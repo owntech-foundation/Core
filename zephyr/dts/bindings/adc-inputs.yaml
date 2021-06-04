@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Martin Jäger / Libre Solar
+
+description: Description for an ADC input including gain (multiplier/divider) and offset
+
+compatible: "adc-inputs"
+
+child-binding:
+  description: ADC inputs child node
+  properties:
+    io-channels:
+      type: phandle-array
+      required: true
+      description: |
+        ADC channel for this input.
+
+    differential:
+      type: boolean
+      required: false
+      description: |
+        Set the io-channels to differential mode. Default is Single Ended    
+
+    enable-gpios:
+      type: phandle-array
+      required: false
+      description: |
+        Enable the voltage divider input or amplifier.
+
+        If present the corresponding GPIO must be set to an active level
+        to enable the divider input.
+
+    label:
+      required: true
+      type: string
+      description: Human-readable string describing the channel acquirred data

@@ -1,0 +1,39 @@
+/ {
+
+	mychannels: adc-inputs {
+		compatible = "adc-inputs";
+		v1-low {
+			io-channels = <&adc2 1>;
+			differential;
+			label = "V1_LOW";
+		};
+
+		i1-low {
+			io-channels = <&adc1 6>;
+			label = "I1_LOW";
+		};
+
+		v2-low {
+			io-channels = <&adc2 3>;
+			differential;
+			label = "V2_LOW";
+		};
+
+		i2-low {
+			io-channels = <&adc1 7>;
+			label = "I2_LOW";
+		};
+
+		v-high {
+			io-channels = <&adc2 11>;
+			differential;
+			label = "V_HIGH";
+		};
+
+		i-high {
+			io-channels = <&adc1 8>;
+			label = "I_HIGH";
+		};
+
+	};
+};

@@ -1,0 +1,82 @@
+#include "dts/hrtim.dtsi"
+#include "dts/adc-channels.dtsi"
+#include "dts/ngnd.dtsi"
+
+/*******/
+/* ADC */
+/*******/
+
+&adc1 {
+	pinctrl-0 = <&adc1_in6_pc0 &adc1_in7_pc1 &adc1_in8_pc2 &adc1_in9_pc3>;
+	status = "okay";
+};
+
+&adc2 {
+	pinctrl-0 = <&adc2_in1_pa0 &adc2_in2_pa1 &adc2_in3_pa6 &adc2_in4_pa7 &adc2_in11_pc5 &adc2_in12_pb2>;
+	status = "okay";
+};
+
+/*******/
+/* SPI */
+/*******/
+
+/* &spi1_miso_pa6 &spi1_mosi_pa7 conflict with &adc2_in3_pa6 &adc2_in4_pa7 */
+&spi1 {
+	status = "disabled";
+};
+
+/* &spi2_nss_pb12 conflict with $fdcan2_rx_pb12, &spi2_nss_pc6 AF does not exist */
+&spi2 {
+	/* pinctrl-0 = <&spi2_nss_pc6 &spi2_sck_pb13
+	 * 				&spi2_miso_pb14 &spi2_mosi_pb15>; */
+	status = "disabled";
+};
+
+/* &spi3_nss_pa15 &spi3_miso_pc11 &spi3_mosi_pc12 conflict with hrtim */
+&spi3 {
+	pinctrl-0 = <&spi3_nss_pa4 &spi3_sck_pc10 &spi3_miso_pb4 &spi3_mosi_pb5>;
+	status = "okay";
+};
+
+/*******/
+/* I2C */
+/*******/
+
+/* &i2c1_scl_pb8 &i2c1_sda_pb9 will conflict with can1 */
+&i2c1 {
+	status = "disabled";
+};
+
+/********/
+/* UART */
+/********/
+
+/* &usart1_rx_pc5 conflict with &adc2_in11_pc5 */
+&usart1 {
+	pinctrl-0 = <&usart1_tx_pc4 &usart1_rx_pb7>;
+	status = "okay";
+};
+
+/*********/
+/* Timer */
+/*********/
+
+&timers6 {
+	status = "okay";
+};
+
+/*******/
+/* DMA */
+/*******/
+
+&dma1 {
+	status = "okay";
+};
+
+&dma2 {
+	status = "okay";
+};
+
+&dmamux1 {
+	status = "okay";
+};
