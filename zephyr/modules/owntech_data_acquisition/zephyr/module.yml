@@ -1,0 +1,4 @@
+name: owntech_data_acquisition
+build:
+  cmake: zephyr
+  kconfig: zephyr/Kconfig

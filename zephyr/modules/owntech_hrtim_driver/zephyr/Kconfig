@@ -1,0 +1,4 @@
+
+config OWNTECH_HRTIM_DRIVER
+	bool "Enable OwnTech hrtim driver"
+	default y
