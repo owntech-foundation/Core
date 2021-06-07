@@ -1,10 +1,8 @@
 / {
-
 	mychannels: adc-inputs {
 		compatible = "adc-inputs";
 		v1-low {
 			io-channels = <&adc2 1>;
-			differential;
 			label = "V1_LOW";
 		};
 
@@ -14,8 +12,7 @@
 		};
 
 		v2-low {
-			io-channels = <&adc2 3>;
-			differential;
+			io-channels = <&adc2 2>;
 			label = "V2_LOW";
 		};
 
@@ -25,8 +22,7 @@
 		};
 
 		v-high {
-			io-channels = <&adc2 11>;
-			differential;
+			io-channels = <&adc2 3>;
 			label = "V_HIGH";
 		};
 
@@ -34,6 +30,5 @@
 			io-channels = <&adc1 8>;
 			label = "I_HIGH";
 		};
-
 	};
 };
