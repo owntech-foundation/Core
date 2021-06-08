@@ -343,7 +343,7 @@ void hrtim_rst_cb_unset(hrtim_t hrtim, hrtim_tu_t tu, hrtim_out_t out,
     }
 }
 
-void hrtim_cmpl_pwm_out(hrtim_t hrtim, hrtim_tu_t tu, uint8_t upper_switch_convention)
+void hrtim_cmpl_pwm_out(hrtim_t hrtim, hrtim_tu_t tu, bool upper_switch_convention)
 {
     //Configuration for the upper switch convention
     if (upper_switch_convention == true)
