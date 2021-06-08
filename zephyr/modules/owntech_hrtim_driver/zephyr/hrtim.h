@@ -27,6 +27,7 @@
  *
  * @author      Hugues Larrive <hugues.larrive@laas.fr>
  * @author      Clément Foucher <clement.foucher@laas.fr>
+ * @author      Antoine Boche <antoine.boche@laas.fr>
  */
 
 #ifndef HRTIM_H
@@ -359,14 +360,15 @@ typedef enum {
  * @brief   Initialize an HRTIM device and all these timing units for
  *          complementary pwm outputs with a dead time.
  *
- * @param[in] dev           HRTIM device to initialize
- * @param[inout] freq       HRTIM frequency in Hz
- * @param[in] dt            Desired dead time in ns
+ * @param[in] dev                   HRTIM device to initialize
+ * @param[inout] freq               HRTIM frequency in Hz
+ * @param[in] dt                    Desired dead time in ns
+ * @param[in] switch_convention     Choice of the switch convention
  *
  * @return                  actual HRTIM resolution on success
  * @return                  0 on error
  */
-uint16_t hrtim_init(hrtim_t dev, uint32_t *freq, uint16_t dt);
+uint16_t hrtim_init(hrtim_t dev, uint32_t *freq, uint16_t dt, uint8_t switch_convention);
 
 /**
  * @brief   Set the duty-cycle, dead-time and phase shift for a given
@@ -450,10 +452,11 @@ void hrtim_rst_cb_unset(hrtim_t dev, hrtim_tu_t tu, hrtim_out_t out,
  * @brief   Full timing unit outputs set/reset crossbars setting for
  *          complementary pwm.
  *
- * @param[in] dev           HRTIM device
- * @param[in] tu            Timing unit
+ * @param[in] dev                   HRTIM device
+ * @param[in] tu                    Timing unit
+ * @param[in] switch_convention     Choice of the switch convention
  */
-void hrtim_cmpl_pwm_out(hrtim_t dev, hrtim_tu_t tu);
+void hrtim_cmpl_pwm_out(hrtim_t dev, hrtim_tu_t tu, bool switch_convention);
 
 /**
  * @brief   Set a period value

@@ -26,6 +26,7 @@
  *
  * @author      Hugues Larrive <hugues.larrive@laas.fr>
  * @author      Clément Foucher <clement.foucher@laas.fr>
+ * @author      Antoine Boche <antoine.boche@laas.fr>
  */
 
 #include "hrtim.h"
@@ -127,7 +128,7 @@ static inline uint32_t _period_ckpsc(hrtim_t hrtim, uint32_t freq,
     return frequency;
 }
 
-uint16_t hrtim_init(hrtim_t hrtim, uint32_t *freq, uint16_t dt)
+uint16_t hrtim_init(hrtim_t hrtim, uint32_t *freq, uint16_t dt, uint8_t upper_switch_convention)
 {
     /* Master timer initialization */
     uint16_t period = hrtim_init_master(hrtim, freq);
@@ -144,7 +145,7 @@ uint16_t hrtim_init(hrtim_t hrtim, uint32_t *freq, uint16_t dt)
         hrtim_cnt_en(hrtim, (1 << (HRTIM_MCR_TACEN_Pos + tu)));
 
         /* Setup outputs */
-        hrtim_cmpl_pwm_out(hrtim, tu);
+        hrtim_cmpl_pwm_out(hrtim, tu, upper_switch_convention);
 
         /* Reset on master timer period event */
         hrtim_rst_evt_en(hrtim, tu, RST_MSTPER);
@@ -342,12 +343,53 @@ void hrtim_rst_cb_unset(hrtim_t hrtim, hrtim_tu_t tu, hrtim_out_t out,
     }
 }
 
-void hrtim_cmpl_pwm_out(hrtim_t hrtim, hrtim_tu_t tu)
+void hrtim_cmpl_pwm_out(hrtim_t hrtim, hrtim_tu_t tu, uint8_t upper_switch_convention)
 {
-    dev(hrtim)->sTimerxRegs[tu].SETx1R = PER;
-    dev(hrtim)->sTimerxRegs[tu].RSTx1R = CMP1;
-    dev(hrtim)->sTimerxRegs[tu].SETx2R = CMP1;
-    dev(hrtim)->sTimerxRegs[tu].RSTx2R = PER;
+    //Configuration for the upper switch convention
+    if (upper_switch_convention == true)
+    {
+        //Configuration for the TIMA that is not correctly mounted in the hardware
+        //It is actually inversed that is why TIMA has a different configuration
+        //To be changed for the new booard
+        if(tu==0)
+        {
+            dev(hrtim)->sTimerxRegs[tu].SETx1R = CMP1;
+            dev(hrtim)->sTimerxRegs[tu].RSTx1R = PER;
+            dev(hrtim)->sTimerxRegs[tu].SETx2R = PER;
+            dev(hrtim)->sTimerxRegs[tu].RSTx2R = CMP1;
+        }
+
+        else
+        {
+            dev(hrtim)->sTimerxRegs[tu].SETx1R = PER;
+            dev(hrtim)->sTimerxRegs[tu].RSTx1R = CMP1;
+            dev(hrtim)->sTimerxRegs[tu].SETx2R = CMP1;
+            dev(hrtim)->sTimerxRegs[tu].RSTx2R = PER;
+        }
+    }
+
+    //Configuration for the lower switch convention
+    else if (upper_switch_convention == false)
+    {
+        //Configuration for the TIMA that is not correctly mounted in the hardware
+        //It is actually inversed that is why TIMA has a different configuration
+        //To be changed for the new booard
+        if(tu==0)
+        {
+            dev(hrtim)->sTimerxRegs[tu].SETx1R = PER;
+            dev(hrtim)->sTimerxRegs[tu].RSTx1R = CMP1;
+            dev(hrtim)->sTimerxRegs[tu].SETx2R = CMP1;
+            dev(hrtim)->sTimerxRegs[tu].RSTx2R = PER;
+        }
+
+        else
+        {
+            dev(hrtim)->sTimerxRegs[tu].SETx1R = CMP1;
+            dev(hrtim)->sTimerxRegs[tu].RSTx1R = PER;
+            dev(hrtim)->sTimerxRegs[tu].SETx2R = PER;
+            dev(hrtim)->sTimerxRegs[tu].RSTx2R = CMP1;
+        }
+    }
 }
 
 void hrtim_period_set(hrtim_t hrtim, hrtim_tu_t tu, uint16_t value)
@@ -431,6 +473,10 @@ void hrtim_out_dis(hrtim_t hrtim, hrtim_tu_t tu, hrtim_out_t out)
     dev(hrtim)->sCommonRegs.ODISR |= (out << (tu * 2));
 }
 
+
+/* Note : The dead time is configured centered by default,
+ * there are no options available to modify this, so the dead time
+ * must be taken into account when calculating the PWM duty cycle */
 void hrtim_pwm_dt(hrtim_t hrtim, hrtim_tu_t tu, uint16_t ns)
 {
     uint32_t ps = ns * 1000;
@@ -444,9 +490,9 @@ void hrtim_pwm_dt(hrtim_t hrtim, hrtim_tu_t tu, uint16_t ns)
 #warning "unsupported stm32XX family"
 #endif
 
-    uint8_t dtpsc = 0;
-    uint32_t t_dtg_ps = (1 << dtpsc) * 1000000 / ((f_hrtim * 8) / 1000000);
-    uint16_t dt = ps / t_dtg_ps;
+    uint8_t dtpsc = 0; // Deadtime clock prescaler set at xx
+    uint32_t t_dtg_ps = (1 << dtpsc) * 1000000 / ((f_hrtim * 8) / 1000000); // intermediate gain for dead time calculation
+    uint16_t dt = ps / t_dtg_ps; // calculate the register value based on desired deadtime in picoseconds
     while (dt > 511 && dtpsc < 7) {
         dtpsc++;
         t_dtg_ps = (1 << dtpsc) * 1000000 / ((f_hrtim * 8) / 1000000);
@@ -458,9 +504,11 @@ void hrtim_pwm_dt(hrtim_t hrtim, hrtim_tu_t tu, uint16_t ns)
     dev(hrtim)->sTimerxRegs[tu].DTxR &= ~(HRTIM_DTR_DTPRSC_Msk
                                         | HRTIM_DTR_DTF_Msk
                                         | HRTIM_DTR_DTR);
-    dev(hrtim)->sTimerxRegs[tu].DTxR |= (dtpsc << HRTIM_DTR_DTPRSC_Pos);
-    dev(hrtim)->sTimerxRegs[tu].DTxR |= (dt << HRTIM_DTR_DTF_Pos);
-    dev(hrtim)->sTimerxRegs[tu].DTxR |= (dt << HRTIM_DTR_DTR_Pos);
+    dev(hrtim)->sTimerxRegs[tu].DTxR |= (dtpsc << HRTIM_DTR_DTPRSC_Pos); // Deadtime clock prescaler
+    dev(hrtim)->sTimerxRegs[tu].DTxR |= (dt << HRTIM_DTR_DTF_Pos); // Deadtime falling edge value
+    dev(hrtim)->sTimerxRegs[tu].DTxR |= (dt << HRTIM_DTR_DTR_Pos); // Deadtime rising edge value
+//  dev(hrtim)->sTimerxRegs[tu].DTxR |= HRTIM_DTR_SDTF; //change the behavior of the deadtime insertion by overlapping the signals (negative falling edge)
+//  dev(hrtim)->sTimerxRegs[tu].DTxR |= HRTIM_DTR_SDTR;  //change the behavior of the deadtime insertion by overlapping the signals (positive falling edge)
     dev(hrtim)->sTimerxRegs[tu].OUTxR |= HRTIM_OUTR_DTEN; /* Note: This
     * parameter cannot be changed once the timer is operating (TxEN bit
     * set) or if its outputs are enabled and set/reset by another timer. */

@@ -28,6 +28,7 @@
  * @brief   PWM management layer by inverter leg interface definitions
  * @date    2020
  * @author  Hugues Larrive <hugues.larrive@laas.fr>
+ * @author  Antoine Boche <antoine.boche@laas.fr>
  */
 
 #ifndef LEG_H
@@ -52,9 +53,13 @@ typedef struct {
 } leg_conf_t;
 
 /**
- * @brief   Initializes all the configured devices
+ * @brief   Initializes all the configured devices with the chosen switch convention
+ *
+ * @param[in]   upper_switch_convention    Choice of the switch convention
+ * 
+ * @return                      HRTIM period
  */
-void leg_init(void);
+uint16_t leg_init(bool upper_switch_convention);
 
 /**
  * @brief   Set the PWM pulse width for a given leg device
