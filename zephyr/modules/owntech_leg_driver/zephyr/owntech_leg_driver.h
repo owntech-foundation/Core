@@ -22,19 +22,15 @@
  * @ingroup     owntech_modules_leg
  * @file
  *
- * @{
  * @brief   leg_config array definition
  * @date    2020
  * @author  Hugues Larrive <hugues.larrive@laas.fr>
  *
- * @note    This must only be included in leg.c
+ * @note    This must only be included in owntech_leg_driver.c
  */
 
-#ifndef LEG_CONF_H
-#define LEG_CONF_H
-
-#define LEG_DEFAULT_DT  (100U)      /**< dead-time in ns */
-#define LEG_FREQ        KHZ(200U)   /**< frequency in Hz*/
+#ifndef LEG_CONF_H_
+#define LEG_CONF_H_
 
 /**
  * @brief   Inverter leg configuration
@@ -76,5 +72,4 @@ static leg_conf_t leg_config[] = {
 
 #define LEG_NUMOF           ARRAY_SIZE(leg_config)
 
-#endif /* LEG_CONF_H */
-/** @} */
+#endif /* LEG_CONF_H_ */

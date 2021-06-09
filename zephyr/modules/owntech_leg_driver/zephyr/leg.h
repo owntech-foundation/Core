@@ -42,6 +42,9 @@
 extern "C" {
 #endif
 
+#define LEG_DEFAULT_DT  (100U)      /**< dead-time in ns */
+#define LEG_FREQ        KHZ(200U)   /**< frequency in Hz*/
+
 /**
  * @brief   Inverter leg configuration data structure
  */
@@ -56,7 +59,7 @@ typedef struct {
  * @brief   Initializes all the configured devices with the chosen switch convention
  *
  * @param[in]   upper_switch_convention    Choice of the switch convention
- * 
+ *
  * @return                      HRTIM period
  */
 uint16_t leg_init(bool upper_switch_convention);

@@ -45,7 +45,7 @@ uint16_t leg_init(bool upper_switch_convention)
     uint32_t freq = LEG_FREQ;
 
     /* ensures that timing_unit can be used as leg identifier */
-    for (int i = 0; i < LEG_NUMOF; i++) 
+    for (int i = 0; i < LEG_NUMOF; i++)
     {
         leg_conf[leg_config[i].timing_unit] = leg_config[i];
     }
@@ -71,7 +71,7 @@ void leg_set(hrtim_tu_t timing_unit, uint16_t pulse_width, uint16_t phase_shift)
     {
         pulse_width = max_pw;
     }
-    
+
     hrtim_pwm_set(  leg_conf[timing_unit].hrtim,
                     timing_unit,
                     pulse_width,
