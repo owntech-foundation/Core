@@ -39,6 +39,10 @@ static int timer_stm32_init(const struct device* dev)
 
 	if (tim_dev == TIM6)
 		init_timer_6();
+	else if (tim_dev == TIM7)
+		init_timer_7();
+	else
+		return -1;
 
 	return 0;
 }
@@ -138,9 +142,30 @@ void init_timer_6()
 	LL_TIM_DisableMasterSlaveMode(TIM6);
 }
 
+void init_timer_7()
+{
+	LL_TIM_InitTypeDef TIM_InitStruct = {0};
+
+	// Peripheral clock enable
+	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM7);
+
+	// TIM7 interrupt Init
+	NVIC_SetPriority(TIM7_DAC_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),0, 0));
+
+	TIM_InitStruct.Prescaler = (CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC/1e7) - 1; // Set prescaler to tick to 0.1µs
+	TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
+	LL_TIM_Init(TIM7, &TIM_InitStruct);
+	LL_TIM_DisableARRPreload(TIM7);
+	LL_TIM_SetTriggerOutput(TIM7, LL_TIM_TRGO_RESET);
+	LL_TIM_DisableMasterSlaveMode(TIM7);
+}
+
 
 /////
 // Device definitions
+
+// Timer 6
+#if DT_NODE_HAS_STATUS(TIMER6_NODELABEL, okay)
 
 struct stm32_timer_driver_data timer6_data =
 {
@@ -150,13 +175,37 @@ struct stm32_timer_driver_data timer6_data =
 	.timer_callback = NULL
 };
 
-DEVICE_DEFINE(stm32_timer_driver,
-              TIMER6_LABEL,
-              timer_stm32_init,
-              device_pm_control_nop,
-              &timer6_data,
-              NULL,
-              PRE_KERNEL_1,
-              CONFIG_KERNEL_INIT_PRIORITY_DEVICE,
-              &timer_funcs
-             );
+DEVICE_DT_DEFINE(TIMER6_NODELABEL,
+                 timer_stm32_init,
+                 device_pm_control_nop,
+                 &timer6_data,
+                 NULL,
+                 PRE_KERNEL_1,
+                 CONFIG_KERNEL_INIT_PRIORITY_DEVICE,
+                 &timer_funcs
+                );
+
+#endif // Timer 6
+
+// Timer 7
+#if DT_NODE_HAS_STATUS(TIMER7_NODELABEL, okay)
+
+struct stm32_timer_driver_data timer7_data =
+{
+	.timer_struct   = TIM7,
+	.interrupt_line = TIMER7_INTERRUPT_LINE,
+	.interrupt_prio = TIMER7_INTERRUPT_PRIO,
+	.timer_callback = NULL
+};
+
+DEVICE_DT_DEFINE(TIMER7_NODELABEL,
+                 timer_stm32_init,
+                 device_pm_control_nop,
+                 &timer7_data,
+                 NULL,
+                 PRE_KERNEL_1,
+                 CONFIG_KERNEL_INIT_PRIORITY_DEVICE,
+                 &timer_funcs
+                );
+
+#endif // Timer 7

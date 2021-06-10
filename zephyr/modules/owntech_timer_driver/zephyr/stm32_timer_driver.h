@@ -36,11 +36,13 @@ extern "C" {
 #endif
 
 
-#define TIMER6_NODELABEL DT_NODELABEL(timers6)
-#define TIMER6_LABEL     DT_PROP(TIMER6_NODELABEL, label)
-
+#define TIMER6_NODELABEL      DT_NODELABEL(timers6)
 #define TIMER6_INTERRUPT_LINE DT_IRQN(TIMER6_NODELABEL)
 #define TIMER6_INTERRUPT_PRIO DT_IRQ_BY_IDX(TIMER6_NODELABEL, 0, priority)
+
+#define TIMER7_NODELABEL      DT_NODELABEL(timers7)
+#define TIMER7_INTERRUPT_LINE DT_IRQN(TIMER7_NODELABEL)
+#define TIMER7_INTERRUPT_PRIO DT_IRQ_BY_IDX(TIMER7_NODELABEL, 0, priority)
 
 /**
  * Members of this structure marked with a "§"
@@ -67,6 +69,7 @@ uint32_t timer_stm32_get_count(const struct device* dev);
 void timer_stm32_clear(const struct device* dev);
 
 void init_timer_6();
+void init_timer_7();
 
 
 #ifdef __cplusplus

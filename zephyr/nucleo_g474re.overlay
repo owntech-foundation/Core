@@ -65,6 +65,10 @@
 	status = "okay";
 };
 
+&timers7 {
+	status = "okay";
+};
+
 /*******/
 /* DMA */
 /*******/
