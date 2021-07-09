@@ -72,7 +72,7 @@ static const struct timer_driver_api timer_funcs =
 {
 	.config    = timer_stm32_config,
 	.start     = timer_stm32_start,
-	.get_count = timer_stm32_get_count,
+	.get_count = timer_stm32_get_count
 };
 
 void timer_stm32_config(const struct device* dev, const struct timer_config_t* config)

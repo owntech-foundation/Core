@@ -1,4 +1,3 @@
-
 config OWNTECH_TIMER_DRIVER
 	bool "Enable timer driver by OwnTech (only STM32 timer partial support for now)"
 	default y
