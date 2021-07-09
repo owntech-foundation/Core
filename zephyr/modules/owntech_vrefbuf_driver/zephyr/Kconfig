@@ -1,0 +1,3 @@
+config OWNTECH_VREFBUF_DRIVER
+	bool "Enable OwnTech VREFBUF driver for STM32"
+	default y
