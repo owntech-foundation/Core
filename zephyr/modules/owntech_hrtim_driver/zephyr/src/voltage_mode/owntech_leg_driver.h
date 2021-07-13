@@ -29,8 +29,8 @@
  * @note    This must only be included in owntech_leg_driver.c
  */
 
-#ifndef LEG_CONF_H_
-#define LEG_CONF_H_
+#ifndef OWNTECH_LEG_DRIVER_H_
+#define OWNTECH_LEG_DRIVER_H_
 
 /**
  * @brief   Inverter leg configuration
@@ -72,4 +72,4 @@ static leg_conf_t leg_config[] = {
 
 #define LEG_NUMOF           ARRAY_SIZE(leg_config)
 
-#endif /* LEG_CONF_H_ */
+#endif // OWNTECH_LEG_DRIVER_H_

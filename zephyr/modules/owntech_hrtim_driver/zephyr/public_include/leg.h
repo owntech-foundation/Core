@@ -31,10 +31,13 @@
  * @author  Antoine Boche <antoine.boche@laas.fr>
  */
 
-#ifndef LEG_H
-#define LEG_H
+#ifndef LEG_H_
+#define LEG_H_
 
 #include <assert.h>
+#include <stdint.h>
+
+#include <zephyr.h>
 
 #include "hrtim.h"
 
@@ -114,5 +117,4 @@ uint16_t leg_get_freq(void);
 }
 #endif
 
-#endif /* LEG_H */
-/** @} */
+#endif // LEG_H_

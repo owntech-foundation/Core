@@ -1,4 +1,3 @@
-
 config OWNTECH_HRTIM_DRIVER
-	bool "Enable OwnTech hrtim driver"
+	bool "Enable OwnTech High-resolution timer driver for STM32"
 	default y

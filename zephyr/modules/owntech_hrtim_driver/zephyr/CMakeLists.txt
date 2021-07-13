@@ -1,9 +1,12 @@
-
 if(CONFIG_OWNTECH_HRTIM_DRIVER)
-  zephyr_include_directories(.)
-
+  # Select directory to add to the include path
+  zephyr_include_directories(./public_include)
+  # Define the current folder as a Zephyr library
   zephyr_library()
+  # Select source files to be compiled
   zephyr_library_sources(
-    owntech_hrtim_driver.c
+    ./src/voltage_mode/hrtim_voltage_mode.c
+    ./src/voltage_mode/owntech_leg_driver.cpp
+    ./src/hrtim_common.c
     )
 endif()

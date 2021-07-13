@@ -1,4 +1,0 @@
-name: owntech_leg_driver
-build:
-  cmake: zephyr
-  kconfig: zephyr/Kconfig

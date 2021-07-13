@@ -1,4 +1,0 @@
-
-config OWNTECH_LEG_DRIVER
-	bool "Enable OwnTech leg driver"
-	default y

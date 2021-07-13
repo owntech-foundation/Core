@@ -28,6 +28,7 @@
 
 #include "leg.h"
 #include "owntech_leg_driver.h"
+#include "hrtim_voltage_mode.h"
 
 static uint16_t period, min_pw, max_pw, dead_time;
 
@@ -45,7 +46,7 @@ uint16_t leg_init(bool upper_switch_convention)
     uint32_t freq = LEG_FREQ;
 
     /* ensures that timing_unit can be used as leg identifier */
-    for (int i = 0; i < LEG_NUMOF; i++)
+    for (unsigned int i = 0; i < LEG_NUMOF; i++)
     {
         leg_conf[leg_config[i].timing_unit] = leg_config[i];
     }

@@ -29,7 +29,7 @@
  * @author      Antoine Boche <antoine.boche@laas.fr>
  */
 
-#include "hrtim.h"
+#include "hrtim_voltage_mode.h"
 #include "assert.h"
 
 static const struct soc_gpio_pinctrl tim_pinctrl[] = ST_STM32_DT_INST_PINCTRL(0, 0);

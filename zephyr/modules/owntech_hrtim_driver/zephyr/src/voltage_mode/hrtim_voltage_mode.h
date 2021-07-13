@@ -30,26 +30,20 @@
  * @author      Antoine Boche <antoine.boche@laas.fr>
  */
 
-#ifndef HRTIM_H
-#define HRTIM_H
+#ifndef HRTIM_VOLTAGE_MODE_H_
+#define HRTIM_VOLTAGE_MODE_H_
 
 #include <stdint.h>
 #include <limits.h>
 
 #include <pinmux/stm32/pinmux_stm32.h>
 
+#include <hrtim.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
- * @brief   HRTIM have 5 or 6 timing units
- */
-#ifdef HRTIM_MCR_TFCEN
-#define HRTIM_STU_NUMOF (6U)        /**< number of slave timing units */
-#else
-#define HRTIM_STU_NUMOF (5U)
-#endif
 
 #define DT_DRV_COMPAT hrtim
 #define CLOCK_APB2 (CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC / CONFIG_CLOCK_STM32_APB2_PRESCALER)
@@ -67,13 +61,6 @@ extern "C" {
  */
 #ifndef HRTIM_UNDEF
 #define HRTIM_UNDEF           (UINT_MAX)
-#endif
-
-/**
- * @brief   Default HRTIM type definition
- */
-#ifndef HAVE_HRTIM_T
-typedef unsigned int hrtim_t;
 #endif
 
 /**
@@ -114,21 +101,6 @@ typedef enum {
     UPDATE = 0x80000000         /*< Registers update (transfer preload
                                     to active) */
 } hrtim_cb_t;
-
-/**
- * @brief   HRTIM timing units definition
- */
-typedef enum {
-    TIMA,
-    TIMB,
-    TIMC,
-    TIMD,
-    TIME,
-#if (HRTIM_STU_NUMOF == 6)
-    TIMF,
-#endif
-    MSTR
-} hrtim_tu_t;
 
 /**
  * @brief   HRTIM comparators definition
@@ -371,17 +343,6 @@ typedef enum {
 uint16_t hrtim_init(hrtim_t dev, uint32_t *freq, uint16_t dt, uint8_t switch_convention);
 
 /**
- * @brief   Set the duty-cycle, dead-time and phase shift for a given
- *          timing unit of a given HRTIM device
- *
- * @param[in] dev           HRTIM device
- * @param[in] tu            Timing unit
- * @param[in] value         Duty cycle
- * @param[in] shift         Phase shifting
- */
-void hrtim_pwm_set(hrtim_t dev, hrtim_tu_t tu, uint16_t value, uint16_t shift);
-
-/**
  * @brief   Initialize an HRTIM device master timer
  *
  * @param[in] dev           HRTIM device to initialize
@@ -562,4 +523,4 @@ void hrtim_adc_trigger_dis(hrtim_t dev, hrtim_adc_t adc, hrtim_adc_trigger_t evt
 }
 #endif
 
-#endif /* HRTIM_H */
+#endif // HRTIM_VOLTAGE_MODE_H_
