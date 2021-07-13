@@ -1,4 +1,3 @@
-
 config OWNTECH_NGND_DRIVER
 	bool "Enable OwnTech ngnd driver"
 	default y

@@ -1,9 +1,10 @@
-
 if(CONFIG_OWNTECH_NGND_DRIVER)
-  zephyr_include_directories(.)
-
+  # Select directory to add to the include path
+  zephyr_include_directories(./public_include)
+  # Define the current folder as a Zephyr library
   zephyr_library()
+  # Select source files to be compiled
   zephyr_library_sources(
-    owntech_ngnd_driver.c
+    src/owntech_ngnd_driver.c
     )
 endif()
