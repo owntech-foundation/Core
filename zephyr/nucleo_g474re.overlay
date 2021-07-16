@@ -84,3 +84,19 @@
 &dmamux1 {
 	status = "okay";
 };
+
+/*******/
+/* DAC */
+/*******/
+
+&dac1 {
+	status = "okay";
+};
+
+&dac2 {
+	status = "okay";
+};
+
+&dac3 {
+	status = "okay";
+};
