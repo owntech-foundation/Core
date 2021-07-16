@@ -345,50 +345,22 @@ void hrtim_rst_cb_unset(hrtim_t hrtim, hrtim_tu_t tu, hrtim_out_t out,
 
 void hrtim_cmpl_pwm_out(hrtim_t hrtim, hrtim_tu_t tu, bool upper_switch_convention)
 {
-    //Configuration for the upper switch convention
+    // Configuration for the upper switch convention
     if (upper_switch_convention == true)
     {
-        //Configuration for the TIMA that is not correctly mounted in the hardware
-        //It is actually inversed that is why TIMA has a different configuration
-        //To be changed for the new booard
-        if(tu==0)
-        {
-            dev(hrtim)->sTimerxRegs[tu].SETx1R = CMP1;
-            dev(hrtim)->sTimerxRegs[tu].RSTx1R = PER;
-            dev(hrtim)->sTimerxRegs[tu].SETx2R = PER;
-            dev(hrtim)->sTimerxRegs[tu].RSTx2R = CMP1;
-        }
-
-        else
-        {
-            dev(hrtim)->sTimerxRegs[tu].SETx1R = PER;
-            dev(hrtim)->sTimerxRegs[tu].RSTx1R = CMP1;
-            dev(hrtim)->sTimerxRegs[tu].SETx2R = CMP1;
-            dev(hrtim)->sTimerxRegs[tu].RSTx2R = PER;
-        }
+        dev(hrtim)->sTimerxRegs[tu].SETx1R = PER;
+        dev(hrtim)->sTimerxRegs[tu].RSTx1R = CMP1;
+        dev(hrtim)->sTimerxRegs[tu].SETx2R = CMP1;
+        dev(hrtim)->sTimerxRegs[tu].RSTx2R = PER;
     }
 
-    //Configuration for the lower switch convention
+    // Configuration for the lower switch convention
     else if (upper_switch_convention == false)
     {
-        //Configuration for the TIMA that is not correctly mounted in the hardware
-        //It is actually inversed that is why TIMA has a different configuration
-        //To be changed for the new booard
-        if(tu==0)
-        {
-            dev(hrtim)->sTimerxRegs[tu].SETx1R = PER;
-            dev(hrtim)->sTimerxRegs[tu].RSTx1R = CMP1;
-            dev(hrtim)->sTimerxRegs[tu].SETx2R = CMP1;
-            dev(hrtim)->sTimerxRegs[tu].RSTx2R = PER;
-        }
-
-        else
-        {
-            dev(hrtim)->sTimerxRegs[tu].SETx1R = CMP1;
-            dev(hrtim)->sTimerxRegs[tu].RSTx1R = PER;
-            dev(hrtim)->sTimerxRegs[tu].SETx2R = PER;
-            dev(hrtim)->sTimerxRegs[tu].RSTx2R = CMP1;
-        }
+        dev(hrtim)->sTimerxRegs[tu].SETx1R = CMP1;
+        dev(hrtim)->sTimerxRegs[tu].RSTx1R = PER;
+        dev(hrtim)->sTimerxRegs[tu].SETx2R = PER;
+        dev(hrtim)->sTimerxRegs[tu].RSTx2R = CMP1;
     }
 }
 
