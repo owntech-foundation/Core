@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 LAAS-CNRS
+ * Copyright (c) 2020-2021 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -21,21 +21,19 @@
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
-#include "voltage_mode/hrtim_voltage_mode.h"
-#include "current_mode/hrtim_current_mode.h"
-#include "leg.h"
+#ifndef HRTIM_CURRENT_MODE_H_
+#define HRTIM_CURRENT_MODE_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void hrtim_init_current()
-{
-	hrtim_cm_init();
-	hrtim_cm_init_gpio();
-	hrtim_cm_enable();
+void hrtim_cm_init();
+void hrtim_cm_init_gpio();
+void hrtim_cm_enable();
+
+#ifdef __cplusplus
 }
+#endif
 
-void hrtim_init_voltage()
-{
-	leg_init(true);
-	hrtim_adc_trigger_en(0, ADC1R, AD13_TAC3);
-	hrtim_cmp_set(0, TIMA, CMP3xR, 1);
-}
+#endif // HRTIM_CURRENT_MODE_H_

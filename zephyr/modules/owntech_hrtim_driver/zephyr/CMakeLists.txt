@@ -7,6 +7,7 @@ if(CONFIG_OWNTECH_HRTIM_DRIVER)
   zephyr_library_sources(
     ./src/voltage_mode/hrtim_voltage_mode.c
     ./src/voltage_mode/owntech_leg_driver.cpp
+    ./src/current_mode/hrtim_current_mode.c
     ./src/hrtim_common.c
     )
 endif()
