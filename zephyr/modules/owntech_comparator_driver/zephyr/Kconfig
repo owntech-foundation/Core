@@ -1,0 +1,3 @@
+config OWNTECH_COMPARATOR_DRIVER
+	bool "Enable OwnTech comparator driver for STM32"
+	default y

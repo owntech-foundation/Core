@@ -1,0 +1,4 @@
+name: owntech_comparator_driver
+build:
+  cmake: zephyr
+  kconfig: zephyr/Kconfig
