@@ -125,30 +125,60 @@ static void dac_stm32_set_function(const struct device* dev, uint8_t channel, co
 static void dac_stm32_function_update_reset(const struct device* dev, uint8_t channel, uint32_t reset_data)
 {
 	struct stm32_dac_driver_data* data = (struct stm32_dac_driver_data*)dev->data;
+	DAC_TypeDef* dac_dev = data->dac_struct;
+
+	uint8_t dac_channel = __LL_DAC_DECIMAL_NB_TO_CHANNEL(channel);
 
 	if (data->dac_mode[channel-1] == dac_mode_function)
 	{
-		dac_function_config_t new_config = data->dac_config->function_config;
-		new_config.reset_data = reset_data;
+		data->dac_config->function_config.reset_data = reset_data;
 
-		dac_stm32_stop(dev, channel);
-		dac_stm32_set_function(dev, channel, &new_config);
-		dac_stm32_start(dev, channel);
+		if (data->started[channel-1] == 1)
+		{
+			LL_DAC_Disable(dac_dev, dac_channel);
+		}
+
+		LL_DAC_SetWaveSawtoothResetData(dac_dev, dac_channel, reset_data);
+
+		if (data->started[channel-1] == 1)
+		{
+			LL_DAC_Enable(dac_dev, dac_channel);
+
+			while (LL_DAC_IsReady(dac_dev, dac_channel) == 0)
+			{
+				// Wait
+			}
+		}
 	}
 }
 
 static void dac_stm32_function_update_step(const struct device* dev, uint8_t channel, uint32_t step_data)
 {
 	struct stm32_dac_driver_data* data = (struct stm32_dac_driver_data*)dev->data;
+	DAC_TypeDef* dac_dev = data->dac_struct;
+
+	uint8_t dac_channel = __LL_DAC_DECIMAL_NB_TO_CHANNEL(channel);
 
 	if (data->dac_mode[channel-1] == dac_mode_function)
 	{
-		dac_function_config_t new_config = data->dac_config->function_config;
-		new_config.step_data = step_data;
+		data->dac_config->function_config.step_data = step_data;
 
-		dac_stm32_stop(dev, channel);
-		dac_stm32_set_function(dev, channel, &new_config);
-		dac_stm32_start(dev, channel);
+		if (data->started[channel-1] == 1)
+		{
+			LL_DAC_Disable(dac_dev, dac_channel);
+		}
+
+		LL_DAC_SetWaveSawtoothStepData(dac_dev, dac_channel, step_data);
+
+		if (data->started[channel-1] == 1)
+		{
+			LL_DAC_Enable(dac_dev, dac_channel);
+
+			while (LL_DAC_IsReady(dac_dev, dac_channel) == 0)
+			{
+				// Wait
+			}
+		}
 	}
 }
 
@@ -169,7 +199,7 @@ static void dac_stm32_start(const struct device* dev, uint8_t channel)
 
 	uint8_t dac_channel = __LL_DAC_DECIMAL_NB_TO_CHANNEL(channel);
 
-	if (data->dac_mode[channel-1] != dac_mode_unset)
+	if ( (data->dac_mode[channel-1] != dac_mode_unset) && (data->started[channel-1] == 0) )
 	{
 		LL_DAC_Enable(dac_dev, dac_channel);
 
@@ -177,6 +207,8 @@ static void dac_stm32_start(const struct device* dev, uint8_t channel)
 		{
 			// Wait
 		}
+
+		data->started[channel-1] = 1;
 	}
 }
 
@@ -187,7 +219,12 @@ static void dac_stm32_stop(const struct device* dev, uint8_t channel)
 
 	uint8_t dac_channel = __LL_DAC_DECIMAL_NB_TO_CHANNEL(channel);
 
-	LL_DAC_Disable(dac_dev, dac_channel);
+	if (data->started[channel-1] == 1)
+	{
+		LL_DAC_Disable(dac_dev, dac_channel);
+
+		data->started[channel-1] = 0;
+	}
 }
 
 
@@ -200,7 +237,8 @@ static void dac_stm32_stop(const struct device* dev, uint8_t channel)
 struct stm32_dac_driver_data dac1_data =
 {
 	.dac_struct = DAC1,
-	.dac_mode   = {dac_mode_unset, dac_mode_unset}
+	.dac_mode   = {dac_mode_unset, dac_mode_unset},
+	.started    = {0, 0}
 };
 
 DEVICE_DT_DEFINE(DAC1_NODELABEL,
@@ -221,7 +259,8 @@ DEVICE_DT_DEFINE(DAC1_NODELABEL,
 struct stm32_dac_driver_data dac2_data =
 {
 	.dac_struct = DAC2,
-	.dac_mode   = {dac_mode_unset, dac_mode_unset}
+	.dac_mode   = {dac_mode_unset, dac_mode_unset},
+	.started    = {0, 0}
 };
 
 DEVICE_DT_DEFINE(DAC2_NODELABEL,
@@ -242,7 +281,8 @@ DEVICE_DT_DEFINE(DAC2_NODELABEL,
 struct stm32_dac_driver_data dac3_data =
 {
 	.dac_struct = DAC3,
-	.dac_mode   = {dac_mode_unset, dac_mode_unset}
+	.dac_mode   = {dac_mode_unset, dac_mode_unset},
+	.started    = {0, 0}
 };
 
 DEVICE_DT_DEFINE(DAC3_NODELABEL,

@@ -51,6 +51,7 @@ struct stm32_dac_driver_data
 {
 	DAC_TypeDef* dac_struct;
 	dac_mode_t   dac_mode[2];
+	uint8_t      started[2];
 	union
 	{
 		uint32_t              constant_value;

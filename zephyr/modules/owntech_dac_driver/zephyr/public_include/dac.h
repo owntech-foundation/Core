@@ -109,7 +109,6 @@ static inline void dac_function_update_step(const struct device* dev, uint8_t ch
 	api->fn_upd_step(dev, channel, step_data);
 }
 
-
 static inline void dac_pin_configure(const struct device* dev, uint8_t channel, const dac_pin_config_t* pin_config)
 {
 	const struct dac_driver_api* api = (const struct dac_driver_api*)(dev->api);
