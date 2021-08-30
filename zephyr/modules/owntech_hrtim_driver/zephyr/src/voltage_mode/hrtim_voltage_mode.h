@@ -38,7 +38,7 @@
 
 #include <pinmux/stm32/pinmux_stm32.h>
 
-#include <hrtim.h>
+#include "hrtim.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,7 +46,6 @@ extern "C" {
 
 
 #define DT_DRV_COMPAT hrtim
-#define CLOCK_APB2 (CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC / CONFIG_CLOCK_STM32_APB2_PRESCALER)
 #define HRTIM_NUMOF (1)
 
 /**
@@ -518,6 +517,8 @@ void hrtim_adc_trigger_en(hrtim_t dev, hrtim_adc_t adc, hrtim_adc_trigger_t evt)
  * @param[in] evt           Trigger event
  */
 void hrtim_adc_trigger_dis(hrtim_t dev, hrtim_adc_t adc, hrtim_adc_trigger_t evt);
+
+int hrtim_get_apb2_clock();
 
 #ifdef __cplusplus
 }

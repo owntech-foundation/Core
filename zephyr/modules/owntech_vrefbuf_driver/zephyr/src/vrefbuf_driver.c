@@ -44,7 +44,7 @@ static int vrefbuf_init(const struct device* dev)
 DEVICE_DEFINE(vrefbuf_driver,
               "vrefbuf_driver",
               vrefbuf_init,
-              device_pm_control_nop,
+              NULL,
               NULL,
               NULL,
               PRE_KERNEL_1,

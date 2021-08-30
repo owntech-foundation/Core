@@ -34,9 +34,6 @@ extern "C" {
 
 
 #define NGND_GPIO_NODE  DT_ALIAS(ngnd)
-#define NGND_GPIO_LABEL DT_GPIO_LABEL(NGND_GPIO_NODE, gpios)
-#define NGND_GPIO_PIN   DT_GPIO_PIN(NGND_GPIO_NODE, gpios)
-#define NGND_GPIO_FLAGS DT_GPIO_FLAGS(NGND_GPIO_NODE, gpios)
 
 static int ngnd_init(const struct device* dev);
 

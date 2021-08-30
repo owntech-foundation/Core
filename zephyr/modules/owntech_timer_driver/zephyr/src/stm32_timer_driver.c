@@ -177,7 +177,7 @@ struct stm32_timer_driver_data timer6_data =
 
 DEVICE_DT_DEFINE(TIMER6_NODELABEL,
                  timer_stm32_init,
-                 device_pm_control_nop,
+                 NULL,
                  &timer6_data,
                  NULL,
                  PRE_KERNEL_1,
@@ -200,7 +200,7 @@ struct stm32_timer_driver_data timer7_data =
 
 DEVICE_DT_DEFINE(TIMER7_NODELABEL,
                  timer_stm32_init,
-                 device_pm_control_nop,
+                 NULL,
                  &timer7_data,
                  NULL,
                  PRE_KERNEL_1,

@@ -29,6 +29,8 @@
  * @author      Antoine Boche <antoine.boche@laas.fr>
  */
 
+#include <stm32_ll_rcc.h>
+
 #include "hrtim_voltage_mode.h"
 #include "assert.h"
 
@@ -74,9 +76,9 @@ static inline uint32_t _period_ckpsc(hrtim_t hrtim, uint32_t freq,
                                         uint16_t *per, uint8_t *ckpsc)
 {
 #if defined(CONFIG_SOC_SERIES_STM32F3X)
-    uint32_t f_hrtim = CLOCK_APB2 * 2;
+    uint32_t f_hrtim = hrtim_get_apb2_clock() * 2;
 #elif defined(CONFIG_SOC_SERIES_STM32G4X)
-    uint32_t f_hrtim = CLOCK_APB2;
+    uint32_t f_hrtim = hrtim_get_apb2_clock();
 #else
 #warning "unsupported stm32XX family"
 #endif
@@ -455,9 +457,9 @@ void hrtim_pwm_dt(hrtim_t hrtim, hrtim_tu_t tu, uint16_t ns)
     /* t_dtg = (2^dtpsc) * (t_hrtim / 8)
      *       = (2^dtpsc) / (f_hrtim * 8) */
 #if defined(CONFIG_SOC_SERIES_STM32F3X)
-    uint32_t f_hrtim = CLOCK_APB2 * 2;
+    uint32_t f_hrtim = hrtim_get_apb2_clock() * 2;
 #elif defined(CONFIG_SOC_SERIES_STM32G4X)
-    uint32_t f_hrtim = CLOCK_APB2;
+    uint32_t f_hrtim = hrtim_get_apb2_clock();
 #else
 #warning "unsupported stm32XX family"
 #endif
@@ -506,4 +508,30 @@ void hrtim_adc_trigger_dis(hrtim_t hrtim, hrtim_adc_t adc, hrtim_adc_trigger_t e
         case ADC3R: dev(hrtim)->sCommonRegs.ADC3R &= ~evt; break;
         case ADC4R: dev(hrtim)->sCommonRegs.ADC4R &= ~evt; break;
     }
+}
+
+int hrtim_get_apb2_clock()
+{
+    int prescaler = 1;
+
+    switch(LL_RCC_GetAPB2Prescaler())
+    {
+        case RCC_CFGR_PPRE2_DIV1:
+            prescaler=1;
+            break;
+        case RCC_CFGR_PPRE2_DIV2:
+            prescaler=2;
+            break;
+        case RCC_CFGR_PPRE2_DIV4:
+            prescaler=4;
+            break;
+        case RCC_CFGR_PPRE2_DIV8:
+            prescaler=8;
+            break;
+        case RCC_CFGR_PPRE2_DIV16:
+            prescaler=16;
+            break;
+    }
+
+    return CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC / prescaler;
 }

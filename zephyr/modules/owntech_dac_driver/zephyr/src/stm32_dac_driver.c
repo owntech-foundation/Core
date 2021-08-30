@@ -243,7 +243,7 @@ struct stm32_dac_driver_data dac1_data =
 
 DEVICE_DT_DEFINE(DAC1_NODELABEL,
                  dac_stm32_init,
-                 device_pm_control_nop,
+                 NULL,
                  &dac1_data,
                  NULL,
                  PRE_KERNEL_1,
@@ -265,7 +265,7 @@ struct stm32_dac_driver_data dac2_data =
 
 DEVICE_DT_DEFINE(DAC2_NODELABEL,
                  dac_stm32_init,
-                 device_pm_control_nop,
+                 NULL,
                  &dac2_data,
                  NULL,
                  PRE_KERNEL_1,
@@ -287,7 +287,7 @@ struct stm32_dac_driver_data dac3_data =
 
 DEVICE_DT_DEFINE(DAC3_NODELABEL,
                  dac_stm32_init,
-                 device_pm_control_nop,
+                 NULL,
                  &dac3_data,
                  NULL,
                  PRE_KERNEL_1,

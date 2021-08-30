@@ -1,11 +1,11 @@
-description: GPIO parent node
+description: Neutral-Ground Switch
 
-compatible: "ngnd-gpio"
+compatible: "ngnd-switch"
 
 child-binding:
-    description: NGND GPIO child node
+    description: Neutral-Ground GPIO node
     properties:
-       gpios:
+       ngnd-gpios:
           type: phandle-array
           required: true
        label:

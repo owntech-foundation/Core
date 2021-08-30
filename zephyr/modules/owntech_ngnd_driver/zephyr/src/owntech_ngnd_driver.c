@@ -36,18 +36,17 @@
 
 static struct owntech_ngnd_driver_dev_data
 {
-	const struct device* gpio_dev;
+	struct gpio_dt_spec ngnd_pin_spec;
 } data;
 
 static int ngnd_init(const struct device* dev)
 {
-    struct owntech_ngnd_driver_dev_data* data = dev->data;
+	struct owntech_ngnd_driver_dev_data* data = dev->data;
 
-	data->gpio_dev = device_get_binding(NGND_GPIO_LABEL);
+	const struct gpio_dt_spec ngnd_spec = GPIO_DT_SPEC_GET(NGND_GPIO_NODE, ngnd_gpios);
+	data->ngnd_pin_spec = ngnd_spec;
 
-	__ASSERT(data->gpio_dev, "ERROR: unable to obtain ngnd device binding");
-
-    gpio_pin_configure(data->gpio_dev, NGND_GPIO_PIN, GPIO_OUTPUT_ACTIVE | NGND_GPIO_FLAGS);
+	gpio_pin_configure_dt(&data->ngnd_pin_spec, GPIO_OUTPUT_ACTIVE);
 
 	return 0;
 }
@@ -60,7 +59,7 @@ void ngnd_set(const struct device* dev, int value)
 {
 	struct owntech_ngnd_driver_dev_data* data = dev->data;
 
-	gpio_pin_set(data->gpio_dev, NGND_GPIO_PIN, value);
+	gpio_pin_set(data->ngnd_pin_spec.port, data->ngnd_pin_spec.pin, value);
 }
 
 
@@ -70,7 +69,7 @@ void ngnd_set(const struct device* dev, int value)
 DEVICE_DEFINE(owntech_ngnd_driver,
               NGND_LABEL,
               ngnd_init,
-              device_pm_control_nop,
+              NULL,
               &data,
               NULL,
               PRE_KERNEL_2,
