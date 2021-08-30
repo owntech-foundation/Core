@@ -7,12 +7,12 @@
 		};
 
 		i1-low {
-			io-channels = <&adc1 6>;
+			io-channels = <&adc1 2>;
 			label = "I1_LOW";
 		};
 
 		v2-low {
-			io-channels = <&adc2 2>;
+			io-channels = <&adc2 6>;
 			label = "V2_LOW";
 		};
 
@@ -22,7 +22,7 @@
 		};
 
 		v-high {
-			io-channels = <&adc2 3>;
+			io-channels = <&adc2 9>;
 			label = "V_HIGH";
 		};
 
