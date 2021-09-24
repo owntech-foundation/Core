@@ -19,32 +19,77 @@
 
 /**
  * @author Clément Foucher <clement.foucher@laas.fr>
- * @brief  This is the public include for adc_cores.h
- * It should only be included in C files from the current folder.
  */
 
 #ifndef ADC_CORE_H_
 #define ADC_CORE_H_
 
 
-// Zephyr
-#include <zephyr.h>
+#include <stdint.h>
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
+/////
 // Init, enable, start
-void adc_core_init();
-void adc_core_enable(ADC_TypeDef* adc);
-void adc_core_start(ADC_TypeDef* adc);
 
+/**
+ * ADC initialization procedure for
+ * ADC 1, ADC 2 and ADC 3.
+ */
+void adc_core_init();
+
+/**
+ * ADC enable.
+ * Refer to RM 21.4.9
+ *
+ * @param adc_num Number of the ADC to enable.
+ */
+void adc_core_enable(uint8_t adc_num);
+
+/**
+ * ADC start.
+ * Refer to RM 21.4.15
+ *
+ * @param adc_num Number of the ADC to start.
+ */
+void adc_core_start(uint8_t adc_num);
+
+/////
 // Configuration functions
-void adc_core_set_channel_differential(ADC_TypeDef* adc, uint8_t channel);
-void adc_core_configure_internal_paths(uint8_t vts, uint8_t vbat, uint8_t vref);
-void adc_core_set_dual_mode();
+
+/**
+ * ADC dual mode: enables ADC 1/ADC 2 synchronization.
+ * When ADC 1 acquisition is triggered, it simultaneously
+ * triggers an acquisition on ADC 2.
+ *
+ * Refer to RM 21.4.30
+ *
+ * @param dual_mode true to enable dual moode, false to
+ *        disable it. false by default.
+ */
+void adc_core_set_dual_mode(uint8_t dual_mode);
+
+/**
+ * ADC DMA mode configuration.
+ * Enables DMA and circular mode on an ADC.
+ *
+ * @param adc_num Number of the ADC on which to enable DMA.
+ */
+void adc_core_configure_dma_mode(uint8_t adc_num);
+
+/**
+ * Defines the trigger source for an ADC.
+ *
+ * @param adc_num Number of the ADC to configure.
+ * @param ExternalTriggerEdge Edge of the trigger as defined
+ *        in stm32gxx_ll_adc.h (LL_ADC_REG_TRIG_***).
+ * @param trigger_source Source of the trigger as defined
+ *        in stm32gxx_ll_adc.h (LL_ADC_REG_TRIG_***).
+ */
+void adc_core_configure_trigger_source(uint8_t adc_num, uint32_t ExternalTriggerEdge, uint32_t TriggerSource);
 
 
 #ifdef __cplusplus

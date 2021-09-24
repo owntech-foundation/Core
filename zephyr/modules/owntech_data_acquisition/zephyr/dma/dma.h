@@ -25,8 +25,7 @@
 #define DMA_H_
 
 
-// Zephyr
-#include <zephyr.h>
+#include <stdint.h>
 
 
 #ifdef __cplusplus
@@ -34,25 +33,19 @@ extern "C" {
 #endif
 
 
-// Public functions
-void dma_init();
+/**
+ * This function configures and starts
+ * the DMA. It must only be called after
+ * all the ADCs configuration has been
+ * carried out, as it uses its channels
+ * configuration to determine the size
+ * of the buffers.
+ */
+void dma_configure_and_start();
 
+// For debug purpose
 uint16_t* dma_get_dma1_buffer();
 uint16_t* dma_get_dma2_buffer();
-
-size_t dma_get_dma1_buffer_size();
-size_t dma_get_dma2_buffer_size();
-
-// Public variables: these variables handle
-// the number of readings stored in the
-// buffer at a specific time. They are
-// incremented by 1 by the DMA transfer
-// interrupts and can be decremented by
-// a task reading the buffers.
-// Each unit in these counts represent
-// a half-buffer amount of readings.
-extern atomic_t dma1_readings_count;
-extern atomic_t dma2_readings_count;
 
 
 #ifdef __cplusplus

@@ -16,6 +16,13 @@
 	status = "okay";
 };
 
+/*
+&adc3 {
+	pinctrl-0 = <&adc3_in1_pb1 >;
+	status = "okay";
+};
+*/
+
 /*******/
 /* SPI */
 /*******/
@@ -74,10 +81,6 @@
 /*******/
 
 &dma1 {
-	status = "okay";
-};
-
-&dma2 {
 	status = "okay";
 };
 

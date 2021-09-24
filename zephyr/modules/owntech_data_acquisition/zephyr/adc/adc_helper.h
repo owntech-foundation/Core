@@ -19,15 +19,13 @@
 
 /**
  * @author Clément Foucher <clement.foucher@laas.fr>
- * @brief  This is the public include for adc_helper.h
- * It should only be included in C files from the current folder.
  */
 
 #ifndef ADC_HELPER_H_
 #define ADC_HELPER_H_
 
 
-// Zephyr
+#include <stdint.h>
 #include <zephyr.h>
 
 
@@ -37,6 +35,8 @@ extern "C" {
 
 
 ADC_TypeDef* _get_adc_by_name(char* name);
+ADC_TypeDef* _get_adc_by_number(uint8_t adc_number);
+uint8_t _get_adc_number_by_name(char* name);
 uint32_t adc_decimal_nb_to_rank(uint8_t decimal_rank);
 
 

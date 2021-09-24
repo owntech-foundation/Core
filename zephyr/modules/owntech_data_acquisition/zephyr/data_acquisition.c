@@ -22,52 +22,217 @@
  */
 
 
-/////
-// OwnTech Power API includes
+// Stdlib
+#include <string.h>
+#include <stdint.h>
 
-#include "timer.h"
+// OwnTech Power API
 #include "dma/dma.h"
 #include "adc/adc.h"
+#include "adc/adc_channels.h"
 #include "data_dispatch/data_dispatch.h"
 
-
-/////
-// Timer
-
-#define TIMER7_LABEL DT_PROP(DT_NODELABEL(timers7), label)
-static const struct device* timer7;
+#include "data_acquisition.h"
 
 
 /////
-// Private functions
+// Local types
+
+typedef struct
+{
+	uint8_t adc_number;
+	uint8_t channel_rank;
+} channel_assignment_t;
+
+
+/////
+// Local variables
+
+static uint8_t data_acquisition_initialized = 0;
+static uint8_t data_acquisition_started = 0;
+
+static channel_assignment_t v1_low_assignement = {0};
+static channel_assignment_t v2_low_assignement = {0};
+static channel_assignment_t v_high_assignement = {0};
+static channel_assignment_t i1_low_assignement = {0};
+static channel_assignment_t i2_low_assignement = {0};
+static channel_assignment_t i_high_assignement = {0};
+static channel_assignment_t temp_sensor_assignement = {0};
 
 
 /////
 // Public API
 
-void data_acquisition_init()
+int8_t data_acquisition_init()
 {
-	/////
-	// Initialize peripherals
-
-	// ADC
-	adc_init();
-
-	// DMA
-	dma_init();
-
-	/////
-	// Initialize data dispatch
-	data_dispatch_init();
-
-	/////
-	// Configure timer for background data dispatch
-	timer7 = device_get_binding(TIMER7_LABEL);
-	struct timer_config_t timer_cfg =
+	if (data_acquisition_initialized == 0)
 	{
-		.timer_enable_irq = 1,
-		.timer_callback   = data_dispatch_do_dispatch
-	};
-	timer_config(timer7, &timer_cfg);
-	timer_start(timer7, 25);
+		adc_init();
+		data_acquisition_initialized = 1;
+		return 0;
+	}
+	else
+	{
+		return EALREADYINIT;
+	}
+}
+
+int8_t data_acquisition_set_adc12_dual_mode(uint8_t dual_mode)
+{
+	if ( (data_acquisition_initialized == 1) && (data_acquisition_started == 0) )
+	{
+		adc_set_dual_mode(dual_mode);
+		return 0;
+	}
+	else if (data_acquisition_initialized == 0)
+	{
+		return EUNITITIALIZED;
+	}
+	else
+	{
+		return EALREADYSTARTED;
+	}
+}
+
+int8_t data_acquisition_configure_adc_channels(uint8_t adc_number, char* channel_list[], uint8_t channel_count)
+{
+	if ( (data_acquisition_initialized == 1) && (data_acquisition_started == 0) )
+	{
+		int8_t result = adc_configure_adc_channels(adc_number, channel_list, channel_count);
+		if (result == 0)
+		{
+			for (int i = 0 ; i < channel_count ; i++)
+			{
+				if (strcmp(channel_list[i], "V1_LOW") == 0)
+				{
+					v1_low_assignement.adc_number = adc_number;
+					v1_low_assignement.channel_rank = i;
+				}
+				else if (strcmp(channel_list[i], "V2_LOW") == 0)
+				{
+					v2_low_assignement.adc_number = adc_number;
+					v2_low_assignement.channel_rank = i;
+				}
+				else if (strcmp(channel_list[i], "V_HIGH") == 0)
+				{
+					v_high_assignement.adc_number = adc_number;
+					v_high_assignement.channel_rank = i;
+				}
+				else if (strcmp(channel_list[i], "I1_LOW") == 0)
+				{
+					i1_low_assignement.adc_number = adc_number;
+					i1_low_assignement.channel_rank = i;
+				}
+				else if (strcmp(channel_list[i], "I2_LOW") == 0)
+				{
+					i2_low_assignement.adc_number = adc_number;
+					i2_low_assignement.channel_rank = i;
+				}
+				else if (strcmp(channel_list[i], "I_HIGH") == 0)
+				{
+					i_high_assignement.adc_number = adc_number;
+					i_high_assignement.channel_rank = i;
+				}
+				else if (strcmp(channel_list[i], "TEMP_SENSOR") == 0)
+				{
+					temp_sensor_assignement.adc_number = adc_number;
+					temp_sensor_assignement.channel_rank = i;
+				}
+			}
+		}
+		return result;
+	}
+	else if (data_acquisition_initialized == 0)
+	{
+		return EUNITITIALIZED;
+	}
+	else
+	{
+		return EALREADYSTARTED;
+	}
+}
+
+int8_t data_acquisition_configure_adc_trigger_source(uint8_t adc_number, uint32_t trigger_source)
+{
+	if ( (data_acquisition_initialized == 1) && (data_acquisition_started == 0) )
+	{
+		adc_configure_trigger_source(adc_number, trigger_source);
+		return 0;
+	}
+	else if (data_acquisition_initialized == 0)
+	{
+		return EUNITITIALIZED;
+	}
+	else
+	{
+		return EALREADYSTARTED;
+	}
+}
+
+
+int8_t data_acquisition_start()
+{
+	if ( (data_acquisition_initialized == 1) && (data_acquisition_started == 0) )
+	{
+		// DMAs
+		dma_configure_and_start();
+
+		// Initialize data dispatch
+		data_dispatch_init();
+
+		// Launch ADC conversion
+		adc_start();
+
+		data_acquisition_started = 1;
+
+		return 0;
+	}
+	else if (data_acquisition_initialized == 0)
+	{
+		return EUNITITIALIZED;
+	}
+	else
+	{
+		return EALREADYSTARTED;
+	}
+}
+
+char* data_acquisition_get_channel_name(uint8_t adc_number, uint8_t channel_rank)
+{
+	return adc_channels_get_channel_name(adc_number, channel_rank);
+}
+
+uint16_t* data_acquisition_get_v1_low_values(uint32_t* number_of_values_acquired)
+{
+	return data_dispatch_get_acquired_values(v1_low_assignement.adc_number, v1_low_assignement.channel_rank, number_of_values_acquired);
+}
+
+uint16_t* data_acquisition_get_v2_low_values(uint32_t* number_of_values_acquired)
+{
+	return data_dispatch_get_acquired_values(v2_low_assignement.adc_number, v2_low_assignement.channel_rank, number_of_values_acquired);
+}
+
+uint16_t* data_acquisition_get_v_high_values(uint32_t* number_of_values_acquired)
+{
+	return data_dispatch_get_acquired_values(v_high_assignement.adc_number, v_high_assignement.channel_rank, number_of_values_acquired);
+}
+
+uint16_t* data_acquisition_get_i1_low_values(uint32_t* number_of_values_acquired)
+{
+	return data_dispatch_get_acquired_values(i1_low_assignement.adc_number, i1_low_assignement.channel_rank, number_of_values_acquired);
+}
+
+uint16_t* data_acquisition_get_i2_low_values(uint32_t* number_of_values_acquired)
+{
+	return data_dispatch_get_acquired_values(i2_low_assignement.adc_number, i2_low_assignement.channel_rank, number_of_values_acquired);
+}
+
+uint16_t* data_acquisition_get_i_high_values(uint32_t* number_of_values_acquired)
+{
+	return data_dispatch_get_acquired_values(i_high_assignement.adc_number, i_high_assignement.channel_rank, number_of_values_acquired);
+}
+
+uint16_t* data_acquisition_get_temp_sensor_values(uint32_t* number_of_values_acquired)
+{
+	return data_dispatch_get_acquired_values(temp_sensor_assignement.adc_number, temp_sensor_assignement.channel_rank, number_of_values_acquired);
 }

@@ -22,6 +22,9 @@
  */
 
 
+// Stdlib
+#include <stdint.h>
+
 // STM32 LL
 #include <stm32g4xx_ll_adc.h>
 
@@ -29,87 +32,86 @@
 #include "adc_channels.h"
 #include "adc_core.h"
 
-
 /////
-// Private functions
-
-/**
- * ADC 1 OwnTech's specific configuration.
- */
-static void _adc_configure_adc_1()
-{
-    // Set regular sequence length
-    LL_ADC_REG_SetSequencerLength(ADC1, adc_channels_get_channels_count(1)-1);
-
-    // TO TEST
-    // Set discontinuous mode: first event triggers first channel conversion,
-    // next event will convert the next channel in the sequence, and so on
-    // until all channels are converted, then restart from fisrt channel.
-    // RM: 21.4.20
-    //LL_ADC_REG_SetSequencerDiscont(ADC1, LL_ADC_REG_SEQ_DISCONT_1RANK);
-
-    // Enable dma and circular mode
-    LL_ADC_REG_SetDMATransfer(ADC1, LL_ADC_REG_DMA_TRANSFER_UNLIMITED);
-
-    /////
-    // Set trigger source: only for ADC 1 as we operate in dual mode
-    // (ADC 2 triggered by ADC 1)
-
-    // Enable external trigger on hrtim_adc_trg1
-    LL_ADC_REG_SetTriggerEdge(ADC1, LL_ADC_REG_TRIG_EXT_RISING);
-
-    // RM Table 163. adc_ext_trg21 hrtim_adc_trg1 EXTSEL = 0x10101
-    LL_ADC_REG_SetTriggerSource(ADC1, LL_ADC_REG_TRIG_EXT_HRTIM_TRG1);
-}
-
-/**
- * ADC 2 OwnTech's specific configuration.
- */
-static void _adc_configure_adc_2()
-{
-    // Set regular sequence length
-    LL_ADC_REG_SetSequencerLength(ADC2, adc_channels_get_channels_count(2)-1);
-
-    // TO TEST
-    // Set discontinuous mode: first event triggers first channel conversion,
-    // next event will convert the next channel in the sequence, and so on
-    // until all channels are converted, then restart from fisrt channel.
-    // RM: 21.4.20
-    //LL_ADC_REG_SetSequencerDiscont(ADC2, LL_ADC_REG_SEQ_DISCONT_1RANK);
-
-    // Enable dma and circular mode
-    LL_ADC_REG_SetDMATransfer(ADC2, LL_ADC_REG_DMA_TRANSFER_UNLIMITED);
-}
+// Local variables
+static uint32_t adc_trigger_sources[3];
 
 
 /////
 // Public API
 
-/**
- * Configure ADC and DMA according to OwnTech
- * board requirements.
- */
 void adc_init()
 {
-    // Initialize ADC
-    adc_core_init();
-    adc_core_set_dual_mode();
+	for (int i = 0 ; i < 3 ; i++)
+	{
+		adc_trigger_sources[i] = 0;
+	}
 
-    // Initialize channels
-    adc_channels_init();
+	adc_core_init();
+	adc_channels_init();
+}
 
-    // Enable ADC
-    adc_core_enable(ADC1);
-    adc_core_enable(ADC2);
+void adc_set_dual_mode(uint8_t dual_mode)
+{
+	adc_core_set_dual_mode(dual_mode);
+}
 
-    // Perform post-enable ADC configuration
-    adc_channels_configure(ADC1);
-    adc_channels_configure(ADC2);
+void adc_configure_trigger_source(uint8_t adc_number, uint32_t trigger_source)
+{
+	// Only store configuration: it must be applied after ADC enable
+	if (adc_number < 3)
+		adc_trigger_sources[adc_number-1] = trigger_source;
+}
 
-    _adc_configure_adc_1();
-    _adc_configure_adc_2();
+int8_t adc_configure_adc_channels(uint8_t adc_number, char* channel_list[], uint8_t channel_count)
+{
+	return adc_channnels_configure_adc_channels(adc_number, channel_list, channel_count);
+}
 
-    // Finally, start ADCs
-    adc_core_start(ADC1);
-    adc_core_start(ADC2);
+void adc_start()
+{
+	uint8_t enabled_channels_count[3];
+
+	for (uint8_t i = 0 ; i < 3 ; i++)
+	{
+		enabled_channels_count[i] = adc_channels_get_enabled_channels_count(i+1);
+	}
+
+	/////
+	// Enable ADCs
+	for (uint8_t i = 0 ; i < 3 ; i++)
+	{
+		if (enabled_channels_count[i] > 0)
+			adc_core_enable(i+1);
+	}
+
+	/////
+	// Configure ADCs channels
+	for (uint8_t i = 0 ; i < 3 ; i++)
+	{
+		if (enabled_channels_count[i] > 0)
+			adc_channels_configure(i+1);
+	}
+
+	/////
+	// Configure ADCs
+	for (uint8_t i = 0 ; i < 3 ; i++)
+	{
+		if (enabled_channels_count[i] > 0)
+			adc_core_configure_dma_mode(i+1);
+	}
+
+	for (uint8_t i = 0 ; i < 3 ; i++)
+	{
+		if ( (enabled_channels_count[i] > 0) && (adc_trigger_sources[i] != 0) )
+			adc_core_configure_trigger_source(i+1, LL_ADC_REG_TRIG_EXT_RISING, adc_trigger_sources[i]);
+	}
+
+	/////
+	// Finally, start ADCs
+	for (uint8_t i = 0 ; i < 3 ; i++)
+	{
+		if (enabled_channels_count[i] > 0)
+			adc_core_start(i+1);
+	}
 }

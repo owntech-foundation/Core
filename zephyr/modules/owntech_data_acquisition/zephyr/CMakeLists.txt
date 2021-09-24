@@ -1,6 +1,6 @@
 
 if(CONFIG_OWNTECH_DATA_ACQUISITION)
-  zephyr_include_directories(.)
+  zephyr_include_directories(./public_include)
 
   zephyr_library()
   zephyr_library_sources(

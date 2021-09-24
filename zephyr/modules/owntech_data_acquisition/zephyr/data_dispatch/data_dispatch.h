@@ -28,7 +28,6 @@
 #define DATA_DISPATCH_H_
 
 
-// Stdlib
 #include <stdint.h>
 
 
@@ -41,27 +40,10 @@ extern "C" {
 void data_dispatch_init();
 
 // Dispatch function: gets the readings and store them in per-channel arrays
-void data_dispatch_do_dispatch();
+void data_dispatch_do_dispatch(uint8_t adc_num, uint16_t* dma_buffer);
 
-// Get the name of a specific channel
-char* data_dispatch_get_adc1_channel_name(uint8_t channel_rank);
-char* data_dispatch_get_adc2_channel_name(uint8_t channel_rank);
-
-// Get number of readings available for a specific channel
-uint32_t data_dispatch_get_values_available_in_adc1_channel(uint8_t channel_rank);
-uint32_t data_dispatch_get_values_available_in_adc2_channel(uint8_t channel_rank);
-
-// Pop next value from the buffer of a specific channel
-// WARNING: calling one of these function when values_available is 0
-// will break the behavior by desynchronizing the buffer indexes
-uint16_t data_dispatch_get_next_value_from_adc1_channel(uint8_t channel_rank);
-uint16_t data_dispatch_get_next_value_from_adc2_channel(uint8_t channel_rank);
-
-// Error function: tells how many values have been missed since
-// last call of the function (error count is reset at each call)
-uint32_t data_dispatch_how_many_adc1_reading_been_lost();
-uint32_t data_dispatch_how_many_adc2_reading_been_lost();
-
+// Obtain buffer for a specific channel
+uint16_t* data_dispatch_get_acquired_values(uint8_t adc_number, uint8_t channel_rank, uint32_t* number_of_values_acquired);
 
 #ifdef __cplusplus
 }

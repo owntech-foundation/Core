@@ -18,25 +18,32 @@
  */
 
 /**
- * @brief  DMA configuration for OwnTech application
+ * @brief  DMA configuration for OwnTech application.
+ * One DMA channel is assigned per ADC. For each ADC, the DMA
+ * has a buffer sized 2*(number of enabled channels in ADC),
+ * which is subdivised in two half-buffers, so that when
+ * the DMA is filling one half-buffer, the other one
+ * is available to data dispatch.
+ * DMA 1 is used for all acquisitions, with channel i
+ * acquiring values from ADC i.
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
+
 // Stdlib
-#include <stdlib.h>
+#include <stdint.h>
 
 // Zephyr
+#include <zephyr.h>
 #include <drivers/dma.h>
 
 // STM32
 #include <stm32g4xx_ll_dma.h>
 
 // OwnTech API
+#include "../data_dispatch/data_dispatch.h"
 #include "../adc/adc_channels.h"
-
-// Current file header
-#include "dma.h"
 
 
 /////
@@ -44,155 +51,116 @@
 #define DMA1_NODELABEL DT_NODELABEL(dma1)
 #define DMA1_LABEL     DT_PROP(DMA1_NODELABEL, label)
 
-#define DMA2_NODELABEL DT_NODELABEL(dma2)
-#define DMA2_LABEL     DT_PROP(DMA2_NODELABEL, label)
-
-// This is the size of the buffer, in terms of readings
-// *per channel*. E.g. if 3 channels in an ADC,
-// the size of the buffer will be 3*DMA_BUFFER_SIZE
-// This value *must be* a multiple of 2 to allow
-// half-transfer interrupts correct handling.
-#define DMA_BUFFER_SIZE 2
+const struct device* _dma1;
 
 /////
-// Variables
-atomic_t dma1_readings_count = ATOMIC_INIT(0);
-atomic_t dma2_readings_count = ATOMIC_INIT(0);
-
-static uint16_t* dma1_buffer = NULL;
-static uint16_t* dma2_buffer = NULL;
-
-static size_t buffer1_size;
-static size_t buffer2_size;
+// Arrays of buffers:
+// half_buffer_*[i][] is an array whose size matches
+// the number of enabled channels in ADC(i+1).
+static uint16_t* half_buffer_1[3];
+static uint16_t* half_buffer_2[3];
 
 
 /////
-// DMA callbacks
-// These callbacks are called twice per buffer filling:
-// when buffer is half-filled and when buffer is filled.
+// Private API
 
-void _dma1_callback(const struct device* dev, void* user_data, uint32_t channel, int status)
+/**
+ * DMA callback
+ * This callback is called twice per buffer filling:
+ * when buffer is half-filled and when buffer is filled.
+ */
+static void _dma_callback(const struct device* dev, void* user_data, uint32_t channel, int status)
 {
-    atomic_inc(&dma1_readings_count);
+	static uint8_t current_half_buffer[3] = {0};
+
+	if (current_half_buffer[channel] == 0)
+	{
+		data_dispatch_do_dispatch(channel+1, half_buffer_1[channel]);
+		current_half_buffer[channel] = 1;
+	}
+	else
+	{
+		data_dispatch_do_dispatch(channel+1, half_buffer_2[channel]);
+		current_half_buffer[channel] = 0;
+	}
 }
 
-void _dma2_callback(const struct device* dev, void* user_data, uint32_t channel, int status)
+/**
+ * DMA init function for one channel
+ */
+static void _dma_channel_init(uint8_t adc_num, uint32_t source_address, uint32_t source_trigger)
 {
-    atomic_inc(&dma2_readings_count);
-}
+	// Prepare buffers
+	uint8_t enabled_channels = adc_channels_get_enabled_channels_count(adc_num);
+	size_t dma_buffer_size = enabled_channels * sizeof(uint16_t) * 2;
+	uint8_t adc_index = adc_num - 1;
 
+	uint16_t* dma_buffer = k_malloc(dma_buffer_size);
+	half_buffer_1[adc_index] = dma_buffer;
+	half_buffer_2[adc_index] = dma_buffer + enabled_channels;
 
-/////
-// DMA inits
+	// Configure DMA
+	struct dma_block_config dma_block_config_s = {0};
+	struct dma_config       dma_config_s       = {0};
 
-static void _dma1_init()
-{
-    // Prepare buffers
-    buffer1_size = adc_channels_get_channels_count(1) * DMA_BUFFER_SIZE;
-    dma1_buffer = malloc(sizeof(uint16_t) * buffer1_size);
+	dma_block_config_s.source_address   = source_address;         // Source: ADC DR register
+	dma_block_config_s.dest_address     = (uint32_t)dma_buffer;   // Dest: buffer in memory
+	dma_block_config_s.block_size       = dma_buffer_size;        // Buffer size in bytes
+	dma_block_config_s.source_addr_adj  = DMA_ADDR_ADJ_NO_CHANGE; // Source: no increment in ADC register
+	dma_block_config_s.dest_addr_adj    = DMA_ADDR_ADJ_INCREMENT; // Dest: increment in memory
+	dma_block_config_s.source_reload_en = 1;                      // Reload initial address after block; Enables Half-transfer interrupt
+	dma_block_config_s.dest_reload_en   = 1;                      // Reload initial address after block
 
-    // Configure DMA
-    struct dma_block_config dma1_block_config = {0};
-    struct dma_config       dma1_config       = {0};
+	dma_config_s.dma_slot            = source_trigger;       // Source: triggered from ADC
+	dma_config_s.channel_direction   = PERIPHERAL_TO_MEMORY; // From periph to mem
+	dma_config_s.source_data_size    = 2;                    // 2 bytes
+	dma_config_s.dest_data_size      = 2;                    // 2 bytes
+	dma_config_s.source_burst_length = 1;                    // No burst
+	dma_config_s.dest_burst_length   = 1;                    // No burst
+	dma_config_s.block_count         = 1;                    // 1 block
+	dma_config_s.head_block          = &dma_block_config_s;  // Above block config
+	dma_config_s.dma_callback        = _dma_callback;        // Callback
 
-    dma1_block_config.source_address   = (uint32_t)(&(ADC1->DR)); // Source: ADC 1
-    dma1_block_config.dest_address     = (uint32_t)dma1_buffer;   // Dest: array in mem
-    dma1_block_config.block_size       = 2 * buffer1_size;        // Buffer size in bytes
-    dma1_block_config.source_addr_adj  = DMA_ADDR_ADJ_NO_CHANGE;  // Source: no increment in DMA register
-    dma1_block_config.dest_addr_adj    = DMA_ADDR_ADJ_INCREMENT;  // Dest: increment in memory
-    dma1_block_config.source_reload_en = 1;                       // Reload initial address after block
-    dma1_block_config.dest_reload_en   = 1;                       // Reload initial address after block
-
-    dma1_config.dma_slot            = LL_DMAMUX_REQ_ADC1;   // Source: ADC 1
-    dma1_config.channel_direction   = PERIPHERAL_TO_MEMORY; // From periph to mem
-    dma1_config.source_data_size    = 2;                    // 2 bytes
-    dma1_config.dest_data_size      = 2;                    // 2 bytes
-    dma1_config.source_burst_length = 1;                    // No burst
-    dma1_config.dest_burst_length   = 1;                    // No burst
-    dma1_config.block_count         = 1;                    // 1 block
-    dma1_config.head_block          = &dma1_block_config;   // Above block config
-    dma1_config.dma_callback        = _dma1_callback;       // Callback
-
-    const struct device* _dma1 = device_get_binding(DMA1_LABEL);
-    dma_config(_dma1, 1, &dma1_config);
-    // Half-transfer interrupt is not handled by Zephyr driver:
-    // enable it manually.
-    LL_DMA_EnableIT_HT(DMA1, LL_DMA_CHANNEL_1);
-}
-
-static void _dma2_init()
-{
-    // Prepare buffers
-    buffer2_size = adc_channels_get_channels_count(2) * DMA_BUFFER_SIZE;
-    dma2_buffer = malloc(sizeof(uint16_t) * buffer2_size);
-
-    // Configure DMA
-    struct dma_block_config dma2_block_config = {0};
-    struct dma_config       dma2_config       = {0};
-
-    dma2_block_config.source_address   = (uint32_t)(&(ADC2->DR)); // Source: ADC 2
-    dma2_block_config.dest_address     = (uint32_t)dma2_buffer;   // Dest: array in mem
-    dma2_block_config.block_size       = 2 * buffer2_size;        // Buffer size in bytes
-    dma2_block_config.source_addr_adj  = DMA_ADDR_ADJ_NO_CHANGE;  // Source: no increment in DMA register
-    dma2_block_config.dest_addr_adj    = DMA_ADDR_ADJ_INCREMENT;  // Dest: increment in memory
-    dma2_block_config.source_reload_en = 1;                       // Reload initial address after block
-    dma2_block_config.dest_reload_en   = 1;                       // Reload initial address after block
-
-    dma2_config.dma_slot            = LL_DMAMUX_REQ_ADC2;   // Source: ADC 2
-    dma2_config.channel_direction   = PERIPHERAL_TO_MEMORY; // From periph to mem
-    dma2_config.source_data_size    = 2;                    // 2 bytes
-    dma2_config.dest_data_size      = 2;                    // 2 bytes
-    dma2_config.source_burst_length = 1;                    // No burst
-    dma2_config.dest_burst_length   = 1;                    // No burst
-    dma2_config.block_count         = 1;                    // 1 block
-    dma2_config.head_block          = &dma2_block_config;   // Above block config
-    dma2_config.dma_callback        = _dma2_callback;       // Callback
-
-    const struct device* _dma2 = device_get_binding(DMA2_LABEL);
-    dma_config(_dma2, 1, &dma2_config);
-    // Half-transfer interrupt is not handled by Zephyr driver:
-    // enable it manually.
-    LL_DMA_EnableIT_HT(DMA2, LL_DMA_CHANNEL_1);
+	dma_config(_dma1, adc_num, &dma_config_s);
 }
 
 
 /////
 // Public API
 
-/**
- * DMA initialization procedure.
- */
-void dma_init()
+void dma_configure_and_start()
 {
-    __ASSERT( (DMA_BUFFER_SIZE%2 == 0), "WARNING: DMA_BUFFER_SIZE macro must be an even value.");
+	_dma1 = device_get_binding(DMA1_LABEL);
 
-    // DMA1
-    _dma1_init();
-    const struct device* _dma1 = device_get_binding(DMA1_LABEL);
-    dma_start(_dma1, 1);
+	// ADC 1
+	if (adc_channels_get_enabled_channels_count(1) > 0)
+	{
+		_dma_channel_init(1, (uint32_t)(&(ADC1->DR)), LL_DMAMUX_REQ_ADC1);
+		dma_start(_dma1, 1);
+	}
 
-    // DMA2
-    _dma2_init();
-    const struct device* _dma2 = device_get_binding(DMA2_LABEL);
-    dma_start(_dma2, 1);
+	// ADC 2
+	if (adc_channels_get_enabled_channels_count(2) > 0)
+	{
+		_dma_channel_init(2, (uint32_t)(&(ADC2->DR)), LL_DMAMUX_REQ_ADC2);
+		dma_start(_dma1, 2);
+	}
+
+	// ADC 3
+	if (adc_channels_get_enabled_channels_count(3) > 0)
+	{
+		_dma_channel_init(3, (uint32_t)(&(ADC3->DR)), LL_DMAMUX_REQ_ADC3);
+		dma_start(_dma1, 3);
+	}
 }
+
 
 uint16_t* dma_get_dma1_buffer()
 {
-    return dma1_buffer;
+	return half_buffer_1[0];
 }
 
 uint16_t* dma_get_dma2_buffer()
 {
-    return dma2_buffer;
-}
-
-size_t dma_get_dma1_buffer_size()
-{
-    return buffer1_size;
-}
-
-size_t dma_get_dma2_buffer_size()
-{
-    return buffer2_size;
+	return half_buffer_1[1];
 }

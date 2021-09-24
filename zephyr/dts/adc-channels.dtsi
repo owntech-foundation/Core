@@ -1,34 +1,80 @@
 / {
 	mychannels: adc-inputs {
 		compatible = "adc-inputs";
-		v1-low {
+
+		/* Voltage channels */
+
+		v1-low-adc1 {
+			io-channels = <&adc1 1>;
+			label = "V1_LOW";
+		};
+
+		v1-low-adc2 {
 			io-channels = <&adc2 1>;
 			label = "V1_LOW";
 		};
 
-		i1-low {
-			io-channels = <&adc1 2>;
-			label = "I1_LOW";
+		v2-low-adc1 {
+			io-channels = <&adc1 6>;
+			label = "V2_LOW";
 		};
 
-		v2-low {
+		v2-low-adc2 {
 			io-channels = <&adc2 6>;
 			label = "V2_LOW";
 		};
 
-		i2-low {
-			io-channels = <&adc1 7>;
-			label = "I2_LOW";
+		v-high-adc1 {
+
+			io-channels = <&adc1 9>;
+			label = "V_HIGH";
 		};
 
-		v-high {
+		v-high-adc2 {
 			io-channels = <&adc2 9>;
 			label = "V_HIGH";
 		};
 
-		i-high {
+		/* Current channels */
+
+		i1-low-adc1 {
+			io-channels = <&adc1 2>;
+			label = "I1_LOW";
+		};
+
+		i1-low-adc2 {
+			io-channels = <&adc2 2>;
+			label = "I1_LOW";
+		};
+
+		i2-low-adc1 {
+			io-channels = <&adc1 7>;
+			label = "I2_LOW";
+		};
+
+		i2-low-adc2 {
+			io-channels = <&adc2 7>;
+			label = "I2_LOW";
+		};
+
+		i-high-adc1 {
 			io-channels = <&adc1 8>;
 			label = "I_HIGH";
 		};
+
+		i-high-adc2 {
+			io-channels = <&adc2 8>;
+			label = "I_HIGH";
+		};
+
+		/* Temperature channel */
+
+		/*
+		temp-sensor {
+			io-channels = <&adc3 1>;
+			label = "TEMP_SENSOR";
+		};
+		*/
+
 	};
 };
