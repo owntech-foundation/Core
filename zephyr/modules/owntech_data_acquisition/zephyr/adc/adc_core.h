@@ -19,6 +19,11 @@
 
 /**
  * @author Clément Foucher <clement.foucher@laas.fr>
+ *
+ * @brief This file implements the core management of the ADCs.
+ *
+ * THIS FILE SHOULD NOT BE INCLUDED ANYWHERE OUTSIDE FILES
+ * FROM THE SAME FOLDER.
  */
 
 #ifndef ADC_CORE_H_

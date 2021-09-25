@@ -32,9 +32,11 @@
 #include "adc_channels.h"
 #include "adc_core.h"
 
+
 /////
 // Local variables
-static uint32_t adc_trigger_sources[3];
+
+static uint32_t adc_trigger_sources[3] = {0};
 
 
 /////
@@ -42,11 +44,6 @@ static uint32_t adc_trigger_sources[3];
 
 void adc_init()
 {
-	for (int i = 0 ; i < 3 ; i++)
-	{
-		adc_trigger_sources[i] = 0;
-	}
-
 	adc_core_init();
 	adc_channels_init();
 }
@@ -114,4 +111,9 @@ void adc_start()
 		if (enabled_channels_count[i] > 0)
 			adc_core_start(i+1);
 	}
+}
+
+char* adc_get_channel_name(uint8_t adc_number, uint8_t channel_rank)
+{
+	return adc_channels_get_channel_name(adc_number, channel_rank);
 }

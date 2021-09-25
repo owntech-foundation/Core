@@ -29,7 +29,6 @@
 // OwnTech Power API
 #include "dma/dma.h"
 #include "adc/adc.h"
-#include "adc/adc_channels.h"
 #include "data_dispatch/data_dispatch.h"
 
 #include "data_acquisition.h"
@@ -86,7 +85,7 @@ int8_t data_acquisition_set_adc12_dual_mode(uint8_t dual_mode)
 	}
 	else if (data_acquisition_initialized == 0)
 	{
-		return EUNITITIALIZED;
+		return EUNINITIALIZED;
 	}
 	else
 	{
@@ -144,7 +143,7 @@ int8_t data_acquisition_configure_adc_channels(uint8_t adc_number, char* channel
 	}
 	else if (data_acquisition_initialized == 0)
 	{
-		return EUNITITIALIZED;
+		return EUNINITIALIZED;
 	}
 	else
 	{
@@ -161,7 +160,7 @@ int8_t data_acquisition_configure_adc_trigger_source(uint8_t adc_number, uint32_
 	}
 	else if (data_acquisition_initialized == 0)
 	{
-		return EUNITITIALIZED;
+		return EUNINITIALIZED;
 	}
 	else
 	{
@@ -175,10 +174,10 @@ int8_t data_acquisition_start()
 	if ( (data_acquisition_initialized == 1) && (data_acquisition_started == 0) )
 	{
 		// DMAs
-		dma_configure_and_start();
+		dma_configure_and_start(2);
 
 		// Initialize data dispatch
-		data_dispatch_init();
+		data_dispatch_init(2);
 
 		// Launch ADC conversion
 		adc_start();
@@ -189,7 +188,7 @@ int8_t data_acquisition_start()
 	}
 	else if (data_acquisition_initialized == 0)
 	{
-		return EUNITITIALIZED;
+		return EUNINITIALIZED;
 	}
 	else
 	{
@@ -199,7 +198,7 @@ int8_t data_acquisition_start()
 
 char* data_acquisition_get_channel_name(uint8_t adc_number, uint8_t channel_rank)
 {
-	return adc_channels_get_channel_name(adc_number, channel_rank);
+	return adc_get_channel_name(adc_number, channel_rank);
 }
 
 uint16_t* data_acquisition_get_v1_low_values(uint32_t* number_of_values_acquired)

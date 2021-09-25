@@ -19,6 +19,12 @@
 
 /**
  * @author Clément Foucher <clement.foucher@laas.fr>
+ *
+ * @brief This file provides helper functions for the ADC management.
+ *
+ * THIS FILE SHOULD NOT BE INCLUDED ANYWHERE OUTSIDE FILES
+ * FROM THE SAME FOLDER.
+ *
  */
 
 #ifndef ADC_HELPER_H_

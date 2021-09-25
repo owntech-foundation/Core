@@ -29,6 +29,11 @@
  *
  * To use this driver, first call adc_init(), then call
  * required configuration functions, then call adc_start().
+ *
+ * This file is the entry point of the ADC management.
+ * Only this header file provides public functions for the
+ * ADC. No other header from this folder should be included
+ * in files outside this folder.
  */
 
 
@@ -92,6 +97,21 @@ int8_t adc_configure_adc_channels(uint8_t adc_number, char* channel_list[], uint
  * @brief Starts all configured ADCs.
  */
 void adc_start();
+
+/**
+ * This function returns the name of an enabled channel.
+ *
+ * This function must onle be called after
+ * adc_configure_adc_channels has been called.
+ *
+ * @param  adc_number Number of the ADC
+ * @param  channel_rank Rank of the ADC channel to query.
+ *         Rank ranges from 0 to (number of enabled channels)-1
+ * @return Name of the channel as defined in the device tree, or
+ *         NULL if channel configuration has not been made or
+ *         channel_rank is over (number of enabled channels)-1.
+ */
+char* adc_get_channel_name(uint8_t adc_number, uint8_t channel_rank);
 
 #ifdef __cplusplus
 }

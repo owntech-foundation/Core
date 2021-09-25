@@ -25,7 +25,6 @@
 // Stdlib
 #include <stdlib.h>
 #include <stdint.h>
-#include <stdio.h>
 
 //Zephyr
 #include <zephyr.h>
@@ -35,124 +34,109 @@
 
 
 /////
-// General data
+// Local variables
 
 #define CHANNELS_BUFFERS_SIZE 32
 
+static uint8_t number_of_adcs = 0;
+
 // Number of channels in each ADC (cell i is ADC number i+1)
-static uint8_t enabled_channels_count[3];
+static uint8_t* enabled_channels_count = NULL;
 
+// Array of per-adc/per-channel buffers.
+// adc_channel_buffers[x][y][z][] is ADC x+1 channel y buffer z
+// with z either 0 or 1 as there are two buffers per channel (double buffering)
+static uint16_t**** adc_channel_buffers = NULL;
 
-/////
-// Per-channel buffers
+// Number of readings stored in each channel.
+// buffers_data_count[x][y] is the current nuumber of
+// values stored in the currently written buffer of ADC x+1 Channel y
+static uint32_t** buffers_data_count = NULL;
 
-// Bidimentionnal arrays: each of these variables is an array
-// of per-channel arrays holding the readings
-static uint16_t** adc1_channels_buffers = NULL;
-static uint16_t** adc2_channels_buffers = NULL;
+// Currently written buffer for each channel.
+// Either 0 or 1.
+// If current_buffer[x][y] is 0, the currently written buffer
+// for ADC x+1 Channel y is buffer 0 and the user buffer is buffer 1
+static uint8_t** current_buffer = NULL;
 
-// Arrays to store the read and write indexes in each channel array
-static uint32_t* adc1_next_read_indexes  = NULL;
-static uint32_t* adc2_next_read_indexes  = NULL;
-static uint32_t* adc1_next_write_indexes = NULL;
-static uint32_t* adc2_next_write_indexes = NULL;
-
-static uint16_t** adc1_user_buffers = NULL;
-static uint16_t** adc2_user_buffers = NULL;
 
 /////
 // Private functions
 
-__STATIC_INLINE void _increment_circular_index(uint32_t* buffer_index, uint32_t buffer_size)
+__STATIC_INLINE uint16_t* _data_dispatch_get_buffer(uint8_t adc_index, uint8_t channel_index)
 {
-	(*buffer_index) =  ( (*buffer_index) < (buffer_size-1) ) ? ( (*buffer_index) + 1 ) : 0;
+	uint8_t active_buffer = current_buffer[adc_index][channel_index];
+	return adc_channel_buffers[adc_index][channel_index][active_buffer];
 }
 
-__STATIC_INLINE void _circular_buffer_copy(uint16_t* src_buffer,                 uint16_t* dest_buffer,
-                                           uint32_t  src_buffer_next_read_index, uint32_t  dest_buffer_next_write_index
-                                          )
+__STATIC_INLINE uint32_t _data_dispatch_get_count(uint8_t adc_index, uint8_t channel_index)
 {
-	dest_buffer[dest_buffer_next_write_index] = src_buffer[src_buffer_next_read_index];
+	return buffers_data_count[adc_index][channel_index];
 }
 
-static uint32_t _get_values_available_count_in_buffer(uint32_t next_read_index, uint32_t next_write_index, uint32_t buffer_size)
+__STATIC_INLINE void _data_dispatch_increment_count(uint8_t adc_index, uint8_t channel_index)
 {
-	if (next_read_index == next_write_index)
-		return 0;
-
-	uint32_t i_next_write_index = (next_write_index < next_read_index) ? (next_write_index + buffer_size) : next_write_index;
-	return i_next_write_index - next_read_index;
+	uint32_t* current_count = &buffers_data_count[adc_index][channel_index];
+	if ( (*current_count) < CHANNELS_BUFFERS_SIZE)
+		(*current_count)++;
 }
 
-static uint16_t _get_next_value_from_buffer(uint16_t* buffer, uint32_t* next_read_index, uint32_t buffer_size)
+__STATIC_INLINE void _data_dispatch_swap_buffer(uint8_t adc_index, uint8_t channel_index)
 {
-	uint16_t value = buffer[*next_read_index];
-	_increment_circular_index(next_read_index, buffer_size);
-	return value;
-}
+	uint8_t* active_buffer = &current_buffer[adc_index][channel_index];
 
+	*active_buffer = ((*active_buffer) == 0) ? 1 : 0;
+	buffers_data_count[adc_index][channel_index] = 0;
+}
 
 /////
 // Public API
 
-void data_dispatch_init()
+void data_dispatch_init(uint8_t adc_count)
 {
-	enabled_channels_count[0] = adc_channels_get_enabled_channels_count(1);
-	if (enabled_channels_count[0] > 0)
-	{
-		adc1_channels_buffers   = k_malloc(sizeof(uint16_t*) * enabled_channels_count[0]);
-		adc1_next_read_indexes  = k_malloc(sizeof(uint32_t)  * enabled_channels_count[0]);
-		adc1_next_write_indexes = k_malloc(sizeof(uint32_t)  * enabled_channels_count[0]);
-		adc1_user_buffers       = k_malloc(sizeof(uint16_t*) * enabled_channels_count[0]);
-		for (int i = 0 ; i < enabled_channels_count[0] ; i++)
-		{
-			adc1_channels_buffers[i]   = k_malloc(sizeof(uint16_t) * CHANNELS_BUFFERS_SIZE);
-			adc1_next_read_indexes[i]  = 0;
-			adc1_next_write_indexes[i] = 0;
-			adc1_user_buffers[i]       = k_malloc(sizeof(uint16_t) * CHANNELS_BUFFERS_SIZE);
-		}
-	}
+	// Store number on ADCs
+	number_of_adcs = adc_count;
 
-	enabled_channels_count[1] = adc_channels_get_enabled_channels_count(2);
-	if (enabled_channels_count[1] > 0)
+	// Prepare arrays for each ADC
+	enabled_channels_count = k_malloc(number_of_adcs * sizeof(uint8_t));
+	adc_channel_buffers    = k_calloc(number_of_adcs,  sizeof(uint16_t***));
+	buffers_data_count     = k_calloc(number_of_adcs,  sizeof(uint32_t*));
+	current_buffer         = k_calloc(number_of_adcs,  sizeof(uint8_t*));
+
+	for (int adc_index = 0 ; adc_index < number_of_adcs ; adc_index++)
 	{
-		adc2_channels_buffers   = k_malloc(sizeof(uint16_t*) * enabled_channels_count[1]);
-		adc2_next_read_indexes  = k_malloc(sizeof(uint32_t)  * enabled_channels_count[1]);
-		adc2_next_write_indexes = k_malloc(sizeof(uint32_t)  * enabled_channels_count[1]);
-		adc2_user_buffers       = k_malloc(sizeof(uint16_t*) * enabled_channels_count[1]);
-		for (int i = 0 ; i < enabled_channels_count[1] ; i++)
+		enabled_channels_count[adc_index] = adc_channels_get_enabled_channels_count(adc_index+1);
+		if (enabled_channels_count[adc_index] > 0)
 		{
-			adc2_channels_buffers[i]   = k_malloc(sizeof(uint16_t) * CHANNELS_BUFFERS_SIZE);
-			adc2_next_read_indexes[i]  = 0;
-			adc2_next_write_indexes[i] = 0;
-			adc2_user_buffers[i]       = k_malloc(sizeof(uint16_t) * CHANNELS_BUFFERS_SIZE);
+			// Prepare arrays for each channel
+			adc_channel_buffers[adc_index] = k_malloc(enabled_channels_count[adc_index] * sizeof(uint16_t**));
+			buffers_data_count[adc_index]  = k_calloc(enabled_channels_count[adc_index],  sizeof(uint32_t));
+			current_buffer[adc_index]      = k_calloc(enabled_channels_count[adc_index],  sizeof(uint8_t));
+			for (int channel_index = 0 ; channel_index < enabled_channels_count[adc_index] ; channel_index++)
+			{
+				// Prepare double buffer
+				adc_channel_buffers[adc_index][channel_index]    = k_malloc(sizeof(uint16_t*) * 2);
+				adc_channel_buffers[adc_index][channel_index][0] = k_malloc(sizeof(uint16_t) * CHANNELS_BUFFERS_SIZE);
+				adc_channel_buffers[adc_index][channel_index][1] = k_malloc(sizeof(uint16_t) * CHANNELS_BUFFERS_SIZE);
+			}
 		}
 	}
 }
 
 void data_dispatch_do_dispatch(uint8_t adc_num, uint16_t* dma_buffer)
 {
-	if (adc_num == 1)
+	uint8_t adc_index = adc_num-1;
+	for (int channel_index = 0 ; channel_index < enabled_channels_count[adc_index] ; channel_index++)
 	{
-		for (int current_channel = 0 ; current_channel < enabled_channels_count[0] ; current_channel++)
-		{
-			_circular_buffer_copy(dma_buffer,      adc1_channels_buffers[current_channel],
-			                      current_channel, adc1_next_write_indexes[current_channel]
-			                     );
+		// Get info on buffer
+		uint16_t* active_buffer = _data_dispatch_get_buffer(adc_index, channel_index);
+		uint32_t  current_count = _data_dispatch_get_count(adc_index, channel_index);
 
-			_increment_circular_index(&adc1_next_write_indexes[current_channel], CHANNELS_BUFFERS_SIZE);
-		}
-	}
-	else if (adc_num == 2)
-	{
-		for (int current_channel = 0 ; current_channel < enabled_channels_count[1] ; current_channel++)
-		{
-			_circular_buffer_copy(dma_buffer,      adc2_channels_buffers[current_channel],
-			                      current_channel, adc2_next_write_indexes[current_channel]
-			                     );
+		// Copy data
+		active_buffer[current_count] = dma_buffer[channel_index];
 
-			_increment_circular_index(&adc2_next_write_indexes[current_channel], CHANNELS_BUFFERS_SIZE);
-		}
+		// Increment count
+		_data_dispatch_increment_count(adc_index, channel_index);
 	}
 }
 
@@ -162,43 +146,19 @@ void data_dispatch_do_dispatch(uint8_t adc_num, uint16_t* dma_buffer)
 
 uint16_t* data_dispatch_get_acquired_values(uint8_t adc_number, uint8_t channel_rank, uint32_t* number_of_values_acquired)
 {
-	if (adc_number == 1)
+	uint8_t adc_index = adc_number-1;
+	if (adc_index < number_of_adcs)
 	{
-		// Get number of available values
-		uint32_t number_of_values = _get_values_available_count_in_buffer(adc1_next_read_indexes[channel_rank],
-		                                                                  adc1_next_write_indexes[channel_rank],
-		                                                                  CHANNELS_BUFFERS_SIZE
-		                                                                 );
+		// Get info on buffer
+		uint16_t* active_buffer = _data_dispatch_get_buffer(adc_index, channel_rank);
+		uint32_t  current_count = _data_dispatch_get_count(adc_index, channel_rank);
 
-		for (uint32_t i = 0 ; i < number_of_values ; i++)
-		{
-			adc1_user_buffers[channel_rank][i] = _get_next_value_from_buffer(adc1_channels_buffers[channel_rank],
-			                                                                &adc1_next_read_indexes[channel_rank],
-			                                                                CHANNELS_BUFFERS_SIZE
-			                                                               );
-		}
+		// Swap buffers
+		_data_dispatch_swap_buffer(adc_index, channel_rank);
 
-		*number_of_values_acquired = number_of_values;
-		return adc1_user_buffers[channel_rank];
-	}
-	else if (adc_number == 2)
-	{
-		// Get number of available values
-		uint32_t number_of_values = _get_values_available_count_in_buffer(adc2_next_read_indexes[channel_rank],
-		                                                                  adc2_next_write_indexes[channel_rank],
-		                                                                  CHANNELS_BUFFERS_SIZE
-		                                                                 );
-
-		for (uint32_t i = 0 ; i < number_of_values ; i++)
-		{
-			adc2_user_buffers[channel_rank][i] = _get_next_value_from_buffer(adc2_channels_buffers[channel_rank],
-			                                                                 &adc2_next_read_indexes[channel_rank],
-			                                                                CHANNELS_BUFFERS_SIZE
-			                                                                );
-		}
-
-		*number_of_values_acquired = number_of_values;
-		return adc2_user_buffers[channel_rank];
+		// Return data
+		*number_of_values_acquired = current_count;
+		return active_buffer;
 	}
 	else
 	{

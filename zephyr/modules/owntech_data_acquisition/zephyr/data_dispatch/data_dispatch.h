@@ -20,8 +20,13 @@
 /**
  * @author Clément Foucher <clement.foucher@laas.fr>
  *
- * @brief This is a quick and dirty dispatch of ADC
- * data in per-DMA channel independent buffers.
+ * @brief Data dispatch is intended at dispatching ADCs
+ * acquired data from DMA buffers to per-channel buffers.
+ * User can then request the data of a specific channel.
+ *
+ * It uses double-buffering, holding 2 buffers for each
+ * enabled channel of each ADC, one being filled and one
+ * made available to the user.
  */
 
 #ifndef DATA_DISPATCH_H_
@@ -36,14 +41,45 @@ extern "C" {
 #endif
 
 
-// Init function to be called first
-void data_dispatch_init();
+/**
+ * Init function to be called first.
+ *
+ * @param adc_count Number of enabled ADCs
+ */
+void data_dispatch_init(uint8_t adc_count);
 
-// Dispatch function: gets the readings and store them in per-channel arrays
+/**
+ * Dispatch function: gets the readings and store
+ * them in per-channel arrays. This functon is
+ * called by DMA callback when the DMA has filled
+ * one of its buffers.
+ *
+ * @param adc_num Number of the ADC from which data
+ *        comes from.
+ * @param dma_buffer Buffer in which data is stored.
+ */
 void data_dispatch_do_dispatch(uint8_t adc_num, uint16_t* dma_buffer);
 
-// Obtain buffer for a specific channel
+/**
+ * Obtain data for a specific channel.
+ * The data is provided as an array of values
+ * and the count of data in this buffer is returned
+ * as an output parameter.
+ *
+ * @param  adc_number Number of the ADC from which to
+ *         obtain data.
+ * @param  channel_rank Rank of the channel from which
+ *         to obtain data.
+ * @param  number_of_values_acquired Output parameter:
+ *         address to a variable that will be updated
+ *         by the function with the data count.
+ * @return Buffer containing the available data.
+ *         Note that the returned buffer is invalidated
+ *         by further calls to the function with same
+ *         adc number/channel rank.
+ */
 uint16_t* data_dispatch_get_acquired_values(uint8_t adc_number, uint8_t channel_rank, uint32_t* number_of_values_acquired);
+
 
 #ifdef __cplusplus
 }

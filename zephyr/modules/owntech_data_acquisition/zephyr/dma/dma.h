@@ -18,7 +18,9 @@
  */
 
 /**
- * @author  Clément Foucher <clement.foucher@laas.fr>
+ * @author Clément Foucher <clement.foucher@laas.fr>
+ *
+ * @brief  This file provides DMA configuration.
  */
 
 #ifndef DMA_H_
@@ -34,14 +36,14 @@ extern "C" {
 
 
 /**
- * This function configures and starts
- * the DMA. It must only be called after
- * all the ADCs configuration has been
- * carried out, as it uses its channels
- * configuration to determine the size
- * of the buffers.
+ * This function configures and starts the DMA.
+ * It must only be called after all the ADCs configuration
+ * has been carried out, as it uses its channels
+ * configuration to determine the size of the buffers.
+ *
+ * @param adc_count Number of configured ADCs.
  */
-void dma_configure_and_start();
+void dma_configure_and_start(uint8_t adc_count);
 
 // For debug purpose
 uint16_t* dma_get_dma1_buffer();

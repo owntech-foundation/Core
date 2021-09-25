@@ -37,10 +37,9 @@ extern "C" {
 // Error codes
 
 #define ECHANNOTFOUND   -1
-#define EUNITITIALIZED  -2
-#define ESTARTED        -3
-#define EALREADYSTARTED -4
-#define EALREADYINIT    -5
+#define EUNINITIALIZED  -2
+#define EALREADYSTARTED -3
+#define EALREADYINIT    -4
 
 
 /////

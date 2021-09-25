@@ -48,17 +48,38 @@
 
 /////
 // DT definitions
+
 #define DMA1_NODELABEL DT_NODELABEL(dma1)
 #define DMA1_LABEL     DT_PROP(DMA1_NODELABEL, label)
 
-const struct device* _dma1;
+static const struct device* dma1;
+
+
+/////
+// LL definitions
+
+static uint32_t source_registers[3] =
+{
+	(uint32_t)(&(ADC1->DR)),
+	(uint32_t)(&(ADC2->DR)),
+	(uint32_t)(&(ADC3->DR))
+};
+
+static uint32_t source_triggers[3] =
+{
+	LL_DMAMUX_REQ_ADC1,
+	LL_DMAMUX_REQ_ADC2,
+	LL_DMAMUX_REQ_ADC3
+};
+
 
 /////
 // Arrays of buffers:
 // half_buffer_*[i][] is an array whose size matches
 // the number of enabled channels in ADC(i+1).
-static uint16_t* half_buffer_1[3];
-static uint16_t* half_buffer_2[3];
+
+static uint16_t** half_buffer_1;
+static uint16_t** half_buffer_2;
 
 
 /////
@@ -72,15 +93,16 @@ static uint16_t* half_buffer_2[3];
 static void _dma_callback(const struct device* dev, void* user_data, uint32_t channel, int status)
 {
 	static uint8_t current_half_buffer[3] = {0};
+	uint8_t adc_number = channel + 1;
 
 	if (current_half_buffer[channel] == 0)
 	{
-		data_dispatch_do_dispatch(channel+1, half_buffer_1[channel]);
+		data_dispatch_do_dispatch(adc_number, half_buffer_1[channel]);
 		current_half_buffer[channel] = 1;
 	}
 	else
 	{
-		data_dispatch_do_dispatch(channel+1, half_buffer_2[channel]);
+		data_dispatch_do_dispatch(adc_number, half_buffer_2[channel]);
 		current_half_buffer[channel] = 0;
 	}
 }
@@ -121,39 +143,30 @@ static void _dma_channel_init(uint8_t adc_num, uint32_t source_address, uint32_t
 	dma_config_s.head_block          = &dma_block_config_s;  // Above block config
 	dma_config_s.dma_callback        = _dma_callback;        // Callback
 
-	dma_config(_dma1, adc_num, &dma_config_s);
+	dma_config(dma1, adc_num, &dma_config_s);
 }
 
 
 /////
 // Public API
 
-void dma_configure_and_start()
+void dma_configure_and_start(uint8_t adc_count)
 {
-	_dma1 = device_get_binding(DMA1_LABEL);
+	dma1 = device_get_binding(DMA1_LABEL);
 
-	// ADC 1
-	if (adc_channels_get_enabled_channels_count(1) > 0)
-	{
-		_dma_channel_init(1, (uint32_t)(&(ADC1->DR)), LL_DMAMUX_REQ_ADC1);
-		dma_start(_dma1, 1);
-	}
+	half_buffer_1 = k_malloc(adc_count * sizeof(uint16_t*));
+	half_buffer_2 = k_malloc(adc_count * sizeof(uint16_t*));
 
-	// ADC 2
-	if (adc_channels_get_enabled_channels_count(2) > 0)
+	for (uint8_t adc_index = 0 ; adc_index < adc_count ; adc_index++)
 	{
-		_dma_channel_init(2, (uint32_t)(&(ADC2->DR)), LL_DMAMUX_REQ_ADC2);
-		dma_start(_dma1, 2);
-	}
-
-	// ADC 3
-	if (adc_channels_get_enabled_channels_count(3) > 0)
-	{
-		_dma_channel_init(3, (uint32_t)(&(ADC3->DR)), LL_DMAMUX_REQ_ADC3);
-		dma_start(_dma1, 3);
+		uint8_t adc_num = adc_index +1;
+		if (adc_channels_get_enabled_channels_count(adc_num) > 0)
+		{
+			_dma_channel_init(adc_num, source_registers[adc_index], source_triggers[adc_index]);
+			dma_start(dma1, adc_num);
+		}
 	}
 }
-
 
 uint16_t* dma_get_dma1_buffer()
 {
