@@ -419,6 +419,26 @@ void hrtim_rst_cb_unset(hrtim_t dev, hrtim_tu_t tu, hrtim_out_t out,
  */
 void hrtim_cmpl_pwm_out(hrtim_t dev, hrtim_tu_t tu, bool switch_convention);
 
+
+/**
+ * @brief   Sets up the switching convention of leg 1
+ *
+ * @param[in] hrtim                            HRTIM device
+ * @param[in] tu                               Timing unit
+ * @param[in] leg1_upper_switch_convention     Choice of the switch convention - 1 for buck mode and 0 for boost mode
+ */
+void hrtim_cmpl_pwm_out1(hrtim_t hrtim, hrtim_tu_t tu, bool leg1_upper_switch_convention);
+
+/**
+ * @brief   Sets up the switching convention of leg 2
+ *
+ * @param[in] hrtim                            HRTIM device
+ * @param[in] tu                    Timing unit
+ * @param[in] leg1_upper_switch_convention     Choice of the switch convention - 1 for buck mode and 0 for boost mode
+ */
+void hrtim_cmpl_pwm_out2(hrtim_t hrtim, hrtim_tu_t tu, bool leg2_upper_switch_convention);
+
+
 /**
  * @brief   Set a period value
  *
@@ -518,6 +538,8 @@ void hrtim_adc_trigger_en(hrtim_t dev, hrtim_adc_t adc, hrtim_adc_trigger_t evt)
  * @param[in] evt           Trigger event
  */
 void hrtim_adc_trigger_dis(hrtim_t dev, hrtim_adc_t adc, hrtim_adc_trigger_t evt);
+
+
 
 int hrtim_get_apb2_clock();
 
