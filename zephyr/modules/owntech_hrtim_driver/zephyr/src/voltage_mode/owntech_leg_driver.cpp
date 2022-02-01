@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 LAAS-CNRS
+ * Copyright (c) 2020-2022 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -21,9 +21,10 @@
 /**
  * @file
  * @brief   PWM management layer by inverter leg
- * @date    2020
+ * @date    2022
  * @author  Hugues Larrive <hugues.larrive@laas.fr>
  * @author  Antoine Boche <antoine.boche@laas.fr>
+ * @author  Luiz Villa <luiz.villa@laas.fr>
  */
 
 #include "leg.h"
@@ -41,7 +42,7 @@ static leg_conf_t leg_conf[6]; /* a copy of leg_config with index
  * on the power converter to a frequency of 200kHz
  * Must be initialized in first position
  */
-uint16_t leg_init(bool upper_switch_convention)
+uint16_t leg_init(bool leg1_upper_switch_convention, bool leg2_upper_switch_convention)
 {
     uint32_t freq = LEG_FREQ;
 
@@ -51,7 +52,7 @@ uint16_t leg_init(bool upper_switch_convention)
         leg_conf[leg_config[i].timing_unit] = leg_config[i];
     }
 
-    period = hrtim_init(0, &freq, LEG_DEFAULT_DT,upper_switch_convention);
+    period = hrtim_init(0, &freq, LEG_DEFAULT_DT,leg1_upper_switch_convention,leg2_upper_switch_convention);
     dead_time = (period*LEG_DEFAULT_DT*leg_get_freq())/1000000;
     min_pw = (period * 0.1) + dead_time;
     max_pw = (period * 0.9) + dead_time;
@@ -83,10 +84,14 @@ void leg_set(hrtim_tu_t timing_unit, uint16_t pulse_width, uint16_t phase_shift)
 
 void leg_stop(hrtim_tu_t timing_unit)
 {
-    hrtim_pwm_set(  leg_conf[timing_unit].hrtim,
-                    leg_conf[timing_unit].timing_unit,
-                    0,
-                    0);
+    hrtim_out_dis(leg_conf[timing_unit].hrtim, leg_conf[timing_unit].timing_unit, OUT1);
+    hrtim_out_dis(leg_conf[timing_unit].hrtim, leg_conf[timing_unit].timing_unit, OUT2); 
+}
+
+void leg_start(hrtim_tu_t timing_unit)
+{
+    hrtim_out_en(leg_conf[timing_unit].hrtim, leg_conf[timing_unit].timing_unit, OUT1);
+    hrtim_out_en(leg_conf[timing_unit].hrtim, leg_conf[timing_unit].timing_unit, OUT2);
 }
 
 uint16_t leg_period(void)

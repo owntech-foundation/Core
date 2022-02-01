@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 LAAS-CNRS
+ * Copyright (c) 2021-2022 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -19,6 +19,7 @@
 
 /**
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Luiz Villa <luiz.villa@laas.fr>
  */
 
 #include "voltage_mode/hrtim_voltage_mode.h"
@@ -33,9 +34,30 @@ void hrtim_init_current()
 	hrtim_cm_enable();
 }
 
-void hrtim_init_voltage()
+void hrtim_init_voltage_buck()
 {
-	leg_init(true);
+	leg_init(true,true);
+	hrtim_adc_trigger_en(0, ADC1R, AD13_TAC3);
+	hrtim_cmp_set(0, TIMA, CMP3xR, 1);
+}
+
+void hrtim_init_voltage_boost()
+{
+	leg_init(false,false);
+	hrtim_adc_trigger_en(0, ADC1R, AD13_TAC3);
+	hrtim_cmp_set(0, TIMA, CMP3xR, 1);
+}
+
+void hrtim_init_voltage_leg1_buck_leg2_boost()
+{
+	leg_init(true,false);
+	hrtim_adc_trigger_en(0, ADC1R, AD13_TAC3);
+	hrtim_cmp_set(0, TIMA, CMP3xR, 1);
+}
+
+void hrtim_init_voltage_leg1_boost_leg2_buck()
+{
+	leg_init(false,true);
 	hrtim_adc_trigger_en(0, ADC1R, AD13_TAC3);
 	hrtim_cmp_set(0, TIMA, CMP3xR, 1);
 }

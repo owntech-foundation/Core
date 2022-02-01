@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 LAAS-CNRS
+ * Copyright (c) 2021-2022 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -19,6 +19,7 @@
 
 /**
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Luiz Villa <luiz.villa@laas.fr>
  */
 
 #ifndef HRTIM_H_
@@ -78,7 +79,12 @@ void hrtim_pwm_set(hrtim_t dev, hrtim_tu_t tu, uint16_t value, uint16_t shift);
 
 
 void hrtim_init_current();
-void hrtim_init_voltage();
+void hrtim_init_voltage_buck();
+void hrtim_init_voltage_boost();
+void hrtim_init_voltage_leg1_buck_leg2_boost();
+void hrtim_init_voltage_leg1_boost_leg2_buck();
+
+
 
 #ifdef __cplusplus
 }

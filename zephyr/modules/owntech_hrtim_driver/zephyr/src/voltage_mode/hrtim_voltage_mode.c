@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 LAAS-CNRS
+ * Copyright (c) 2020-2022 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -27,6 +27,7 @@
  * @author      Hugues Larrive <hugues.larrive@laas.fr>
  * @author      Clément Foucher <clement.foucher@laas.fr>
  * @author      Antoine Boche <antoine.boche@laas.fr>
+ * @author      Luiz Villa <luiz.villa@laas.fr>
  */
 
 #include <stm32_ll_rcc.h>
@@ -130,7 +131,7 @@ static inline uint32_t _period_ckpsc(hrtim_t hrtim, uint32_t freq,
     return frequency;
 }
 
-uint16_t hrtim_init(hrtim_t hrtim, uint32_t *freq, uint16_t dt, uint8_t upper_switch_convention)
+uint16_t hrtim_init(hrtim_t hrtim, uint32_t *freq, uint16_t dt, uint8_t leg1_upper_switch_convention, uint8_t leg2_upper_switch_convention)
 {
     /* Master timer initialization */
     uint16_t period = hrtim_init_master(hrtim, freq);
@@ -147,7 +148,8 @@ uint16_t hrtim_init(hrtim_t hrtim, uint32_t *freq, uint16_t dt, uint8_t upper_sw
         hrtim_cnt_en(hrtim, (1 << (HRTIM_MCR_TACEN_Pos + tu)));
 
         /* Setup outputs */
-        hrtim_cmpl_pwm_out(hrtim, tu, upper_switch_convention);
+        hrtim_cmpl_pwm_out1(hrtim, tu, leg1_upper_switch_convention);
+        hrtim_cmpl_pwm_out2(hrtim, tu, leg2_upper_switch_convention);
 
         /* Reset on master timer period event */
         hrtim_rst_evt_en(hrtim, tu, RST_MSTPER);
@@ -361,6 +363,40 @@ void hrtim_cmpl_pwm_out(hrtim_t hrtim, hrtim_tu_t tu, bool upper_switch_conventi
     {
         dev(hrtim)->sTimerxRegs[tu].SETx1R = CMP1;
         dev(hrtim)->sTimerxRegs[tu].RSTx1R = PER;
+        dev(hrtim)->sTimerxRegs[tu].SETx2R = PER;
+        dev(hrtim)->sTimerxRegs[tu].RSTx2R = CMP1;
+    }
+}
+
+void hrtim_cmpl_pwm_out1(hrtim_t hrtim, hrtim_tu_t tu, bool leg1_upper_switch_convention)
+{
+    // Configuration for the upper switch convention
+    if (leg1_upper_switch_convention == true)
+    {
+        dev(hrtim)->sTimerxRegs[tu].SETx1R = PER;
+        dev(hrtim)->sTimerxRegs[tu].RSTx1R = CMP1;
+    }
+
+    // Configuration for the lower switch convention
+    else if (leg1_upper_switch_convention == false)
+    {
+        dev(hrtim)->sTimerxRegs[tu].SETx1R = CMP1;
+        dev(hrtim)->sTimerxRegs[tu].RSTx1R = PER;
+    }
+}
+
+void hrtim_cmpl_pwm_out2(hrtim_t hrtim, hrtim_tu_t tu, bool leg2_upper_switch_convention)
+{
+    // Configuration for the upper switch convention
+    if (leg2_upper_switch_convention == true)
+    {
+        dev(hrtim)->sTimerxRegs[tu].SETx2R = CMP1;
+        dev(hrtim)->sTimerxRegs[tu].RSTx2R = PER;
+    }
+
+    // Configuration for the lower switch convention
+    else if (leg2_upper_switch_convention == false)
+    {
         dev(hrtim)->sTimerxRegs[tu].SETx2R = PER;
         dev(hrtim)->sTimerxRegs[tu].RSTx2R = CMP1;
     }

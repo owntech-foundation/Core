@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 LAAS-CNRS
+ * Copyright (c) 2020-2022 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -23,12 +23,12 @@
  * @ingroup     owntech_modules
  * @brief       OwnTech PWM management layer by inverter leg
  *
- * @{
  * @file
  * @brief   PWM management layer by inverter leg interface definitions
- * @date    2020
+ * @date    2022
  * @author  Hugues Larrive <hugues.larrive@laas.fr>
  * @author  Antoine Boche <antoine.boche@laas.fr>
+ * @author  Luiz Villa <luiz.villa@laas.fr>
  */
 
 #ifndef LEG_H_
@@ -61,11 +61,12 @@ typedef struct {
 /**
  * @brief   Initializes all the configured devices with the chosen switch convention
  *
- * @param[in]   upper_switch_convention    Choice of the switch convention
+ * @param[in]   leg1_upper_switch_convention    Choice of the switch convention for leg 1
+ * @param[in]   leg2_upper_switch_convention    Choice of the switch convention for leg 2 
  *
  * @return                      HRTIM period
  */
-uint16_t leg_init(bool upper_switch_convention);
+uint16_t leg_init(bool leg1_upper_switch_convention, bool leg2_upper_switch_convention);
 
 /**
  * @brief   Set the PWM pulse width for a given leg device
@@ -82,6 +83,13 @@ void leg_set(hrtim_tu_t timing_unit, uint16_t pulse_width, uint16_t phase_shift)
  * @param[in]   timing_unit     timing_unit from TIMA to TIMF
  */
 void leg_stop(hrtim_tu_t timing_unit);
+
+/**
+ * @brief   Start the leg (its 2 outputs goes low)
+ *
+ * @param[in]   timing_unit     timing_unit from TIMA to TIMF
+ */
+void leg_start(hrtim_tu_t timing_unit); 
 
 /**
  * @brief   period getter

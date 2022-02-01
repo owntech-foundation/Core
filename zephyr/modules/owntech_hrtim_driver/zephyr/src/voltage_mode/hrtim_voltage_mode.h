@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 LAAS-CNRS
+ * Copyright (c) 2020-2022 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -28,6 +28,7 @@
  * @author      Hugues Larrive <hugues.larrive@laas.fr>
  * @author      Clément Foucher <clement.foucher@laas.fr>
  * @author      Antoine Boche <antoine.boche@laas.fr>
+ * @author      Luiz Villa <luiz.villa@laas.fr>
  */
 
 #ifndef HRTIM_VOLTAGE_MODE_H_
@@ -331,16 +332,16 @@ typedef enum {
  * @brief   Initialize an HRTIM device and all these timing units for
  *          complementary pwm outputs with a dead time.
  *
- * @param[in] dev                   HRTIM device to initialize
- * @param[inout] freq               HRTIM frequency in Hz
- * @param[in] dt                    Desired dead time in ns
- * @param[in] switch_convention     Choice of the switch convention
+ * @param[in] dev                            HRTIM device to initialize
+ * @param[inout] freq                        HRTIM frequency in Hz
+ * @param[in] dt                             Desired dead time in ns
+ * @param[in] leg1_upper_switch_convention   Choice of the switch convention for leg 1
+ * @param[in] leg2_upper_switch_convention   Choice of the switch convention for leg 2 
  *
  * @return                  actual HRTIM resolution on success
  * @return                  0 on error
  */
-uint16_t hrtim_init(hrtim_t dev, uint32_t *freq, uint16_t dt, uint8_t switch_convention);
-
+uint16_t hrtim_init(hrtim_t dev, uint32_t *freq, uint16_t dt, uint8_t leg1_upper_switch_convention, uint8_t leg2_upper_switch_convention);
 /**
  * @brief   Initialize an HRTIM device master timer
  *
