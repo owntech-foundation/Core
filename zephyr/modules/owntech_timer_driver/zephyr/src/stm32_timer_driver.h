@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 LAAS-CNRS
+ * Copyright (c) 2021-2022 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,8 @@
  */
 
 /**
- * @author  Clément Foucher <clement.foucher@laas.fr>
+ * @date   2022
+ * @author Clément Foucher <clement.foucher@laas.fr>
  */
 #ifndef STM32_TIMER_DRIVER_H_
 #define STM32_TIMER_DRIVER_H_
@@ -36,6 +37,10 @@ extern "C" {
 #endif
 
 
+#define TIMER4_NODELABEL      DT_NODELABEL(timers4)
+#define TIMER4_INTERRUPT_LINE DT_IRQN(TIMER4_NODELABEL)
+#define TIMER4_INTERRUPT_PRIO DT_IRQ_BY_IDX(TIMER4_NODELABEL, 0, priority)
+
 #define TIMER6_NODELABEL      DT_NODELABEL(timers6)
 #define TIMER6_INTERRUPT_LINE DT_IRQN(TIMER6_NODELABEL)
 #define TIMER6_INTERRUPT_PRIO DT_IRQ_BY_IDX(TIMER6_NODELABEL, 0, priority)
@@ -44,30 +49,42 @@ extern "C" {
 #define TIMER7_INTERRUPT_LINE DT_IRQN(TIMER7_NODELABEL)
 #define TIMER7_INTERRUPT_PRIO DT_IRQ_BY_IDX(TIMER7_NODELABEL, 0, priority)
 
+typedef enum
+{
+	periodic_interrupt,
+	incremental_coder
+} timer_mode_t;
+
+
 /**
  * Members of this structure marked with a "§"
  * have to be set when calling DEVICE_DEFINE.
  *
- * timer_struct§:   store the STM32 LL timer structure
- * interrupt_line§: interrupt line number (if interrupt has to be enabled)
- * interrupt_prio$: interrupt priority (if interrupt has to be enabled)
- * timer_callback:  user-defined, set by the timer_config call (if interrupt has to be enabled).
- *                  Should be set to NULL in DEVICE_DEFINE
+ * timer_struct§:          stores the STM32 LL timer structure
+ * interrupt_line§:        interrupt line number (if interrupt has to be enabled)
+ * interrupt_prio$:        interrupt priority (if interrupt has to be enabled)
+ * timer_mode:             Mode in which the timer is configured.
+ * timer_irq_callback:     user-defined, set by the timer_config call (if interrupt has to be enabled).
+ *                         Should be set to NULL in DEVICE_DEFINE
+ * timer_irq_period_usec : period of the irq in microseconds.
  */
 struct stm32_timer_driver_data
 {
 	TIM_TypeDef*     timer_struct;
-    unsigned int     interrupt_line;
-    unsigned int     interrupt_prio;
-    timer_callback_t timer_callback;
+	unsigned int     interrupt_line;
+	unsigned int     interrupt_prio;
+	timer_mode_t     timer_mode;
+	timer_callback_t timer_irq_callback;
+	uint32_t         timer_irq_period_usec;
 };
 
 static int timer_stm32_init(const struct device* dev);
 void timer_stm32_config(const struct device* dev, const struct timer_config_t* config);
-void timer_stm32_start(const struct device* dev, uint32_t t_usec);
+void timer_stm32_start(const struct device* dev);
 uint32_t timer_stm32_get_count(const struct device* dev);
 void timer_stm32_clear(const struct device* dev);
 
+void init_timer_4();
 void init_timer_6();
 void init_timer_7();
 

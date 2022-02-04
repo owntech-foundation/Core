@@ -1,3 +1,4 @@
+#include "dts/pinout.dtsi"
 #include "dts/hrtim.dtsi"
 #include "dts/adc-channels.dtsi"
 #include "dts/ngnd.dtsi"
@@ -67,6 +68,11 @@
 /*********/
 /* Timer */
 /*********/
+
+&timers4 {
+	pinctrl-0 = <&tim4_etr_pb3 &tim4_ch1_pb6 &tim4_ch2_pb7 >;
+	status = "okay";
+};
 
 &timers6 {
 	status = "okay";
