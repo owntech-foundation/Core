@@ -60,7 +60,7 @@ void adc_configure_trigger_source(uint8_t adc_number, uint32_t trigger_source)
 		adc_trigger_sources[adc_number-1] = trigger_source;
 }
 
-int8_t adc_configure_adc_channels(uint8_t adc_number, char* channel_list[], uint8_t channel_count)
+int8_t adc_configure_adc_channels(uint8_t adc_number, const char* channel_list[], uint8_t channel_count)
 {
 	return adc_channnels_configure_adc_channels(adc_number, channel_list, channel_count);
 }
@@ -113,7 +113,7 @@ void adc_start()
 	}
 }
 
-char* adc_get_channel_name(uint8_t adc_number, uint8_t channel_rank)
+const char* adc_get_channel_name(uint8_t adc_number, uint8_t channel_rank)
 {
 	return adc_channels_get_channel_name(adc_number, channel_rank);
 }

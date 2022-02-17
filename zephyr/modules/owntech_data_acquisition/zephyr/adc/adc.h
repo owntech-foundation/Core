@@ -91,7 +91,7 @@ void adc_configure_trigger_source(uint8_t adc_number, uint32_t trigger_source);
  *           is not available in the given ADC. Available channels are the
  *           ones defined in the device tree.
  */
-int8_t adc_configure_adc_channels(uint8_t adc_number, char* channel_list[], uint8_t channel_count);
+int8_t adc_configure_adc_channels(uint8_t adc_number, const char* channel_list[], uint8_t channel_count);
 
 /**
  * @brief Starts all configured ADCs.
@@ -111,7 +111,7 @@ void adc_start();
  *         NULL if channel configuration has not been made or
  *         channel_rank is over (number of enabled channels)-1.
  */
-char* adc_get_channel_name(uint8_t adc_number, uint8_t channel_rank);
+const char* adc_get_channel_name(uint8_t adc_number, uint8_t channel_rank);
 
 #ifdef __cplusplus
 }

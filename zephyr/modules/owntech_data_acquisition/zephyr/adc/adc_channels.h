@@ -72,7 +72,7 @@ void adc_channels_configure(uint8_t adc_num);
  *           is not available in the given ADC. Available channels are the
  *           ones defined in the device tree.
  */
-int8_t adc_channnels_configure_adc_channels(uint8_t adc_num, char* channel_list[], uint8_t channel_count);
+int8_t adc_channnels_configure_adc_channels(uint8_t adc_num, const char* channel_list[], uint8_t channel_count);
 
 /**
  * This function returns the name of an enabled channel.
@@ -87,7 +87,7 @@ int8_t adc_channnels_configure_adc_channels(uint8_t adc_num, char* channel_list[
  *         NULL if channel configuration has not been made or
  *         channel_rank is over (number of enabled channels)-1.
  */
-char* adc_channels_get_channel_name(uint8_t adc_num, uint8_t channel_rank);
+const char* adc_channels_get_channel_name(uint8_t adc_num, uint8_t channel_rank);
 
 /**
  * Get the number of enabled channels for an ADC.

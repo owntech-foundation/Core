@@ -37,8 +37,8 @@
 #include "adc_channels.h"
 
 // OwnTech API
-#include "data_acquisition.h"
 #include "adc_helper.h"
+#include "data_acquisition_error_codes.h"
 
 
 /////
@@ -290,7 +290,7 @@ static void _adc_channels_set_enabled_channels(uint8_t adc_num, channel_prop_t**
 	}
 }
 
-static channel_prop_t* _adc_channels_get_available_channel_by_name(uint8_t adc_num, char* channel_name)
+static channel_prop_t* _adc_channels_get_available_channel_by_name(uint8_t adc_num, const char* channel_name)
 {
 	channel_prop_t** current_adc_available_channels = _adc_channels_get_available_channels_list(adc_num);
 
@@ -384,7 +384,7 @@ void adc_channels_configure(uint8_t adc_num)
 	LL_ADC_REG_SetSequencerLength(adc, (uint32_t)enabled_channels_in_this_adc-1);
 }
 
-int8_t adc_channnels_configure_adc_channels(uint8_t adc_num, char* channel_list[], uint8_t channel_count)
+int8_t adc_channnels_configure_adc_channels(uint8_t adc_num, const char* channel_list[], uint8_t channel_count)
 {
 	uint8_t result = 0;
 
@@ -422,7 +422,7 @@ int8_t adc_channnels_configure_adc_channels(uint8_t adc_num, char* channel_list[
 	return result;
 }
 
-char* adc_channels_get_channel_name(uint8_t adc_num, uint8_t channel_rank)
+const char* adc_channels_get_channel_name(uint8_t adc_num, uint8_t channel_rank)
 {
 	channel_prop_t** current_adc_enabled_channels_list = _adc_channels_get_enabled_channels_list(adc_num);
 
