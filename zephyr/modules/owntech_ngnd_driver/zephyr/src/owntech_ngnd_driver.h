@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 LAAS-CNRS
+ * Copyright (c) 2021-2022 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,8 +18,12 @@
  */
 
 /**
- * @author  Clément Foucher <clement.foucher@laas.fr>
+ * @date   2022
+ *
+ * @author Clément Foucher <clement.foucher@laas.fr>
  */
+
+
 #ifndef OWNTECH_NGND_DRIVER_H_
 #define OWNTECH_NGND_DRIVER_H_
 
@@ -28,12 +32,13 @@
 #include "ngnd.h"
 
 
+#define NGND_NODE DT_NODELABEL(ngnd)
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
-#define NGND_GPIO_NODE  DT_ALIAS(ngnd)
 
 static int ngnd_init(const struct device* dev);
 

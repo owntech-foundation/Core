@@ -1,0 +1,254 @@
+/*
+ * The first part of this file is based on Nucleo G474RE dts original file.
+ * All changes from the originl file are indicated with comments "Edited".
+ *
+ * Copyright (c) 2019 STMicroelectronics.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+#include <st/g4/stm32g474Xe.dtsi>
+#include <st/g4/stm32g474r(b-c-e)tx-pinctrl.dtsi>
+
+/ {
+	// Edited for OwnTech Power Converter board:
+	model = "OwnTech Power Converter board";
+	compatible = "owntech,owntech-board", "st,stm32g474re-nucleo";
+
+	chosen {
+		zephyr,console = &lpuart1;
+		zephyr,shell-uart = &lpuart1;
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+		zephyr,can-primary = &can1;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		green_led: led_0 {
+			gpios = <&gpioa 5 GPIO_ACTIVE_HIGH>;
+			label = "User LD2";
+		};
+	};
+
+	pwmleds {
+		compatible = "pwm-leds";
+
+		green_pwm_led: green_pwm_led {
+			pwms = <&pwm2 1 4 PWM_POLARITY_NORMAL>;
+		};
+	};
+
+	gpio_keys {
+		compatible = "gpio-keys";
+		user_button: button {
+			label = "User";
+			gpios = <&gpioc 13 GPIO_ACTIVE_LOW>;
+		};
+	};
+
+	aliases {
+		led0 = &green_led;
+		pwm-led0 = &green_pwm_led;
+		sw0 = &user_button;
+	};
+};
+
+&clk_hse {
+	clock-frequency = <DT_FREQ_M(24)>;
+	status = "okay";
+};
+
+&pll {
+	div-m = <6>;
+	mul-n = <85>;
+	div-p = <7>;
+	div-q = <2>;
+	div-r = <2>;
+	clocks = <&clk_hse>;
+	status = "okay";
+};
+
+&rcc {
+	clocks = <&pll>;
+	clock-frequency = <DT_FREQ_M(170)>;
+	ahb-prescaler = <1>;
+	apb1-prescaler = <1>;
+	apb2-prescaler = <1>;
+};
+
+// Edited for OwnTech Power Converter board:
+// &usart1_rx_pc5 conflict with &adc2_in11_pc5
+&usart1 {
+	pinctrl-0 = <&usart1_tx_pc4 &usart1_rx_pb7>;
+	current-speed = <115200>;
+	status = "okay";
+};
+
+&lpuart1 {
+	pinctrl-0 = <&lpuart1_tx_pa2 &lpuart1_rx_pa3>;
+	current-speed = <115200>;
+	status = "okay";
+};
+
+// Edited for OwnTech Power Converter board:
+// &i2c1_scl_pb8 &i2c1_sda_pb9 will conflict with can1
+&i2c1 {
+	status = "disabled";
+};
+
+// Edited for OwnTech Power Converter board:
+// &spi1_miso_pa6 &spi1_mosi_pa7 conflict with &adc2_in3_pa6 &adc2_in4_pa7
+&spi1 {
+	status = "disabled";
+};
+
+// Edited for OwnTech Power Converter board:
+// &spi2_nss_pb12 conflict with $fdcan2_rx_pb12, &spi2_nss_pc6 AF does not exist
+&spi2 {
+	status = "disabled";
+};
+
+// Edited for OwnTech Power Converter board:
+// &spi3_nss_pa15 &spi3_miso_pc11 &spi3_mosi_pc12 conflict with hrtim
+&spi3 {
+	pinctrl-0 = <&spi3_nss_pa4 &spi3_sck_pc10 &spi3_miso_pb4 &spi3_mosi_pb5>;
+	status = "okay";
+};
+
+&timers2 {
+	status = "okay";
+
+	pwm2: pwm {
+		status = "okay";
+		pinctrl-0 = <&tim2_ch1_pa5>;
+	};
+};
+
+&rtc {
+	status = "okay";
+};
+
+&flash0 {
+	/*
+	 * For more information, see:
+	 * http://docs.zephyrproject.org/latest/guides/dts/index.html#flash-partitions
+	 */
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		/* Set 2Kb of storage at the end of the 128Kb of flash */
+		storage_partition: partition@1f800 {
+			label = "storage";
+			reg = <0x0001f800 0x00000800>;
+		};
+	};
+};
+
+&iwdg {
+	status = "okay";
+};
+
+&rng {
+	status = "okay";
+};
+
+// Edited for OwnTech Power Converter board
+&adc1 {
+	pinctrl-0 = <&adc1_in6_pc0 &adc1_in7_pc1 &adc1_in8_pc2 &adc1_in9_pc3>;
+	status = "okay";
+};
+
+&can1 {
+	pinctrl-0 = <&fdcan1_rx_pa11 &fdcan1_tx_pa12>;
+	bus-speed = <125000>;
+	sjw = <1>;
+	sample-point = <875>;
+	bus-speed-data = <1000000>;
+	sjw-data = <1>;
+	sample-point-data = <875>;
+	status = "okay";
+};
+
+/*
+ * The following part is addition to the original Nucleo device tree file.
+ *
+ * Copyright (c) 2022 OwnTech.
+ */
+
+#include "dts/pinout.dtsi"
+#include "dts/hrtim.dtsi"
+#include "dts/adc-channels.dtsi"
+#include "dts/ngnd.dtsi"
+
+/*********/
+/* Timer */
+/*********/
+
+&timers4 {
+	pinctrl-0 = <&tim4_etr_pb3 &tim4_ch1_pb6 &tim4_ch2_pb7 >;
+	status = "okay";
+};
+
+&timers6 {
+	status = "okay";
+};
+
+&timers7 {
+	status = "okay";
+};
+
+/*******/
+/* DMA */
+/*******/
+
+&dma1 {
+	status = "okay";
+};
+
+&dmamux1 {
+	status = "okay";
+};
+
+/*******/
+/* ADC */
+/*******/
+
+&adc2 {
+	pinctrl-0 = <&adc2_in1_pa0 &adc2_in2_pa1 &adc2_in3_pa6>;
+	status = "okay";
+};
+
+/*
+&adc3 {
+	pinctrl-0 = <&adc3_in1_pb1 >;
+	status = "okay";
+};
+*/
+
+/*******/
+/* DAC */
+/*******/
+
+&dac1 {
+	status = "okay";
+};
+
+&dac2 {
+	status = "okay";
+};
+
+&dac3 {
+	status = "okay";
+};
+
+/********/
+/* NGND */
+/********/
+
+&ngnd {
+	status = "okay";
+};

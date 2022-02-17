@@ -36,7 +36,7 @@
 // Write a driver to load on startup without user action?
 void owntech_dac_dac2_constant_init()
 {
-	const struct device* dac2 = device_get_binding(DAC2_LABEL);
+	const struct device* dac2 = device_get_binding(DAC2_DEVICE);
 
 	dac_pin_config_t pin_config =
 	{
@@ -51,8 +51,8 @@ void owntech_dac_dac2_constant_init()
 
 void owntech_dac_dac1_dac3_current_mode_init()
 {
-	const struct device* dac1 = device_get_binding(DAC1_LABEL);
-	const struct device* dac3 = device_get_binding(DAC3_LABEL);
+	const struct device* dac1 = device_get_binding(DAC1_DEVICE);
+	const struct device* dac3 = device_get_binding(DAC3_DEVICE);
 
 	dac_function_config_t function_config =
 	{

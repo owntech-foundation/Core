@@ -255,7 +255,7 @@ void init_timer_7()
 // Device definitions
 
 // Timer4
-#if DT_NODE_HAS_STATUS(TIMER4_NODELABEL, okay)
+#if DT_NODE_HAS_STATUS(TIMER4_NODE, okay)
 
 struct stm32_timer_driver_data timer4_data =
 {
@@ -265,7 +265,7 @@ struct stm32_timer_driver_data timer4_data =
 	.timer_irq_callback = NULL
 };
 
-DEVICE_DT_DEFINE(TIMER4_NODELABEL,
+DEVICE_DT_DEFINE(TIMER4_NODE,
                  timer_stm32_init,
                  NULL,
                  &timer4_data,
@@ -278,7 +278,7 @@ DEVICE_DT_DEFINE(TIMER4_NODELABEL,
 #endif // Timer 4
 
 // Timer 6
-#if DT_NODE_HAS_STATUS(TIMER6_NODELABEL, okay)
+#if DT_NODE_HAS_STATUS(TIMER6_NODE, okay)
 
 struct stm32_timer_driver_data timer6_data =
 {
@@ -288,7 +288,7 @@ struct stm32_timer_driver_data timer6_data =
 	.timer_irq_callback = NULL
 };
 
-DEVICE_DT_DEFINE(TIMER6_NODELABEL,
+DEVICE_DT_DEFINE(TIMER6_NODE,
                  timer_stm32_init,
                  NULL,
                  &timer6_data,
@@ -301,7 +301,7 @@ DEVICE_DT_DEFINE(TIMER6_NODELABEL,
 #endif // Timer 6
 
 // Timer 7
-#if DT_NODE_HAS_STATUS(TIMER7_NODELABEL, okay)
+#if DT_NODE_HAS_STATUS(TIMER7_NODE, okay)
 
 struct stm32_timer_driver_data timer7_data =
 {
@@ -311,7 +311,7 @@ struct stm32_timer_driver_data timer7_data =
 	.timer_irq_callback = NULL
 };
 
-DEVICE_DT_DEFINE(TIMER7_NODELABEL,
+DEVICE_DT_DEFINE(TIMER7_NODE,
                  timer_stm32_init,
                  NULL,
                  &timer7_data,

@@ -48,6 +48,15 @@ extern "C" {
 #endif
 
 
+/////
+// Public devices names
+
+#define TIMER4_DEVICE DT_LABEL(DT_NODELABEL(timers4))
+#define TIMER6_DEVICE DT_LABEL(DT_NODELABEL(timers6))
+#define TIMER7_DEVICE DT_LABEL(DT_NODELABEL(timers7))
+
+
+/////
 // Configuration structure
 
 typedef void (*timer_callback_t)();
@@ -86,6 +95,8 @@ struct timer_config_t
 	pin_mode_t       timer_enc_pin_mode;
 };
 
+
+/////
 // API
 
 typedef void     (*timer_api_config)   (const struct device* dev, const struct timer_config_t* config);

@@ -232,7 +232,7 @@ static void dac_stm32_stop(const struct device* dev, uint8_t channel)
 // Device definitions
 
 // DAC 1
-#if DT_NODE_HAS_STATUS(DAC1_NODELABEL, okay)
+#if DT_NODE_HAS_STATUS(DAC1_NODE, okay)
 
 struct stm32_dac_driver_data dac1_data =
 {
@@ -241,7 +241,7 @@ struct stm32_dac_driver_data dac1_data =
 	.started    = {0, 0}
 };
 
-DEVICE_DT_DEFINE(DAC1_NODELABEL,
+DEVICE_DT_DEFINE(DAC1_NODE,
                  dac_stm32_init,
                  NULL,
                  &dac1_data,
@@ -254,7 +254,7 @@ DEVICE_DT_DEFINE(DAC1_NODELABEL,
 #endif // DAC 1
 
 // DAC 2
-#if DT_NODE_HAS_STATUS(DAC2_NODELABEL, okay)
+#if DT_NODE_HAS_STATUS(DAC2_NODE, okay)
 
 struct stm32_dac_driver_data dac2_data =
 {
@@ -263,7 +263,7 @@ struct stm32_dac_driver_data dac2_data =
 	.started    = {0, 0}
 };
 
-DEVICE_DT_DEFINE(DAC2_NODELABEL,
+DEVICE_DT_DEFINE(DAC2_NODE,
                  dac_stm32_init,
                  NULL,
                  &dac2_data,
@@ -276,7 +276,7 @@ DEVICE_DT_DEFINE(DAC2_NODELABEL,
 #endif // DAC 2
 
 // DAC 3
-#if DT_NODE_HAS_STATUS(DAC3_NODELABEL, okay)
+#if DT_NODE_HAS_STATUS(DAC3_NODE, okay)
 
 struct stm32_dac_driver_data dac3_data =
 {
@@ -285,7 +285,7 @@ struct stm32_dac_driver_data dac3_data =
 	.started    = {0, 0}
 };
 
-DEVICE_DT_DEFINE(DAC3_NODELABEL,
+DEVICE_DT_DEFINE(DAC3_NODE,
                  dac_stm32_init,
                  NULL,
                  &dac3_data,

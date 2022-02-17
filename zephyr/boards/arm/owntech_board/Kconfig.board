@@ -1,0 +1,5 @@
+# OwnTech board configuration
+
+config BOARD_OWNTECH_BOARD
+	bool "OwnTech Power Converter board"
+	depends on SOC_STM32G474XX

@@ -1,0 +1,12 @@
+# OwnTech board configuration
+
+if BOARD_OWNTECH_BOARD
+
+config BOARD
+	default "owntech_board"
+
+config SPI_STM32_INTERRUPT
+	default y
+	depends on SPI
+
+endif # BOARD_OWNTECH_BOARD

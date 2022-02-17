@@ -34,6 +34,15 @@ extern "C" {
 #endif
 
 
+/////
+// Public devices names
+
+#define DAC1_DEVICE DT_LABEL(DT_NODELABEL(dac1))
+#define DAC2_DEVICE DT_LABEL(DT_NODELABEL(dac2))
+#define DAC3_DEVICE DT_LABEL(DT_NODELABEL(dac3))
+
+
+/////
 // Configuration types
 
 typedef enum
@@ -60,6 +69,7 @@ typedef struct
 } dac_pin_config_t;
 
 
+/////
 // API
 
 typedef void (*dac_api_setconstvalue) (const struct device* dev, uint8_t channel, uint32_t value);
@@ -132,10 +142,6 @@ static inline void dac_stop(const struct device* dev, uint8_t channel)
 
 /////
 // Owntech-specific config
-
-#define DAC1_LABEL DT_PROP(DT_NODELABEL(dac1), label)
-#define DAC2_LABEL DT_PROP(DT_NODELABEL(dac2), label)
-#define DAC3_LABEL DT_PROP(DT_NODELABEL(dac3), label)
 
 void owntech_dac_dac2_constant_init();
 void owntech_dac_dac1_dac3_current_mode_init();

@@ -30,14 +30,16 @@
 // Public API
 #include "dac.h"
 
+
+#define DAC1_NODE DT_NODELABEL(dac1)
+#define DAC2_NODE DT_NODELABEL(dac2)
+#define DAC3_NODE DT_NODELABEL(dac3)
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
-#define DAC1_NODELABEL DT_NODELABEL(dac1)
-#define DAC2_NODELABEL DT_NODELABEL(dac2)
-#define DAC3_NODELABEL DT_NODELABEL(dac3)
 
 typedef enum
 {
