@@ -37,7 +37,7 @@
 #include <stdint.h>
 #include <limits.h>
 
-#include <pinmux/stm32/pinmux_stm32.h>
+#include <pinmux/pinmux_stm32.h>
 
 #include "hrtim.h"
 
@@ -336,7 +336,7 @@ typedef enum {
  * @param[inout] freq                        HRTIM frequency in Hz
  * @param[in] dt                             Desired dead time in ns
  * @param[in] leg1_upper_switch_convention   Choice of the switch convention for leg 1
- * @param[in] leg2_upper_switch_convention   Choice of the switch convention for leg 2 
+ * @param[in] leg2_upper_switch_convention   Choice of the switch convention for leg 2
  *
  * @return                  actual HRTIM resolution on success
  * @return                  0 on error

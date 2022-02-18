@@ -60,7 +60,7 @@ void ngnd_set(const struct device* dev, int value)
 {
 	struct owntech_ngnd_driver_dev_data* data = dev->data;
 
-	gpio_pin_set(data->ngnd_pin_spec.port, data->ngnd_pin_spec.pin, value);
+	gpio_pin_set_dt(&data->ngnd_pin_spec, value);
 }
 
 
