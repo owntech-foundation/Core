@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 LAAS-CNRS
+ * Copyright (c) 2021-2022 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,9 @@
  */
 
 /**
- * @author  Clément Foucher <clement.foucher@laas.fr>
+ * @date   2022
+ *
+ * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
 

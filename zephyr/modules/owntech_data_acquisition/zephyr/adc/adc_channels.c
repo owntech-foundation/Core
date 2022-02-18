@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 LAAS-CNRS
+ * Copyright (c) 2021-2022 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,10 +18,12 @@
  */
 
 /**
- * @brief   ADC driver for stm32g474re
+ * @date   2022
  *
- * @author  Hugues Larrive <hugues.larrive@laas.fr>
- * @author  Clément Foucher <clement.foucher@laas.fr>
+ * @author Hugues Larrive <hugues.larrive@laas.fr>
+ * @author Clément Foucher <clement.foucher@laas.fr>
+ *
+ * @brief  ADC driver for stm32g474re
  */
 
 
