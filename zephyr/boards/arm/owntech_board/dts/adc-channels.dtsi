@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2022 OwnTech.
+ *
+ * SPDX-License-Identifier: LGLPV2.1
+ */
+
 / {
 	mychannels: adc-inputs {
 		compatible = "adc-inputs";
@@ -68,13 +74,11 @@
 		};
 
 		/* Temperature channel */
-
-		/*
+/*
 		temp-sensor {
 			io-channels = <&adc3 1>;
 			label = "TEMP_SENSOR";
-		};
-		*/
+		};*/
 
 	};
 };

@@ -1,4 +1,10 @@
-/ {
+/*
+ * Copyright (c) 2022 OwnTech.
+ *
+ * SPDX-License-Identifier: LGLPV2.1
+ */
+
+ / {
 	soc {
 		hrtim1: timers@40016800 {
 			compatible = "st,stm32-timers";
@@ -18,55 +24,6 @@
 							&hrtim1_chd1_pb14 &hrtim1_chd2_pb15
 							&hrtim1_che1_pc8 &hrtim1_che2_pc9
 							&hrtim1_chf1_pc6 &hrtim1_chf2_pc7>;
-			};
-		};
-		pinctrl: pin-controller@48000000 {
-			hrtim1_cha1_pa8: hrtim1_cha1_pa8 {
-				pinmux = <STM32_PINMUX('A', 8, AF13)>;
-			};
-
-			hrtim1_cha2_pa9: hrtim1_cha2_pa9 {
-				pinmux = <STM32_PINMUX('A', 9, AF13)>;
-			};
-
-			hrtim1_chb1_pa10: hrtim1_chb1_pa10 {
-				pinmux = <STM32_PINMUX('A', 10, AF13)>;
-			};
-
-			hrtim1_chb2_pa11: hrtim1_chb2_pa11 {
-				pinmux = <STM32_PINMUX('A', 11, AF13)>;
-			};
-
-			hrtim1_chc1_pb12: hrtim1_chc1_pb12 {
-				pinmux = <STM32_PINMUX('B', 12, AF13)>;
-			};
-
-			hrtim1_chc2_pb13: hrtim1_chc2_pb13 {
-				pinmux = <STM32_PINMUX('B', 13, AF13)>;
-			};
-
-			hrtim1_chd1_pb14: hrtim1_chd1_pb14 {
-				pinmux = <STM32_PINMUX('B', 14, AF13)>;
-			};
-
-			hrtim1_chd2_pb15: hrtim1_chd2_pb15 {
-				pinmux = <STM32_PINMUX('B', 15, AF13)>;
-			};
-
-			hrtim1_che1_pc8: hrtim1_che1_pc8 {
-				pinmux = <STM32_PINMUX('C', 8, AF3)>;
-			};
-
-			hrtim1_che2_pc9: hrtim1_che2_pc9 {
-				pinmux = <STM32_PINMUX('C', 9, AF3)>;
-			};
-
-			hrtim1_chf1_pc6: hrtim1_chf1_pc6 {
-				pinmux = <STM32_PINMUX('C', 6, AF13)>;
-			};
-
-			hrtim1_chf2_pc7: hrtim1_chf2_pc7 {
-				pinmux = <STM32_PINMUX('C', 7, AF13)>;
 			};
 		};
 	};

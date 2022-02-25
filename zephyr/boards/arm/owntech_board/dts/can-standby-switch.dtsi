@@ -1,0 +1,16 @@
+/*
+ * Copyright (c) 2022 OwnTech.
+ *
+ * SPDX-License-Identifier: LGLPV2.1
+ */
+
+/ {
+	can-standby-switch {
+		compatible = "can-standby-switch";
+		label = "CAN_STANDBY";
+		can-standby-gpio-pin {
+			can-standby-gpios = <&gpiob 10 GPIO_ACTIVE_HIGH>;
+			label = "CAN Standby output";
+		};
+	};
+};
