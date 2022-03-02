@@ -1,0 +1,6 @@
+config OWNTECH_HARDWARE_CONFIGURATION
+	bool "Enable OwnTech hardware configuration module"
+	default y
+	depends on OWNTECH_DAC_DRIVER
+	depends on OWNTECH_NGND_DRIVER
+	depends on OWNTECH_TIMER_DRIVER

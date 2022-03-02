@@ -183,14 +183,21 @@ static void dac_stm32_function_update_step(const struct device* dev, uint8_t cha
 	}
 }
 
-static void dac_stm32_pin_configure(const struct device* dev, uint8_t channel, const dac_pin_config_t* pin_config)
+static void dac_stm32_pin_configure(const struct device* dev, uint8_t channel, dac_pin_config_t pin_config)
 {
 	struct stm32_dac_driver_data* data = (struct stm32_dac_driver_data*)dev->data;
 	DAC_TypeDef* dac_dev = data->dac_struct;
 
 	uint8_t dac_channel = __LL_DAC_DECIMAL_NB_TO_CHANNEL(channel);
 
-	LL_DAC_ConfigOutput(dac_dev, dac_channel, LL_DAC_OUTPUT_MODE_NORMAL, pin_config->pin_buffer_enable, pin_config->pin_connect);
+	if (pin_config == dac_pin_internal)
+	{
+		LL_DAC_ConfigOutput(dac_dev, dac_channel, LL_DAC_OUTPUT_MODE_NORMAL, LL_DAC_OUTPUT_BUFFER_DISABLE, LL_DAC_OUTPUT_CONNECT_INTERNAL);
+	}
+	else if (pin_config == dac_pin_external)
+	{
+		LL_DAC_ConfigOutput(dac_dev, dac_channel, LL_DAC_OUTPUT_MODE_NORMAL, LL_DAC_OUTPUT_BUFFER_ENABLE, LL_DAC_OUTPUT_CONNECT_GPIO);
+	}
 }
 
 static void dac_stm32_start(const struct device* dev, uint8_t channel)

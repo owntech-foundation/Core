@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 LAAS-CNRS
+ * Copyright (c) 2022 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,36 +18,32 @@
  */
 
 /**
- * @author  Clément Foucher <clement.foucher@laas.fr>
+ * @date   2022
+ * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
 
-// Zephyr
-#include <zephyr.h>
-#include <device.h>
+#include "ngnd.h"
 
-// STM32 LL
-#include "stm32_ll_bus.h"
-#include "stm32_ll_system.h"
+static const struct device* ngnd_switch = nullptr;
 
 
-static int vrefbuf_init(const struct device* dev)
+void ngnd_config_on()
 {
-	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SYSCFG);
-	LL_VREFBUF_SetVoltageScaling(LL_VREFBUF_VOLTAGE_SCALE0);
-	LL_VREFBUF_DisableHIZ();
-	LL_VREFBUF_Enable();
+	if (ngnd_switch == NULL)
+	{
+		ngnd_switch = device_get_binding(NGND_DEVICE);
+	}
 
-	return 0;
+	ngnd_set(ngnd_switch, 1);
 }
 
-DEVICE_DEFINE(vrefbuf_driver,
-              "vrefbuf_driver",
-              vrefbuf_init,
-              NULL,
-              NULL,
-              NULL,
-              PRE_KERNEL_1,
-              CONFIG_KERNEL_INIT_PRIORITY_DEVICE,
-              NULL
-             );
+void ngnd_config_off()
+{
+	if (ngnd_switch == NULL)
+	{
+		ngnd_switch = device_get_binding(NGND_DEVICE);
+	}
+
+	ngnd_set(ngnd_switch, 0);
+}

@@ -6,6 +6,5 @@ if(CONFIG_OWNTECH_DAC_DRIVER)
   # Select source files to be compiled
   zephyr_library_sources(
     ./src/stm32_dac_driver.c
-    ./src/owntech_dac_configure.c
     )
 endif()

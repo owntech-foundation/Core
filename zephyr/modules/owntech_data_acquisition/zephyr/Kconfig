@@ -1,5 +1,5 @@
-
 config OWNTECH_DATA_ACQUISITION
 	bool "Enable OwnTech data acquisition using ADCs"
 	default y
 	select DMA
+	depends on !ADC

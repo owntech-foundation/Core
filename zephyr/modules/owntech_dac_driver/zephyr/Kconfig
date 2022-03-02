@@ -1,3 +1,4 @@
 config OWNTECH_DAC_DRIVER
 	bool "Enable OwnTech DAC driver"
 	default y
+	depends on !DAC

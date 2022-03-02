@@ -64,10 +64,10 @@ typedef struct
 	uint32_t       step_data;
 } dac_function_config_t;
 
-typedef struct
+typedef enum
 {
-	uint32_t pin_connect;
-	uint32_t pin_buffer_enable;
+	dac_pin_internal,
+	dac_pin_external
 } dac_pin_config_t;
 
 
@@ -78,7 +78,7 @@ typedef void (*dac_api_setconstvalue) (const struct device* dev, uint8_t channel
 typedef void (*dac_api_setfunction)   (const struct device* dev, uint8_t channel, const dac_function_config_t* config);
 typedef void (*dac_api_fn_upd_reset)  (const struct device* dev, uint8_t channel, uint32_t reset_data);
 typedef void (*dac_api_fn_upd_step)   (const struct device* dev, uint8_t channel, uint32_t step_data);
-typedef void (*dac_api_pinconfigure)  (const struct device* dev, uint8_t channel, const dac_pin_config_t* config);
+typedef void (*dac_api_pinconfigure)  (const struct device* dev, uint8_t channel, dac_pin_config_t config);
 typedef void (*dac_api_start)         (const struct device* dev, uint8_t channel);
 typedef void (*dac_api_stop)          (const struct device* dev, uint8_t channel);
 
@@ -121,7 +121,7 @@ static inline void dac_function_update_step(const struct device* dev, uint8_t ch
 	api->fn_upd_step(dev, channel, step_data);
 }
 
-static inline void dac_pin_configure(const struct device* dev, uint8_t channel, const dac_pin_config_t* pin_config)
+static inline void dac_pin_configure(const struct device* dev, uint8_t channel, dac_pin_config_t pin_config)
 {
 	const struct dac_driver_api* api = (const struct dac_driver_api*)(dev->api);
 
@@ -145,7 +145,6 @@ static inline void dac_stop(const struct device* dev, uint8_t channel)
 /////
 // Owntech-specific config
 
-void owntech_dac_dac2_constant_init();
 void owntech_dac_dac1_dac3_current_mode_init();
 
 

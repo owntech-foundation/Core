@@ -1,4 +1,4 @@
-name: owntech_vrefbuf_driver
+name: owntech_hardware_configuration
 build:
   cmake: zephyr
   kconfig: zephyr/Kconfig

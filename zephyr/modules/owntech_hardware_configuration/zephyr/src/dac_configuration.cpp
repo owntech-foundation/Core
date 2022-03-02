@@ -19,7 +19,6 @@
 
 /**
  * @date   2022
- *
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
@@ -34,24 +33,8 @@
 #include "dac.h"
 
 
-// TODO: this function must *always* be run.
-// Write a driver to load on startup without user action?
-void owntech_dac_dac2_constant_init()
-{
-	const struct device* dac2 = device_get_binding(DAC2_DEVICE);
 
-	dac_pin_config_t pin_config =
-	{
-		.pin_connect       = LL_DAC_OUTPUT_CONNECT_GPIO,
-		.pin_buffer_enable = LL_DAC_OUTPUT_BUFFER_ENABLE
-	};
-
-	dac_set_const_value(dac2, 1, 2048U);
-	dac_pin_configure(dac2, 1, &pin_config);
-	dac_start(dac2, 1);
-}
-
-void owntech_dac_dac1_dac3_current_mode_init()
+void dac_config_dac1_dac3_current_mode_init()
 {
 	const struct device* dac1 = device_get_binding(DAC1_DEVICE);
 	const struct device* dac3 = device_get_binding(DAC3_DEVICE);
@@ -66,15 +49,9 @@ void owntech_dac_dac1_dac3_current_mode_init()
 		.step_data = 200
 	};
 
-	dac_pin_config_t pin_config =
-	{
-		.pin_connect       = LL_DAC_OUTPUT_CONNECT_INTERNAL,
-		.pin_buffer_enable = LL_DAC_OUTPUT_BUFFER_DISABLE
-	};
-
 	// DAC 1
 	dac_set_function(dac1, 1, &function_config);
-	dac_pin_configure(dac1, 1, &pin_config);
+	dac_pin_configure(dac1, 1, dac_pin_internal);
 	dac_start(dac1, 1);
 
 	// DAC 3
@@ -82,6 +59,6 @@ void owntech_dac_dac1_dac3_current_mode_init()
 	function_config.step_trigger_source = LL_DAC_TRIG_EXT_HRTIM_STEP_TRG2;
 
 	dac_set_function(dac3, 1, &function_config);
-	dac_pin_configure(dac3, 1, &pin_config);
+	dac_pin_configure(dac3, 1, dac_pin_internal);
 	dac_start(dac3, 1);
 }

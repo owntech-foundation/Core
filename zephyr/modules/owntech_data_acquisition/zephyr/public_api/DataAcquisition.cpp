@@ -27,6 +27,9 @@
 // Stdlib
 #include <string.h>
 
+// STM32 LL
+#include <stm32g4xx_ll_adc.h>
+
 // OwnTech Power API
 #include "../adc/adc.h"
 #include "../dma/dma.h"
@@ -67,8 +70,14 @@ void DataAcquisition::initialize()
 {
 	if (initialized == 0)
 	{
+		// Initialize the ADCs
 		adc_init();
 		initialized = 1;
+
+		// Perform default configration
+		configureAdcTriggerSource(1, hrtim1);
+		configureAdcTriggerSource(2, hrtim1);
+		configureAdcTriggerSource(3, software);
 	}
 }
 
@@ -115,7 +124,7 @@ void  DataAcquisition::setChannnelAssignment(uint8_t adc_number, const char* cha
 /////
 // Public static configuration functions
 
-int8_t DataAcquisition::setAdc12DualMode(uint8_t dual_mode)
+int8_t DataAcquisition::configureAdc12DualMode(uint8_t dual_mode)
 {
 	/////
 	// Guard
@@ -179,7 +188,7 @@ int8_t DataAcquisition::configureAdcChannels(uint8_t adc_number, const char* cha
 	return NOERROR;
 }
 
-int8_t DataAcquisition::configureAdcTriggerSource(uint8_t adc_number, uint32_t trigger_source)
+int8_t DataAcquisition::configureAdcTriggerSource(uint8_t adc_number, adc_src_t trigger_source)
 {
 	/////
 	// Guard
@@ -199,12 +208,55 @@ int8_t DataAcquisition::configureAdcTriggerSource(uint8_t adc_number, uint32_t t
 
 	/////
 	// Proceed
+	uint32_t trig;
+	switch (trigger_source)
+	{
+	case hrtim1:
+		trig = LL_ADC_REG_TRIG_EXT_HRTIM_TRG1;
+		break;
+	case software:
+	default:
+		trig = LL_ADC_REG_TRIG_SOFTWARE;
+		break;
+	}
 
-	adc_configure_trigger_source(adc_number, trigger_source);
+	adc_configure_trigger_source(adc_number, trig);
 
 	return NOERROR;
 }
 
+int8_t DataAcquisition::configureAdcDefaultAllMeasurements()
+{
+	uint8_t init_status;
+
+	uint8_t number_of_channels_adc1 = 3;
+	uint8_t number_of_channels_adc2 = 3;
+
+	const char* adc1_channels[] =
+	{
+		"V1_LOW",
+		"V2_LOW",
+		"V_HIGH"
+	};
+
+	const char* adc2_channels[] =
+	{
+		"I1_LOW",
+		"I2_LOW",
+		"I_HIGH"
+	};
+
+	init_status = dataAcquisition.configureAdcChannels(1, adc1_channels, number_of_channels_adc1);
+
+	if (init_status != NOERROR)
+	{
+		return init_status;
+	}
+
+	init_status = dataAcquisition.configureAdcChannels(2, adc2_channels, number_of_channels_adc2);
+
+	return NOERROR;
+}
 
 int8_t DataAcquisition::start()
 {

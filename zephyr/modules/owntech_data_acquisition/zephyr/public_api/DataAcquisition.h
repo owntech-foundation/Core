@@ -35,6 +35,15 @@
 
 
 /////
+// Public enums
+typedef enum
+{
+	hrtim1,
+	software
+} adc_src_t;
+
+
+/////
 // Static class definition
 
 class DataAcquisition
@@ -56,21 +65,23 @@ public:
 
 	/**
 	 * Use this function to set ADC 1 and ADC 2 in dual mode.
+	 * By default, ADC 1 and 2 are not in dual mode.
 	 *
-	 * This function must be called BEFORE DataAcquisition::start().
+	 * This function must be called BEFORE dataAcquisition.start().
 	 *
-	 * @param  dual_mode Status of the dual mode: true to enable,
-	 *         false to disable. false by default.
+	 * @param  dual_mode Status of the dual mode:
+	 *         true to enable,
+	 *         false to disable.
 	 * @return 0 is everything went well,
 	 *         EALREADYSTARTED if the module has already been started.
 	 */
-	static int8_t setAdc12DualMode(uint8_t dual_mode);
+	static int8_t configureAdc12DualMode(uint8_t dual_mode);
 
 	/**
 	 * This function is used to configure the channels to be
 	 * enabled on a given ADC.
 	 *
-	 * This function must be called BEFORE DataAcquisition::start().
+	 * This function must be called BEFORE dataAcquisition.start().
 	 *
 	 * @param  adc_number Number of the ADC on which channel configuration is
 	 *         to be done.
@@ -88,19 +99,32 @@ public:
 	static int8_t configureAdcChannels(uint8_t adc_number, const char* channel_list[], uint8_t channel_count);
 
 	/**
-	 * This function is used to configure the trigger source of an ADC.
+	 * This function is used to change the trigger source of an ADC.
+	 * By default, triggger source for ADC 1 and ADC 2 is on HRTIM1,
+	 * and ADC 3 is software-triggered.
 	 *
-	 * This function must be called BEFORE DataAcquisition::start().
-	 *
-	 * TODO: Use an enumeration instead of LL constants for source.
+	 * This function must be called BEFORE dataAcquisition.start().
 	 *
 	 * @param  adc_number Number of the ADC to configure
-	 * @param  trigger_source Source of the trigger as defined
-	 *         in stm32gxx_ll_adc.h (LL_ADC_REG_TRIG_***)
+	 * @param  trigger_source Source of the trigger
 	 * @return 0 is everything went well,
 	 *         EALREADYSTARTED if the module has already been started.
 	 */
-	static int8_t configureAdcTriggerSource(uint8_t adc_number, uint32_t trigger_source);
+	static int8_t configureAdcTriggerSource(uint8_t adc_number, adc_src_t trigger_source);
+
+	/**
+	 * This function is used to configure all ADC channels in default configuration.
+	 * Channels will be attributed as follows:
+ 	 * ADC1 -   V1_LOW      ADC2 -  I1_LOW
+ 	 *          V2_LOW              I2_LOW
+ 	 *          V_HIGH              I_HIGH
+	 *
+	 * This function must be called BEFORE dataAcquisition.start().
+	 *
+	 * @return 0 is everything went well,
+	 *         EALREADYSTARTED if the module has already been started.
+	 */
+	static int8_t configureAdcDefaultAllMeasurements();
 
 	/**
 	 * This functions starts the acquisition chain. It must be called

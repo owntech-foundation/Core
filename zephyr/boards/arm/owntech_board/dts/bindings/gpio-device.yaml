@@ -1,11 +1,11 @@
-description: CAN Standby Switch
+description: GPIO-controllable device
 
-compatible: "can-standby-switch"
+compatible: "gpio-device"
 
 child-binding:
-  description: CAN Stanby GPIO node
+  description: GPIO node
   properties:
-    can-standby-gpios:
+    gpios:
       type: phandle-array
       required: true
     label:
