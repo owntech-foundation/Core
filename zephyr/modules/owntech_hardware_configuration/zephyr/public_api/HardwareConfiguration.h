@@ -28,6 +28,19 @@
 
 
 #include <stdint.h>
+#include <arm_math.h>
+
+
+/** Hardware version. See
+ *  https://gitlab.laas.fr/owntech/1leg/-/wikis/Releases
+ *  for the list and specificities of versions.
+ */
+typedef enum
+{
+    v_0_0, // No power converter attached, the software is running on Nucleo G474RE
+    v_0_9,
+    v_1_1_2
+} hardware_version_t;
 
 
 /////
@@ -37,6 +50,9 @@ class HardwareConfiguration
 {
 
 public:
+	// Common
+	void setBoardVersion(hardware_version_t hardware_version);
+
 	// DAC
 	void initDac1Dac3CurrentMode();
 
@@ -52,6 +68,33 @@ public:
 	// Incremental encoder
 	void startLoggingIncrementalEncoder();
 	uint32_t getIncrementalEncoderValue();
+
+	// Power converter
+	void initInterleavedBuckMode();
+	void initInterleavedBoostMode();
+	void initFullBridgeBuckMode();
+	void initFullBridgeBoostMode();
+	void initIndependentMode(bool leg1_buck_mode, bool leg2_buck_mode);
+
+	void setInterleavedDutyCycle(float32_t duty_cycle);
+	void setFullBridgeDutyCycle(float32_t duty_cycle);
+	void setLeg1DutyCycle(float32_t duty_cycle);
+	void setLeg2DutyCycle(float32_t duty_cycle);
+
+	void setInterleavedOn();
+	void setFullBridgeOn();
+	void setLeg1On();
+	void setLeg2On();
+
+	void setInterleavedOff();
+	void setFullBridgeOff();
+	void setLeg1Off();
+	void setLeg2Off();
+
+	// Extra UART
+	void extraUartInit();
+	char extraUartReadChar();
+	void extraUartWriteChar(char data);
 
 };
 

@@ -142,11 +142,6 @@ static inline void dac_stop(const struct device* dev, uint8_t channel)
 	api->stop(dev, channel);
 }
 
-/////
-// Owntech-specific config
-
-void owntech_dac_dac1_dac3_current_mode_init();
-
 
 #ifdef __cplusplus
 }

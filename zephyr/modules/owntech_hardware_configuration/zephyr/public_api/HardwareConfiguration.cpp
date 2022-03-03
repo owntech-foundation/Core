@@ -28,6 +28,8 @@
 #include "../src/ngnd_configuration.h"
 #include "../src/led_configuration.h"
 #include "../src/timer_configuration.h"
+#include "../src/hrtim_configuration.h"
+#include "../src/uart_configuration.h"
 
 // Current class header
 #include "HardwareConfiguration.h"
@@ -41,6 +43,24 @@ HardwareConfiguration hwConfig;
 
 /////
 // Public static configuration functions
+
+
+/////
+// Common
+
+/**
+ * @brief Sets the version of the underlying hardware.
+ *        Depending on the hardware version, some software
+ *        configuration, such as pinout, has to be tweaked.
+ * @param hardware_version Enum representing the hardware version.
+ */
+void HardwareConfiguration::setBoardVersion(hardware_version_t hardware_version)
+{
+	if (hardware_version == v_1_1_2)
+	{
+		uart_lpuart1_swap_rx_tx();
+	}
+}
 
 
 /////
@@ -65,6 +85,7 @@ void HardwareConfiguration::setNgndOff()
 	ngnd_config_off();
 }
 
+
 /////
 // LED
 
@@ -83,6 +104,8 @@ void HardwareConfiguration::setLedToggle()
 	led_config_toggle();
 }
 
+
+/////
 // Incremental encoder
 
 void HardwareConfiguration::startLoggingIncrementalEncoder()
@@ -93,4 +116,112 @@ void HardwareConfiguration::startLoggingIncrementalEncoder()
 uint32_t HardwareConfiguration::getIncrementalEncoderValue()
 {
 	return timer_incremental_encoder_tim4_get_step();
+}
+
+
+/////
+// Power converter
+
+void HardwareConfiguration::initInterleavedBuckMode()
+{
+	hrtim_init_interleaved_buck_mode();
+}
+
+void HardwareConfiguration::initInterleavedBoostMode()
+{
+	hrtim_init_interleaved_boost_mode();
+}
+
+void HardwareConfiguration::initFullBridgeBuckMode()
+{
+	hrtim_init_interleaved_buck_mode();
+}
+
+void HardwareConfiguration::initFullBridgeBoostMode()
+{
+	hrtim_init_interleaved_boost_mode();
+}
+
+void HardwareConfiguration::initIndependentMode(bool leg1_buck_mode, bool leg2_buck_mode)
+{
+	hrtim_init_independent_mode(leg1_buck_mode, leg2_buck_mode);
+}
+
+void HardwareConfiguration::setInterleavedDutyCycle(float32_t duty_cycle)
+{
+	hrtim_interleaved_pwm_update(duty_cycle);
+}
+
+void HardwareConfiguration::setFullBridgeDutyCycle(float32_t duty_cycle)
+{
+	hrtim_hbridge_pwm_update(duty_cycle);
+}
+
+void HardwareConfiguration::setLeg1DutyCycle(float32_t duty_cycle)
+{
+	hrtim_leg1_pwm_update(duty_cycle);
+}
+
+void HardwareConfiguration::setLeg2DutyCycle(float32_t duty_cycle)
+{
+	hrtim_leg2_pwm_update(duty_cycle);
+}
+
+void HardwareConfiguration::setInterleavedOn()
+{
+	hrtim_start_interleaved();
+}
+
+void HardwareConfiguration::setFullBridgeOn()
+{
+	hrtim_start_interleaved();
+}
+
+void HardwareConfiguration::setLeg1On()
+{
+	hrtim_start_leg1();
+}
+
+void HardwareConfiguration::setLeg2On()
+{
+	hrtim_start_leg2();
+}
+
+void HardwareConfiguration::setInterleavedOff()
+{
+	hrtim_stop_interleaved();
+}
+
+void HardwareConfiguration::setFullBridgeOff()
+{
+	hrtim_stop_interleaved();
+}
+
+void HardwareConfiguration::setLeg1Off()
+{
+	hrtim_stop_leg1();
+}
+
+void HardwareConfiguration::setLeg2Off()
+{
+	hrtim_stop_leg2();
+}
+
+
+/////
+// Extra UART
+
+void HardwareConfiguration::extraUartInit()
+{
+	uart_usart1_init();
+}
+
+char HardwareConfiguration::extraUartReadChar()
+{
+	return uart_usart1_get_data();
+}
+
+void HardwareConfiguration::extraUartWriteChar(char data)
+{
+	uart_usart1_write_single(data);
 }

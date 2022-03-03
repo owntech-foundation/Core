@@ -5,11 +5,11 @@ compatible: "hrtim"
 include: base.yaml
 
 properties:
-    pinctrl-0:
-        type: phandles
-        required: false
-        description: |
-            GPIO pin configuration for HRTIM outputs. We expect that the
-            phandles will reference pinctrl nodes, e.g.
+  pinctrl-0:
+    type: phandles
+    required: false
+    description: |
+      GPIO pin configuration for HRTIM outputs.
+      The phandles have to reference pinctrl nodes, e.g.
 
-            pinctrl-0 = <&hrtim1_cha1_pa8 &hrtim1_cha2_pa9>;
+      pinctrl-0 = <&hrtim1_cha1_pa8 &hrtim1_cha2_pa9>;

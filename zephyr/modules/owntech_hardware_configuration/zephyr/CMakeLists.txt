@@ -12,6 +12,8 @@ if(CONFIG_OWNTECH_HARDWARE_CONFIGURATION)
 	src/ngnd_configuration.cpp
 	src/led_configuration.cpp
 	src/timer_configuration.cpp
+	src/hrtim_configuration.cpp
+	src/uart_configuration.cpp
 	public_api/HardwareConfiguration.cpp
     )
 endif()
