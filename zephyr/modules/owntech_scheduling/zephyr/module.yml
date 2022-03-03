@@ -1,0 +1,4 @@
+name: owntech_scheduling
+build:
+  cmake: zephyr
+  kconfig: zephyr/Kconfig

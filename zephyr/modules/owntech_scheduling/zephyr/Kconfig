@@ -1,0 +1,4 @@
+config OWNTECH_SCHEDULING
+	bool "Enable OwnTech sceduling"
+	default y
+	depends on OWNTECH_TIMER_DRIVER
