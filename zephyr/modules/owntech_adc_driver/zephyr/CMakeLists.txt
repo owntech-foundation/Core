@@ -1,4 +1,4 @@
-if(CONFIG_OWNTECH_DATA_ACQUISITION)
+if(CONFIG_OWNTECH_ADC_DRIVER)
   # Select directory to add to the include path
   zephyr_include_directories(./public_api)
 
@@ -7,9 +7,9 @@ if(CONFIG_OWNTECH_DATA_ACQUISITION)
 
   # Select source files to be compiled
   zephyr_library_sources(
-    ./dma/dma.c
-    ./data_dispatch/data_dispatch.c
-	./data_conversion/data_conversion.c
-    ./public_api/DataAcquisition.cpp
-   )
+    ./src/adc_channels.c
+    ./src/adc_core.c
+    ./src/adc_helper.c
+    ./public_api/adc.c
+    )
 endif()

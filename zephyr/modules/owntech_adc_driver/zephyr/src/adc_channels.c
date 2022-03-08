@@ -40,7 +40,7 @@
 
 // OwnTech API
 #include "adc_helper.h"
-#include "data_acquisition_error_codes.h"
+#include "adc_error_codes.h"
 
 
 /////

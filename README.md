@@ -25,20 +25,19 @@ The hierarchy of the project is as follows:
 
 ```
 owntech_power_api
-└─ boards
-|  └─ nucleo_g474re.json
 └─ src
 |  └─ main.cpp
 |  └─ owntech.ini
 └─ zephyr
-|  └─ dts
+|  └─ boards
 |  └─ modules
 |  └─ [...]
 └─ LICENSE
+└─ README.md
 └─ [...]
 ```
 
-You will want to work in the `src` folder, other folders and files are used to configure the underlying Zephyr OS.
+You will want to work in the `src` folder, other folders and files are used to configure the underlying Zephyr OS and PlatformIO.
 Power users may want to tweak them too. Is so, please checkout the [Zephyr documentation](https://docs.zephyrproject.org/latest/).
 
 In the `src` folder, the file `main.cpp` is the entry point of the application.
@@ -50,3 +49,4 @@ The file `owntech.ini` is used to configure the Power API Libraries you want to 
 To enable a Power API Library, edit the `src/owntech.ini` file.
 In this file, you'll find various commented libraries references.
 Simply uncomment a line to enable the corresponding library.
+You can also add any PlatformIO library in this file.

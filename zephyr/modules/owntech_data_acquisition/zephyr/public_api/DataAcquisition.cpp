@@ -19,6 +19,7 @@
 
 /**
  * @date   2022
+ *
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
  */
@@ -27,15 +28,11 @@
 // Stdlib
 #include <string.h>
 
-// STM32 LL
-#include <stm32g4xx_ll_adc.h>
-
 // OwnTech Power API
-#include "../adc/adc.h"
+#include "adc.h"
 #include "../dma/dma.h"
 #include "../data_dispatch/data_dispatch.h"
 #include "../data_conversion/data_conversion.h"
-#include "data_acquisition_error_codes.h"
 
 // Current class header
 #include "DataAcquisition.h"
@@ -50,10 +47,6 @@ DataAcquisition dataAcquisition;
 /////
 // Initialize static members
 
-uint8_t DataAcquisition::initialized         = 0;
-uint8_t DataAcquisition::channels_configured = 0;
-uint8_t DataAcquisition::started             = 0;
-
 DataAcquisition::channel_assignment_t DataAcquisition::v1_low_assignement      = {0};
 DataAcquisition::channel_assignment_t DataAcquisition::v2_low_assignement      = {0};
 DataAcquisition::channel_assignment_t DataAcquisition::v_high_assignement      = {0};
@@ -64,22 +57,7 @@ DataAcquisition::channel_assignment_t DataAcquisition::temp_sensor_assignement =
 
 
 /////
-// Private members
-
-void DataAcquisition::initialize()
-{
-	if (initialized == 0)
-	{
-		// Initialize the ADCs
-		adc_init();
-		initialized = 1;
-
-		// Perform default configration
-		configureAdcTriggerSource(1, hrtim1);
-		configureAdcTriggerSource(2, hrtim1);
-		configureAdcTriggerSource(3, software);
-	}
-}
+// Public static configuration functions
 
 void  DataAcquisition::setChannnelAssignment(uint8_t adc_number, const char* channel_name, uint8_t channel_rank)
 {
@@ -120,183 +98,44 @@ void  DataAcquisition::setChannnelAssignment(uint8_t adc_number, const char* cha
 	}
 }
 
-
-/////
-// Public static configuration functions
-
-int8_t DataAcquisition::configureAdc12DualMode(uint8_t dual_mode)
+void DataAcquisition::start()
 {
-	/////
-	// Guard
+	uint8_t number_of_adcs = 2;
 
-	if (started == 1)
+	for (uint8_t adc_num = 1 ; adc_num <= number_of_adcs ; adc_num++)
 	{
-		return EALREADYSTARTED;
+		uint8_t channel_rank = 0;
+
+		while (1)
+		{
+			const char* channel_name = adc_get_channel_name(adc_num, channel_rank);
+
+			if (channel_name != NULL)
+			{
+				setChannnelAssignment(adc_num, channel_name, channel_rank);
+				channel_rank++;
+			}
+			else
+			{
+				break;
+			}
+		}
+
 	}
-
-	/////
-	// Make sure module is initialized
-
-	if (initialized == 0)
-	{
-		initialize();
-	}
-
-	/////
-	// Proceed
-
-	adc_set_dual_mode(dual_mode);
-
-	return NOERROR;
-}
-
-int8_t DataAcquisition::configureAdcChannels(uint8_t adc_number, const char* channel_list[], uint8_t channel_count)
-{
-	/////
-	// Guard
-
-	if (started == 1)
-	{
-		return EALREADYSTARTED;
-	}
-
-	/////
-	// Make sure module is initialized
-
-	if (initialized == 0)
-	{
-		initialize();
-	}
-
-	/////
-	// Proceed
-
-	int8_t result = adc_configure_adc_channels(adc_number, channel_list, channel_count);
-
-	if (result != 0)
-	{
-		return result;
-	}
-
-	for (int rank = 0 ; rank < channel_count ; rank++)
-	{
-		setChannnelAssignment(adc_number, channel_list[rank], rank);
-	}
-
-	channels_configured = 1;
-
-	return NOERROR;
-}
-
-int8_t DataAcquisition::configureAdcTriggerSource(uint8_t adc_number, adc_src_t trigger_source)
-{
-	/////
-	// Guard
-
-	if (started == 1)
-	{
-		return EALREADYSTARTED;
-	}
-
-	/////
-	// Make sure module is initialized
-
-	if (initialized == 0)
-	{
-		initialize();
-	}
-
-	/////
-	// Proceed
-	uint32_t trig;
-	switch (trigger_source)
-	{
-	case hrtim1:
-		trig = LL_ADC_REG_TRIG_EXT_HRTIM_TRG1;
-		break;
-	case software:
-	default:
-		trig = LL_ADC_REG_TRIG_SOFTWARE;
-		break;
-	}
-
-	adc_configure_trigger_source(adc_number, trig);
-
-	return NOERROR;
-}
-
-int8_t DataAcquisition::configureAdcDefaultAllMeasurements()
-{
-	uint8_t init_status;
-
-	uint8_t number_of_channels_adc1 = 3;
-	uint8_t number_of_channels_adc2 = 3;
-
-	const char* adc1_channels[] =
-	{
-		"V1_LOW",
-		"V2_LOW",
-		"V_HIGH"
-	};
-
-	const char* adc2_channels[] =
-	{
-		"I1_LOW",
-		"I2_LOW",
-		"I_HIGH"
-	};
-
-	init_status = dataAcquisition.configureAdcChannels(1, adc1_channels, number_of_channels_adc1);
-
-	if (init_status != NOERROR)
-	{
-		return init_status;
-	}
-
-	init_status = dataAcquisition.configureAdcChannels(2, adc2_channels, number_of_channels_adc2);
-
-	return NOERROR;
-}
-
-int8_t DataAcquisition::start()
-{
-	/////
-	// Guards
-
-	if (channels_configured == 0)
-	{
-		return ECHANUNCONF;
-	}
-	else if (started == 1)
-	{
-		return EALREADYSTARTED;
-	}
-
-	/////
-	// Proceed
 
 	// DMAs
-	dma_configure_and_start(2);
+	dma_configure_and_start(number_of_adcs);
 
 	// Initialize data dispatch
-	data_dispatch_init(2);
+	data_dispatch_init(number_of_adcs);
 
 	// Launch ADC conversion
 	adc_start();
-
-	started = 1;
-
-	return NOERROR;
 }
 
 
 /////
 // Public static accessors
-
-const char* DataAcquisition::getChannelName(uint8_t adc_number, uint8_t channel_rank)
-{
-	return adc_get_channel_name(adc_number, channel_rank);
-}
 
 uint16_t* DataAcquisition::getV1LowRawValues(uint32_t& number_of_values_acquired)
 {

@@ -30,6 +30,7 @@
 #include "../src/timer_configuration.h"
 #include "../src/hrtim_configuration.h"
 #include "../src/uart_configuration.h"
+#include "../src/adc_configuration.h"
 
 // Current class header
 #include "HardwareConfiguration.h"
@@ -224,4 +225,28 @@ char HardwareConfiguration::extraUartReadChar()
 void HardwareConfiguration::extraUartWriteChar(char data)
 {
 	uart_usart1_write_single(data);
+}
+
+
+/////
+// ADC
+
+void HardwareConfiguration::configureAdc12DualMode(uint8_t dual_mode)
+{
+	configure_adc12_dual_mode(dual_mode);
+}
+
+int8_t HardwareConfiguration::configureAdcChannels(uint8_t adc_number, const char* channel_list[], uint8_t channel_count)
+{
+	return configure_adc_channels(adc_number, channel_list, channel_count);
+}
+
+void HardwareConfiguration::configureAdcTriggerSource(uint8_t adc_number, adc_src_t trigger_source)
+{
+	configure_adc_trigger_source(adc_number, trigger_source);
+}
+
+void HardwareConfiguration::configureAdcDefaultAllMeasurements()
+{
+	configure_adc_default_all_measurements();
 }

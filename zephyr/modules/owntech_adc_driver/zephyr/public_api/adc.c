@@ -24,15 +24,15 @@
  */
 
 
-// Stdlib
-#include <stdint.h>
-
 // STM32 LL
 #include <stm32g4xx_ll_adc.h>
 
 // OwnTech API
-#include "adc_channels.h"
-#include "adc_core.h"
+#include "../src/adc_channels.h"
+#include "../src/adc_core.h"
+
+// Current file header
+#include "adc.h"
 
 
 /////
@@ -81,7 +81,9 @@ void adc_start()
 	for (uint8_t i = 0 ; i < 3 ; i++)
 	{
 		if (enabled_channels_count[i] > 0)
+		{
 			adc_core_enable(i+1);
+		}
 	}
 
 	/////
@@ -89,7 +91,9 @@ void adc_start()
 	for (uint8_t i = 0 ; i < 3 ; i++)
 	{
 		if (enabled_channels_count[i] > 0)
+		{
 			adc_channels_configure(i+1);
+		}
 	}
 
 	/////
@@ -97,13 +101,17 @@ void adc_start()
 	for (uint8_t i = 0 ; i < 3 ; i++)
 	{
 		if (enabled_channels_count[i] > 0)
+		{
 			adc_core_configure_dma_mode(i+1);
+		}
 	}
 
 	for (uint8_t i = 0 ; i < 3 ; i++)
 	{
 		if ( (enabled_channels_count[i] > 0) && (adc_trigger_sources[i] != 0) )
+		{
 			adc_core_configure_trigger_source(i+1, LL_ADC_REG_TRIG_EXT_RISING, adc_trigger_sources[i]);
+		}
 	}
 
 	/////
@@ -111,11 +119,18 @@ void adc_start()
 	for (uint8_t i = 0 ; i < 3 ; i++)
 	{
 		if (enabled_channels_count[i] > 0)
+		{
 			adc_core_start(i+1);
+		}
 	}
 }
 
 const char* adc_get_channel_name(uint8_t adc_number, uint8_t channel_rank)
 {
 	return adc_channels_get_channel_name(adc_number, channel_rank);
+}
+
+uint8_t adc_get_enabled_channels_count(uint8_t adc_num)
+{
+	return adc_channels_get_enabled_channels_count(adc_num);
 }

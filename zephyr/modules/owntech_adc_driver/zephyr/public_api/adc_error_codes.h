@@ -30,8 +30,6 @@
 #define NOERROR          0
 
 #define ECHANNOTFOUND   -1
-#define EALREADYSTARTED -2
-#define ECHANUNCONF     -3
 
 
 #endif // DATAACQUISITONERRORCODES_H_

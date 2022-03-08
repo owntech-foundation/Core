@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 LAAS-CNRS
+ * Copyright (c) 2021-2022 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,6 +18,10 @@
  */
 
 /**
+ * @date   2022
+ *
+ * @author Clément Foucher <clement.foucher@laas.fr>
+ *
  * @brief  DMA configuration for OwnTech application.
  * One DMA channel is assigned per ADC. For each ADC, the DMA
  * has a buffer sized 2*(number of enabled channels in ADC),
@@ -26,8 +30,6 @@
  * is available to data dispatch.
  * DMA 1 is used for all acquisitions, with channel i
  * acquiring values from ADC i.
- *
- * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
 
@@ -42,8 +44,8 @@
 #include <stm32g4xx_ll_dma.h>
 
 // OwnTech API
+#include "adc.h"
 #include "../data_dispatch/data_dispatch.h"
-#include "../adc/adc_channels.h"
 
 
 /////
@@ -113,7 +115,7 @@ static void _dma_callback(const struct device* dev, void* user_data, uint32_t ch
 static void _dma_channel_init(uint8_t adc_num, uint32_t source_address, uint32_t source_trigger)
 {
 	// Prepare buffers
-	uint8_t enabled_channels = adc_channels_get_enabled_channels_count(adc_num);
+	uint8_t enabled_channels = adc_get_enabled_channels_count(adc_num);
 	size_t dma_buffer_size = enabled_channels * sizeof(uint16_t) * 2;
 	uint8_t adc_index = adc_num - 1;
 
@@ -160,7 +162,7 @@ void dma_configure_and_start(uint8_t adc_count)
 	for (uint8_t adc_index = 0 ; adc_index < adc_count ; adc_index++)
 	{
 		uint8_t adc_num = adc_index +1;
-		if (adc_channels_get_enabled_channels_count(adc_num) > 0)
+		if (adc_get_enabled_channels_count(adc_num) > 0)
 		{
 			_dma_channel_init(adc_num, source_registers[adc_index], source_triggers[adc_index]);
 			dma_start(dma1, adc_num);

@@ -26,9 +26,14 @@
 #ifndef HARDWARECONFIGURATION_H_
 #define HARDWARECONFIGURATION_H_
 
-
+// Std lib
 #include <stdint.h>
+
+// ARM lib
 #include <arm_math.h>
+
+// OwnTech API
+#include "../src/adc_configuration.h"
 
 
 /** Hardware version. See
@@ -51,50 +56,56 @@ class HardwareConfiguration
 
 public:
 	// Common
-	void setBoardVersion(hardware_version_t hardware_version);
+	static void setBoardVersion(hardware_version_t hardware_version);
 
 	// DAC
-	void initDac1Dac3CurrentMode();
+	static void initDac1Dac3CurrentMode();
 
 	// NGND
-	void setNgndOn();
-	void setNgndOff();
+	static void setNgndOn();
+	static void setNgndOff();
 
 	// LED
-	void setLedOn();
-	void setLedOff();
-	void setLedToggle();
+	static void setLedOn();
+	static void setLedOff();
+	static void setLedToggle();
 
 	// Incremental encoder
-	void startLoggingIncrementalEncoder();
-	uint32_t getIncrementalEncoderValue();
+	static void startLoggingIncrementalEncoder();
+	static uint32_t getIncrementalEncoderValue();
 
 	// Power converter
-	void initInterleavedBuckMode();
-	void initInterleavedBoostMode();
-	void initFullBridgeBuckMode();
-	void initFullBridgeBoostMode();
-	void initIndependentMode(bool leg1_buck_mode, bool leg2_buck_mode);
+	static void initInterleavedBuckMode();
+	static void initInterleavedBoostMode();
+	static void initFullBridgeBuckMode();
+	static void initFullBridgeBoostMode();
+	static void initIndependentMode(bool leg1_buck_mode, bool leg2_buck_mode);
 
-	void setInterleavedDutyCycle(float32_t duty_cycle);
-	void setFullBridgeDutyCycle(float32_t duty_cycle);
-	void setLeg1DutyCycle(float32_t duty_cycle);
-	void setLeg2DutyCycle(float32_t duty_cycle);
+	static void setInterleavedDutyCycle(float32_t duty_cycle);
+	static void setFullBridgeDutyCycle(float32_t duty_cycle);
+	static void setLeg1DutyCycle(float32_t duty_cycle);
+	static void setLeg2DutyCycle(float32_t duty_cycle);
 
-	void setInterleavedOn();
-	void setFullBridgeOn();
-	void setLeg1On();
-	void setLeg2On();
+	static void setInterleavedOn();
+	static void setFullBridgeOn();
+	static void setLeg1On();
+	static void setLeg2On();
 
-	void setInterleavedOff();
-	void setFullBridgeOff();
-	void setLeg1Off();
-	void setLeg2Off();
+	static void setInterleavedOff();
+	static void setFullBridgeOff();
+	static void setLeg1Off();
+	static void setLeg2Off();
 
 	// Extra UART
-	void extraUartInit();
-	char extraUartReadChar();
-	void extraUartWriteChar(char data);
+	static void extraUartInit();
+	static char extraUartReadChar();
+	static void extraUartWriteChar(char data);
+
+	// ADC
+	static void configureAdc12DualMode(uint8_t dual_mode);
+	static int8_t configureAdcChannels(uint8_t adc_number, const char* channel_list[], uint8_t channel_count);
+	static void configureAdcTriggerSource(uint8_t adc_number, adc_src_t trigger_source);
+	static void configureAdcDefaultAllMeasurements();
 
 };
 

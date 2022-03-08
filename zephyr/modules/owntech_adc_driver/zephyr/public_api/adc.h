@@ -31,11 +31,6 @@
  *
  * To use this driver, first call adc_init(), then call
  * required configuration functions, then call adc_start().
- *
- * This file is the entry point of the ADC management.
- * Only this header file provides public functions for the
- * ADC. No other header from this folder should be included
- * in files outside this folder.
  */
 
 
@@ -43,6 +38,7 @@
 #define ADC_H_
 
 
+// Stdlib
 #include <stdint.h>
 
 
@@ -94,6 +90,13 @@ void adc_configure_trigger_source(uint8_t adc_number, uint32_t trigger_source);
  *           ones defined in the device tree.
  */
 int8_t adc_configure_adc_channels(uint8_t adc_number, const char* channel_list[], uint8_t channel_count);
+
+/**
+ * Get the number of enabled channels for an ADC.
+ * @param  adc_num Number of the ADC
+ * @return Number of enabled channels in this ADC.
+ */
+uint8_t adc_get_enabled_channels_count(uint8_t adc_num);
 
 /**
  * @brief Starts all configured ADCs.

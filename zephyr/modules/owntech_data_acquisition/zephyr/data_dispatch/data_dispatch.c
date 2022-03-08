@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 LAAS-CNRS
+ * Copyright (c) 2021-2022 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,6 +18,8 @@
  */
 
 /**
+ * @date   2022
+ *
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
@@ -30,7 +32,7 @@
 #include <zephyr.h>
 
 // OwnTech API
-#include "../adc/adc_channels.h"
+#include "adc.h"
 
 
 /////
@@ -105,7 +107,7 @@ void data_dispatch_init(uint8_t adc_count)
 
 	for (int adc_index = 0 ; adc_index < number_of_adcs ; adc_index++)
 	{
-		enabled_channels_count[adc_index] = adc_channels_get_enabled_channels_count(adc_index+1);
+		enabled_channels_count[adc_index] = adc_get_enabled_channels_count(adc_index+1);
 		if (enabled_channels_count[adc_index] > 0)
 		{
 			// Prepare arrays for each channel

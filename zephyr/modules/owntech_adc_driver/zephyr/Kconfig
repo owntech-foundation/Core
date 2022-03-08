@@ -1,0 +1,4 @@
+config OWNTECH_ADC_DRIVER
+	bool "Enable OwnTech ADC driver for STM32"
+	default y
+	depends on !ADC

@@ -19,6 +19,7 @@
 
 /**
  * @date   2022
+ *
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
@@ -34,13 +35,6 @@
 #include <arm_math.h>
 
 
-/////
-// Public enums
-typedef enum
-{
-	hrtim1,
-	software
-} adc_src_t;
 
 
 /////
@@ -48,115 +42,29 @@ typedef enum
 
 class DataAcquisition
 {
-
 private:
-
 	/**
-	 * This function initializes the Data Acquisition module.
-	 */
-	static void initialize();
-
-	/**
+	 * This function is used to indicate to the DataAcquisition module
+	 * what the underlying ADC channel configuration is.
 	 *
+	 * @param adc_number ADC number
+	 * @param channel_name Channel name
+	 * @param channel_rannk Channel rank
 	 */
 	static void setChannnelAssignment(uint8_t adc_number, const char* channel_name, uint8_t channel_rank);
 
 public:
 
 	/**
-	 * Use this function to set ADC 1 and ADC 2 in dual mode.
-	 * By default, ADC 1 and 2 are not in dual mode.
-	 *
-	 * This function must be called BEFORE dataAcquisition.start().
-	 *
-	 * @param  dual_mode Status of the dual mode:
-	 *         true to enable,
-	 *         false to disable.
-	 * @return 0 is everything went well,
-	 *         EALREADYSTARTED if the module has already been started.
-	 */
-	static int8_t configureAdc12DualMode(uint8_t dual_mode);
-
-	/**
-	 * This function is used to configure the channels to be
-	 * enabled on a given ADC.
-	 *
-	 * This function must be called BEFORE dataAcquisition.start().
-	 *
-	 * @param  adc_number Number of the ADC on which channel configuration is
-	 *         to be done.
-	 * @param  channel_list List of channels to configure. This is a list of
-	 *         names as defined in the device tree (field `label`). The order
-	 *         of the names in the array sets the acquisition ranks (order in
-	 *         which the channels are acquired).
-	 * @param  channel_count Number of channels defined in `channel_list`.
-	 * @return 0 is everything went well,
-	 *         ECHANNOTFOUND if at least one of the channels
-	 *           is not available in the given ADC. Available channels are the
-	 *           ones defined in the device tree.
-	 *         EALREADYSTARTED if the module has already been started.
-	 */
-	static int8_t configureAdcChannels(uint8_t adc_number, const char* channel_list[], uint8_t channel_count);
-
-	/**
-	 * This function is used to change the trigger source of an ADC.
-	 * By default, triggger source for ADC 1 and ADC 2 is on HRTIM1,
-	 * and ADC 3 is software-triggered.
-	 *
-	 * This function must be called BEFORE dataAcquisition.start().
-	 *
-	 * @param  adc_number Number of the ADC to configure
-	 * @param  trigger_source Source of the trigger
-	 * @return 0 is everything went well,
-	 *         EALREADYSTARTED if the module has already been started.
-	 */
-	static int8_t configureAdcTriggerSource(uint8_t adc_number, adc_src_t trigger_source);
-
-	/**
-	 * This function is used to configure all ADC channels in default configuration.
-	 * Channels will be attributed as follows:
- 	 * ADC1 -   V1_LOW      ADC2 -  I1_LOW
- 	 *          V2_LOW              I2_LOW
- 	 *          V_HIGH              I_HIGH
-	 *
-	 * This function must be called BEFORE dataAcquisition.start().
-	 *
-	 * @return 0 is everything went well,
-	 *         EALREADYSTARTED if the module has already been started.
-	 */
-	static int8_t configureAdcDefaultAllMeasurements();
-
-	/**
 	 * This functions starts the acquisition chain. It must be called
-	 * after all module configuration has been carried out. No
+	 * after all module configuration has been carried out. No ADC
 	 * configuration change is allowed after module has been started.
-	 *
-	 * @return 0 is everything went well,
-	 *         EUNITITIALIZED if the module has not been initialized,
-	 *         EALREADYSTARTED if the module has already been started,
-	 *         ECHANUNCONF if the channel configuration has not been done.
 	 */
-	static int8_t start();
+	static void start();
 
 
 	/////
 	// Accessor API
-
-	/**
-	 * This function returns the name of an enabled channel.
-	 *
-	 * This function must be called AFTER data_acquisition_init()
-	 * and AFTER data_acquisition_configure_adc_channels() function
-	 * has been called for this channel.
-	 *
-	 * @param  adc_number Number of the ADC
-	 * @param  channel_rank Rank of the ADC channel to query.
-	 *         Rank ranges from 0 to (number of enabled channels)-1
-	 * @return Name of the channel as defined in the device tree, or
-	 *         NULL if channel configuration has not been made or
-	 *         channel_rank is over (number of enabled channels)-1.
-	 */
-	static const char* getChannelName(uint8_t adc_number, uint8_t channel_rank);
 
 	/**
 	 * Functions to access the acquired data for each channel.
@@ -245,9 +153,7 @@ private:
 	} channel_assignment_t;
 
 private:
-	static uint8_t initialized;
-	static uint8_t channels_configured;
-	static uint8_t started;
+
 
 	static channel_assignment_t v1_low_assignement;
 	static channel_assignment_t v2_low_assignement;
