@@ -28,17 +28,22 @@
 
 #include <stdint.h>
 
+#include <zephyr.h>
+
+typedef void (*thread_function_t)();
 
 /////
 // Static class definition
 
 class Scheduling
 {
+private:
+	static void threadEntryPoint(void* thread_function_p, void*, void*);
+
 public:
 	/**
-	 * @brief Library initialization function.
-	 *        This function uses Timer 6 to execute the periodic
-	 *        user task.
+	 * @brief This function uses Timer 6 to execute the periodic user task.
+	 *        The task is immediately started.
 	 *
 	 * @param periodic_task Pointer to the void(void) function
 	 *        to be executed periodically.
@@ -47,12 +52,41 @@ public:
 	 *        Allowed range: 1 to 6553 µs.
 	 *        Value is ignored if first parameter is NULL.
 	 */
-	void controlTaskInit(void (*periodic_task)(), uint32_t task_period_us);
+	static void startControlTask(void (*periodic_task)(), uint32_t task_period_us);
 
 	/**
-	 * @brief Begins the periodic run of the task.
+	 * @brief Schedule the communication thread.
+	 *        The task is immediately started.
+	 *
+	 * @param routine Pointer to the void(void) function
+	 *        that will act as the thread main function.
+	 * @param priority Priority of the thread. This
+	 *        parameter can be omitted and will take
+	 *        its default value.
 	 */
-	void controlTaskLaunch();
+	static void startCommunicationTask(thread_function_t routine, int priority = DEFAULT_PRIORITY);
+
+	/**
+	 * @brief Schedule the application thread.
+	 *        The task is immediately started.
+	 *
+	 * @param routine Pointer to the void(void) function
+	 *        that will act as the thread main function.
+	 * @param priority Priority of the thread. This
+	 *        parameter can be omitted and will take
+	 *        its default value.
+	 */
+	static void startApplicationTask(thread_function_t routine, int priority = DEFAULT_PRIORITY);
+
+private:
+	static const struct device* timer6;
+	static const int DEFAULT_PRIORITY;
+
+	static k_tid_t communicationThreadTid;
+	static k_tid_t applicationThreadTid;
+
+	static k_thread communicationThreadData;
+	static k_thread applicationThreadData;
 };
 
 

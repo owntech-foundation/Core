@@ -31,9 +31,20 @@
 
 
 /////
-// Local variables
+// Static variables
 
-static const struct device* timer6 = NULL;
+const struct device* Scheduling::timer6 = NULL;
+
+const int Scheduling::DEFAULT_PRIORITY = 5;
+
+k_tid_t Scheduling::communicationThreadTid;
+k_tid_t Scheduling::applicationThreadTid;
+
+k_thread Scheduling::communicationThreadData;
+k_thread Scheduling::applicationThreadData;
+
+K_THREAD_STACK_DEFINE(communication_thread_stack, 512);
+K_THREAD_STACK_DEFINE(application_thread_stack,   512);
 
 
 /////
@@ -43,9 +54,19 @@ Scheduling scheduling;
 
 
 /////
+// Private API
+
+void Scheduling::threadEntryPoint(void* thread_function_p, void*, void*)
+{
+	thread_function_t thread_function = (thread_function_t)thread_function_p;
+	thread_function();
+}
+
+
+/////
 // Public API
 
-void Scheduling::controlTaskInit(void (*periodic_task)(), uint32_t task_period_us)
+void Scheduling::startControlTask(void (*periodic_task)(), uint32_t task_period_us)
 {
 	if (periodic_task != NULL)
 	{
@@ -58,10 +79,30 @@ void Scheduling::controlTaskInit(void (*periodic_task)(), uint32_t task_period_u
 		timer_cfg.timer_irq_t_usec   = task_period_us;
 
 		timer_config(timer6, &timer_cfg);
+		timer_start(timer6);
 	}
 }
 
-void Scheduling::controlTaskLaunch()
+void Scheduling::startCommunicationTask(thread_function_t routine, int priority)
 {
-	timer_start(timer6);
+	communicationThreadTid = k_thread_create(&communicationThreadData,
+                                             communication_thread_stack,
+                                             K_THREAD_STACK_SIZEOF(communication_thread_stack),
+                                             threadEntryPoint,
+                                             (void*)routine, NULL, NULL,
+                                             priority,
+                                             0,
+                                             K_NO_WAIT);
+}
+
+void Scheduling::startApplicationTask(thread_function_t routine, int priority)
+{
+	applicationThreadTid = k_thread_create(&applicationThreadData,
+                                           application_thread_stack,
+                                           K_THREAD_STACK_SIZEOF(application_thread_stack),
+                                           threadEntryPoint,
+                                           (void*)routine, NULL, NULL,
+                                           priority,
+                                           0,
+                                           K_NO_WAIT);
 }
