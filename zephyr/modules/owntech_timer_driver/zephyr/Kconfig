@@ -2,4 +2,4 @@ config OWNTECH_TIMER_DRIVER
 	bool "Enable timer driver by OwnTech (only STM32 timer partial support for now)"
 	default y
 	select DYNAMIC_INTERRUPTS
-	select PWM
+	select USE_STM32_LL_TIM # Required to add LL timer source file to compile path
