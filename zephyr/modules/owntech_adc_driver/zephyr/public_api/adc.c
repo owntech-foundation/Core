@@ -36,9 +36,16 @@
 
 
 /////
+// Constants
+
+#define NUMBER_OF_ADCS 3
+
+
+/////
 // Local variables
 
-static uint32_t adc_trigger_sources[3] = {0};
+static uint32_t adc_trigger_sources[NUMBER_OF_ADCS] = {0};
+static uint32_t adc_discontinuous_mode[NUMBER_OF_ADCS] = {0};
 
 
 /////
@@ -58,8 +65,19 @@ void adc_set_dual_mode(uint8_t dual_mode)
 void adc_configure_trigger_source(uint8_t adc_number, uint32_t trigger_source)
 {
 	// Only store configuration: it must be applied after ADC enable
-	if (adc_number < 3)
+	if ( (adc_number > 0) && (adc_number <= NUMBER_OF_ADCS) )
+	{
 		adc_trigger_sources[adc_number-1] = trigger_source;
+	}
+}
+
+void adc_configure_discontinuous_mode(uint8_t adc_number, uint32_t dicontinuous_count)
+{
+	// Only store configuration: it must be applied after ADC enable
+	if ( (adc_number > 0) && (adc_number <= NUMBER_OF_ADCS) )
+	{
+		adc_discontinuous_mode[adc_number-1] = dicontinuous_count;
+	}
 }
 
 int8_t adc_configure_adc_channels(uint8_t adc_number, const char* channel_list[], uint8_t channel_count)
@@ -69,16 +87,16 @@ int8_t adc_configure_adc_channels(uint8_t adc_number, const char* channel_list[]
 
 void adc_start()
 {
-	uint8_t enabled_channels_count[3];
+	uint8_t enabled_channels_count[NUMBER_OF_ADCS];
 
-	for (uint8_t i = 0 ; i < 3 ; i++)
+	for (uint8_t i = 0 ; i < NUMBER_OF_ADCS ; i++)
 	{
 		enabled_channels_count[i] = adc_channels_get_enabled_channels_count(i+1);
 	}
 
 	/////
 	// Enable ADCs
-	for (uint8_t i = 0 ; i < 3 ; i++)
+	for (uint8_t i = 0 ; i < NUMBER_OF_ADCS ; i++)
 	{
 		if (enabled_channels_count[i] > 0)
 		{
@@ -88,7 +106,7 @@ void adc_start()
 
 	/////
 	// Configure ADCs channels
-	for (uint8_t i = 0 ; i < 3 ; i++)
+	for (uint8_t i = 0 ; i < NUMBER_OF_ADCS ; i++)
 	{
 		if (enabled_channels_count[i] > 0)
 		{
@@ -98,7 +116,7 @@ void adc_start()
 
 	/////
 	// Configure ADCs
-	for (uint8_t i = 0 ; i < 3 ; i++)
+	for (uint8_t i = 0 ; i < NUMBER_OF_ADCS ; i++)
 	{
 		if (enabled_channels_count[i] > 0)
 		{
@@ -106,7 +124,15 @@ void adc_start()
 		}
 	}
 
-	for (uint8_t i = 0 ; i < 3 ; i++)
+	for (uint8_t i = 0 ; i < NUMBER_OF_ADCS ; i++)
+	{
+		if ( (enabled_channels_count[i] > 0) && (adc_discontinuous_mode[i] != 0) )
+		{
+			adc_core_configure_discontinuous_mode(i+1, adc_discontinuous_mode[i]);
+		}
+	}
+
+	for (uint8_t i = 0 ; i < NUMBER_OF_ADCS ; i++)
 	{
 		if ( (enabled_channels_count[i] > 0) && (adc_trigger_sources[i] != 0) )
 		{
@@ -116,7 +142,7 @@ void adc_start()
 
 	/////
 	// Finally, start ADCs
-	for (uint8_t i = 0 ; i < 3 ; i++)
+	for (uint8_t i = 0 ; i < NUMBER_OF_ADCS ; i++)
 	{
 		if (enabled_channels_count[i] > 0)
 		{

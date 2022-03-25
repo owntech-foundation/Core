@@ -64,7 +64,7 @@ void adc_init();
 void adc_set_dual_mode(uint8_t dual_mode);
 
 /**
- * Regsters the triger source for an ADC.
+ * Registers the triger source for an ADC.
  * It will be applied when ADC is started.
  *
  * @param adc_number Number of the ADC to configure
@@ -72,6 +72,16 @@ void adc_set_dual_mode(uint8_t dual_mode);
  *        in stm32gxx_ll_adc.h (LL_ADC_REG_TRIG_***)
  */
 void adc_configure_trigger_source(uint8_t adc_number, uint32_t trigger_source);
+
+/**
+ * Registers the discontinuous count for an ADC.
+ * It will be applied when ADC is started.
+ *
+ * @param adc_number Number of the ADC to configure
+ * @param dicontinuous_count Number of channels to acquire on each
+ *        trigger event. 0 to disable discontinuous mode (default).
+ */
+void adc_configure_discontinuous_mode(uint8_t adc_number, uint32_t dicontinuous_count);
 
 /**
  * This function is used to configure the channels to be

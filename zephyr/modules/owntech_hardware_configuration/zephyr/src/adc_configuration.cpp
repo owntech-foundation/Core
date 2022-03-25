@@ -47,8 +47,8 @@ void _initialize()
 		initialized = 1;
 
 		// Perform default configration
-		configure_adc_trigger_source(1, hrtim1);
-		configure_adc_trigger_source(2, hrtim1);
+		configure_adc_trigger_source(1, hrtim_ev1);
+		configure_adc_trigger_source(2, hrtim_ev1);
 		configure_adc_trigger_source(3, software);
 	}
 }
@@ -109,8 +109,17 @@ void configure_adc_trigger_source(uint8_t adc_number, adc_src_t trigger_source)
 	uint32_t trig;
 	switch (trigger_source)
 	{
-	case hrtim1:
+	case hrtim_ev1:
 		trig = LL_ADC_REG_TRIG_EXT_HRTIM_TRG1;
+		break;
+	case hrtim_ev2:
+		trig = LL_ADC_REG_TRIG_EXT_HRTIM_TRG2;
+		break;
+	case hrtim_ev3:
+		trig = LL_ADC_REG_TRIG_EXT_HRTIM_TRG3;
+		break;
+	case hrtim_ev4:
+		trig = LL_ADC_REG_TRIG_EXT_HRTIM_TRG4;
 		break;
 	case software:
 	default:

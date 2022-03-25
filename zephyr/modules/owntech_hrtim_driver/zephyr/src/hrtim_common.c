@@ -27,6 +27,12 @@
 #include "leg.h"
 
 
+void _hrtim_init_events()
+{
+	hrtim_adc_trigger_en(0, ADC1R, AD13_TAC3);
+	hrtim_cmp_set(0, TIMA, CMP3xR, 1);
+}
+
 void hrtim_init_current()
 {
 	hrtim_cm_init();
@@ -37,27 +43,23 @@ void hrtim_init_current()
 void hrtim_init_voltage_buck()
 {
 	leg_init(true,true);
-	hrtim_adc_trigger_en(0, ADC1R, AD13_TAC3);
-	hrtim_cmp_set(0, TIMA, CMP3xR, 1);
+	_hrtim_init_events();
 }
 
 void hrtim_init_voltage_boost()
 {
 	leg_init(false,false);
-	hrtim_adc_trigger_en(0, ADC1R, AD13_TAC3);
-	hrtim_cmp_set(0, TIMA, CMP3xR, 1);
+	_hrtim_init_events();
 }
 
 void hrtim_init_voltage_leg1_buck_leg2_boost()
 {
 	leg_init(true,false);
-	hrtim_adc_trigger_en(0, ADC1R, AD13_TAC3);
-	hrtim_cmp_set(0, TIMA, CMP3xR, 1);
+	_hrtim_init_events();
 }
 
 void hrtim_init_voltage_leg1_boost_leg2_buck()
 {
 	leg_init(false,true);
-	hrtim_adc_trigger_en(0, ADC1R, AD13_TAC3);
-	hrtim_cmp_set(0, TIMA, CMP3xR, 1);
+	_hrtim_init_events();
 }

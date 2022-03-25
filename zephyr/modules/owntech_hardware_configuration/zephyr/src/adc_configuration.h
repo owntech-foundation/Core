@@ -35,7 +35,10 @@
 // Public enums
 typedef enum
 {
-	hrtim1,
+	hrtim_ev1,
+	hrtim_ev2,
+	hrtim_ev3,
+	hrtim_ev4,
 	software
 } adc_src_t;
 

@@ -117,15 +117,54 @@ void adc_core_configure_dma_mode(uint8_t adc_num)
 	LL_ADC_REG_SetDMATransfer(adc, LL_ADC_REG_DMA_TRANSFER_UNLIMITED);
 }
 
-void adc_core_configure_trigger_source(uint8_t adc_num, uint32_t ExternalTriggerEdge, uint32_t TriggerSource)
+void adc_core_configure_trigger_source(uint8_t adc_num, uint32_t external_trigger_edge, uint32_t trigger_source)
 {
 	ADC_TypeDef* adc = _get_adc_by_number(adc_num);
 
 	// Set trigger edge
-	LL_ADC_REG_SetTriggerEdge(adc, ExternalTriggerEdge);
+	LL_ADC_REG_SetTriggerEdge(adc, external_trigger_edge);
 
 	// Set trigger source
-	LL_ADC_REG_SetTriggerSource(adc, TriggerSource);
+	LL_ADC_REG_SetTriggerSource(adc, trigger_source);
+}
+
+void adc_core_configure_discontinuous_mode(uint8_t adc_num, uint32_t discontinuous_count)
+{
+	ADC_TypeDef* adc = _get_adc_by_number(adc_num);
+
+	uint32_t discontinuous_mode;
+
+	switch(discontinuous_count)
+	{
+		case 1:
+			discontinuous_mode = LL_ADC_REG_SEQ_DISCONT_1RANK;
+			break;
+		case 2:
+			discontinuous_mode = LL_ADC_REG_SEQ_DISCONT_2RANKS;
+			break;
+		case 3:
+			discontinuous_mode = LL_ADC_REG_SEQ_DISCONT_3RANKS;
+			break;
+		case 4:
+			discontinuous_mode = LL_ADC_REG_SEQ_DISCONT_4RANKS;
+			break;
+		case 5:
+			discontinuous_mode = LL_ADC_REG_SEQ_DISCONT_5RANKS;
+			break;
+		case 6:
+			discontinuous_mode = LL_ADC_REG_SEQ_DISCONT_6RANKS;
+			break;
+		case 7:
+			discontinuous_mode = LL_ADC_REG_SEQ_DISCONT_7RANKS;
+			break;
+		case 8:
+			discontinuous_mode = LL_ADC_REG_SEQ_DISCONT_8RANKS;
+			break;
+		default:
+			discontinuous_mode = LL_ADC_REG_SEQ_DISCONT_DISABLE;
+	}
+
+	LL_ADC_REG_SetSequencerDiscont(adc, discontinuous_mode);
 }
 
 void adc_core_init()

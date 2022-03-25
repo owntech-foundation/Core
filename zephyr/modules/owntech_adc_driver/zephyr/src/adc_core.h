@@ -89,13 +89,21 @@ void adc_core_configure_dma_mode(uint8_t adc_num);
  * Defines the trigger source for an ADC.
  *
  * @param adc_num Number of the ADC to configure.
- * @param ExternalTriggerEdge Edge of the trigger as defined
+ * @param external_trigger_edge Edge of the trigger as defined
  *        in stm32gxx_ll_adc.h (LL_ADC_REG_TRIG_***).
  * @param trigger_source Source of the trigger as defined
  *        in stm32gxx_ll_adc.h (LL_ADC_REG_TRIG_***).
  */
-void adc_core_configure_trigger_source(uint8_t adc_num, uint32_t ExternalTriggerEdge, uint32_t TriggerSource);
+void adc_core_configure_trigger_source(uint8_t adc_num, uint32_t external_trigger_edge, uint32_t trigger_source);
 
+/**
+ * Configures the discontinuous mode for an ADC.
+ *
+ * @param adc_num Number of the ADC to configure.
+ * @param discontinuous_count Number of channels to acquire on each
+ *        trigger event. 0 to disable discontinuous mode (default).
+ */
+void adc_core_configure_discontinuous_mode(uint8_t adc_num, uint32_t discontinuous_count);
 
 #ifdef __cplusplus
 }
