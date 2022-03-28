@@ -29,7 +29,7 @@
 #include <zephyr.h>
 
 // STM32 LL
-#include <stm32g4xx_ll_bus.h>
+#include <stm32_ll_bus.h>
 
 // Owntech API
 #include "adc_helper.h"

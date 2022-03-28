@@ -41,7 +41,7 @@
 #include <drivers/dma.h>
 
 // STM32
-#include <stm32g4xx_ll_dma.h>
+#include <stm32_ll_dma.h>
 
 // OwnTech API
 #include "adc.h"

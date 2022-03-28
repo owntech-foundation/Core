@@ -24,7 +24,7 @@
 
 
 // STM32 LL
-#include <stm32g4xx_ll_adc.h>
+#include <stm32_ll_adc.h>
 
 // OwnTech Power API
 #include "adc.h"

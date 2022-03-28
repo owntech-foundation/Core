@@ -25,7 +25,7 @@
 
 
 // STM 32 LL
-#include <stm32g4xx_ll_lpuart.h>
+#include <stm32_ll_lpuart.h>
 
 // Zephyr
 #include <drivers/uart.h>
