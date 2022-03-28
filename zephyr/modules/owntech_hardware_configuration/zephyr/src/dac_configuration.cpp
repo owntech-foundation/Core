@@ -19,6 +19,7 @@
 
 /**
  * @date   2022
+ *
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
@@ -26,12 +27,8 @@
 // Zephyr
 #include <zephyr.h>
 
-// STM32LL
-#include <stm32_ll_dac.h>
-
 // Owntech driver
 #include "dac.h"
-
 
 
 void dac_config_dac1_dac3_current_mode_init()
@@ -39,24 +36,24 @@ void dac_config_dac1_dac3_current_mode_init()
 	const struct device* dac1 = device_get_binding(DAC1_DEVICE);
 	const struct device* dac3 = device_get_binding(DAC3_DEVICE);
 
+	// DAC 1
 	dac_function_config_t function_config =
 	{
 		.dac_function = dac_function_sawtooth,
-		.trigger_source = LL_DAC_TRIG_EXT_HRTIM_RST_TRG1,
-		.step_trigger_source = LL_DAC_TRIG_EXT_HRTIM_STEP_TRG1,
-		.polarity = LL_DAC_SAWTOOTH_POLARITY_DECREMENT,
+		.reset_trigger_source = hrtim_trig1,
+		.step_trigger_source = hrtim_trig1,
+		.polarity = dac_polarity_decrement,
 		.reset_data = 4000,
 		.step_data = 200
 	};
 
-	// DAC 1
 	dac_set_function(dac1, 1, &function_config);
 	dac_pin_configure(dac1, 1, dac_pin_internal);
 	dac_start(dac1, 1);
 
 	// DAC 3
-	function_config.trigger_source = LL_DAC_TRIG_EXT_HRTIM_RST_TRG2;
-	function_config.step_trigger_source = LL_DAC_TRIG_EXT_HRTIM_STEP_TRG2;
+	function_config.reset_trigger_source = hrtim_trig2;
+	function_config.step_trigger_source = hrtim_trig2;
 
 	dac_set_function(dac3, 1, &function_config);
 	dac_pin_configure(dac3, 1, dac_pin_internal);

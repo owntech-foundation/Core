@@ -109,12 +109,30 @@ static void dac_stm32_set_function(const struct device* dev, uint8_t channel, co
 	{
 		data->dac_config->function_config = *function_config;
 
+		uint32_t reset_trigger_source = LL_DAC_TRIG_EXT_HRTIM_RST_TRG1;
+		if (function_config->reset_trigger_source == hrtim_trig2)
+		{
+			reset_trigger_source = LL_DAC_TRIG_EXT_HRTIM_RST_TRG2;
+		}
+
+		uint32_t step_trigger_source = LL_DAC_TRIG_EXT_HRTIM_STEP_TRG1;
+		if (function_config->step_trigger_source == hrtim_trig2)
+		{
+			step_trigger_source = LL_DAC_TRIG_EXT_HRTIM_STEP_TRG2;
+		}
+
+		uint32_t polarity = LL_DAC_SAWTOOTH_POLARITY_DECREMENT;
+		if (function_config->polarity == dac_polarity_increment)
+		{
+			polarity = LL_DAC_SAWTOOTH_POLARITY_INCREMENT;
+		}
+
 		LL_DAC_SetSignedFormat(dac_dev, dac_channel, LL_DAC_SIGNED_FORMAT_DISABLE);
 
 		LL_DAC_SetWaveAutoGeneration(dac_dev, dac_channel, LL_DAC_WAVE_AUTO_GENERATION_SAWTOOTH);
-		LL_DAC_SetWaveSawtoothResetTriggerSource(dac_dev, dac_channel, function_config->trigger_source);
-		LL_DAC_SetWaveSawtoothStepTriggerSource(dac_dev, dac_channel, function_config->step_trigger_source);
-		LL_DAC_SetWaveSawtoothPolarity(dac_dev, dac_channel, function_config->polarity);
+		LL_DAC_SetWaveSawtoothResetTriggerSource(dac_dev, dac_channel, reset_trigger_source);
+		LL_DAC_SetWaveSawtoothStepTriggerSource(dac_dev, dac_channel, step_trigger_source);
+		LL_DAC_SetWaveSawtoothPolarity(dac_dev, dac_channel, polarity);
 		LL_DAC_SetWaveSawtoothResetData(dac_dev, dac_channel, function_config->reset_data);
 		LL_DAC_SetWaveSawtoothStepData(dac_dev, dac_channel, function_config->step_data);
 

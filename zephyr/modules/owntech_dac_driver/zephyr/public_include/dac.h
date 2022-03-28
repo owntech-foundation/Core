@@ -54,12 +54,24 @@ typedef enum
 	dac_function_sawtooth
 } dac_function_t;
 
+typedef enum
+{
+	dac_polarity_decrement,
+	dac_polarity_increment
+} dac_polarity_t;
+
+typedef enum
+{
+	hrtim_trig1,
+	hrtim_trig2
+} dac_trigger_t;
+
 typedef struct
 {
 	dac_function_t dac_function;
-	uint32_t       trigger_source;
-	uint32_t       step_trigger_source;
-	uint32_t       polarity;
+	dac_trigger_t  reset_trigger_source;
+	dac_trigger_t  step_trigger_source;
+	dac_polarity_t polarity;
 	uint32_t       reset_data;
 	uint32_t       step_data;
 } dac_function_config_t;
@@ -69,7 +81,6 @@ typedef enum
 	dac_pin_internal,
 	dac_pin_external
 } dac_pin_config_t;
-
 
 /////
 // API
