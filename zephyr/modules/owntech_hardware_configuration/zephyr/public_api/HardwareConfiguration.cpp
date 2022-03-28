@@ -19,6 +19,7 @@
 
 /**
  * @date   2022
+ *
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
@@ -241,7 +242,7 @@ int8_t HardwareConfiguration::configureAdcChannels(uint8_t adc_number, const cha
 	return configure_adc_channels(adc_number, channel_list, channel_count);
 }
 
-void HardwareConfiguration::configureAdcTriggerSource(uint8_t adc_number, adc_src_t trigger_source)
+void HardwareConfiguration::configureAdcTriggerSource(uint8_t adc_number, adc_ev_src_t trigger_source)
 {
 	configure_adc_trigger_source(adc_number, trigger_source);
 }

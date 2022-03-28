@@ -19,6 +19,7 @@
 
 /**
  * @date   2022
+ *
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
@@ -104,7 +105,7 @@ public:
 	// ADC
 	static void configureAdc12DualMode(uint8_t dual_mode);
 	static int8_t configureAdcChannels(uint8_t adc_number, const char* channel_list[], uint8_t channel_count);
-	static void configureAdcTriggerSource(uint8_t adc_number, adc_src_t trigger_source);
+	static void configureAdcTriggerSource(uint8_t adc_number, adc_ev_src_t trigger_source);
 	static void configureAdcDefaultAllMeasurements();
 
 };

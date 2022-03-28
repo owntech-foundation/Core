@@ -19,6 +19,7 @@
 
 /**
  * @date   2022
+ *
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
@@ -30,17 +31,8 @@
 // Stdlib
 #include <stdint.h>
 
-
-/////
-// Public enums
-typedef enum
-{
-	hrtim_ev1,
-	hrtim_ev2,
-	hrtim_ev3,
-	hrtim_ev4,
-	software
-} adc_src_t;
+// OwnTech API
+#include "adc.h"
 
 
 /////
@@ -88,7 +80,7 @@ int8_t configure_adc_channels(uint8_t adc_number, const char* channel_list[], ui
  * @param  adc_number Number of the ADC to configure
  * @param  trigger_source Source of the trigger
  */
-void configure_adc_trigger_source(uint8_t adc_number, adc_src_t trigger_source);
+void configure_adc_trigger_source(uint8_t adc_number, adc_ev_src_t trigger_source);
 
 /**
  * This function is used to configure all ADC channels in default configuration.

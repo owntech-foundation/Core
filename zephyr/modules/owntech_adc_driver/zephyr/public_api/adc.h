@@ -47,6 +47,22 @@ extern "C" {
 #endif
 
 
+/////
+// Public enums
+
+typedef enum
+{
+	hrtim_ev1,
+	hrtim_ev2,
+	hrtim_ev3,
+	hrtim_ev4,
+	software
+} adc_ev_src_t;
+
+
+/////
+// Public API
+
 /**
  * @brief Initializes the ADCs. It must be
  * called *before* any configuration is made.
@@ -67,17 +83,16 @@ void adc_set_dual_mode(uint8_t dual_mode);
  * Registers the triger source for an ADC.
  * It will be applied when ADC is started.
  *
- * @param adc_number Number of the ADC to configure
- * @param triggger_source Source of the trigger as defined
- *        in stm32gxx_ll_adc.h (LL_ADC_REG_TRIG_***)
+ * @param adc_number Number of the ADC to configure.
+ * @param triggger_source Source of the trigger.
  */
-void adc_configure_trigger_source(uint8_t adc_number, uint32_t trigger_source);
+void adc_configure_trigger_source(uint8_t adc_number, adc_ev_src_t trigger_source);
 
 /**
  * Registers the discontinuous count for an ADC.
  * It will be applied when ADC is started.
  *
- * @param adc_number Number of the ADC to configure
+ * @param adc_number Number of the ADC to configure.
  * @param dicontinuous_count Number of channels to acquire on each
  *        trigger event. 0 to disable discontinuous mode (default).
  */
@@ -103,7 +118,8 @@ int8_t adc_configure_adc_channels(uint8_t adc_number, const char* channel_list[]
 
 /**
  * Get the number of enabled channels for an ADC.
- * @param  adc_num Number of the ADC
+ *
+ * @param  adc_num Number of the ADC.
  * @return Number of enabled channels in this ADC.
  */
 uint8_t adc_get_enabled_channels_count(uint8_t adc_num);
@@ -116,10 +132,10 @@ void adc_start();
 /**
  * This function returns the name of an enabled channel.
  *
- * This function must onle be called after
+ * This function must only be called after
  * adc_configure_adc_channels has been called.
  *
- * @param  adc_number Number of the ADC
+ * @param  adc_number Number of the ADC.
  * @param  channel_rank Rank of the ADC channel to query.
  *         Rank ranges from 0 to (number of enabled channels)-1
  * @return Name of the channel as defined in the device tree, or

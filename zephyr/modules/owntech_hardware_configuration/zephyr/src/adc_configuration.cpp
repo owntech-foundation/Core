@@ -19,12 +19,10 @@
 
 /**
  * @date   2022
+ *
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
-
-// STM32 LL
-#include <stm32_ll_adc.h>
 
 // OwnTech Power API
 #include "adc.h"
@@ -94,7 +92,7 @@ int8_t configure_adc_channels(uint8_t adc_number, const char* channel_list[], ui
 	return NOERROR;
 }
 
-void configure_adc_trigger_source(uint8_t adc_number, adc_src_t trigger_source)
+void configure_adc_trigger_source(uint8_t adc_number, adc_ev_src_t trigger_source)
 {
 	/////
 	// Make sure module is initialized
@@ -106,28 +104,8 @@ void configure_adc_trigger_source(uint8_t adc_number, adc_src_t trigger_source)
 
 	/////
 	// Proceed
-	uint32_t trig;
-	switch (trigger_source)
-	{
-	case hrtim_ev1:
-		trig = LL_ADC_REG_TRIG_EXT_HRTIM_TRG1;
-		break;
-	case hrtim_ev2:
-		trig = LL_ADC_REG_TRIG_EXT_HRTIM_TRG2;
-		break;
-	case hrtim_ev3:
-		trig = LL_ADC_REG_TRIG_EXT_HRTIM_TRG3;
-		break;
-	case hrtim_ev4:
-		trig = LL_ADC_REG_TRIG_EXT_HRTIM_TRG4;
-		break;
-	case software:
-	default:
-		trig = LL_ADC_REG_TRIG_SOFTWARE;
-		break;
-	}
 
-	adc_configure_trigger_source(adc_number, trig);
+	adc_configure_trigger_source(adc_number, trigger_source);
 }
 
 void configure_adc_default_all_measurements()

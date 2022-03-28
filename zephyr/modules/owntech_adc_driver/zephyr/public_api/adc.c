@@ -62,12 +62,36 @@ void adc_set_dual_mode(uint8_t dual_mode)
 	adc_core_set_dual_mode(dual_mode);
 }
 
-void adc_configure_trigger_source(uint8_t adc_number, uint32_t trigger_source)
+void adc_configure_trigger_source(uint8_t adc_number, adc_ev_src_t trigger_source)
 {
+	/////
+	// Convert to LL constants
+
+	uint32_t trig;
+	switch (trigger_source)
+	{
+	case hrtim_ev1:
+		trig = LL_ADC_REG_TRIG_EXT_HRTIM_TRG1;
+		break;
+	case hrtim_ev2:
+		trig = LL_ADC_REG_TRIG_EXT_HRTIM_TRG2;
+		break;
+	case hrtim_ev3:
+		trig = LL_ADC_REG_TRIG_EXT_HRTIM_TRG3;
+		break;
+	case hrtim_ev4:
+		trig = LL_ADC_REG_TRIG_EXT_HRTIM_TRG4;
+		break;
+	case software:
+	default:
+		trig = LL_ADC_REG_TRIG_SOFTWARE;
+		break;
+	}
+
 	// Only store configuration: it must be applied after ADC enable
 	if ( (adc_number > 0) && (adc_number <= NUMBER_OF_ADCS) )
 	{
-		adc_trigger_sources[adc_number-1] = trigger_source;
+		adc_trigger_sources[adc_number-1] = trig;
 	}
 }
 
