@@ -18,9 +18,13 @@
  */
 
 /**
+ * @date   2022
+ *
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
  */
+
+#include <stm32_ll_hrtim.h>
 
 #include "voltage_mode/hrtim_voltage_mode.h"
 #include "current_mode/hrtim_current_mode.h"
@@ -29,7 +33,8 @@
 
 void _hrtim_init_events()
 {
-	hrtim_adc_trigger_en(0, ADC1R, AD13_TAC3);
+	hrtim_adc_trigger_set_postscaler(0, 9);
+	hrtim_adc_trigger_en(1, 1, LL_HRTIM_ADCTRIG_SRC13_TIMACMP3);
 	hrtim_cmp_set(0, TIMA, CMP3xR, 1);
 }
 

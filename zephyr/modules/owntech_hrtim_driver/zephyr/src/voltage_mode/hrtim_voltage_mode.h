@@ -18,6 +18,8 @@
  */
 
 /**
+ * @date        2022
+ *
  * @defgroup    drivers_periph_hrtim OwnTech's hrtim module
  * @ingroup     drivers_periph
  * @brief       Low-level HRTIM peripheral driver
@@ -522,13 +524,24 @@ void hrtim_out_dis(hrtim_t dev, hrtim_tu_t tu, hrtim_out_t out);
 void hrtim_pwm_dt(hrtim_t dev, hrtim_tu_t tu, uint16_t ns);
 
 /**
- * @brief   Enable an ADCx trigger event
+ * @brief   Set the HRTIM event postsaler. Postscaler ratio indicates
+ *          how many potential events will be ignored between two
+ *          events which are effectively generated.
  *
  * @param[in] dev           HRTIM device
- * @param[in] adc           ADC trigger register from ADC1R to ADC4R
- * @param[in] evt           Trigger event
+ * @param[in] ps_ratio      Post scaler ratio (0 = no post scaler, default)
  */
-void hrtim_adc_trigger_en(hrtim_t dev, hrtim_adc_t adc, hrtim_adc_trigger_t evt);
+void hrtim_adc_trigger_set_postscaler(hrtim_t dev, uint32_t ps_ratio);
+
+/**
+ * @brief   Configures and enables an ADC trigger event.
+ *
+ * @param[in] event_number  Number of the event to configure
+ * @param[in] source_timer  Source timer of the event. 0 = Master timer, 1 = Timer A, 2 = Timer B, etc.
+ * @param[in] event         Event as defined in stm32g4xx_ll_hrtim.h 'ADC TRIGGER X/X SOURCE'
+ */
+void hrtim_adc_trigger_en(uint32_t event_number, uint32_t source_timer, uint32_t event);
+
 
 /**
  * @brief   Disbable a ADCx trigger event

@@ -18,6 +18,8 @@
  */
 
 /**
+ * @date        2022
+ *
  * @ingroup     cpu_stm32
  * @ingroup     drivers_periph_hrtim
 
@@ -31,6 +33,7 @@
  */
 
 #include <stm32_ll_rcc.h>
+#include <stm32_ll_hrtim.h>
 
 #include "hrtim_voltage_mode.h"
 #include "assert.h"
@@ -524,16 +527,50 @@ void hrtim_pwm_dt(hrtim_t hrtim, hrtim_tu_t tu, uint16_t ns)
     * set) or if its outputs are enabled and set/reset by another timer. */
 }
 
-void hrtim_adc_trigger_en(hrtim_t hrtim, hrtim_adc_t adc, hrtim_adc_trigger_t evt)
+void hrtim_adc_trigger_set_postscaler(hrtim_t hrtim, uint32_t ps_ratio)
 {
-    dev(hrtim)->sCommonRegs.CR1 |= HRTIM_CR1_ADC1USRC_0; // ADC trigger 1 update source
-    dev(hrtim)->sCommonRegs.ADCPS1 |= 9;
-    switch (adc) {
-        case ADC1R: dev(hrtim)->sCommonRegs.ADC1R |= evt; break;
-        case ADC2R: dev(hrtim)->sCommonRegs.ADC2R |= evt; break;
-        case ADC3R: dev(hrtim)->sCommonRegs.ADC3R |= evt; break;
-        case ADC4R: dev(hrtim)->sCommonRegs.ADC4R |= evt; break;
-    }
+	dev(hrtim)->sCommonRegs.ADCPS1 |= ps_ratio;
+}
+
+void hrtim_adc_trigger_en(uint32_t event_number, uint32_t source_timer, uint32_t event)
+{
+	uint32_t adcTrig = LL_HRTIM_ADCTRIG_1;
+	uint32_t update = LL_HRTIM_ADCTRIG_UPDATE_MASTER;
+
+	switch (event_number)
+	{
+		case 1:
+			adcTrig = LL_HRTIM_ADCTRIG_1;
+			break;
+		case 2:
+			adcTrig = LL_HRTIM_ADCTRIG_2;
+			break;
+		case 3:
+			adcTrig = LL_HRTIM_ADCTRIG_3;
+			break;
+		case 4:
+			adcTrig = LL_HRTIM_ADCTRIG_4;
+			break;
+	}
+
+	switch (source_timer)
+	{
+		case 1:
+			update = LL_HRTIM_ADCTRIG_UPDATE_TIMER_A;
+			break;
+		case 2:
+			update = LL_HRTIM_ADCTRIG_UPDATE_TIMER_B;
+			break;
+		case 3:
+			update = LL_HRTIM_ADCTRIG_UPDATE_TIMER_C;
+			break;
+		case 4:
+			update = LL_HRTIM_ADCTRIG_UPDATE_TIMER_D;
+			break;
+	}
+
+	LL_HRTIM_SetADCTrigSrc(HRTIM1, adcTrig, event);
+	LL_HRTIM_SetADCTrigUpdate(HRTIM1, adcTrig, update);
 }
 
 void hrtim_adc_trigger_dis(hrtim_t hrtim, hrtim_adc_t adc, hrtim_adc_trigger_t evt)
