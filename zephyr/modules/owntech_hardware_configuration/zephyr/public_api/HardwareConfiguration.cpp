@@ -247,6 +247,11 @@ void HardwareConfiguration::configureAdcTriggerSource(uint8_t adc_number, adc_ev
 	configure_adc_trigger_source(adc_number, trigger_source);
 }
 
+void HardwareConfiguration::configureAdcDiscontinuousMode(uint8_t adc_number, uint32_t dicontinuous_count)
+{
+	configure_adc_discontinuous_mode(adc_number, dicontinuous_count);
+}
+
 void HardwareConfiguration::configureAdcDefaultAllMeasurements()
 {
 	configure_adc_default_all_measurements();

@@ -108,6 +108,22 @@ void configure_adc_trigger_source(uint8_t adc_number, adc_ev_src_t trigger_sourc
 	adc_configure_trigger_source(adc_number, trigger_source);
 }
 
+void configure_adc_discontinuous_mode(uint8_t adc_number, uint32_t dicontinuous_count)
+{
+	/////
+	// Make sure module is initialized
+
+	if (initialized == 0)
+	{
+		_initialize();
+	}
+
+	/////
+	// Proceed
+
+	adc_configure_discontinuous_mode(adc_number, dicontinuous_count);
+}
+
 void configure_adc_default_all_measurements()
 {
 	uint8_t number_of_channels_adc1 = 3;

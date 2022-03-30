@@ -83,6 +83,16 @@ int8_t configure_adc_channels(uint8_t adc_number, const char* channel_list[], ui
 void configure_adc_trigger_source(uint8_t adc_number, adc_ev_src_t trigger_source);
 
 /**
+ * Registers the discontinuous count for an ADC.
+ * It will be applied when ADC is started.
+ *
+ * @param adc_number Number of the ADC to configure.
+ * @param dicontinuous_count Number of channels to acquire on each
+ *        trigger event. 0 to disable discontinuous mode (default).
+ */
+void configure_adc_discontinuous_mode(uint8_t adc_number, uint32_t dicontinuous_count);
+
+/**
  * This function is used to configure all ADC channels in default configuration.
  * Channels will be attributed as follows:
  * ADC1 -   V1_LOW      ADC2 -  I1_LOW
