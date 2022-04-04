@@ -21,6 +21,7 @@
  * @date   2022
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Luiz Villa <luiz.villa@laas.fr>
  */
 
 
@@ -46,8 +47,11 @@ void _initialize()
 
 		// Perform default configration
 		configure_adc_trigger_source(1, hrtim_ev1);
-		configure_adc_trigger_source(2, hrtim_ev1);
+		configure_adc_trigger_source(2, hrtim_ev3);
 		configure_adc_trigger_source(3, software);
+
+		adc_configure_discontinuous_mode(1, 1);
+		adc_configure_discontinuous_mode(2, 1);
 	}
 }
 
@@ -131,15 +135,15 @@ void configure_adc_default_all_measurements()
 
 	const char* adc1_channels[] =
 	{
+		"I1_LOW",
 		"V1_LOW",
-		"V2_LOW",
 		"V_HIGH"
 	};
 
 	const char* adc2_channels[] =
 	{
-		"I1_LOW",
 		"I2_LOW",
+		"V2_LOW",
 		"I_HIGH"
 	};
 

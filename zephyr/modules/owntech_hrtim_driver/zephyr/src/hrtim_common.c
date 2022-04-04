@@ -33,10 +33,17 @@
 
 void _hrtim_init_events()
 {
-	hrtim_adc_trigger_set_postscaler(0, 9);
 	hrtim_adc_trigger_en(1, 1, LL_HRTIM_ADCTRIG_SRC13_TIMACMP3);
-	hrtim_cmp_set(0, TIMA, CMP3xR, 1);
+	hrtim_adc_trigger_en(3, 2, LL_HRTIM_ADCTRIG_SRC13_TIMBCMP4);
+	hrtim_update_adc_trig_interleaved(1);
 }
+
+void hrtim_update_adc_trig_interleaved(uint16_t new_trig)
+{
+	hrtim_cmp_set(0, TIMA, CMP3xR, new_trig);
+	hrtim_cmp_set(0, TIMB, CMP4xR, new_trig);
+}
+
 
 void hrtim_init_current()
 {

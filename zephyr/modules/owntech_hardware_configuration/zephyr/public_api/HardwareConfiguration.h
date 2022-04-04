@@ -21,6 +21,7 @@
  * @date   2022
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Luiz Villa <luiz.villa@laas.fr>
  */
 
 
@@ -96,6 +97,8 @@ public:
 	static void setFullBridgeOff();
 	static void setLeg1Off();
 	static void setLeg2Off();
+
+	static void setHrtimAdcTrigInterleaved(uint16_t new_trig);
 
 	// Extra UART
 	static void extraUartInit();

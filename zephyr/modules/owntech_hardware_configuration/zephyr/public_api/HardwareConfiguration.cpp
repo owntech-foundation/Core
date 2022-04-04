@@ -21,6 +21,7 @@
  * @date   2022
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Luiz Villa <luiz.villa@laas.fr>
  */
 
 
@@ -209,6 +210,10 @@ void HardwareConfiguration::setLeg2Off()
 	hrtim_stop_leg2();
 }
 
+void HardwareConfiguration::setHrtimAdcTrigInterleaved(uint16_t new_trig)
+{
+	set_adc_trig_interleaved(new_trig);
+}
 
 /////
 // Extra UART

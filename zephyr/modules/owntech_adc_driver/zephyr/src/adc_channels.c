@@ -377,7 +377,7 @@ void adc_channels_configure(uint8_t adc_num)
 		 */
 		LL_ADC_SetChannelSamplingTime(adc,
 		                              __LL_ADC_DECIMAL_NB_TO_CHANNEL(current_channel),
-		                              LL_ADC_SAMPLINGTIME_92CYCLES_5
+		                              LL_ADC_SAMPLINGTIME_12CYCLES_5
 		                             );
 
 	}

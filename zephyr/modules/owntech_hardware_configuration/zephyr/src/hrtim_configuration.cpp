@@ -127,6 +127,8 @@ void hrtim_interleaved_pwm_update(float32_t pwm_duty_cycle)
 		leg_set(TIMA, pwm_pulse_width, 0);
 		leg_set(TIMB, pwm_pulse_width, pwm_phase_shift);
 	}
+
+	hrtim_update_adc_trig_interleaved( (pwm_pulse_width>>1) + (pwm_pulse_width>>2));
 }
 
 /**
@@ -280,4 +282,9 @@ void hrtim_start_leg1()
 void hrtim_start_leg2()
 {
 	leg_start(TIMB);
+}
+
+void set_adc_trig_interleaved(uint16_t new_trig)
+{
+	hrtim_update_adc_trig_interleaved(new_trig);
 }

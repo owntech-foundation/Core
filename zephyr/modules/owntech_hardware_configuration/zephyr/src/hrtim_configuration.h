@@ -117,6 +117,12 @@ void hrtim_start_leg1();
  */
 void hrtim_start_leg2();
 
+/**
+ * @brief     Updates the adc trigger moment
+ *
+ * @param[in] new_trig    defines the triggering moment
+ */
+void set_adc_trig_interleaved(uint16_t new_trig);
 
 
 #endif // HRTIM_CONFIGURATION_H_

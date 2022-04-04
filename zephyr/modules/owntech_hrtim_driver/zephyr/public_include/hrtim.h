@@ -83,6 +83,7 @@ void hrtim_init_voltage_buck();
 void hrtim_init_voltage_boost();
 void hrtim_init_voltage_leg1_buck_leg2_boost();
 void hrtim_init_voltage_leg1_boost_leg2_buck();
+void hrtim_update_adc_trig_interleaved(uint16_t new_trig);
 
 
 
