@@ -20,6 +20,7 @@
 /**
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
 #ifndef HRTIM_H_
@@ -27,6 +28,8 @@
 
 
 #include <stdint.h>
+
+#include <stm32_ll_hrtim.h>
 
 
 #ifdef __cplusplus
@@ -53,15 +56,15 @@ typedef unsigned int hrtim_t;
  * @brief   HRTIM timing units definition
  */
 typedef enum {
-    TIMA,
-    TIMB,
-    TIMC,
-    TIMD,
-    TIME,
+    TIMA = LL_HRTIM_TIMER_A,
+    TIMB = LL_HRTIM_TIMER_B,
+    TIMC = LL_HRTIM_TIMER_C,
+    TIMD = LL_HRTIM_TIMER_D,
+    TIME = LL_HRTIM_TIMER_E,
 #if (HRTIM_STU_NUMOF == 6)
-    TIMF,
+    TIMF = LL_HRTIM_TIMER_F,
 #endif
-    MSTR
+    MSTR = LL_HRTIM_TIMER_MASTER
 } hrtim_tu_t;
 
 
@@ -80,9 +83,13 @@ void hrtim_pwm_set(hrtim_t dev, hrtim_tu_t tu, uint16_t value, uint16_t shift);
 
 void hrtim_init_current();
 void hrtim_init_voltage_buck();
+void hrtim_init_voltage_buck_center_aligned();
 void hrtim_init_voltage_boost();
+void hrtim_init_voltage_boost_center_aligned();
 void hrtim_init_voltage_leg1_buck_leg2_boost();
+void hrtim_init_voltage_leg1_buck_leg2_boost_center_aligned();
 void hrtim_init_voltage_leg1_boost_leg2_buck();
+void hrtim_init_voltage_leg1_boost_leg2_buck_center_aligned();
 void hrtim_update_adc_trig_interleaved(uint16_t new_trig);
 
 

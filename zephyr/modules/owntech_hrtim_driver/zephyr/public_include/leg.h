@@ -29,6 +29,7 @@
  * @author  Hugues Larrive <hugues.larrive@laas.fr>
  * @author  Antoine Boche <antoine.boche@laas.fr>
  * @author  Luiz Villa <luiz.villa@laas.fr>
+ * @author  Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
 #ifndef LEG_H_
@@ -67,6 +68,16 @@ typedef struct {
  * @return                      HRTIM period
  */
 uint16_t leg_init(bool leg1_upper_switch_convention, bool leg2_upper_switch_convention);
+
+/**
+ * @brief   Initializes all the configured devices with up-down mode and the chosen switch convention
+ *
+ * @param[in]   leg1_upper_switch_convention    Choice of the switch convention for leg 1
+ * @param[in]   leg2_upper_switch_convention    Choice of the switch convention for leg 2 
+ *
+ * @return                      HRTIM period
+ */
+uint16_t leg_init_center_aligned(bool leg1_upper_switch_convention, bool leg2_upper_switch_convention);
 
 /**
  * @brief   Set the PWM pulse width for a given leg device

@@ -22,6 +22,7 @@
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
 
@@ -78,10 +79,15 @@ public:
 
 	// Power converter
 	static void initInterleavedBuckMode();
+	static void initInterleavedBuckModeCenterAligned();
 	static void initInterleavedBoostMode();
+	static void initInterleavedBoostModeCenterAligned();
 	static void initFullBridgeBuckMode();
+	static void initFullBridgeBuckModeCenterAligned();
 	static void initFullBridgeBoostMode();
+	static void initFullBridgeBoostModeCenterAligned();
 	static void initIndependentMode(bool leg1_buck_mode, bool leg2_buck_mode);
+	static void initIndependentModeCenterAligned(bool leg1_buck_mode, bool leg2_buck_mode);
 
 	static void setInterleavedDutyCycle(float32_t duty_cycle);
 	static void setFullBridgeDutyCycle(float32_t duty_cycle);

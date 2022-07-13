@@ -21,6 +21,7 @@
  * @date   2022
  * @author Luiz Villa <luiz.villa@laas.fr>
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
 
@@ -61,6 +62,19 @@ void hrtim_init_interleaved_buck_mode()
 }
 
 /**
+ * This function initializes both legs in buck mode in up-down mode
+ */
+void hrtim_init_interleaved_buck_mode_center_aligned()
+{
+	hrtim_init_voltage_buck_center_aligned();
+
+	pwm_period = leg_period();
+	pwm_phase_shift = pwm_period;
+	pwm_low_pulse_width = pwm_period * LOW_DUTY;
+	pwm_high_pulse_width = pwm_period * HIGH_DUTY;
+}
+
+/**
  * This function initializes both legs in boost mode
  */
 void hrtim_init_interleaved_boost_mode()
@@ -69,6 +83,16 @@ void hrtim_init_interleaved_boost_mode()
 
 	pwm_period = leg_period();
 	pwm_phase_shift = pwm_period / 2;
+	pwm_low_pulse_width = pwm_period * LOW_DUTY;
+	pwm_high_pulse_width = pwm_period * HIGH_DUTY;
+}
+
+void hrtim_init_interleaved_boost_mode_center_aligned()
+{
+	hrtim_init_voltage_boost_center_aligned();
+
+	pwm_period = leg_period();
+	pwm_phase_shift = pwm_period;
 	pwm_low_pulse_width = pwm_period * LOW_DUTY;
 	pwm_high_pulse_width = pwm_period * HIGH_DUTY;
 }
@@ -85,6 +109,12 @@ void hrtim_init_independent_mode(bool leg1_buck_mode, bool leg2_buck_mode)
 	else if (!leg1_buck_mode && leg2_buck_mode){
 		hrtim_init_voltage_leg1_boost_leg2_buck();
 	}
+	else if (leg1_buck_mode && leg2_buck_mode){
+		hrtim_init_voltage_buck();
+	}
+	else if (!leg1_buck_mode && !leg2_buck_mode){
+		hrtim_init_voltage_boost();
+	}
 
 	pwm_period = leg_period();
 	pwm_phase_shift = pwm_period / 2;
@@ -92,6 +122,31 @@ void hrtim_init_independent_mode(bool leg1_buck_mode, bool leg2_buck_mode)
 	pwm_high_pulse_width = pwm_period * HIGH_DUTY;
 }
 
+/**
+ * This leg initializes each leg independently. It receives the modes of each leg and triggers them accordingly.
+ * The counting mode is set to up-down (center aligned).
+ */
+void hrtim_init_independent_mode_center_aligned(bool leg1_buck_mode, bool leg2_buck_mode)
+{
+	// High resolution timer initialization
+	if (leg1_buck_mode && !leg2_buck_mode){
+		hrtim_init_voltage_leg1_buck_leg2_boost_center_aligned();
+	}
+	else if (!leg1_buck_mode && leg2_buck_mode){
+		hrtim_init_voltage_leg1_boost_leg2_buck_center_aligned();
+	}
+	else if (leg1_buck_mode && leg2_buck_mode){
+		hrtim_init_voltage_buck_center_aligned();
+	}
+	else if (!leg1_buck_mode && !leg2_buck_mode){
+		hrtim_init_voltage_boost_center_aligned();
+	}
+
+	pwm_period = leg_period();
+	pwm_phase_shift = pwm_period;
+	pwm_low_pulse_width = pwm_period * LOW_DUTY;
+	pwm_high_pulse_width = pwm_period * HIGH_DUTY;
+}
 
 
 /**

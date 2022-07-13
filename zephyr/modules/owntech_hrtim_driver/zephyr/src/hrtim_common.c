@@ -22,6 +22,7 @@
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
 #include <stm32_ll_hrtim.h>
@@ -36,6 +37,18 @@ void _hrtim_init_events()
 	hrtim_adc_trigger_en(1, 1, LL_HRTIM_ADCTRIG_SRC13_TIMACMP3);
 	hrtim_adc_trigger_en(3, 2, LL_HRTIM_ADCTRIG_SRC13_TIMBCMP4);
 	hrtim_update_adc_trig_interleaved(1);
+}
+
+void _hrtim_init_events_center_aligned()
+{
+	
+	// setting the adc roll-over mode on period event
+	LL_HRTIM_TIM_SetADCRollOverMode(HRTIM1, LL_HRTIM_TIMER_A, LL_HRTIM_ROLLOVER_MODE_PER);
+	LL_HRTIM_TIM_SetADCRollOverMode(HRTIM1, LL_HRTIM_TIMER_B, LL_HRTIM_ROLLOVER_MODE_PER);
+	
+	// setting adc trigger
+	hrtim_adc_trigger_en(1, 1, LL_HRTIM_ADCTRIG_SRC13_TIMAPER);
+	hrtim_adc_trigger_en(3, 2, LL_HRTIM_ADCTRIG_SRC13_TIMBPER);
 }
 
 void hrtim_update_adc_trig_interleaved(uint16_t new_trig)
@@ -58,10 +71,22 @@ void hrtim_init_voltage_buck()
 	_hrtim_init_events();
 }
 
+void hrtim_init_voltage_buck_center_aligned()
+{
+	leg_init_center_aligned(true,true);
+	_hrtim_init_events_center_aligned();
+}
+
 void hrtim_init_voltage_boost()
 {
 	leg_init(false,false);
 	_hrtim_init_events();
+}
+
+void hrtim_init_voltage_boost_center_aligned()
+{
+	leg_init_center_aligned(false,false);
+	_hrtim_init_events_center_aligned();
 }
 
 void hrtim_init_voltage_leg1_buck_leg2_boost()
@@ -70,8 +95,20 @@ void hrtim_init_voltage_leg1_buck_leg2_boost()
 	_hrtim_init_events();
 }
 
+void hrtim_init_voltage_leg1_buck_leg2_boost_center_aligned()
+{
+	leg_init_center_aligned(true,false);
+	_hrtim_init_events_center_aligned();
+}
+
 void hrtim_init_voltage_leg1_boost_leg2_buck()
 {
 	leg_init(false,true);
 	_hrtim_init_events();
+}
+
+void hrtim_init_voltage_leg1_boost_leg2_buck_center_aligned()
+{
+	leg_init_center_aligned(false,true);
+	_hrtim_init_events_center_aligned();
 }

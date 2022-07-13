@@ -31,6 +31,7 @@
  * @author      Clément Foucher <clement.foucher@laas.fr>
  * @author      Antoine Boche <antoine.boche@laas.fr>
  * @author      Luiz Villa <luiz.villa@laas.fr>
+ * @author      Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
 #ifndef HRTIM_VOLTAGE_MODE_H_
@@ -38,6 +39,7 @@
 
 #include <stdint.h>
 #include <limits.h>
+#include <stm32_ll_hrtim.h>
 
 #include <pinmux/pinmux_stm32.h>
 
@@ -65,44 +67,6 @@ extern "C" {
 #define HRTIM_UNDEF           (UINT_MAX)
 #endif
 
-/**
- * @brief   HRTIM Set/Reset trigger definition
- */
-typedef enum {
-    SOFT_TRIG = 0x00000001,     /*< Software Set/Reset trigger */
-    RESYNC = 0x00000002,        /*< Timer x resynchronization */
-    PER = 0x00000004,           /*< Timer x Period */
-    CMP1 = 0x00000008,          /*< Timer x Compare 1 */
-    CMP2 = 0x00000010,          /*< Timer x Compare 2 */
-    CMP3 = 0x00000020,          /*< Timer x Compare 3 */
-    CMP4 = 0x00000040,          /*< Timer x Compare 4 */
-    MSTPER = 0x00000080,        /*< Master Period */
-    MSTCMP1 = 0x00000100,       /*< Master Compare 1 */
-    MSTCMP2 = 0x00000200,       /*< Master Compare 2 */
-    MSTCMP3 = 0x00000400,       /*< Master Compare 3 */
-    MSTCMP4 = 0x00000800,       /*< Master Compare 4 */
-    TIMEVNT1 = 0x00001000,      /*< Timer Event 1 */
-    TIMEVNT2 = 0x00002000,      /*< Timer Event 2 */
-    TIMEVNT3 = 0x00004000,      /*< Timer Event 3 */
-    TIMEVNT4 = 0x00008000,      /*< Timer Event 4 */
-    TIMEVNT5 = 0x00010000,      /*< Timer Event 5 */
-    TIMEVNT6 = 0x00020000,      /*< Timer Event 6 */
-    TIMEVNT7 = 0x00040000,      /*< Timer Event 7 */
-    TIMEVNT8 = 0x00080000,      /*< Timer Event 8 */
-    TIMEVNT9 = 0x00100000,      /*< Timer Event 9 */
-    EXTEVNT1 = 0x00200000,      /*< External Event 1 */
-    EXTEVNT2 = 0x00400000,      /*< External Event 2 */
-    EXTEVNT3 = 0x00800000,      /*< External Event 3 */
-    EXTEVNT4 = 0x01000000,      /*< External Event 4 */
-    EXTEVNT5 = 0x02000000,      /*< External Event 5 */
-    EXTEVNT6 = 0x04000000,      /*< External Event 6 */
-    EXTEVNT7 = 0x08000000,      /*< External Event 7 */
-    EXTEVNT8 = 0x10000000,      /*< External Event 8 */
-    EXTEVNT9 = 0x20000000,      /*< External Event 9 */
-    EXTEVNT10 = 0x40000000,     /*< External Event 10 */
-    UPDATE = 0x80000000         /*< Registers update (transfer preload
-                                    to active) */
-} hrtim_cb_t;
 
 /**
  * @brief   HRTIM comparators definition
@@ -118,136 +82,14 @@ typedef enum {
     MCMP4R = 4
 } hrtim_cmp_t;
 
-/**
- * @brief   HRTIM outputs definition
- */
-typedef enum {
-    OUT1 = 1,
+
+
+typedef enum{
+
+    OUT1 = 1, 
     OUT2 = 2
 } hrtim_out_t;
 
-/**
- * @brief   HRTIM Timerx reset event definition
- *
- * Note: Bit definitions in stm32xxxx.h are for RSTAR (Timer A)
- * where Bits 19:30 are reset signals come from TIMB, TIMC,
- * TIMD, TIME so they are not usable for another unit.
- */
-typedef enum {
-    RST_UPDT = 0x00000002,          /*< Timer x Update reset */
-    RST_CMP2 = 0x00000004,          /*< Timer x compare 2 reset */
-    RST_CMP4 = 0x00000008,          /*< Timer x compare 4 reset */
-    RST_MSTPER = 0x00000010,        /*< Master timer Period */
-    RST_MSTCMP1 = 0x00000020,       /*< Master Compare 1 */
-    RST_MSTCMP2 = 0x00000040,       /*< Master Compare 2 */
-    RST_MSTCMP3 = 0x00000080,       /*< Master Compare 3 */
-    RST_MSTCMP4 = 0x00000100,       /*< Master Compare 4 */
-    RST_EXTEVNT1 = 0x00000200,      /*< External Event 1 */
-    RST_EXTEVNT2 = 0x00000400,      /*< External Event 2 */
-    RST_EXTEVNT3 = 0x00000800,      /*< External Event 3 */
-    RST_EXTEVNT4 = 0x00001000,      /*< External Event 4 */
-    RST_EXTEVNT5 = 0x00002000,      /*< External Event 5 */
-    RST_EXTEVNT6 = 0x00004000,      /*< External Event 6 */
-    RST_EXTEVNT7 = 0x00008000,      /*< External Event 7 */
-    RST_EXTEVNT8 = 0x00010000,      /*< External Event 8 */
-    RST_EXTEVNT9 = 0x00020000,      /*< External Event 9 */
-    RST_EXTEVNT10 = 0x00040000,     /*< External Event 10 */
-    RSTA_TBCMP1 = 0x00080000,       /*< Timer B Compare 1 for TIMA */
-    RSTA_TBCMP2 = 0x00100000,       /*< Timer B Compare 2 for TIMA */
-    RSTA_TBCMP4 = 0x00200000,       /*< Timer B Compare 4 for TIMA */
-    RSTA_TCCMP1 = 0x00400000,       /*< Timer C Compare 1 for TIMA */
-    RSTA_TCCMP2 = 0x00800000,       /*< Timer C Compare 2 for TIMA */
-    RSTA_TCCMP4 = 0x01000000,       /*< Timer C Compare 4 for TIMA */
-    RSTA_TDCMP1 = 0x02000000,       /*< Timer D Compare 1 for TIMA */
-    RSTA_TDCMP2 = 0x04000000,       /*< Timer D Compare 2 for TIMA */
-    RSTA_TDCMP4 = 0x08000000,       /*< Timer D Compare 4 for TIMA */
-    RSTA_TECMP1 = 0x10000000,       /*< Timer E Compare 1 for TIMA */
-    RSTA_TECMP2 = 0x20000000,       /*< Timer E Compare 2 for TIMA */
-    RSTA_TECMP4 = 0x40000000,       /*< Timer E Compare 4 for TIMA */
-    RSTB_TACMP1 = 0x00080000,       /*< Timer A Compare 1 for TIMB */
-    RSTB_TACMP2 = 0x00100000,       /*< Timer A Compare 2 for TIMB */
-    RSTB_TACMP4 = 0x00200000,       /*< Timer A Compare 4 for TIMB */
-    RSTB_TCCMP1 = 0x00400000,       /*< Timer C Compare 1 for TIMB */
-    RSTB_TCCMP2 = 0x00800000,       /*< Timer C Compare 2 for TIMB */
-    RSTB_TCCMP4 = 0x01000000,       /*< Timer C Compare 4 for TIMB */
-    RSTB_TDCMP1 = 0x02000000,       /*< Timer D Compare 1 for TIMB */
-    RSTB_TDCMP2 = 0x04000000,       /*< Timer D Compare 2 for TIMB */
-    RSTB_TDCMP4 = 0x08000000,       /*< Timer D Compare 4 for TIMB */
-    RSTB_TECMP1 = 0x10000000,       /*< Timer E Compare 1 for TIMB */
-    RSTB_TECMP2 = 0x20000000,       /*< Timer E Compare 2 for TIMB */
-    RSTB_TECMP4 = 0x40000000,       /*< Timer E Compare 4 for TIMB */
-    RSTC_TACMP1 = 0x00080000,       /*< Timer A Compare 1 for TIMC */
-    RSTC_TACMP2 = 0x00100000,       /*< Timer A Compare 2 for TIMC */
-    RSTC_TACMP4 = 0x00200000,       /*< Timer A Compare 4 for TIMC */
-    RSTC_TBCMP1 = 0x00400000,       /*< Timer B Compare 1 for TIMC */
-    RSTC_TBCMP2 = 0x00800000,       /*< Timer B Compare 2 for TIMC */
-    RSTC_TBCMP4 = 0x01000000,       /*< Timer B Compare 4 for TIMC */
-    RSTC_TDCMP1 = 0x02000000,       /*< Timer D Compare 1 for TIMC */
-    RSTC_TDCMP2 = 0x04000000,       /*< Timer D Compare 2 for TIMC */
-    RSTC_TDCMP4 = 0x08000000,       /*< Timer D Compare 4 for TIMC */
-    RSTC_TECMP1 = 0x10000000,       /*< Timer E Compare 1 for TIMC */
-    RSTC_TECMP2 = 0x20000000,       /*< Timer E Compare 2 for TIMC */
-    RSTC_TECMP4 = 0x40000000,       /*< Timer E Compare 4 for TIMC */
-    RSTD_TACMP1 = 0x00080000,       /*< Timer A Compare 1 for TIMD */
-    RSTD_TACMP2 = 0x00100000,       /*< Timer A Compare 2 for TIMD */
-    RSTD_TACMP4 = 0x00200000,       /*< Timer A Compare 4 for TIMD */
-    RSTD_TBCMP1 = 0x00400000,       /*< Timer B Compare 1 for TIMD */
-    RSTD_TBCMP2 = 0x00800000,       /*< Timer B Compare 2 for TIMD */
-    RSTD_TBCMP4 = 0x01000000,       /*< Timer B Compare 4 for TIMD */
-    RSTD_TCCMP1 = 0x02000000,       /*< Timer C Compare 1 for TIMD */
-    RSTD_TCCMP2 = 0x04000000,       /*< Timer C Compare 2 for TIMD */
-    RSTD_TCCMP4 = 0x08000000,       /*< Timer C Compare 4 for TIMD */
-    RSTD_TECMP1 = 0x10000000,       /*< Timer E Compare 1 for TIMD */
-    RSTD_TECMP2 = 0x20000000,       /*< Timer E Compare 2 for TIMD */
-    RSTD_TECMP4 = 0x40000000,       /*< Timer E Compare 4 for TIMD */
-    RSTE_TACMP1 = 0x00080000,       /*< Timer A Compare 1 for TIME */
-    RSTE_TACMP2 = 0x00100000,       /*< Timer A Compare 2 for TIME */
-    RSTE_TACMP4 = 0x00200000,       /*< Timer A Compare 4 for TIME */
-    RSTE_TBCMP1 = 0x00400000,       /*< Timer B Compare 1 for TIME */
-    RSTE_TBCMP2 = 0x00800000,       /*< Timer B Compare 2 for TIME */
-    RSTE_TBCMP4 = 0x01000000,       /*< Timer B Compare 4 for TIME */
-    RSTE_TCCMP1 = 0x02000000,       /*< Timer C Compare 1 for TIME */
-    RSTE_TCCMP2 = 0x04000000,       /*< Timer C Compare 2 for TIME */
-    RSTE_TCCMP4 = 0x08000000,       /*< Timer C Compare 4 for TIME */
-    RSTE_TDCMP1 = 0x10000000,       /*< Timer D Compare 1 for TIME */
-    RSTE_TDCMP2 = 0x20000000,       /*< Timer D Compare 2 for TIME */
-    RSTE_TDCMP4 = 0x40000000,       /*< Timer D Compare 4 for TIME */
-#if (HRTIM_STU_NUMOF == 6)
-    RSTA_TFCMP2 = 0x80000000,       /*< Timer F Compare 2 for TIMA */
-    RSTB_TFCMP2 = 0x80000000,       /*< Timer F Compare 2 for TIMB */
-    RSTC_TFCMP2 = 0x80000000,       /*< Timer F Compare 2 for TIMC */
-    RSTD_TFCMP2 = 0x80000000,       /*< Timer F Compare 2 for TIMD */
-    RSTE_TFCMP2 = 0x80000000,       /*< Timer F Compare 2 for TIME */
-    RSTF_TACMP1 = 0x00080000,       /*< Timer A Compare 1 for TIMF */
-    RSTF_TACMP2 = 0x00100000,       /*< Timer A Compare 2 for TIMF */
-    RSTF_TACMP4 = 0x00200000,       /*< Timer A Compare 4 for TIMF */
-    RSTF_TBCMP1 = 0x00400000,       /*< Timer B Compare 1 for TIMF */
-    RSTF_TBCMP2 = 0x00800000,       /*< Timer B Compare 2 for TIMF */
-    RSTF_TBCMP4 = 0x01000000,       /*< Timer B Compare 4 for TIMF */
-    RSTF_TCCMP1 = 0x02000000,       /*< Timer C Compare 1 for TIMF */
-    RSTF_TCCMP2 = 0x04000000,       /*< Timer C Compare 2 for TIMF */
-    RSTF_TCCMP4 = 0x08000000,       /*< Timer C Compare 4 for TIMF */
-    RSTF_TDCMP1 = 0x10000000,       /*< Timer D Compare 1 for TIMF */
-    RSTF_TDCMP2 = 0x20000000,       /*< Timer D Compare 2 for TIMF */
-    RSTF_TDCMP4 = 0x40000000,       /*< Timer D Compare 4 for TIMF */
-    RSTF_TECMP2 = 0x80000000,       /*< Timer E Compare 2 for TIMF */
-#endif
-} hrtim_rst_evt_t;
-
-/**
- * @brief   HRTIM timing units CEN bits
- */
-typedef enum {
-    MCEN = HRTIM_MCR_MCEN,
-    TACEN = HRTIM_MCR_TACEN,
-    TBCEN = HRTIM_MCR_TBCEN,
-    TCCEN = HRTIM_MCR_TCCEN,
-    TDCEN = HRTIM_MCR_TDCEN,
-    TECEN = HRTIM_MCR_TECEN,
-#if (HRTIM_STU_NUMOF == 6)
-    TFCEN = HRTIM_MCR_TFCEN
-#endif
-} hrtim_cen_t;
 
 /**
  * @brief   HRTIM ADC trigger registers definition
@@ -259,204 +101,488 @@ typedef enum {
     ADC4R = 4
 } hrtim_adc_t;
 
+
 /**
- * @brief   HRTIM ADC trigger register bits definitions
+ * @brief  HRTIM counting mode setting
+ * 
  */
 typedef enum {
-    AD13_MC1 = 0x00000001,          /*< ADC trigger on master compare 1 */
-    AD13_MC2 = 0x00000002,          /*< ADC trigger on master compare 2 */
-    AD13_MC3 = 0x00000004,          /*< ADC trigger on master compare 3 */
-    AD13_MC4 = 0x00000008,          /*< ADC trigger on master compare 4 */
-    AD13_MPER = 0x00000010,         /*< ADC trigger on master period */
-    AD13_EEV1 = 0x00000020,         /*< ADC trigger on external event 1 */
-    AD13_EEV2 = 0x00000040,         /*< ADC trigger on external event 2 */
-    AD13_EEV3 = 0x00000080,         /*< ADC trigger on external event 3 */
-    AD13_EEV4 = 0x00000100,         /*< ADC trigger on external event 4 */
-    AD13_EEV5 = 0x00000200,         /*< ADC trigger on external event 5 */
-    AD13_TFC2 = 0x00000400,         /*< ADC trigger on timer F compare 2 */
-    AD13_TAC3 = 0x00000800,         /*< ADC trigger on timer A compare 3 */
-    AD13_TAC4 = 0x00001000,         /*< ADC trigger on timer A compare 4 */
-    AD13_TAPER = 0x00002000,        /*< ADC trigger on timer A period */
-    AD13_TARST = 0x00004000,        /*< ADC trigger on timer A reset */
-    AD13_TFC3 = 0x00008000,         /*< ADC trigger on timer F compare 3 */
-    AD13_TBC3 = 0x00010000,         /*< ADC trigger on timer B compare 3 */
-    AD13_TBC4 = 0x00020000,         /*< ADC trigger on timer B compare 4 */
-    AD13_TBPER = 0x00040000,        /*< ADC trigger on timer B period */
-    AD13_TBRST = 0x00080000,        /*< ADC trigger on timer B reset */
-    AD13_TFC4 = 0x00100000,         /*< ADC trigger on timer F compare 4 */
-    AD13_TCC3 = 0x00200000,         /*< ADC trigger on timer C compare 3 */
-    AD13_TCC4 = 0x00400000,         /*< ADC trigger on timer C compare 4 */
-    AD13_TCPER = 0x00800000,        /*< ADC trigger on timer C period */
-    AD13_TFPER = 0x01000000,        /*< ADC trigger on timer F period */
-    AD13_TDC3 = 0x02000000,         /*< ADC trigger on timer D compare 3 */
-    AD13_TDC4 = 0x04000000,         /*< ADC trigger on timer D compare 4 */
-    AD13_TDPER = 0x08000000,        /*< ADC trigger on timer D period */
-    AD13_TFRST = 0x10000000,        /*< ADC trigger on timer F reset */
-    AD13_TEC3 = 0x20000000,         /*< ADC trigger on timer E compare 3 */
-    AD13_TEC4 = 0x40000000,         /*< ADC trigger on timer E compare 4 */
-    AD13_TEPER = 0x80000000,        /*< ADC trigger on timer E period */
 
-    AD24_MC1 = 0x00000001,          /*< ADC trigger on master compare 1 */
-    AD24_MC2 = 0x00000002,          /*< ADC trigger on master compare 2 */
-    AD24_MC3 = 0x00000004,          /*< ADC trigger on master compare 3 */
-    AD24_MC4 = 0x00000008,          /*< ADC trigger on master compare 4 */
-    AD24_MPER = 0x00000010,         /*< ADC trigger on master period */
-    AD24_EEV6 = 0x00000020,         /*< ADC trigger on external event 6 */
-    AD24_EEV7 = 0x00000040,         /*< ADC trigger on external event 7 */
-    AD24_EEV8 = 0x00000080,         /*< ADC trigger on external event 8 */
-    AD24_EEV9 = 0x00000100,         /*< ADC trigger on external event 9 */
-    AD24_EEV10 = 0x00000200,        /*< ADC trigger on external event 10 */
-    AD24_TAC2 = 0x00000400,         /*< ADC trigger on timer A compare 2 */
-    AD24_TFC2 = 0x00000800,         /*< ADC trigger on timer F compare 2 */
-    AD24_TAC4 = 0x00001000,         /*< ADC trigger on timer A compare 4 */
-    AD24_TAPER = 0x00002000,        /*< ADC trigger on timer A period */
-    AD24_TBC2 = 0x00004000,         /*< ADC trigger on timer B compare 2 */
-    AD24_TFC3 = 0x00008000,         /*< ADC trigger on timer F compare 3 */
-    AD24_TBC4 = 0x00010000,         /*< ADC trigger on timer B compare 4 */
-    AD24_TBPER = 0x00020000,        /*< ADC trigger on timer B period */
-    AD24_TCC2 = 0x00040000,         /*< ADC trigger on timer C compare 2 */
-    AD24_TFC4 = 0x00080000,         /*< ADC trigger on timer F compare 4 */
-    AD24_TCC4 = 0x00100000,         /*< ADC trigger on timer C compare 4 */
-    AD24_TCPER = 0x00200000,        /*< ADC trigger on timer C period */
-    AD24_TCRST = 0x00400000,        /*< ADC trigger on timer C reset */
-    AD24_TDC2 = 0x00800000,         /*< ADC trigger on timer D compare 2 */
-    AD24_TFPER = 0x01000000,        /*< ADC trigger on timer F period */
-    AD24_TDC4 = 0x02000000,         /*< ADC trigger on timer D compare 4 */
-    AD24_TDPER = 0x04000000,        /*< ADC trigger on timer D period */
-    AD24_TDRST = 0x08000000,        /*< ADC trigger on timer D reset */
-    AD24_TEC2 = 0x10000000,         /*< ADC trigger on timer E compare 2 */
-    AD24_TEC3 = 0x20000000,         /*< ADC trigger on timer E compare 3 */
-    AD24_TEC4 = 0x40000000,         /*< ADC trigger on timer E compare 4 */
-    AD24_TERST = 0x80000000,        /*< ADC trigger on timer E reset */
-} hrtim_adc_trigger_t;
+    Lft_aligned =1,
+    UpDwn = 2 
+
+}hrtim_cnt_t;
+
+
 
 /**
  * @brief   Initialize an HRTIM device and all these timing units for
  *          complementary pwm outputs with a dead time.
  *
- * @param[in] dev                            HRTIM device to initialize
- * @param[inout] freq                        HRTIM frequency in Hz
- * @param[in] dt                             Desired dead time in ns
- * @param[in] leg1_upper_switch_convention   Choice of the switch convention for leg 1
- * @param[in] leg2_upper_switch_convention   Choice of the switch convention for leg 2
- *
- * @return                  actual HRTIM resolution on success
- * @return                  0 on error
+ * @param[in] dev      HRTIM device to initialize
+ * @param[inout] freq  HRTIM frequency in Hz
+ * @param[in] dt       Desired dead time in ns
+ * @param[in] leg1_upper_switch_convention   Choice of the switch convention for leg 1, can be one of the following values:
+ *            @arg @ref True (Buck mode)
+ *            @arg @ref False (Boost mode)
+ * @param[in] leg2_upper_switch_convention   Choice of the switch convention for leg 2, can be one of the following values:
+ *            @arg @ref True (Buck mode)
+ *            @arg @ref False (Boost mode)
+ * @return              actual HRTIM resolution on success
+ * @return              0 on error
  */
 uint16_t hrtim_init(hrtim_t dev, uint32_t *freq, uint16_t dt, uint8_t leg1_upper_switch_convention, uint8_t leg2_upper_switch_convention);
+
+/**
+ * @brief   Initialize an HRTIM device and all these timing units for
+ *          complementary pwm outputs with a dead time with Up-Down mode (center alligned).
+ *
+ * @param[in] dev      HRTIM device to initialize
+ * @param[inout] freq  HRTIM frequency in Hz
+ * @param[in] dt       Desired dead time in ns
+ * @param[in] leg1_upper_switch_convention   Choice of the switch convention for leg 1, can be one of the following values:
+ *            @arg @ref True (Buck mode)
+ *            @arg @ref False (Boost mode)
+ * @param[in] leg2_upper_switch_convention   Choice of the switch convention for leg 2, can be one of the following values:
+ *            @arg @ref True (Buck mode)
+ *            @arg @ref False (Boost mode)
+ * @return              actual HRTIM resolution on success
+ * @return              0 on error
+ */
+uint16_t hrtim_init_updwn(hrtim_t dev, uint32_t *freq, uint16_t dt, uint8_t leg1_upper_switch_convention, uint8_t leg2_upper_switch_convention);
+
+
 /**
  * @brief   Initialize an HRTIM device master timer
  *
- * @param[in] dev           HRTIM device to initialize
- * @param[inout] freq       HRTIM frequency in Hz
+ * @param[in] dev       HRTIM device to initialize
+ * @param[inout] freq   HRTIM frequency in Hz
  *
- * @return                  actual HRTIM resolution on success
- * @return                  0 on error
+ * @return              actual HRTIM resolution on success
+ * @return              0 on error
  */
 uint16_t hrtim_init_master(hrtim_t dev, uint32_t *freq);
 
 /**
  * @brief   Initialize a timing unit
  *
- * @param[in] dev           HRTIM device
- * @param[in] tu            Timing unit to initialize
- * @param[inout] freq       HRTIM frequency in Hz
+ * @param[in] dev       HRTIM device
+ * @param[in] tu        Timing unit to initialize, can be one of the following values:
+ *            @arg @ref TIMA
+ *            @arg @ref TIMB
+ *            @arg @ref TIMC
+ *            @arg @ref TIMD
+ *            @arg @ref TIME
+ *            @arg @ref TIMF
+ * @param[in] cnt_mode  Counting mode 
+ *            @arg @ref Lft_aligned
+ *            @arg @ref UpDwn 
+ * @param[inout] freq   HRTIM frequency in Hz
  *
- * @return                  actual timing unit resolution on success
- * @return                  0 on error
+ * @return              actual timing unit resolution on success
+ * @return              0 on error
  */
-uint16_t hrtim_init_tu(hrtim_t dev, hrtim_tu_t tu, uint32_t *freq);
+uint16_t hrtim_init_tu(hrtim_t dev, hrtim_tu_t tu, uint32_t *freq, hrtim_cnt_t cnt_mode);
 
 /**
  * @brief   Set crossbar(s) setting
  *
- * @param[in] dev           HRTIM device
- * @param[in] tu            Timing unit
- * @param[in] out           Output 1 or 2
- * @param[in] cb            Set crossbar(s)
+ * @param[in] dev       HRTIM device
+ * @param[in] out       Output, can be one of the following values:
+ *            @arg @ref LL_HRTIM_OUTPUT_TA1
+ *            @arg @ref LL_HRTIM_OUTPUT_TA2
+ *            @arg @ref LL_HRTIM_OUTPUT_TB1
+ *            @arg @ref LL_HRTIM_OUTPUT_TB2
+ *            @arg @ref LL_HRTIM_OUTPUT_TC1
+ *            @arg @ref LL_HRTIM_OUTPUT_TC2
+ *            @arg @ref LL_HRTIM_OUTPUT_TD1
+ *            @arg @ref LL_HRTIM_OUTPUT_TD2
+ *            @arg @ref LL_HRTIM_OUTPUT_TE1
+ *            @arg @ref LL_HRTIM_OUTPUT_TE2
+ *            @arg @ref LL_HRTIM_OUTPUT_TF1
+ *            @arg @ref LL_HRTIM_OUTPUT_TF2 
+ * @param[in] cb        Set crossbar(s)
  */
-void hrtim_set_cb_set(hrtim_t dev, hrtim_tu_t tu, hrtim_out_t out,
-                        hrtim_cb_t cb);
+void hrtim_set_cb_set(hrtim_t dev, uint32_t out,
+                        uint32_t cb);
 
 /**
  * @brief   Unset set crossbar(s)
  *
- * @param[in] dev           HRTIM device
- * @param[in] tu            Timing unit
- * @param[in] out           Output 1 or 2
- * @param[in] cb            Set crossbar(s)
+ * @param[in] dev       HRTIM device
+ * @param[in] out       Output, can be one of the following values:
+ *            @arg @ref LL_HRTIM_OUTPUT_TA1
+ *            @arg @ref LL_HRTIM_OUTPUT_TA2
+ *            @arg @ref LL_HRTIM_OUTPUT_TB1
+ *            @arg @ref LL_HRTIM_OUTPUT_TB2
+ *            @arg @ref LL_HRTIM_OUTPUT_TC1
+ *            @arg @ref LL_HRTIM_OUTPUT_TC2
+ *            @arg @ref LL_HRTIM_OUTPUT_TD1
+ *            @arg @ref LL_HRTIM_OUTPUT_TD2
+ *            @arg @ref LL_HRTIM_OUTPUT_TE1
+ *            @arg @ref LL_HRTIM_OUTPUT_TE2
+ *            @arg @ref LL_HRTIM_OUTPUT_TF1
+ *            @arg @ref LL_HRTIM_OUTPUT_TF2 
+ * @param[in] cb        Set crossbar(s)
+ *            @arg @ref LL_HRTIM_OUTPUTSET_NONE
+ *            @arg @ref LL_HRTIM_OUTPUTSET_RESYNC
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMPER
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTSET_MASTERPER
+ *            @arg @ref LL_HRTIM_OUTPUTSET_MASTERCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTSET_MASTERCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTSET_MASTERCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTSET_MASTERCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMAEV1_TIMBCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMAEV2_TIMBCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMAEV3_TIMCCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMAEV4_TIMCCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMAEV5_TIMDCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMAEV6_TIMDCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMAEV7_TIMECMP3
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMAEV8_TIMECMP4
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMAEV9_TIMFCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMBEV1_TIMACMP1
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMBEV2_TIMACMP2
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMBEV3_TIMCCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMBEV4_TIMCCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMBEV5_TIMDCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMBEV6_TIMDCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMBEV7_TIMECMP1
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMBEV8_TIMECMP2
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMBEV9_TIMFCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMCEV1_TIMACMP2
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMCEV2_TIMACMP3
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMCEV3_TIMBCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMCEV4_TIMBCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMCEV5_TIMDCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMCEV6_TIMDCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMCEV7_TIMECMP3
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMCEV8_TIMECMP4
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMCEV9_TIMFCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMDEV1_TIMACMP1
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMDEV2_TIMACMP4
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMDEV3_TIMBCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMDEV4_TIMBCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMDEV5_TIMCCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMDEV6_TIMECMP1
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMDEV7_TIMECMP4
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMDEV8_TIMFCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMDEV9_TIMFCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMEEV1_TIMACMP4
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMEEV2_TIMBCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMEEV3_TIMBCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMEEV4_TIMCCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMEEV5_TIMCCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMEEV6_TIMDCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMEEV7_TIMDCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMEEV8_TIMFCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMEEV9_TIMFCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMFEV1_TIMACMP3
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMFEV2_TIMBCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMFEV3_TIMBCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMFEV4_TIMCCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMFEV5_TIMCCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMFEV6_TIMDCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMFEV7_TIMDCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMFEV8_TIMECMP2
+ *            @arg @ref LL_HRTIM_OUTPUTSET_TIMFEV9_TIMECMP3
+ *            @arg @ref LL_HRTIM_OUTPUTSET_EEV_1
+ *            @arg @ref LL_HRTIM_OUTPUTSET_EEV_2
+ *            @arg @ref LL_HRTIM_OUTPUTSET_EEV_3
+ *            @arg @ref LL_HRTIM_OUTPUTSET_EEV_4
+ *            @arg @ref LL_HRTIM_OUTPUTSET_EEV_5
+ *            @arg @ref LL_HRTIM_OUTPUTSET_EEV_6
+ *            @arg @ref LL_HRTIM_OUTPUTSET_EEV_7
+ *            @arg @ref LL_HRTIM_OUTPUTSET_EEV_8
+ *            @arg @ref LL_HRTIM_OUTPUTSET_EEV_9
+ *            @arg @ref LL_HRTIM_OUTPUTSET_EEV_10
+ *            @arg @ref LL_HRTIM_OUTPUTSET_UPDATE
+ *            (source = TIMy and destination = TIMx, Compare Unit = CMPz).
  */
-void hrtim_set_cb_unset(hrtim_t dev, hrtim_tu_t tu, hrtim_out_t out,
-                        hrtim_cb_t cb);
+void hrtim_set_cb_unset(hrtim_t dev, uint32_t out,
+                        uint32_t cb);
 
 /**
  * @brief   Reset crossbar(s) setting
  *
- * @param[in] dev           HRTIM device
- * @param[in] tu            Timing unit
- * @param[in] out           Output 1 or 2
- * @param[in] cb            Reset crossbar(s)
+ * @param[in] dev  HRTIM device
+ * @param[in] out  Output, can be one of the following values:
+ *            @arg @ref LL_HRTIM_OUTPUT_TA1
+ *            @arg @ref LL_HRTIM_OUTPUT_TA2
+ *            @arg @ref LL_HRTIM_OUTPUT_TB1
+ *            @arg @ref LL_HRTIM_OUTPUT_TB2
+ *            @arg @ref LL_HRTIM_OUTPUT_TC1
+ *            @arg @ref LL_HRTIM_OUTPUT_TC2
+ *            @arg @ref LL_HRTIM_OUTPUT_TD1
+ *            @arg @ref LL_HRTIM_OUTPUT_TD2
+ *            @arg @ref LL_HRTIM_OUTPUT_TE1
+ *            @arg @ref LL_HRTIM_OUTPUT_TE2
+ *            @arg @ref LL_HRTIM_OUTPUT_TF1
+ *            @arg @ref LL_HRTIM_OUTPUT_TF2 
+ * @param[in] cb   Reset crossbar(s), can be one of those following values: 
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_NONE
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_RESYNC
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMPER
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_MASTERPER
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_MASTERCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_MASTERCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_MASTERCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_MASTERCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMAEV1_TIMBCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMAEV2_TIMBCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMAEV3_TIMCCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMAEV4_TIMCCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMAEV5_TIMDCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMAEV6_TIMDCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMAEV7_TIMECMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMAEV8_TIMECMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMAEV9_TIMFCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMBEV1_TIMACMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMBEV2_TIMACMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMBEV3_TIMCCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMBEV4_TIMCCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMBEV5_TIMDCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMBEV6_TIMDCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMBEV7_TIMECMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMBEV8_TIMECMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMBEV9_TIMFCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCEV1_TIMACMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCEV2_TIMACMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCEV3_TIMBCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCEV4_TIMBCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCEV5_TIMDCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCEV6_TIMDCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCEV7_TIMECMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCEV8_TIMECMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCEV9_TIMFCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMDEV1_TIMACMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMDEV2_TIMACMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMDEV3_TIMBCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMDEV4_TIMBCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMDEV5_TIMCCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMDEV6_TIMECMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMDEV7_TIMECMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMDEV8_TIMFCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMDEV9_TIMFCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMEEV1_TIMACMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMEEV2_TIMBCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMEEV3_TIMBCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMEEV4_TIMCCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMEEV5_TIMCCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMEEV6_TIMDCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMEEV7_TIMDCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMEEV8_TIMFCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMEEV9_TIMFCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMFEV1_TIMACMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMFEV2_TIMBCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMFEV3_TIMBCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMFEV4_TIMCCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMFEV5_TIMCCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMFEV6_TIMDCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMFEV7_TIMDCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMFEV8_TIMECMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMFEV9_TIMECMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_EEV_1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_EEV_2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_EEV_3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_EEV_4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_EEV_5
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_EEV_6
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_EEV_7
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_EEV_8
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_EEV_9
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_EEV_10
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_UPDATE
+ *            (source = TIMy and destination = TIMx, Compare Unit = CMPz).
  */
-void hrtim_rst_cb_set(hrtim_t dev, hrtim_tu_t tu, hrtim_out_t out,
-                        hrtim_cb_t cb);
+void hrtim_rst_cb_set(hrtim_t dev, uint32_t out,
+                        uint32_t cb);
 
 /**
  * @brief   Unset reset crossbar(s)
  *
- * @param[in] dev           HRTIM device
- * @param[in] tu            Timing unit
- * @param[in] out           Output 1 or 2
- * @param[in] cb            Reset crossbar(s)
+ * @param[in] dev HRTIM device
+ * @param[in] out Output, can be one of the following values:
+ *            @arg @ref LL_HRTIM_OUTPUT_TA1
+ *            @arg @ref LL_HRTIM_OUTPUT_TA2
+ *            @arg @ref LL_HRTIM_OUTPUT_TB1
+ *            @arg @ref LL_HRTIM_OUTPUT_TB2
+ *            @arg @ref LL_HRTIM_OUTPUT_TC1
+ *            @arg @ref LL_HRTIM_OUTPUT_TC2
+ *            @arg @ref LL_HRTIM_OUTPUT_TD1
+ *            @arg @ref LL_HRTIM_OUTPUT_TD2
+ *            @arg @ref LL_HRTIM_OUTPUT_TE1
+ *            @arg @ref LL_HRTIM_OUTPUT_TE2
+ *            @arg @ref LL_HRTIM_OUTPUT_TF1
+ *            @arg @ref LL_HRTIM_OUTPUT_TF2
+ * @param[in] cb  Reset crossbar(s), can be one of those following values: 
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_NONE
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_RESYNC
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMPER
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_MASTERPER
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_MASTERCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_MASTERCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_MASTERCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_MASTERCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMAEV1_TIMBCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMAEV2_TIMBCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMAEV3_TIMCCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMAEV4_TIMCCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMAEV5_TIMDCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMAEV6_TIMDCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMAEV7_TIMECMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMAEV8_TIMECMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMAEV9_TIMFCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMBEV1_TIMACMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMBEV2_TIMACMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMBEV3_TIMCCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMBEV4_TIMCCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMBEV5_TIMDCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMBEV6_TIMDCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMBEV7_TIMECMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMBEV8_TIMECMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMBEV9_TIMFCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCEV1_TIMACMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCEV2_TIMACMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCEV3_TIMBCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCEV4_TIMBCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCEV5_TIMDCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCEV6_TIMDCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCEV7_TIMECMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCEV8_TIMECMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMCEV9_TIMFCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMDEV1_TIMACMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMDEV2_TIMACMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMDEV3_TIMBCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMDEV4_TIMBCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMDEV5_TIMCCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMDEV6_TIMECMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMDEV7_TIMECMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMDEV8_TIMFCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMDEV9_TIMFCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMEEV1_TIMACMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMEEV2_TIMBCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMEEV3_TIMBCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMEEV4_TIMCCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMEEV5_TIMCCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMEEV6_TIMDCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMEEV7_TIMDCMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMEEV8_TIMFCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMEEV9_TIMFCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMFEV1_TIMACMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMFEV2_TIMBCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMFEV3_TIMBCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMFEV4_TIMCCMP1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMFEV5_TIMCCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMFEV6_TIMDCMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMFEV7_TIMDCMP4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMFEV8_TIMECMP2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_TIMFEV9_TIMECMP3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_EEV_1
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_EEV_2
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_EEV_3
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_EEV_4
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_EEV_5
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_EEV_6
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_EEV_7
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_EEV_8
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_EEV_9
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_EEV_10
+ *            @arg @ref LL_HRTIM_OUTPUTRESET_UPDATE
+ *            (source = TIMy and destination = TIMx, Compare Unit = CMPz).
  */
-void hrtim_rst_cb_unset(hrtim_t dev, hrtim_tu_t tu, hrtim_out_t out,
-                            hrtim_cb_t cb);
+void hrtim_rst_cb_unset(hrtim_t dev, uint32_t out,
+                            uint32_t cb);
 
 /**
- * @brief   Full timing unit outputs set/reset crossbars setting for
- *          complementary pwm.
+ * @brief   Sets up the switching convention of the leg upper switch
  *
- * @param[in] dev                   HRTIM device
- * @param[in] tu                    Timing unit
- * @param[in] switch_convention     Choice of the switch convention
- */
-void hrtim_cmpl_pwm_out(hrtim_t dev, hrtim_tu_t tu, bool switch_convention);
-
-
-/**
- * @brief   Sets up the switching convention of leg 1
- *
- * @param[in] hrtim                            HRTIM device
- * @param[in] tu                               Timing unit
+ * @param[in] hrtim     HRTIM device
+ * @param[in] tu        Timing unit, can be one of the following values:
+ *            @arg @ref TIMA
+ *            @arg @ref TIMB
+ *            @arg @ref TIMC
+ *            @arg @ref TIMD
+ *            @arg @ref TIME
+ *            @arg @ref TIMF
+ * @param[in] cnt_mode  Counting mode 
+ *            @arg @ref Lft_aligned
+ *            @arg @ref UpDwn
  * @param[in] leg1_upper_switch_convention     Choice of the switch convention - 1 for buck mode and 0 for boost mode
  */
-void hrtim_cmpl_pwm_out1(hrtim_t hrtim, hrtim_tu_t tu, bool leg1_upper_switch_convention);
+void hrtim_cmpl_pwm_out1(hrtim_t hrtim, hrtim_tu_t tu, bool leg_upper_switch_convention, hrtim_cnt_t cnt_mode);
+
 
 /**
- * @brief   Sets up the switching convention of leg 2
+ * @brief   Sets up the switching convention of the leg lower switch 
  *
- * @param[in] hrtim                            HRTIM device
- * @param[in] tu                    Timing unit
+ * @param[in] hrtim     HRTIM device
+ * @param[in] tu        Timing unit, can be one of the following values:
+ *            @arg @ref TIMA
+ *            @arg @ref TIMB
+ *            @arg @ref TIMC
+ *            @arg @ref TIMD
+ *            @arg @ref TIME
+ *            @arg @ref TIMF
+ * @param[in] cnt_mode  Counting mode 
+ *            @arg @ref Lft_aligned
+ *            @arg @ref UpDwn
  * @param[in] leg1_upper_switch_convention     Choice of the switch convention - 1 for buck mode and 0 for boost mode
- */
-void hrtim_cmpl_pwm_out2(hrtim_t hrtim, hrtim_tu_t tu, bool leg2_upper_switch_convention);
+*/
+
+void hrtim_cmpl_pwm_out2(hrtim_t hrtim, hrtim_tu_t tu, bool leg_upper_switch_convention, hrtim_cnt_t cnt);
 
 
 /**
  * @brief   Set a period value
  *
- * @param[in] dev           HRTIM device
- * @param[in] tu            Timing unit (TIM{A..F} or MSTR for master)
- * @param[in] value         Raw value to set
+ * @param[in] dev       HRTIM device
+ * @param[in] tu        Timing unit, can be one of the following values:
+ *            @arg @ref TIMA
+ *            @arg @ref TIMB
+ *            @arg @ref TIMC
+ *            @arg @ref TIMD
+ *            @arg @ref TIME
+ *            @arg @ref TIMF
+ *            @arg @ref MSTR 
+ * @param[in] value     Raw value to set
  */
 void hrtim_period_set(hrtim_t dev, hrtim_tu_t tu, uint16_t value);
 
 /**
  * @brief   Set a comparator value
  *
- * @param[in] dev           HRTIM device
- * @param[in] tu            Timing unit (TIM{A..F} or MSTR for master)
- * @param[in] cmp           Comparator from 1 to 4
- * @param[in] value         Raw value to set
+ * @param[in] dev       HRTIM device
+ * @param[in] tu        Timing unit, can be one of the following values:
+ *            @arg @ref TIMA
+ *            @arg @ref TIMB
+ *            @arg @ref TIMC
+ *            @arg @ref TIMD
+ *            @arg @ref TIME
+ *            @arg @ref TIMF
+ *            @arg @ref MSTR 
+ * @param[in] cmp       Comparator from 1 to 4, can be one of the following values:
+ *            @arg @ref CMP1xR
+ *            @arg @ref CMP2xR
+ *            @arg @ref CMP3xR
+ *            @arg @ref CMP4xR
+ *            @arg @ref MCMP1R
+ *            @arg @ref MCMP2R
+ *            @arg @ref MCMP3R
+ *            @arg @ref MCMP4R
+ * @param[in] value     Raw value to set
  */
 void hrtim_cmp_set(hrtim_t dev, hrtim_tu_t tu, hrtim_cmp_t cmp,
                     uint16_t value);
@@ -464,52 +590,160 @@ void hrtim_cmp_set(hrtim_t dev, hrtim_tu_t tu, hrtim_cmp_t cmp,
 /**
  * @brief   Enable a timing unit counter.
  *
- * @param[in] dev           HRTIM device
- * @param[in] cen           CEN mask
+ * @param[in] dev       HRTIM device
+ * @param[in] tu        Timing unit, can be one of the following values:
+ *            @arg @ref TIMA
+ *            @arg @ref TIMB
+ *            @arg @ref TIMC
+ *            @arg @ref TIMD
+ *            @arg @ref TIME
+ *            @arg @ref TIMF
+ *            @arg @ref MSTR
  */
-void hrtim_cnt_en(hrtim_t dev, hrtim_cen_t cen);
+void hrtim_cnt_en(hrtim_t dev, hrtim_tu_t tu);
 
 /**
  * @brief   Disable a timing unit counter.
  *
- * @param[in] dev           HRTIM device
- * @param[in] cen           CEN mask
+ * @param[in] dev       HRTIM device
+ * @param[in] tu        Timing unit, Timing unit, can be one of the following values:
+ *            @arg @ref TIMA
+ *            @arg @ref TIMB
+ *            @arg @ref TIMC
+ *            @arg @ref TIMD
+ *            @arg @ref TIME
+ *            @arg @ref TIMF
+ *            @arg @ref MSTR
  */
-void hrtim_cnt_dis(hrtim_t dev, hrtim_cen_t cen);
+void hrtim_cnt_dis(hrtim_t dev, hrtim_tu_t tu);
 
 /**
  * @brief   Enable a Timerx reset event
  *
- * @param[in] dev           HRTIM device
- * @param[in] tu            Timing unit
- * @param[in] evt           Reset event
+ * @param[in] dev       HRTIM device
+ * @param[in] tu        Timing unit, can be one of the following values:
+ *            @arg @ref TIMA
+ *            @arg @ref TIMB
+ *            @arg @ref TIMC
+ *            @arg @ref TIMD
+ *            @arg @ref TIME
+ *            @arg @ref TIMF
+ * @param[in] evt       Reset event, can be one of the following values: 
+ *            @arg @ref LL_HRTIM_RESETTRIG_NONE
+ *            @arg @ref LL_HRTIM_RESETTRIG_UPDATE
+ *            @arg @ref LL_HRTIM_RESETTRIG_CMP2
+ *            @arg @ref LL_HRTIM_RESETTRIG_CMP4
+ *            @arg @ref LL_HRTIM_RESETTRIG_MASTER_PER
+ *            @arg @ref LL_HRTIM_RESETTRIG_MASTER_CMP1
+ *            @arg @ref LL_HRTIM_RESETTRIG_MASTER_CMP2
+ *            @arg @ref LL_HRTIM_RESETTRIG_MASTER_CMP3
+ *            @arg @ref LL_HRTIM_RESETTRIG_MASTER_CMP4
+ *            @arg @ref LL_HRTIM_RESETTRIG_EEV_1
+ *            @arg @ref LL_HRTIM_RESETTRIG_EEV_2
+ *            @arg @ref LL_HRTIM_RESETTRIG_EEV_3
+ *            @arg @ref LL_HRTIM_RESETTRIG_EEV_4
+ *            @arg @ref LL_HRTIM_RESETTRIG_EEV_5
+ *            @arg @ref LL_HRTIM_RESETTRIG_EEV_6
+ *            @arg @ref LL_HRTIM_RESETTRIG_EEV_7
+ *            @arg @ref LL_HRTIM_RESETTRIG_EEV_8
+ *            @arg @ref LL_HRTIM_RESETTRIG_EEV_9
+ *            @arg @ref LL_HRTIM_RESETTRIG_EEV_10
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER1_CMP1
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER1_CMP2
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER1_CMP4
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER2_CMP1
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER2_CMP2
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER2_CMP4
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER3_CMP1
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER3_CMP2
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER3_CMP4
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER4_CMP1
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER4_CMP2
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER4_CMP4
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER5_CMP1
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER5_CMP2
  */
-void hrtim_rst_evt_en(hrtim_t dev, hrtim_tu_t tu, hrtim_rst_evt_t evt);
+void hrtim_rst_evt_en(hrtim_t dev, hrtim_tu_t tu, uint32_t evt);
 
 /**
- * @brief   Disbable a Timerx reset event
+ * @brief   Disbable a TimerX (X = A,B...F) reset event
  *
- * @param[in] dev           HRTIM device
- * @param[in] tu            Timing unit
- * @param[in] evt           Reset event
+ * @param[in] dev       HRTIM device
+ * @param[in] tu        Timing unit, can be one of the following values:
+ *            @arg @ref TIMA
+ *            @arg @ref TIMB
+ *            @arg @ref TIMC
+ *            @arg @ref TIMD
+ *            @arg @ref TIME
+ *            @arg @ref TIMF
+ * @param[in] evt       Reset event, can be one of the following values: 
+ *            @arg @ref LL_HRTIM_RESETTRIG_NONE
+ *            @arg @ref LL_HRTIM_RESETTRIG_UPDATE
+ *            @arg @ref LL_HRTIM_RESETTRIG_CMP2
+ *            @arg @ref LL_HRTIM_RESETTRIG_CMP4
+ *            @arg @ref LL_HRTIM_RESETTRIG_MASTER_PER
+ *            @arg @ref LL_HRTIM_RESETTRIG_MASTER_CMP1
+ *            @arg @ref LL_HRTIM_RESETTRIG_MASTER_CMP2
+ *            @arg @ref LL_HRTIM_RESETTRIG_MASTER_CMP3
+ *            @arg @ref LL_HRTIM_RESETTRIG_MASTER_CMP4
+ *            @arg @ref LL_HRTIM_RESETTRIG_EEV_1
+ *            @arg @ref LL_HRTIM_RESETTRIG_EEV_2
+ *            @arg @ref LL_HRTIM_RESETTRIG_EEV_3
+ *            @arg @ref LL_HRTIM_RESETTRIG_EEV_4
+ *            @arg @ref LL_HRTIM_RESETTRIG_EEV_5
+ *            @arg @ref LL_HRTIM_RESETTRIG_EEV_6
+ *            @arg @ref LL_HRTIM_RESETTRIG_EEV_7
+ *            @arg @ref LL_HRTIM_RESETTRIG_EEV_8
+ *            @arg @ref LL_HRTIM_RESETTRIG_EEV_9
+ *            @arg @ref LL_HRTIM_RESETTRIG_EEV_10
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER1_CMP1
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER1_CMP2
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER1_CMP4
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER2_CMP1
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER2_CMP2
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER2_CMP4
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER3_CMP1
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER3_CMP2
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER3_CMP4
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER4_CMP1
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER4_CMP2
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER4_CMP4
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER5_CMP1
+ *            @arg @ref LL_HRTIM_RESETTRIG_OTHER5_CMP2
  */
-void hrtim_rst_evt_dis(hrtim_t dev, hrtim_tu_t tu, hrtim_rst_evt_t evt);
+void hrtim_rst_evt_dis(hrtim_t dev, hrtim_tu_t tu, uint32_t evt);
 
 /**
  * @brief   Enable a given output of a given timing unit.
  *
- * @param[in] dev           HRTIM device
- * @param[in] tu            Timing unit
- * @param[in] out           Output to enable
+ * @param[in] dev       HRTIM device
+ * @param[in] tu        Timing unit, can be one of the following values:
+ *            @arg @ref TIMA
+ *            @arg @ref TIMB
+ *            @arg @ref TIMC
+ *            @arg @ref TIMD
+ *            @arg @ref TIME
+ *            @arg @ref TIMF
+ * @param[in] out       Output to enable, can be one of the following values: 
+ *            @arg @ref OUT1
+ *            @arg @ref OUT2
  */
 void hrtim_out_en(hrtim_t dev, hrtim_tu_t tu, hrtim_out_t out);
 
 /**
  * @brief   Disable a given output of a given timing unit.
  *
- * @param[in] dev           HRTIM device
- * @param[in] tu            Timing unit
- * @param[in] out           Output to disable
+ * @param[in] dev       HRTIM device
+ * @param[in] tu        Timing unit, can be one of the following values:
+ *            @arg @ref TIMA
+ *            @arg @ref TIMB
+ *            @arg @ref TIMC
+ *            @arg @ref TIMD
+ *            @arg @ref TIME
+ *            @arg @ref TIMF
+ * @param[in] out       Output to disable, can be one of the following values: 
+ *            @arg @ref OUT1
+ *            @arg @ref OUT2
  */
 void hrtim_out_dis(hrtim_t dev, hrtim_tu_t tu, hrtim_out_t out);
 
@@ -517,9 +751,15 @@ void hrtim_out_dis(hrtim_t dev, hrtim_tu_t tu, hrtim_out_t out);
  * @brief   Setup a dead time in nano second for given complementary
  *          outputs.
  *
- * @param[in] dev           HRTIM device
- * @param[in] tu            Timing unit
- * @param[in] ns            The desired dead time in nano second
+ * @param[in] dev       HRTIM device
+ * @param[in] tu        Timing unit, can be one of the following values: 
+ *            @arg @ref TIMA
+ *            @arg @ref TIMB
+ *            @arg @ref TIMC
+ *            @arg @ref TIMD
+ *            @arg @ref TIME
+ *            @arg @ref TIMF          
+ * @param[in] ns        The desired dead time in nano second
  */
 void hrtim_pwm_dt(hrtim_t dev, hrtim_tu_t tu, uint16_t ns);
 
@@ -528,8 +768,8 @@ void hrtim_pwm_dt(hrtim_t dev, hrtim_tu_t tu, uint16_t ns);
  *          how many potential events will be ignored between two
  *          events which are effectively generated.
  *
- * @param[in] dev           HRTIM device
- * @param[in] ps_ratio      Post scaler ratio (0 = no post scaler, default)
+ * @param[in] dev       HRTIM device
+ * @param[in] ps_ratio  Post scaler ratio (0 = no post scaler, default)
  */
 void hrtim_adc_trigger_set_postscaler(hrtim_t dev, uint32_t ps_ratio);
 
@@ -538,7 +778,78 @@ void hrtim_adc_trigger_set_postscaler(hrtim_t dev, uint32_t ps_ratio);
  *
  * @param[in] event_number  Number of the event to configure
  * @param[in] source_timer  Source timer of the event. 0 = Master timer, 1 = Timer A, 2 = Timer B, etc.
- * @param[in] event         Event as defined in stm32g4xx_ll_hrtim.h 'ADC TRIGGER X/X SOURCE'
+ * @param[in] event     Trigger event
+ *                      For ADC trigger 1 and ADC trigger 3 this parameter can be a
+ *                      combination of the following values:
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_NONE
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_MCMP1
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_MCMP2
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_MCMP3
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_MCMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_MPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_EEV1
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_EEV2
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_EEV3
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_EEV4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_EEV5
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMACMP3
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMACMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMAPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMARST
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMBCMP3
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMBCMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMBPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMBRST
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMCCMP3
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMCCMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMCPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMDCMP3
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMDCMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMDPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMECMP3
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMECMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMEPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMFCMP2
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMFCMP3
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMFCMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMFPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMFRST
+ *
+ *                      For ADC trigger 2 and ADC trigger 4 this parameter can be a
+ *                      combination of the following values:
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_NONE
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_MCMP1
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_MCMP2
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_MCMP3
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_MCMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_MPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_EEV6
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_EEV7
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_EEV8
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_EEV9
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_EEV10
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMACMP2
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMACMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMAPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMBCMP2
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMBCMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMBPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMCCMP2
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMCCMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMCPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMCRST
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMDCMP2
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMDCMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMDPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMDRST
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMECMP2
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMECMP3
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMECMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMERST
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMFCMP2
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMFCMP3
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMFCMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMFPER                   
  */
 void hrtim_adc_trigger_en(uint32_t event_number, uint32_t source_timer, uint32_t event);
 
@@ -546,11 +857,86 @@ void hrtim_adc_trigger_en(uint32_t event_number, uint32_t source_timer, uint32_t
 /**
  * @brief   Disbable a ADCx trigger event
  *
- * @param[in] dev           HRTIM device
- * @param[in] adc           ADC trigger register from ADC1R to ADC4R
- * @param[in] evt           Trigger event
+ * @param[in] dev       HRTIM device
+ * @param[in] adc       ADC trigger register, can be one of the following values: 
+ *            @arg @ref ADC1R
+ *            @arg @ref ADC2R
+ *            @arg @ref ADC3R
+ *            @arg @ref ADC4R           
+ * @param[in] evt       Trigger event
+ *                      For ADC trigger 1 and ADC trigger 3 this parameter can be a
+ *                      combination of the following values:
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_NONE
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_MCMP1
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_MCMP2
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_MCMP3
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_MCMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_MPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_EEV1
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_EEV2
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_EEV3
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_EEV4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_EEV5
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMACMP3
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMACMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMAPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMARST
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMBCMP3
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMBCMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMBPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMBRST
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMCCMP3
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMCCMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMCPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMDCMP3
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMDCMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMDPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMECMP3
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMECMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMEPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMFCMP2
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMFCMP3
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMFCMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMFPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC13_TIMFRST
+ *
+ *                      For ADC trigger 2 and ADC trigger 4 this parameter can be a
+ *                      combination of the following values:
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_NONE
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_MCMP1
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_MCMP2
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_MCMP3
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_MCMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_MPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_EEV6
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_EEV7
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_EEV8
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_EEV9
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_EEV10
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMACMP2
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMACMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMAPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMBCMP2
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMBCMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMBPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMCCMP2
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMCCMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMCPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMCRST
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMDCMP2
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMDCMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMDPER
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMDRST
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMECMP2
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMECMP3
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMECMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMERST
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMFCMP2
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMFCMP3
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMFCMP4
+ *            @arg @ref LL_HRTIM_ADCTRIG_SRC24_TIMFPER           
  */
-void hrtim_adc_trigger_dis(hrtim_t dev, hrtim_adc_t adc, hrtim_adc_trigger_t evt);
+void hrtim_adc_trigger_dis(hrtim_t hrtim, hrtim_adc_t adc, uint32_t evt);
 
 
 

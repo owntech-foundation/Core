@@ -37,16 +37,37 @@
 void hrtim_init_interleaved_buck_mode();
 
 /**
+ * @brief     This function initializes the converter in interleaved buck mode
+ * with the input on the high side and the output on the low side. The counting mode
+ * is set to up-down (center aligned).
+ */
+void hrtim_init_interleaved_buck_mode_center_aligned();
+
+/**
  * @brief     This function initializes the converter in interleaved boost mode
  * with the input on the low side and the output on the high side
  */
 void hrtim_init_interleaved_boost_mode();
 
 /**
+ * @brief     This function initializes the converter in interleaved boost mode
+ * with the input on the low side and the output on the high side. The counting mode
+ * is set to up-down (center aligned).
+ */
+void hrtim_init_interleaved_boost_mode_center_aligned();
+
+/**
  * @brief     This function initializes the converter in independent mode
  * the user must define the mode for each leg separetely
  */
 void hrtim_init_independent_mode(bool leg1_buck_mode, bool leg2_buck_mode);
+
+/**
+ * @brief     This function initializes the converter in independent mode
+ * the user must define the mode for each leg separetely. The counting mode
+ * is set to up-down (center aligned).
+ */
+void hrtim_init_independent_mode_center_aligned(bool leg1_buck_mode, bool leg2_buck_mode);
 
 /**
  * @brief     This function transfer the calculated PWM value to the

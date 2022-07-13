@@ -22,6 +22,7 @@
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
 
@@ -130,9 +131,19 @@ void HardwareConfiguration::initInterleavedBuckMode()
 	hrtim_init_interleaved_buck_mode();
 }
 
+void HardwareConfiguration::initInterleavedBuckModeCenterAligned()
+{
+	hrtim_init_interleaved_buck_mode_center_aligned();
+}
+
 void HardwareConfiguration::initInterleavedBoostMode()
 {
 	hrtim_init_interleaved_boost_mode();
+}
+
+void HardwareConfiguration::initInterleavedBoostModeCenterAligned()
+{
+	hrtim_init_interleaved_boost_mode_center_aligned();
 }
 
 void HardwareConfiguration::initFullBridgeBuckMode()
@@ -140,14 +151,29 @@ void HardwareConfiguration::initFullBridgeBuckMode()
 	hrtim_init_interleaved_buck_mode();
 }
 
+void HardwareConfiguration::initFullBridgeBuckModeCenterAligned()
+{
+	hrtim_init_interleaved_buck_mode_center_aligned();
+}
+
 void HardwareConfiguration::initFullBridgeBoostMode()
 {
 	hrtim_init_interleaved_boost_mode();
 }
 
+void HardwareConfiguration::initFullBridgeBoostModeCenterAligned()
+{
+	hrtim_init_interleaved_boost_mode_center_aligned();
+}
+
 void HardwareConfiguration::initIndependentMode(bool leg1_buck_mode, bool leg2_buck_mode)
 {
 	hrtim_init_independent_mode(leg1_buck_mode, leg2_buck_mode);
+}
+
+void HardwareConfiguration::initIndependentModeCenterAligned(bool leg1_buck_mode, bool leg2_buck_mode)
+{
+	hrtim_init_independent_mode_center_aligned(leg1_buck_mode, leg2_buck_mode);
 }
 
 void HardwareConfiguration::setInterleavedDutyCycle(float32_t duty_cycle)

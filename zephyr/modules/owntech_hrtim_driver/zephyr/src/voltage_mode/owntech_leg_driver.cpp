@@ -25,6 +25,7 @@
  * @author  Hugues Larrive <hugues.larrive@laas.fr>
  * @author  Antoine Boche <antoine.boche@laas.fr>
  * @author  Luiz Villa <luiz.villa@laas.fr>
+ * @author  Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
 #include "leg.h"
@@ -35,6 +36,34 @@ static uint16_t period, min_pw, max_pw, dead_time;
 
 static leg_conf_t leg_conf[6]; /* a copy of leg_config with index
                                 * corresponding to timing unit */
+
+static uint8_t _TU_num(hrtim_tu_t tu){
+
+    switch(tu){
+        case TIMA:
+            return 0;
+        
+        case TIMB:
+             return 1;
+        
+        case TIMC: 
+             return 2;
+        
+        case TIMD:
+             return 3;
+             break;
+        
+        case TIME:
+             return 4; 
+        
+        case TIMF: 
+             return 5;
+        
+        default:
+            return 100;
+
+    }
+}
 
 /**
  * This function Initialize the hrtim and all the legs
@@ -49,10 +78,34 @@ uint16_t leg_init(bool leg1_upper_switch_convention, bool leg2_upper_switch_conv
     /* ensures that timing_unit can be used as leg identifier */
     for (unsigned int i = 0; i < LEG_NUMOF; i++)
     {
-        leg_conf[leg_config[i].timing_unit] = leg_config[i];
+        leg_conf[_TU_num(leg_config[i].timing_unit)] = leg_config[i];
     }
 
     period = hrtim_init(0, &freq, LEG_DEFAULT_DT,leg1_upper_switch_convention,leg2_upper_switch_convention);
+    dead_time = (period*LEG_DEFAULT_DT*leg_get_freq())/1000000;
+    min_pw = (period * 0.1) + dead_time;
+    max_pw = (period * 0.9) + dead_time;
+    return period;
+}
+
+/**
+ * This function Initialize the hrtim and all the legs
+ * with the chosen convention for the switch controlled
+ * on the power converter to a frequency of 200kHz 
+ * with the counter on up-down mode (center-alligned)
+ * Must be initialized in first position
+ */
+uint16_t leg_init_center_aligned(bool leg1_upper_switch_convention, bool leg2_upper_switch_convention)
+{
+    uint32_t freq = LEG_FREQ;
+
+    /* ensures that timing_unit can be used as leg identifier */
+    for (unsigned int i = 0; i < LEG_NUMOF; i++)
+    {
+        leg_conf[_TU_num(leg_config[i].timing_unit)] = leg_config[i];
+    }
+
+    period = hrtim_init_updwn(0, &freq, LEG_DEFAULT_DT,leg1_upper_switch_convention,leg2_upper_switch_convention);
     dead_time = (period*LEG_DEFAULT_DT*leg_get_freq())/1000000;
     min_pw = (period * 0.1) + dead_time;
     max_pw = (period * 0.9) + dead_time;
@@ -74,24 +127,24 @@ void leg_set(hrtim_tu_t timing_unit, uint16_t pulse_width, uint16_t phase_shift)
         pulse_width = max_pw;
     }
 
-    hrtim_pwm_set(  leg_conf[timing_unit].hrtim,
+    hrtim_pwm_set(  leg_conf[_TU_num(timing_unit)].hrtim,
                     timing_unit,
                     pulse_width,
                     phase_shift);
     /* save the pulse_width */
-    leg_conf[timing_unit].pulse_width = pulse_width;
+    leg_conf[_TU_num(timing_unit)].pulse_width = pulse_width;
 }
 
 void leg_stop(hrtim_tu_t timing_unit)
 {
-    hrtim_out_dis(leg_conf[timing_unit].hrtim, leg_conf[timing_unit].timing_unit, OUT1);
-    hrtim_out_dis(leg_conf[timing_unit].hrtim, leg_conf[timing_unit].timing_unit, OUT2); 
+    hrtim_out_dis(leg_conf[_TU_num(timing_unit)].hrtim, leg_conf[_TU_num(timing_unit)].timing_unit, OUT1);
+    hrtim_out_dis(leg_conf[_TU_num(timing_unit)].hrtim, leg_conf[_TU_num(timing_unit)].timing_unit, OUT2); 
 }
 
 void leg_start(hrtim_tu_t timing_unit)
 {
-    hrtim_out_en(leg_conf[timing_unit].hrtim, leg_conf[timing_unit].timing_unit, OUT1);
-    hrtim_out_en(leg_conf[timing_unit].hrtim, leg_conf[timing_unit].timing_unit, OUT2);
+    hrtim_out_en(leg_conf[_TU_num(timing_unit)].hrtim, leg_conf[_TU_num(timing_unit)].timing_unit, OUT1);
+    hrtim_out_en(leg_conf[_TU_num(timing_unit)].hrtim, leg_conf[_TU_num(timing_unit)].timing_unit, OUT2);
 }
 
 uint16_t leg_period(void)
