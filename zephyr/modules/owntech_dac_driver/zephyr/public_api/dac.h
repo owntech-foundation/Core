@@ -19,7 +19,6 @@
 
 /**
  * @date   2022
- *
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
