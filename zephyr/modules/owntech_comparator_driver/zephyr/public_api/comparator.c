@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 LAAS-CNRS
+ * Copyright (c) 2022 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -22,19 +22,13 @@
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
-#ifndef COMPARATOR_DRIVER_H_
-#define COMPARATOR_DRIVER_H_
+// Current module private functions
+#include "../src/comparator_driver.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
-void comparator_comp1_init();
-void comparator_comp3_init();
-void comparator_gpio_init();
-
-#ifdef __cplusplus
+void comparator_init()
+{
+	comparator_gpio_init();
+	comparator_comp1_init();
+	comparator_comp3_init();
 }
-#endif
-
-#endif // COMPARATOR_DRIVER_H_

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 LAAS-CNRS
+ * Copyright (c) 2021-2022 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,8 @@
  */
 
 /**
- * @author  Clément Foucher <clement.foucher@laas.fr>
+ * @date   2022
+ * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
 
@@ -34,15 +35,7 @@
 #include "comparator_driver.h"
 
 
-void comparator_init()
-{
-	_comparator_gpio_init();
-	_comparator_comp1_init();
-	_comparator_comp3_init();
-}
-
-
-static void _comparator_gpio_init()
+void comparator_gpio_init()
 {
 	// TODO : use Zephyr gpio_pin_configure
 
@@ -68,7 +61,7 @@ static void _comparator_gpio_init()
 	LL_GPIO_SetPinMode(GPIOC, LL_GPIO_PIN_1, LL_GPIO_MODE_ANALOG);
 }
 
-static void _comparator_comp1_init()
+void comparator_comp1_init()
 {
 	LL_COMP_ConfigInputs(COMP1, LL_COMP_INPUT_MINUS_DAC1_CH1, LL_COMP_INPUT_PLUS_IO1);
 	LL_COMP_SetInputHysteresis(COMP1, LL_COMP_HYSTERESIS_NONE);
@@ -83,7 +76,7 @@ static void _comparator_comp1_init()
 	LL_COMP_Enable(COMP1);
 }
 
-static void _comparator_comp3_init()
+void comparator_comp3_init()
 {
 	LL_COMP_ConfigInputs(COMP3, LL_COMP_INPUT_MINUS_DAC3_CH1, LL_COMP_INPUT_PLUS_IO2);
 	LL_COMP_SetInputHysteresis(COMP3, LL_COMP_HYSTERESIS_NONE);
