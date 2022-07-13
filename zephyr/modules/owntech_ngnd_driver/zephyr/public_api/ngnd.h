@@ -27,7 +27,10 @@
 #ifndef NGND_H_
 #define NGND_H_
 
+
+// Zephyr
 #include <device.h>
+
 
 #ifdef __cplusplus
 extern "C" {

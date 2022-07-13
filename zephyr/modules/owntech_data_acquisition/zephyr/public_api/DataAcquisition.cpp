@@ -28,11 +28,13 @@
 // Stdlib
 #include <string.h>
 
-// OwnTech Power API
-#include "adc.h"
+// Current module private functions
 #include "../dma/dma.h"
 #include "../data_dispatch/data_dispatch.h"
 #include "../data_conversion/data_conversion.h"
+
+// OwnTech Power API
+#include "adc.h"
 
 // Current class header
 #include "DataAcquisition.h"

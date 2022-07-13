@@ -26,7 +26,7 @@
  */
 
 
-// OwnTech headers
+// Current module private functions
 #include "../src/dac_configuration.h"
 #include "../src/ngnd_configuration.h"
 #include "../src/led_configuration.h"

@@ -27,7 +27,7 @@
 // STM32 LL
 #include <stm32_ll_adc.h>
 
-// OwnTech API
+// Current module private functions
 #include "../src/adc_channels.h"
 #include "../src/adc_core.h"
 

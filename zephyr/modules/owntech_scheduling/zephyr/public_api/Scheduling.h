@@ -26,9 +26,12 @@
 #define SCHEDULING_H_
 
 
+// Stdlib
 #include <stdint.h>
 
+// Zephyr
 #include <zephyr.h>
+
 
 typedef void (*thread_function_t)();
 

@@ -29,14 +29,14 @@
 #ifndef HARDWARECONFIGURATION_H_
 #define HARDWARECONFIGURATION_H_
 
-// Std lib
+// Stdlib
 #include <stdint.h>
 
 // ARM lib
 #include <arm_math.h>
 
 // OwnTech API
-#include "../src/adc_configuration.h"
+#include "adc.h"
 
 
 /** Hardware version. See
