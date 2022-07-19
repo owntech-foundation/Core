@@ -131,7 +131,7 @@ typedef enum {
  * @return              actual HRTIM resolution on success
  * @return              0 on error
  */
-uint16_t hrtim_init(hrtim_t dev, uint32_t *freq, uint16_t dt, uint8_t leg1_upper_switch_convention, uint8_t leg2_upper_switch_convention);
+uint16_t hrtim_init(hrtim_t dev, uint32_t *freq, uint16_t dead_time_ns, uint8_t leg1_upper_switch_convention, uint8_t leg2_upper_switch_convention);
 
 /**
  * @brief   Initialize an HRTIM device and all these timing units for
@@ -139,7 +139,7 @@ uint16_t hrtim_init(hrtim_t dev, uint32_t *freq, uint16_t dt, uint8_t leg1_upper
  *
  * @param[in] dev      HRTIM device to initialize
  * @param[inout] freq  HRTIM frequency in Hz
- * @param[in] dt       Desired dead time in ns
+ * @param[in] dead_time_ns       Desired dead time in ns
  * @param[in] leg1_upper_switch_convention   Choice of the switch convention for leg 1, can be one of the following values:
  *            @arg @ref True (Buck mode)
  *            @arg @ref False (Boost mode)
@@ -151,6 +151,21 @@ uint16_t hrtim_init(hrtim_t dev, uint32_t *freq, uint16_t dt, uint8_t leg1_upper
  */
 uint16_t hrtim_init_updwn(hrtim_t dev, uint32_t *freq, uint16_t dt, uint8_t leg1_upper_switch_convention, uint8_t leg2_upper_switch_convention);
 
+/**
+ * @brief   Updates the duty cycle
+ *
+ * @param[in] dev       HRTIM device to be used
+ * @param[in] tu        Timing unit to updated, can be one of the following values:
+ *            @arg @ref TIMA
+ *            @arg @ref TIMB
+ *            @arg @ref TIMC
+ *            @arg @ref TIMD
+ *            @arg @ref TIME
+ *            @arg @ref TIMF*
+ * @param[in] rise_ns       Rising edge dead time in ns
+ * @param[in] fall_ns       Falling edge dead time in ns
+ */
+void hrtim_update_dead_time(hrtim_t dev, hrtim_tu_t tu, uint16_t rise_ns, uint16_t fall_ns);
 
 /**
  * @brief   Initialize an HRTIM device master timer
@@ -759,9 +774,10 @@ void hrtim_out_dis(hrtim_t dev, hrtim_tu_t tu, hrtim_out_t out);
  *            @arg @ref TIMD
  *            @arg @ref TIME
  *            @arg @ref TIMF          
- * @param[in] ns        The desired dead time in nano second
+ * @param[in] rise_ns        The desired dead time of the rising edge in nano second
+ * @param[in] fall_ns        The desired dead time of the falling edge in nano second
  */
-void hrtim_pwm_dt(hrtim_t dev, hrtim_tu_t tu, uint16_t ns);
+void hrtim_pwm_dt(hrtim_t dev, hrtim_tu_t tu, uint16_t rise_ns, uint16_t fall_ns);
 
 /**
  * @brief   Set the HRTIM event postsaler. Postscaler ratio indicates

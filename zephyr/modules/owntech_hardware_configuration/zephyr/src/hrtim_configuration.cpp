@@ -44,6 +44,8 @@
 // Local variables
 static uint16_t pwm_period;
 static uint16_t pwm_phase_shift;
+static uint16_t pwm_phase_shift_leg1;
+static uint16_t pwm_phase_shift_leg2;
 static uint16_t pwm_low_pulse_width;
 static uint16_t pwm_high_pulse_width;
 
@@ -117,7 +119,8 @@ void hrtim_init_independent_mode(bool leg1_buck_mode, bool leg2_buck_mode)
 	}
 
 	pwm_period = leg_period();
-	pwm_phase_shift = pwm_period / 2;
+	pwm_phase_shift_leg1 = 0;
+	pwm_phase_shift_leg2 = pwm_period / 2;
 	pwm_low_pulse_width = pwm_period * LOW_DUTY;
 	pwm_high_pulse_width = pwm_period * HIGH_DUTY;
 }
@@ -240,20 +243,20 @@ void hrtim_leg1_pwm_update(float32_t pwm_duty_cycle)
 	{
 		pwm_duty_cycle = HIGH_DUTY;
 		pwm_pulse_width = pwm_high_pulse_width;
-		leg_set(TIMA, pwm_pulse_width, 0);
+		leg_set(TIMA, pwm_pulse_width, pwm_phase_shift_leg1);
 	}
 
 	else if (pwm_duty_cycle < LOW_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
 	{
 		pwm_duty_cycle = LOW_DUTY;
 		pwm_pulse_width = pwm_low_pulse_width;
-		leg_set(TIMA, pwm_pulse_width, 0);
+		leg_set(TIMA, pwm_pulse_width, pwm_phase_shift_leg1);
 	}
 
 	else
 	{
 		pwm_pulse_width = (pwm_duty_cycle * pwm_period);
-		leg_set(TIMA, pwm_pulse_width, 0);
+		leg_set(TIMA, pwm_pulse_width, pwm_phase_shift_leg1);
 	}
 }
 
@@ -271,22 +274,59 @@ void hrtim_leg2_pwm_update(float32_t pwm_duty_cycle)
 	{
 		pwm_duty_cycle = HIGH_DUTY;
 		pwm_pulse_width = pwm_high_pulse_width;
-		leg_set(TIMB, pwm_pulse_width, pwm_phase_shift);
+		leg_set(TIMB, pwm_pulse_width, pwm_phase_shift_leg2);
 	}
 
 	else if (pwm_duty_cycle < LOW_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
 	{
 		pwm_duty_cycle = LOW_DUTY;
 		pwm_pulse_width = pwm_low_pulse_width;
-		leg_set(TIMB, pwm_pulse_width, pwm_phase_shift);
+		leg_set(TIMB, pwm_pulse_width, pwm_phase_shift_leg2);
 	}
 
 	else
 	{
 		pwm_pulse_width = (pwm_duty_cycle * pwm_period);
-		leg_set(TIMB, pwm_pulse_width, pwm_phase_shift);
+		leg_set(TIMB, pwm_pulse_width, pwm_phase_shift_leg2);
 	}
 }
+
+/**
+ * This function updates the phase shift between leg 1 and hrtim master
+ */
+void hrtim_leg1_phase_shift_update(float32_t phase_shift)
+{
+	pwm_phase_shift_leg1 = (uint16_t)(pwm_period * (phase_shift/360) );
+}
+
+
+/**
+ * This function updates the phase shift between leg 2 and hrtim master
+ */
+void hrtim_leg2_phase_shift_update(float32_t phase_shift)
+{
+	pwm_phase_shift_leg2 = (uint16_t)(pwm_period * (phase_shift/360) );
+}
+
+/**
+ * This function updates the phase shift between leg 1 and hrtim master for the center aligned application.
+ * In center aligned, the master timer has a frequency 2 times higher than the timers.
+ */
+void hrtim_leg1_phase_shift_update_center_aligned(float32_t phase_shift)
+{
+	pwm_phase_shift_leg1 = (uint16_t)(2*pwm_period * (phase_shift/360) );
+}
+
+
+/**
+ * This function updates the phase shift between leg 2 and hrtim master for the center aligned application
+ * In center aligned, the master timer has a frequency 2 times higher than the timers.
+ */
+void hrtim_leg2_phase_shift_update_center_aligned(float32_t phase_shift)
+{
+	pwm_phase_shift_leg2 = (uint16_t)(2*pwm_period * (phase_shift/360) );
+}
+
 
 /**
  * This stops the converter by putting both timing
@@ -342,4 +382,21 @@ void hrtim_start_leg2()
 void set_adc_trig_interleaved(uint16_t new_trig)
 {
 	hrtim_update_adc_trig_interleaved(new_trig);
+}
+
+
+/**
+ * This updates the dead time of the leg 1
+
+ */
+void hrtim_set_dead_time_leg1(uint16_t rise_ns, uint16_t fall_ns)
+{
+	leg_set_dt(TIMA, rise_ns, fall_ns);
+}
+/**
+ * This updates the dead time of the leg 2
+ */
+void hrtim_set_dead_time_leg2(uint16_t rise_ns, uint16_t fall_ns)
+{
+	leg_set_dt(TIMB, rise_ns, fall_ns);
 }

@@ -163,20 +163,20 @@ static inline uint32_t _period_ckpsc(hrtim_t hrtim, uint32_t freq,
     return frequency;
 }
 
-uint16_t hrtim_init(hrtim_t hrtim, uint32_t *freq, uint16_t dt, uint8_t leg1_upper_switch_convention, uint8_t leg2_upper_switch_convention)
+uint16_t hrtim_init(hrtim_t hrtim, uint32_t *freq, uint16_t dead_time_ns, uint8_t leg1_upper_switch_convention, uint8_t leg2_upper_switch_convention)
 {
     /* Master timer initialization */
     uint16_t period = hrtim_init_master(hrtim, freq);
 
     /* Timer A initialization for leg 1 */
     hrtim_init_tu(hrtim, TIMA, freq, Lft_aligned);
-    hrtim_pwm_dt(hrtim, TIMA, dt); // Set the dead time. Note: this must be done before enable counter
+    hrtim_pwm_dt(hrtim, TIMA, dead_time_ns, dead_time_ns); // Set the dead time. Note: this must be done before enable counter
     hrtim_cnt_en(hrtim, TIMA); // Enable counter 
     hrtim_rst_evt_en(hrtim, TIMA, LL_HRTIM_RESETTRIG_MASTER_PER); // We synchronize the Timer A with the master timer, with a reset on period event
 
     /* Timer B initialization for leg 2 */
     hrtim_init_tu(hrtim, TIMB, freq, Lft_aligned);
-    hrtim_pwm_dt(hrtim, TIMB, dt);  // Set the dead time. Note: this must be done before enable counter
+    hrtim_pwm_dt(hrtim, TIMB, dead_time_ns, dead_time_ns);  // Set the dead time. Note: this must be done before enable counter
     hrtim_cnt_en(hrtim, TIMB);  // Enable the counter
     hrtim_rst_evt_en(hrtim, TIMB, LL_HRTIM_RESETTRIG_MASTER_PER); // We synchronize the Timer B with the master timer, with a reset on period event
 
@@ -187,6 +187,14 @@ uint16_t hrtim_init(hrtim_t hrtim, uint32_t *freq, uint16_t dt, uint8_t leg1_upp
     return period;
 }
 
+void hrtim_update_dead_time(hrtim_t hrtim, hrtim_tu_t tu, uint16_t rise_ns, uint16_t fall_ns)
+{
+    hrtim_cnt_dis(hrtim, tu);    //Disable the timing unit counter
+    hrtim_pwm_dt(hrtim, tu, rise_ns, fall_ns); // Set the dead time. Note: this must be done before enable counter
+    hrtim_cnt_en(hrtim, tu);     // Enable counter 
+
+}
+
 uint16_t hrtim_init_updwn(hrtim_t hrtim, uint32_t *freq, uint16_t dt, uint8_t leg1_upper_switch_convention, uint8_t leg2_upper_switch_convention)
 {
     /* Master timer and timing unit frequency initialization */
@@ -195,13 +203,13 @@ uint16_t hrtim_init_updwn(hrtim_t hrtim, uint32_t *freq, uint16_t dt, uint8_t le
 
     /* Timer A initialization for leg 1 */
     hrtim_init_tu(hrtim, TIMA, &freq_tu, UpDwn);
-    hrtim_pwm_dt(hrtim, TIMA, dt); // Set the dead time. Note: this must be done before enable counter
+    hrtim_pwm_dt(hrtim, TIMA, dt, dt); // Set the dead time. Note: this must be done before enable counter
     hrtim_cnt_en(hrtim, TIMA); // Enable counter 
     hrtim_rst_evt_en(hrtim, TIMA, LL_HRTIM_RESETTRIG_MASTER_PER); // We synchronize the Timer A with the master timer, with a reset on period event
 
     /* Timer B initialization for leg 2 */
     hrtim_init_tu(hrtim, TIMB, &freq_tu, UpDwn);
-    hrtim_pwm_dt(hrtim, TIMB, dt);  // Set the dead time. Note: this must be done before enable counter
+    hrtim_pwm_dt(hrtim, TIMB, dt, dt);  // Set the dead time. Note: this must be done before enable counter
     hrtim_cnt_en(hrtim, TIMB);  // Enable the counter
     hrtim_rst_evt_en(hrtim, TIMB, LL_HRTIM_RESETTRIG_MASTER_PER); // We synchronize the Timer B with the master timer, with a reset on period event
 
@@ -782,9 +790,10 @@ void hrtim_out_dis(hrtim_t hrtim, hrtim_tu_t tu, hrtim_out_t out)
 /* Note : The dead time is configured centered by default,
  * there are no options available to modify this, so the dead time
  * must be taken into account when calculating the PWM duty cycle */
-void hrtim_pwm_dt(hrtim_t hrtim, hrtim_tu_t tu, uint16_t ns)
+void hrtim_pwm_dt(hrtim_t hrtim, hrtim_tu_t tu, uint16_t rise_ns, uint16_t fall_ns)
 {
-    uint32_t ps = ns * 1000;
+    uint32_t rise_ps = rise_ns * 1000;
+    uint32_t fall_ps = fall_ns * 1000;
     /* t_dtg = (2^dtpsc) * (t_hrtim / 8)
      *       = (2^dtpsc) / (f_hrtim * 8) */
     #if defined(CONFIG_SOC_SERIES_STM32F3X)
@@ -797,21 +806,34 @@ void hrtim_pwm_dt(hrtim_t hrtim, hrtim_tu_t tu, uint16_t ns)
 
     uint8_t dtpsc = 0; // Deadtime clock prescaler set at xx
     uint32_t t_dtg_ps = (1 << dtpsc) * 1000000 / ((f_hrtim * 8) / 1000000); // intermediate gain for dead time calculation
-    uint16_t dt = ps / t_dtg_ps; // calculate the register value based on desired deadtime in picoseconds
-    while (dt > 511 && dtpsc < 7) {
+    uint16_t rise_dt = rise_ps / t_dtg_ps; // calculate the register value based on desired deadtime in picoseconds
+    
+    while (rise_dt > 511 && dtpsc < 7) {
         dtpsc++;
         t_dtg_ps = (1 << dtpsc) * 1000000 / ((f_hrtim * 8) / 1000000);
-        dt = ps / t_dtg_ps;
+        rise_dt = rise_ps / t_dtg_ps;
     }
-    if (dt > 511) {
-        dt = 511;
+    if (rise_dt > 511) {
+        rise_dt = 511;
     }
+
+    uint16_t fall_dt = fall_ps / t_dtg_ps; // calculate the register value based on desired deadtime in picoseconds
     
+    while (fall_dt > 511 && dtpsc < 7) {
+        dtpsc++;
+        t_dtg_ps = (1 << dtpsc) * 1000000 / ((f_hrtim * 8) / 1000000);
+        fall_dt = fall_ps / t_dtg_ps;
+    }
+    if (fall_dt > 511) {
+        fall_dt = 511;
+    }
+
+
     LL_HRTIM_DT_SetPrescaler(HRTIM1, tu, dtpsc ); // Deadtime clock prescaler
 
-    LL_HRTIM_DT_SetFallingValue(HRTIM1, tu, dt); // Deadtime falling edge value
+    LL_HRTIM_DT_SetFallingValue(HRTIM1, tu, fall_dt); // Deadtime falling edge value
 
-    LL_HRTIM_DT_SetRisingValue(HRTIM1, tu, dt); // Deadtime rising edge value
+    LL_HRTIM_DT_SetRisingValue(HRTIM1, tu, rise_dt); // Deadtime rising edge value
 
     // LL_HRTIM_DT_SetFallingSign(hrtim, tu, LL_HRTIM_DT_FALLING_NEGATIVE);  // Change the behavior of the deadtime insertion by overlapping the signals (negative falling edge)
 

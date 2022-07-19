@@ -108,6 +108,38 @@ void hrtim_leg1_pwm_update(float32_t duty_cycle);
 void hrtim_leg2_pwm_update(float32_t duty_cycle);
 
 /**
+ * @brief     This function updates the phase shift between the leg 1 and the master hrtim
+ *
+ * @param[in] phase_shift    floating point phase shift of leg_1 in degrees
+ */
+
+void hrtim_leg1_phase_shift_update(float32_t phase_shift);
+/**
+ * @brief     This function updates the phase shift between the leg 1 and the master hrtim
+ *
+ * @param[in] phase_shift    floating point phase shift of leg_2 in degrees
+ */
+
+void hrtim_leg2_phase_shift_update(float32_t phase_shift);
+
+/**
+ * @brief     This function updates the phase shift between the leg 1 and the master hrtim for the center aligned
+ *
+ * @param[in] phase_shift    floating point phase shift of leg_1 in degrees
+ */
+
+void hrtim_leg1_phase_shift_update_center_aligned(float32_t phase_shift);
+/**
+ * @brief     This function updates the phase shift between the leg 1 and the master hrtim for the center aligned
+ *
+ * @param[in] phase_shift    floating point phase shift of leg_2 in degrees
+ */
+
+void hrtim_leg2_phase_shift_update_center_aligned(float32_t phase_shift);
+
+
+
+/**
  * @brief This function stops the converter by putting both timing
  * units outputs low
  */
@@ -144,6 +176,16 @@ void hrtim_start_leg2();
  * @param[in] new_trig    defines the triggering moment
  */
 void set_adc_trig_interleaved(uint16_t new_trig);
+
+/**
+ * @brief This function sets the dead time of the leg 1
+ */
+void hrtim_set_dead_time_leg1(uint16_t rise_ns, uint16_t fall_ns);
+
+/**
+ * @brief This function sets the dead time of the leg 2
+ */
+void hrtim_set_dead_time_leg2(uint16_t rise_ns, uint16_t fall_ns);
 
 
 #endif // HRTIM_CONFIGURATION_H_

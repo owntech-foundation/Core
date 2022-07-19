@@ -55,7 +55,8 @@ extern "C" {
 typedef struct {
     hrtim_t hrtim;              /**< HRTIM device */
     hrtim_tu_t timing_unit;     /**< Timing unit */
-    uint16_t dead_time;         /**< Dead time */
+    uint16_t rise_dead_time;    /**< Rising Edge Dead time */
+    uint16_t fall_dead_time;    /**< Falling Edge Dead time */
     uint16_t pulse_width;       /**< Pulse width */
 } leg_conf_t;
 
@@ -87,6 +88,15 @@ uint16_t leg_init_center_aligned(bool leg1_upper_switch_convention, bool leg2_up
  * @param[in]   phase_shift     phase shift
  */
 void leg_set(hrtim_tu_t timing_unit, uint16_t pulse_width, uint16_t phase_shift);
+
+/**
+ * @brief   Set the dead time for a given leg device
+ *
+ * @param[in]   timing_unit     timing_unit from TIMA to TIMF
+ * @param[in]   rise_ns         rising edge dead time to set in nano seconds
+ * @param[in]   fall_ns         falling edge dead time to set in nano seconds
+ */
+void leg_set_dt(hrtim_tu_t timing_unit, uint16_t rise_ns, uint16_t fall_ns);
 
 /**
  * @brief   Stop the leg (its 2 outputs goes low)

@@ -60,7 +60,7 @@ HardwareConfiguration hwConfig;
  */
 void HardwareConfiguration::setBoardVersion(hardware_version_t hardware_version)
 {
-	if (hardware_version == v_1_1_2)
+	if (hardware_version == v_1_1_2 || hardware_version == SPIN)
 	{
 		uart_lpuart1_swap_rx_tx();
 	}
@@ -166,14 +166,22 @@ void HardwareConfiguration::initFullBridgeBoostModeCenterAligned()
 	hrtim_init_interleaved_boost_mode_center_aligned();
 }
 
-void HardwareConfiguration::initIndependentMode(bool leg1_buck_mode, bool leg2_buck_mode)
+void HardwareConfiguration::initIndependentMode(hardware_conversion_t leg1_conversion_type, hardware_conversion_t leg2_conversion_type)
 {
-	hrtim_init_independent_mode(leg1_buck_mode, leg2_buck_mode);
+	bool leg1_mode, leg2_mode;
+	if (leg1_conversion_type == buck) leg1_mode = true; else leg1_mode = false;
+	if (leg2_conversion_type == buck) leg2_mode = true; else leg2_mode = false;
+
+	hrtim_init_independent_mode(leg1_mode, leg2_mode);
 }
 
-void HardwareConfiguration::initIndependentModeCenterAligned(bool leg1_buck_mode, bool leg2_buck_mode)
+void HardwareConfiguration::initIndependentModeCenterAligned(hardware_conversion_t leg1_conversion_type, hardware_conversion_t leg2_conversion_type)
 {
-	hrtim_init_independent_mode_center_aligned(leg1_buck_mode, leg2_buck_mode);
+	bool leg1_mode, leg2_mode;
+	if (leg1_conversion_type == buck) leg1_mode = true; else leg1_mode = false;
+	if (leg2_conversion_type == buck) leg2_mode = true; else leg2_mode = false;
+
+	hrtim_init_independent_mode_center_aligned(leg1_mode, leg2_mode);
 }
 
 void HardwareConfiguration::setInterleavedDutyCycle(float32_t duty_cycle)
@@ -194,6 +202,26 @@ void HardwareConfiguration::setLeg1DutyCycle(float32_t duty_cycle)
 void HardwareConfiguration::setLeg2DutyCycle(float32_t duty_cycle)
 {
 	hrtim_leg2_pwm_update(duty_cycle);
+}
+
+void HardwareConfiguration::setLeg1PhaseShift(float32_t phase_shift)
+{
+	hrtim_leg1_phase_shift_update(phase_shift);
+}
+
+void HardwareConfiguration::setLeg2PhaseShift(float32_t phase_shift)
+{
+	hrtim_leg2_phase_shift_update(phase_shift);
+}
+
+void HardwareConfiguration::setLeg1PhaseShiftCenterAligned(float32_t phase_shift)
+{
+	hrtim_leg1_phase_shift_update_center_aligned(phase_shift);
+}
+
+void HardwareConfiguration::setLeg2PhaseShiftCenterAligned(float32_t phase_shift)
+{
+	hrtim_leg2_phase_shift_update_center_aligned(phase_shift);
 }
 
 void HardwareConfiguration::setInterleavedOn()
@@ -286,4 +314,15 @@ void HardwareConfiguration::configureAdcDiscontinuousMode(uint8_t adc_number, ui
 void HardwareConfiguration::configureAdcDefaultAllMeasurements()
 {
 	configure_adc_default_all_measurements();
+}
+
+
+void HardwareConfiguration::setLeg1DeadTime(uint16_t rise_ns, uint16_t fall_ns)
+{
+	hrtim_set_dead_time_leg1(rise_ns, fall_ns);
+}
+
+void HardwareConfiguration::setLeg2DeadTime(uint16_t rise_ns, uint16_t fall_ns)
+{
+	hrtim_set_dead_time_leg2(rise_ns, fall_ns);
 }

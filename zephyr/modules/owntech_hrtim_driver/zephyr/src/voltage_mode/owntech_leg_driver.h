@@ -39,33 +39,39 @@ static leg_conf_t leg_config[] = {
     {
         .hrtim = 0,
         .timing_unit = TIMA,
-        .dead_time = LEG_DEFAULT_DT
+        .rise_dead_time = LEG_DEFAULT_DT,
+        .fall_dead_time = LEG_DEFAULT_DT
     },
     {
         .hrtim = 0,
         .timing_unit = TIMB,
-        .dead_time = LEG_DEFAULT_DT
+        .rise_dead_time = LEG_DEFAULT_DT,
+        .fall_dead_time = LEG_DEFAULT_DT
     },
     {
         .hrtim = 0,
         .timing_unit = TIMC,
-        .dead_time = LEG_DEFAULT_DT
+        .rise_dead_time = LEG_DEFAULT_DT,
+        .fall_dead_time = LEG_DEFAULT_DT
     },
     {
         .hrtim = 0,
         .timing_unit = TIMD,
-        .dead_time = LEG_DEFAULT_DT
+        .rise_dead_time = LEG_DEFAULT_DT,
+        .fall_dead_time = LEG_DEFAULT_DT
     },
     {
         .hrtim = 0,
         .timing_unit = TIME,
-        .dead_time = LEG_DEFAULT_DT
+        .rise_dead_time = LEG_DEFAULT_DT,
+        .fall_dead_time = LEG_DEFAULT_DT
     },
 #if defined(HRTIM_MCR_TFCEN)
     {
         .hrtim = 0,
         .timing_unit = TIMF,
-        .dead_time = LEG_DEFAULT_DT
+        .rise_dead_time = LEG_DEFAULT_DT,
+        .fall_dead_time = LEG_DEFAULT_DT
     },
 #endif
 };

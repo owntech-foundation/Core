@@ -135,6 +135,16 @@ void leg_set(hrtim_tu_t timing_unit, uint16_t pulse_width, uint16_t phase_shift)
     leg_conf[_TU_num(timing_unit)].pulse_width = pulse_width;
 }
 
+void leg_set_dt(hrtim_tu_t timing_unit, uint16_t rise_ns, uint16_t fall_ns)
+{
+    //addition of the dead time for the rectification of the centered dead time configuration cf:hrtim_pwm_dt()
+    hrtim_pwm_dt(leg_conf[_TU_num(timing_unit)].hrtim, leg_conf[_TU_num(timing_unit)].timing_unit, rise_ns, fall_ns);
+
+    /* save the pulse_width */
+    leg_conf[_TU_num(timing_unit)].rise_dead_time = rise_ns;
+    leg_conf[_TU_num(timing_unit)].fall_dead_time = fall_ns;
+}
+
 void leg_stop(hrtim_tu_t timing_unit)
 {
     hrtim_out_dis(leg_conf[_TU_num(timing_unit)].hrtim, leg_conf[_TU_num(timing_unit)].timing_unit, OUT1);

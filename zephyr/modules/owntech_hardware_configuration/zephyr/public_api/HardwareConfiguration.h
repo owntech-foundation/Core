@@ -47,8 +47,17 @@ typedef enum
 {
     v_0_0, // No power converter attached, the software is running on Nucleo G474RE
     v_0_9,
-    v_1_1_2
+    v_1_1_2,
+	SPIN
 } hardware_version_t;
+
+/** Switch leg opeation type. 
+ */
+typedef enum
+{
+    buck, // No power converter attached, the software is running on Nucleo G474RE
+    boost
+} hardware_conversion_t;
 
 
 /////
@@ -86,13 +95,21 @@ public:
 	static void initFullBridgeBuckModeCenterAligned();
 	static void initFullBridgeBoostMode();
 	static void initFullBridgeBoostModeCenterAligned();
-	static void initIndependentMode(bool leg1_buck_mode, bool leg2_buck_mode);
-	static void initIndependentModeCenterAligned(bool leg1_buck_mode, bool leg2_buck_mode);
+	static void initIndependentMode(hardware_conversion_t leg1_conversion_type, hardware_conversion_t leg2_conversion_type);
+	static void initIndependentModeCenterAligned(hardware_conversion_t leg1_conversion_type, hardware_conversion_t leg2_conversion_type);
 
 	static void setInterleavedDutyCycle(float32_t duty_cycle);
 	static void setFullBridgeDutyCycle(float32_t duty_cycle);
+
 	static void setLeg1DutyCycle(float32_t duty_cycle);
 	static void setLeg2DutyCycle(float32_t duty_cycle);
+	static void setLeg1PhaseShift(float32_t phase_shift);
+	static void setLeg2PhaseShift(float32_t phase_shift);
+	static void setLeg1PhaseShiftCenterAligned(float32_t phase_shift);
+	static void setLeg2PhaseShiftCenterAligned(float32_t phase_shift);
+	static void setLeg1DeadTime(uint16_t rise_ns, uint16_t fall_ns);
+	static void setLeg2DeadTime(uint16_t rise_ns, uint16_t fall_ns);
+
 
 	static void setInterleavedOn();
 	static void setFullBridgeOn();
