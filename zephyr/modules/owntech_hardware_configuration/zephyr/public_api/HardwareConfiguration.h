@@ -45,19 +45,27 @@
  */
 typedef enum
 {
-    v_0_0, // No power converter attached, the software is running on Nucleo G474RE
-    v_0_9,
-    v_1_1_2,
-	SPIN
+	nucleo_G474RE,
+	O2_v_0_9,
+	O2_v_1_1_2,
+	SPIN_v_0_9
 } hardware_version_t;
 
-/** Switch leg opeation type. 
+/** Switch leg operation type.
  */
 typedef enum
 {
-    buck, // No power converter attached, the software is running on Nucleo G474RE
-    boost
-} hardware_conversion_t;
+	buck,
+	boost
+} leg_operation_t;
+
+/** Inverter leg operation type.
+ */
+typedef enum
+{
+	unipolar,
+	bipolar
+} inverter_modulation_t;
 
 
 /////
@@ -92,14 +100,14 @@ public:
 	static void initInterleavedBoostMode();
 	static void initInterleavedBoostModeCenterAligned();
 	static void initFullBridgeBuckMode();
-	static void initFullBridgeBuckModeCenterAligned();
+	static void initFullBridgeBuckModeCenterAligned(inverter_modulation_t inverter_modulation_type);
 	static void initFullBridgeBoostMode();
 	static void initFullBridgeBoostModeCenterAligned();
-	static void initIndependentMode(hardware_conversion_t leg1_conversion_type, hardware_conversion_t leg2_conversion_type);
-	static void initIndependentModeCenterAligned(hardware_conversion_t leg1_conversion_type, hardware_conversion_t leg2_conversion_type);
+	static void initIndependentMode(leg_operation_t leg1_operation_type, leg_operation_t leg2_operation_type);
+	static void initIndependentModeCenterAligned(leg_operation_t leg1_operation_type, leg_operation_t leg2_operation_type);
 
 	static void setInterleavedDutyCycle(float32_t duty_cycle);
-	static void setFullBridgeDutyCycle(float32_t duty_cycle);
+	static void setFullBridgeBuckDutyCycle(float32_t duty_cycle);
 
 	static void setLeg1DutyCycle(float32_t duty_cycle);
 	static void setLeg2DutyCycle(float32_t duty_cycle);
@@ -112,12 +120,12 @@ public:
 
 
 	static void setInterleavedOn();
-	static void setFullBridgeOn();
+	static void setFullBridgeBuckOn();
 	static void setLeg1On();
 	static void setLeg2On();
 
 	static void setInterleavedOff();
-	static void setFullBridgeOff();
+	static void setFullBridgeBuckOff();
 	static void setLeg1Off();
 	static void setLeg2Off();
 

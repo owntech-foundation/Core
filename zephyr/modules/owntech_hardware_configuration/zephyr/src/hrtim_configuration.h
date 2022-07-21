@@ -50,6 +50,19 @@ void hrtim_init_interleaved_buck_mode_center_aligned();
 void hrtim_init_interleaved_boost_mode();
 
 /**
+ * @brief     This function initializes the converter in full bridge mode
+ * with the input on the high side and the output on the low side with the HRTIM on left aligned
+ */
+void hrtim_init_full_bridge_buck_mode();
+
+/**
+ * @brief     This function initializes the converter in full bridge mode
+ * with the input on the high side and the output on the low side with the HRTIM as center aligned
+ */
+void hrtim_init_full_bridge_buck_mode_center_aligned(bool bipolar_mode);
+
+
+/**
  * @brief     This function initializes the converter in interleaved boost mode
  * with the input on the low side and the output on the high side. The counting mode
  * is set to up-down (center aligned).
@@ -86,7 +99,7 @@ void hrtim_interleaved_pwm_update(float32_t duty_cycle);
  *
  * @param[in] duty_cycle    floating point duty cycle comprised between 0 and 1.
  */
-void hrtim_hbridge_pwm_update(float32_t duty_cycle);
+void hrtim_full_bridge_buck_pwm_update(float32_t duty_cycle);
 
 /**
  * @brief     This function transfer the calculated PWM value of leg_1 to the
@@ -129,6 +142,7 @@ void hrtim_leg2_phase_shift_update(float32_t phase_shift);
  */
 
 void hrtim_leg1_phase_shift_update_center_aligned(float32_t phase_shift);
+
 /**
  * @brief     This function updates the phase shift between the leg 1 and the master hrtim for the center aligned
  *
@@ -137,13 +151,16 @@ void hrtim_leg1_phase_shift_update_center_aligned(float32_t phase_shift);
 
 void hrtim_leg2_phase_shift_update_center_aligned(float32_t phase_shift);
 
-
-
 /**
  * @brief This function stops the converter by putting both timing
  * units outputs low
  */
 void hrtim_stop_interleaved();
+
+/**
+ * @brief This function stops the inverter
+ */
+void hrtim_stop_full_bridge_buck();
 
 /**
  * @brief This function stops only leg 1
@@ -159,6 +176,11 @@ void hrtim_stop_leg2();
  * @brief This function starts both legs
  */
 void hrtim_start_interleaved();
+
+/**
+ * @brief This function starts the inverter
+ */
+void hrtim_start_full_bridge_buck();
 
 /**
  * @brief This function starts only leg 1

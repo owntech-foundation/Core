@@ -48,7 +48,7 @@ static uint16_t pwm_phase_shift_leg1;
 static uint16_t pwm_phase_shift_leg2;
 static uint16_t pwm_low_pulse_width;
 static uint16_t pwm_high_pulse_width;
-
+static bool     full_bridge_bipolar_mode;
 
 /**
  * This function initializes both legs in buck mode
@@ -151,6 +151,42 @@ void hrtim_init_independent_mode_center_aligned(bool leg1_buck_mode, bool leg2_b
 	pwm_high_pulse_width = pwm_period * HIGH_DUTY;
 }
 
+/**
+ * This function initializes both legs in full-bridge mode
+ */
+void hrtim_init_full_bridge_buck_mode()
+{
+	hrtim_init_voltage_buck();
+	full_bridge_bipolar_mode = false; //left-aligned inverter is always on unipolar mode
+
+	pwm_period = leg_period();
+	pwm_low_pulse_width = pwm_period * LOW_DUTY;
+	pwm_high_pulse_width = pwm_period * HIGH_DUTY;
+
+	pwm_phase_shift = pwm_period / 2;
+
+}
+
+/**
+ * This function initializes both legs in full-bridge mode
+ */
+void hrtim_init_full_bridge_buck_mode_center_aligned(bool bipolar_mode)
+{
+	hrtim_init_voltage_buck_center_aligned();
+	full_bridge_bipolar_mode = bipolar_mode;
+
+	pwm_period = leg_period();
+	pwm_low_pulse_width = pwm_period * LOW_DUTY;
+	pwm_high_pulse_width = pwm_period * HIGH_DUTY;
+
+	if (bipolar_mode){
+		pwm_phase_shift = 0;
+	}else{
+		pwm_phase_shift = pwm_period;
+	}
+
+}
+
 
 /**
  * This function transfer the calculated PWM value to the
@@ -186,7 +222,7 @@ void hrtim_interleaved_pwm_update(float32_t pwm_duty_cycle)
 		leg_set(TIMB, pwm_pulse_width, pwm_phase_shift);
 	}
 
-	hrtim_update_adc_trig_interleaved( (pwm_pulse_width>>1) + (pwm_pulse_width>>2));
+	hrtim_update_adc_trig_interleaved( (pwm_pulse_width>>1) + (pwm_pulse_width>>2));  //works only on left aligned as center aligned does not use the same comparators
 }
 
 /**
@@ -195,36 +231,63 @@ void hrtim_interleaved_pwm_update(float32_t pwm_duty_cycle)
  * bounds
  */
 
-void hrtim_hbridge_pwm_update(float32_t pwm_duty_cycle)
+void hrtim_full_bridge_buck_pwm_update(float32_t pwm_duty_cycle)
 {
 	uint16_t pwm_pulse_width;
 	uint16_t pwm_reverse_pulse_width;
 
 	// TESTING PWM VALUE TO AVOID OVERFLOW AND PWM UPDATE//
-	if (pwm_duty_cycle > HIGH_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
+	if(full_bridge_bipolar_mode)
 	{
-		pwm_duty_cycle = HIGH_DUTY;
-		pwm_pulse_width = pwm_high_pulse_width;
-		pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
-		leg_set(TIMA, pwm_pulse_width, 0);
-		leg_set(TIMB, pwm_reverse_pulse_width, pwm_period*pwm_duty_cycle);
+		if (pwm_duty_cycle > HIGH_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
+		{
+			pwm_duty_cycle = HIGH_DUTY;
+			pwm_pulse_width = pwm_high_pulse_width;
+			pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
+			leg_set(TIMA, pwm_pulse_width, 0);
+			leg_set(TIMB, pwm_reverse_pulse_width, pwm_period*pwm_duty_cycle);
+		}
+		else if (pwm_duty_cycle < LOW_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
+		{
+			pwm_duty_cycle = LOW_DUTY;
+			pwm_pulse_width = pwm_low_pulse_width;
+			pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
+			leg_set(TIMA, pwm_pulse_width, 0);
+			leg_set(TIMB, pwm_reverse_pulse_width, pwm_period*pwm_duty_cycle);
+		}
+		else
+		{
+			pwm_pulse_width = (pwm_duty_cycle * pwm_period);
+			pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
+			leg_set(TIMA, pwm_pulse_width, 0);
+			leg_set(TIMB, pwm_reverse_pulse_width, pwm_period*pwm_duty_cycle);
+		}
 	}
-
-	else if (pwm_duty_cycle < LOW_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
-	{
-		pwm_duty_cycle = LOW_DUTY;
-		pwm_pulse_width = pwm_low_pulse_width;
-		pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
-		leg_set(TIMA, pwm_pulse_width, 0);
-		leg_set(TIMB, pwm_reverse_pulse_width, pwm_period*pwm_duty_cycle);
-	}
-
 	else
 	{
-		pwm_pulse_width = (pwm_duty_cycle * pwm_period);
-		pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
-		leg_set(TIMA, pwm_pulse_width, 0);
-		leg_set(TIMB, pwm_reverse_pulse_width, pwm_period*pwm_duty_cycle);
+		if (pwm_duty_cycle > HIGH_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
+		{
+			pwm_duty_cycle = HIGH_DUTY;
+			pwm_pulse_width = pwm_high_pulse_width;
+			pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
+			leg_set(TIMA, pwm_pulse_width, 0);
+			leg_set(TIMB, pwm_reverse_pulse_width, pwm_phase_shift);
+		}
+		else if (pwm_duty_cycle < LOW_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
+		{
+			pwm_duty_cycle = LOW_DUTY;
+			pwm_pulse_width = pwm_low_pulse_width;
+			pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
+			leg_set(TIMA, pwm_pulse_width, 0);
+			leg_set(TIMB, pwm_reverse_pulse_width, pwm_phase_shift);
+		}
+		else
+		{
+			pwm_pulse_width = (pwm_duty_cycle * pwm_period);
+			pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
+			leg_set(TIMA, pwm_pulse_width, 0);
+			leg_set(TIMB, pwm_reverse_pulse_width, pwm_phase_shift);
+		}
 	}
 }
 
@@ -334,16 +397,27 @@ void hrtim_leg2_phase_shift_update_center_aligned(float32_t phase_shift)
  */
 void hrtim_stop_interleaved()
 {
-    leg_stop(TIMA);
-    leg_stop(TIMB);
+	leg_stop(TIMA);
+	leg_stop(TIMB);
 }
+
+/**
+ * This stops the converter by putting both timing
+ * units outputs low
+ */
+void hrtim_stop_full_bridge_buck()
+{
+	leg_stop(TIMA);
+	leg_stop(TIMB);
+}
+
 
 /**
  * This stops only leg 1
  */
 void hrtim_stop_leg1()
 {
-    leg_stop(TIMA);
+	leg_stop(TIMA);
 }
 
 /**
@@ -351,7 +425,7 @@ void hrtim_stop_leg1()
  */
 void hrtim_stop_leg2()
 {
-    leg_stop(TIMB);
+	leg_stop(TIMB);
 }
 /**
  * This stops the converter by putting both timing
@@ -362,6 +436,17 @@ void hrtim_start_interleaved()
 	leg_start(TIMA);
 	leg_start(TIMB);
 }
+
+/**
+ * This stops the converter by putting both timing
+ * units outputs low
+ */
+void hrtim_start_full_bridge_buck()
+{
+	leg_start(TIMA);
+	leg_start(TIMB);
+}
+
 /**
  * This stops the converter by putting both timing
  * units outputs low

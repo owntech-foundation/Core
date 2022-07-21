@@ -60,7 +60,7 @@ HardwareConfiguration hwConfig;
  */
 void HardwareConfiguration::setBoardVersion(hardware_version_t hardware_version)
 {
-	if (hardware_version == v_1_1_2 || hardware_version == SPIN)
+	if (hardware_version == O2_v_1_1_2 || hardware_version == SPIN_v_0_9)
 	{
 		uart_lpuart1_swap_rx_tx();
 	}
@@ -148,12 +148,14 @@ void HardwareConfiguration::initInterleavedBoostModeCenterAligned()
 
 void HardwareConfiguration::initFullBridgeBuckMode()
 {
-	hrtim_init_interleaved_buck_mode();
+	hrtim_init_full_bridge_buck_mode();
 }
 
-void HardwareConfiguration::initFullBridgeBuckModeCenterAligned()
+void HardwareConfiguration::initFullBridgeBuckModeCenterAligned(inverter_modulation_t inverter_modulation_type)
 {
-	hrtim_init_interleaved_buck_mode_center_aligned();
+	bool bipolar_mode;
+	if (inverter_modulation_type == bipolar) bipolar_mode = true; else bipolar_mode = false;
+	hrtim_init_full_bridge_buck_mode_center_aligned(bipolar_mode);
 }
 
 void HardwareConfiguration::initFullBridgeBoostMode()
@@ -166,20 +168,20 @@ void HardwareConfiguration::initFullBridgeBoostModeCenterAligned()
 	hrtim_init_interleaved_boost_mode_center_aligned();
 }
 
-void HardwareConfiguration::initIndependentMode(hardware_conversion_t leg1_conversion_type, hardware_conversion_t leg2_conversion_type)
+void HardwareConfiguration::initIndependentMode(leg_operation_t leg1_operation_type, leg_operation_t leg2_operation_type)
 {
 	bool leg1_mode, leg2_mode;
-	if (leg1_conversion_type == buck) leg1_mode = true; else leg1_mode = false;
-	if (leg2_conversion_type == buck) leg2_mode = true; else leg2_mode = false;
+	if (leg1_operation_type == buck) leg1_mode = true; else leg1_mode = false;
+	if (leg2_operation_type == buck) leg2_mode = true; else leg2_mode = false;
 
 	hrtim_init_independent_mode(leg1_mode, leg2_mode);
 }
 
-void HardwareConfiguration::initIndependentModeCenterAligned(hardware_conversion_t leg1_conversion_type, hardware_conversion_t leg2_conversion_type)
+void HardwareConfiguration::initIndependentModeCenterAligned(leg_operation_t leg1_operation_type, leg_operation_t leg2_operation_type)
 {
 	bool leg1_mode, leg2_mode;
-	if (leg1_conversion_type == buck) leg1_mode = true; else leg1_mode = false;
-	if (leg2_conversion_type == buck) leg2_mode = true; else leg2_mode = false;
+	if (leg1_operation_type == buck) leg1_mode = true; else leg1_mode = false;
+	if (leg2_operation_type == buck) leg2_mode = true; else leg2_mode = false;
 
 	hrtim_init_independent_mode_center_aligned(leg1_mode, leg2_mode);
 }
@@ -189,9 +191,9 @@ void HardwareConfiguration::setInterleavedDutyCycle(float32_t duty_cycle)
 	hrtim_interleaved_pwm_update(duty_cycle);
 }
 
-void HardwareConfiguration::setFullBridgeDutyCycle(float32_t duty_cycle)
+void HardwareConfiguration::setFullBridgeBuckDutyCycle(float32_t duty_cycle)
 {
-	hrtim_hbridge_pwm_update(duty_cycle);
+	hrtim_full_bridge_buck_pwm_update(duty_cycle);
 }
 
 void HardwareConfiguration::setLeg1DutyCycle(float32_t duty_cycle)
@@ -229,9 +231,9 @@ void HardwareConfiguration::setInterleavedOn()
 	hrtim_start_interleaved();
 }
 
-void HardwareConfiguration::setFullBridgeOn()
+void HardwareConfiguration::setFullBridgeBuckOn()
 {
-	hrtim_start_interleaved();
+	hrtim_start_full_bridge_buck();
 }
 
 void HardwareConfiguration::setLeg1On()
@@ -249,9 +251,9 @@ void HardwareConfiguration::setInterleavedOff()
 	hrtim_stop_interleaved();
 }
 
-void HardwareConfiguration::setFullBridgeOff()
+void HardwareConfiguration::setFullBridgeBuckOff()
 {
-	hrtim_stop_interleaved();
+	hrtim_stop_full_bridge_buck();
 }
 
 void HardwareConfiguration::setLeg1Off()
