@@ -38,6 +38,9 @@
 // Current class header
 #include "HardwareConfiguration.h"
 
+// Include public header
+#include "hrtim.h"
+
 
 /////
 // Public object to interact with the class
@@ -60,10 +63,18 @@ HardwareConfiguration hwConfig;
  */
 void HardwareConfiguration::setBoardVersion(hardware_version_t hardware_version)
 {
-	if (hardware_version == O2_v_1_1_2 || hardware_version == SPIN_v_0_9)
+	if (hardware_version == O2_v_1_1_2 || hardware_version == O2_v_0_9)
 	{
 		uart_lpuart1_swap_rx_tx();
+		hrtim_leg_tu(TIMA, TIMB);
+	}else if(hardware_version == SPIN_v_0_9){
+
+		uart_lpuart1_swap_rx_tx();
+		hrtim_leg_tu(TIMA, TIMC);
+	}else if(hardware_version == nucleo_G474RE){
+		hrtim_leg_tu(TIMA, TIMB);
 	}
+
 }
 
 

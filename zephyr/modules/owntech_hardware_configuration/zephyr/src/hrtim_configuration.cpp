@@ -27,7 +27,7 @@
 
 // OwnTech Power API
 #include "leg.h"    // PWM management layer by inverter leg interface
-#include "hrtim.h"
+
 
 // Current file header
 #include "hrtim_configuration.h"
@@ -50,12 +50,27 @@ static uint16_t pwm_low_pulse_width;
 static uint16_t pwm_high_pulse_width;
 static bool     full_bridge_bipolar_mode;
 
+static hrtim_tu_t leg1_tu;
+static hrtim_tu_t leg2_tu; 
+
+
+/**
+ * This function initializes the timer managing each leg
+ */
+
+void hrtim_leg_tu(hrtim_tu_t tu1, hrtim_tu_t tu2)
+{
+	leg1_tu = tu1;
+	leg2_tu = tu2;
+}
+
+
 /**
  * This function initializes both legs in buck mode
  */
 void hrtim_init_interleaved_buck_mode()
 {
-	hrtim_init_voltage_buck();
+	hrtim_init_voltage_buck(leg1_tu,leg2_tu);
 
 	pwm_period = leg_period();
 	pwm_phase_shift = pwm_period / 2;
@@ -68,7 +83,7 @@ void hrtim_init_interleaved_buck_mode()
  */
 void hrtim_init_interleaved_buck_mode_center_aligned()
 {
-	hrtim_init_voltage_buck_center_aligned();
+	hrtim_init_voltage_buck_center_aligned(leg1_tu, leg2_tu);
 
 	pwm_period = leg_period();
 	pwm_phase_shift = pwm_period;
@@ -81,7 +96,7 @@ void hrtim_init_interleaved_buck_mode_center_aligned()
  */
 void hrtim_init_interleaved_boost_mode()
 {
-	hrtim_init_voltage_boost();
+	hrtim_init_voltage_boost(leg1_tu, leg2_tu);
 
 	pwm_period = leg_period();
 	pwm_phase_shift = pwm_period / 2;
@@ -91,7 +106,7 @@ void hrtim_init_interleaved_boost_mode()
 
 void hrtim_init_interleaved_boost_mode_center_aligned()
 {
-	hrtim_init_voltage_boost_center_aligned();
+	hrtim_init_voltage_boost_center_aligned(leg1_tu, leg2_tu);
 
 	pwm_period = leg_period();
 	pwm_phase_shift = pwm_period;
@@ -106,16 +121,16 @@ void hrtim_init_independent_mode(bool leg1_buck_mode, bool leg2_buck_mode)
 {
 	// High resolution timer initialization
 	if (leg1_buck_mode && !leg2_buck_mode){
-		hrtim_init_voltage_leg1_buck_leg2_boost();
+		hrtim_init_voltage_leg1_buck_leg2_boost(leg1_tu, leg2_tu);
 	}
 	else if (!leg1_buck_mode && leg2_buck_mode){
-		hrtim_init_voltage_leg1_boost_leg2_buck();
+		hrtim_init_voltage_leg1_boost_leg2_buck(leg1_tu, leg2_tu);
 	}
 	else if (leg1_buck_mode && leg2_buck_mode){
-		hrtim_init_voltage_buck();
+		hrtim_init_voltage_buck(leg1_tu, leg2_tu);
 	}
 	else if (!leg1_buck_mode && !leg2_buck_mode){
-		hrtim_init_voltage_boost();
+		hrtim_init_voltage_boost(leg1_tu, leg2_tu);
 	}
 
 	pwm_period = leg_period();
@@ -133,16 +148,16 @@ void hrtim_init_independent_mode_center_aligned(bool leg1_buck_mode, bool leg2_b
 {
 	// High resolution timer initialization
 	if (leg1_buck_mode && !leg2_buck_mode){
-		hrtim_init_voltage_leg1_buck_leg2_boost_center_aligned();
+		hrtim_init_voltage_leg1_buck_leg2_boost_center_aligned(leg1_tu, leg2_tu);
 	}
 	else if (!leg1_buck_mode && leg2_buck_mode){
-		hrtim_init_voltage_leg1_boost_leg2_buck_center_aligned();
+		hrtim_init_voltage_leg1_boost_leg2_buck_center_aligned(leg1_tu,leg2_tu);
 	}
 	else if (leg1_buck_mode && leg2_buck_mode){
-		hrtim_init_voltage_buck_center_aligned();
+		hrtim_init_voltage_buck_center_aligned(leg1_tu, leg2_tu);
 	}
 	else if (!leg1_buck_mode && !leg2_buck_mode){
-		hrtim_init_voltage_boost_center_aligned();
+		hrtim_init_voltage_boost_center_aligned(leg1_tu, leg2_tu);
 	}
 
 	pwm_period = leg_period();
@@ -156,7 +171,7 @@ void hrtim_init_independent_mode_center_aligned(bool leg1_buck_mode, bool leg2_b
  */
 void hrtim_init_full_bridge_buck_mode()
 {
-	hrtim_init_voltage_buck();
+	hrtim_init_voltage_buck(leg1_tu, leg1_tu);
 	full_bridge_bipolar_mode = false; //left-aligned inverter is always on unipolar mode
 
 	pwm_period = leg_period();
@@ -172,7 +187,7 @@ void hrtim_init_full_bridge_buck_mode()
  */
 void hrtim_init_full_bridge_buck_mode_center_aligned(bool bipolar_mode)
 {
-	hrtim_init_voltage_buck_center_aligned();
+	hrtim_init_voltage_buck_center_aligned(leg1_tu, leg2_tu);
 	full_bridge_bipolar_mode = bipolar_mode;
 
 	pwm_period = leg_period();
@@ -203,26 +218,26 @@ void hrtim_interleaved_pwm_update(float32_t pwm_duty_cycle)
 	{
 		pwm_duty_cycle = HIGH_DUTY;
 		pwm_pulse_width = pwm_high_pulse_width;
-		leg_set(TIMA, pwm_pulse_width, 0);
-		leg_set(TIMB, pwm_pulse_width, pwm_phase_shift);
+		leg_set(leg1_tu, pwm_pulse_width, 0);
+		leg_set(leg2_tu, pwm_pulse_width, pwm_phase_shift);
 	}
 
 	else if (pwm_duty_cycle < LOW_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
 	{
 		pwm_duty_cycle = LOW_DUTY;
 		pwm_pulse_width = pwm_low_pulse_width;
-		leg_set(TIMA, pwm_pulse_width, 0);
-		leg_set(TIMB, pwm_pulse_width, pwm_phase_shift);
+		leg_set(leg1_tu, pwm_pulse_width, 0);
+		leg_set(leg2_tu, pwm_pulse_width, pwm_phase_shift);
 	}
 
 	else
 	{
 		pwm_pulse_width = (pwm_duty_cycle * pwm_period);
-		leg_set(TIMA, pwm_pulse_width, 0);
-		leg_set(TIMB, pwm_pulse_width, pwm_phase_shift);
+		leg_set(leg1_tu, pwm_pulse_width, 0);
+		leg_set(leg2_tu, pwm_pulse_width, pwm_phase_shift);
 	}
 
-	hrtim_update_adc_trig_interleaved( (pwm_pulse_width>>1) + (pwm_pulse_width>>2));  //works only on left aligned as center aligned does not use the same comparators
+	hrtim_update_adc_trig_interleaved( (pwm_pulse_width>>1) + (pwm_pulse_width>>2), leg1_tu, leg2_tu);  //works only on left aligned as center aligned does not use the same comparators
 }
 
 /**
@@ -244,23 +259,23 @@ void hrtim_full_bridge_buck_pwm_update(float32_t pwm_duty_cycle)
 			pwm_duty_cycle = HIGH_DUTY;
 			pwm_pulse_width = pwm_high_pulse_width;
 			pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
-			leg_set(TIMA, pwm_pulse_width, 0);
-			leg_set(TIMB, pwm_reverse_pulse_width, pwm_period*pwm_duty_cycle);
+			leg_set(leg1_tu, pwm_pulse_width, 0);
+			leg_set(leg2_tu, pwm_reverse_pulse_width, pwm_period*pwm_duty_cycle);
 		}
 		else if (pwm_duty_cycle < LOW_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
 		{
 			pwm_duty_cycle = LOW_DUTY;
 			pwm_pulse_width = pwm_low_pulse_width;
 			pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
-			leg_set(TIMA, pwm_pulse_width, 0);
-			leg_set(TIMB, pwm_reverse_pulse_width, pwm_period*pwm_duty_cycle);
+			leg_set(leg1_tu, pwm_pulse_width, 0);
+			leg_set(leg2_tu, pwm_reverse_pulse_width, pwm_period*pwm_duty_cycle);
 		}
 		else
 		{
 			pwm_pulse_width = (pwm_duty_cycle * pwm_period);
 			pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
-			leg_set(TIMA, pwm_pulse_width, 0);
-			leg_set(TIMB, pwm_reverse_pulse_width, pwm_period*pwm_duty_cycle);
+			leg_set(leg1_tu, pwm_pulse_width, 0);
+			leg_set(leg2_tu, pwm_reverse_pulse_width, pwm_period*pwm_duty_cycle);
 		}
 	}
 	else
@@ -270,23 +285,23 @@ void hrtim_full_bridge_buck_pwm_update(float32_t pwm_duty_cycle)
 			pwm_duty_cycle = HIGH_DUTY;
 			pwm_pulse_width = pwm_high_pulse_width;
 			pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
-			leg_set(TIMA, pwm_pulse_width, 0);
-			leg_set(TIMB, pwm_reverse_pulse_width, pwm_phase_shift);
+			leg_set(leg1_tu, pwm_pulse_width, 0);
+			leg_set(leg2_tu, pwm_reverse_pulse_width, pwm_phase_shift);
 		}
 		else if (pwm_duty_cycle < LOW_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
 		{
 			pwm_duty_cycle = LOW_DUTY;
 			pwm_pulse_width = pwm_low_pulse_width;
 			pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
-			leg_set(TIMA, pwm_pulse_width, 0);
-			leg_set(TIMB, pwm_reverse_pulse_width, pwm_phase_shift);
+			leg_set(leg1_tu, pwm_pulse_width, 0);
+			leg_set(leg2_tu, pwm_reverse_pulse_width, pwm_phase_shift);
 		}
 		else
 		{
 			pwm_pulse_width = (pwm_duty_cycle * pwm_period);
 			pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
-			leg_set(TIMA, pwm_pulse_width, 0);
-			leg_set(TIMB, pwm_reverse_pulse_width, pwm_phase_shift);
+			leg_set(leg1_tu, pwm_pulse_width, 0);
+			leg_set(leg2_tu, pwm_reverse_pulse_width, pwm_phase_shift);
 		}
 	}
 }
@@ -306,20 +321,20 @@ void hrtim_leg1_pwm_update(float32_t pwm_duty_cycle)
 	{
 		pwm_duty_cycle = HIGH_DUTY;
 		pwm_pulse_width = pwm_high_pulse_width;
-		leg_set(TIMA, pwm_pulse_width, pwm_phase_shift_leg1);
+		leg_set(leg1_tu, pwm_pulse_width, pwm_phase_shift_leg1);
 	}
 
 	else if (pwm_duty_cycle < LOW_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
 	{
 		pwm_duty_cycle = LOW_DUTY;
 		pwm_pulse_width = pwm_low_pulse_width;
-		leg_set(TIMA, pwm_pulse_width, pwm_phase_shift_leg1);
+		leg_set(leg1_tu, pwm_pulse_width, pwm_phase_shift_leg1);
 	}
 
 	else
 	{
 		pwm_pulse_width = (pwm_duty_cycle * pwm_period);
-		leg_set(TIMA, pwm_pulse_width, pwm_phase_shift_leg1);
+		leg_set(leg1_tu, pwm_pulse_width, pwm_phase_shift_leg1);
 	}
 }
 
@@ -337,20 +352,20 @@ void hrtim_leg2_pwm_update(float32_t pwm_duty_cycle)
 	{
 		pwm_duty_cycle = HIGH_DUTY;
 		pwm_pulse_width = pwm_high_pulse_width;
-		leg_set(TIMB, pwm_pulse_width, pwm_phase_shift_leg2);
+		leg_set(leg2_tu, pwm_pulse_width, pwm_phase_shift_leg2);
 	}
 
 	else if (pwm_duty_cycle < LOW_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
 	{
 		pwm_duty_cycle = LOW_DUTY;
 		pwm_pulse_width = pwm_low_pulse_width;
-		leg_set(TIMB, pwm_pulse_width, pwm_phase_shift_leg2);
+		leg_set(leg2_tu, pwm_pulse_width, pwm_phase_shift_leg2);
 	}
 
 	else
 	{
 		pwm_pulse_width = (pwm_duty_cycle * pwm_period);
-		leg_set(TIMB, pwm_pulse_width, pwm_phase_shift_leg2);
+		leg_set(leg2_tu, pwm_pulse_width, pwm_phase_shift_leg2);
 	}
 }
 
@@ -359,6 +374,8 @@ void hrtim_leg2_pwm_update(float32_t pwm_duty_cycle)
  */
 void hrtim_leg1_phase_shift_update(float32_t phase_shift)
 {
+	phase_shift = int(phase_shift)%360; // modulo 
+    if(phase_shift<0) phase_shift = phase_shift + 360; // case of negative phase
 	pwm_phase_shift_leg1 = (uint16_t)(pwm_period * (phase_shift/360) );
 }
 
@@ -368,6 +385,8 @@ void hrtim_leg1_phase_shift_update(float32_t phase_shift)
  */
 void hrtim_leg2_phase_shift_update(float32_t phase_shift)
 {
+	phase_shift = int(phase_shift)%360; // modulo 
+    if(phase_shift<0) phase_shift = phase_shift + 360; // case of negative phase
 	pwm_phase_shift_leg2 = (uint16_t)(pwm_period * (phase_shift/360) );
 }
 
@@ -377,6 +396,8 @@ void hrtim_leg2_phase_shift_update(float32_t phase_shift)
  */
 void hrtim_leg1_phase_shift_update_center_aligned(float32_t phase_shift)
 {
+	phase_shift = int(phase_shift)%360; // modulo 
+    if(phase_shift<0) phase_shift = phase_shift + 360; // case of negative phase
 	pwm_phase_shift_leg1 = (uint16_t)(2*pwm_period * (phase_shift/360) );
 }
 
@@ -387,6 +408,8 @@ void hrtim_leg1_phase_shift_update_center_aligned(float32_t phase_shift)
  */
 void hrtim_leg2_phase_shift_update_center_aligned(float32_t phase_shift)
 {
+	phase_shift = int(phase_shift)%360; // modulo 
+    if(phase_shift<0) phase_shift = phase_shift + 360; // case of negative phase
 	pwm_phase_shift_leg2 = (uint16_t)(2*pwm_period * (phase_shift/360) );
 }
 
@@ -397,8 +420,8 @@ void hrtim_leg2_phase_shift_update_center_aligned(float32_t phase_shift)
  */
 void hrtim_stop_interleaved()
 {
-	leg_stop(TIMA);
-	leg_stop(TIMB);
+	leg_stop(leg1_tu);
+	leg_stop(leg2_tu);
 }
 
 /**
@@ -407,8 +430,8 @@ void hrtim_stop_interleaved()
  */
 void hrtim_stop_full_bridge_buck()
 {
-	leg_stop(TIMA);
-	leg_stop(TIMB);
+	leg_stop(leg1_tu);
+	leg_stop(leg2_tu);
 }
 
 
@@ -417,7 +440,7 @@ void hrtim_stop_full_bridge_buck()
  */
 void hrtim_stop_leg1()
 {
-	leg_stop(TIMA);
+	leg_stop(leg1_tu);
 }
 
 /**
@@ -425,7 +448,7 @@ void hrtim_stop_leg1()
  */
 void hrtim_stop_leg2()
 {
-	leg_stop(TIMB);
+	leg_stop(leg2_tu);
 }
 /**
  * This stops the converter by putting both timing
@@ -433,8 +456,8 @@ void hrtim_stop_leg2()
  */
 void hrtim_start_interleaved()
 {
-	leg_start(TIMA);
-	leg_start(TIMB);
+	leg_start(leg1_tu);
+	leg_start(leg2_tu);
 }
 
 /**
@@ -443,8 +466,8 @@ void hrtim_start_interleaved()
  */
 void hrtim_start_full_bridge_buck()
 {
-	leg_start(TIMA);
-	leg_start(TIMB);
+	leg_start(leg1_tu);
+	leg_start(leg2_tu);
 }
 
 /**
@@ -453,7 +476,7 @@ void hrtim_start_full_bridge_buck()
  */
 void hrtim_start_leg1()
 {
-	leg_start(TIMA);
+	leg_start(leg1_tu);
 }
 /**
  * This stops the converter by putting both timing
@@ -461,12 +484,12 @@ void hrtim_start_leg1()
  */
 void hrtim_start_leg2()
 {
-	leg_start(TIMB);
+	leg_start(leg2_tu);
 }
 
 void set_adc_trig_interleaved(uint16_t new_trig)
 {
-	hrtim_update_adc_trig_interleaved(new_trig);
+	hrtim_update_adc_trig_interleaved(new_trig, leg1_tu, leg2_tu);
 }
 
 
@@ -476,12 +499,12 @@ void set_adc_trig_interleaved(uint16_t new_trig)
  */
 void hrtim_set_dead_time_leg1(uint16_t rise_ns, uint16_t fall_ns)
 {
-	leg_set_dt(TIMA, rise_ns, fall_ns);
+	leg_set_dt(leg1_tu, rise_ns, fall_ns);
 }
 /**
  * This updates the dead time of the leg 2
  */
 void hrtim_set_dead_time_leg2(uint16_t rise_ns, uint16_t fall_ns)
 {
-	leg_set_dt(TIMB, rise_ns, fall_ns);
+	leg_set_dt(leg2_tu, rise_ns, fall_ns);
 }

@@ -28,7 +28,17 @@
 
 
 #include <arm_math.h>
+#include "hrtim.h"
 
+
+/**
+ * @brief     This function initializes the timer managing the legs
+ * 
+ * @param[in] tu1 timer unit for leg 1
+ * @param[in] tu2 timer unit for leg 2
+ */
+
+void hrtim_leg_tu(hrtim_tu_t tu1, hrtim_tu_t tu2);
 
 /**
  * @brief     This function initializes the converter in interleaved buck mode

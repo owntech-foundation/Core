@@ -163,26 +163,26 @@ static inline uint32_t _period_ckpsc(hrtim_t hrtim, uint32_t freq,
     return frequency;
 }
 
-uint16_t hrtim_init(hrtim_t hrtim, uint32_t *freq, uint16_t dead_time_ns, uint8_t leg1_upper_switch_convention, uint8_t leg2_upper_switch_convention)
+uint16_t hrtim_init(hrtim_t hrtim, uint32_t *freq, uint16_t dead_time_ns, uint8_t leg1_upper_switch_convention, uint8_t leg2_upper_switch_convention, hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 {
     /* Master timer initialization */
     uint16_t period = hrtim_init_master(hrtim, freq);
 
-    /* Timer A initialization for leg 1 */
-    hrtim_init_tu(hrtim, TIMA, freq, Lft_aligned);
-    hrtim_pwm_dt(hrtim, TIMA, dead_time_ns, dead_time_ns); // Set the dead time. Note: this must be done before enable counter
-    hrtim_cnt_en(hrtim, TIMA); // Enable counter 
-    hrtim_rst_evt_en(hrtim, TIMA, LL_HRTIM_RESETTRIG_MASTER_PER); // We synchronize the Timer A with the master timer, with a reset on period event
+    /* Timer initialization for leg 1 */
+    hrtim_init_tu(hrtim, leg1_tu, freq, Lft_aligned);
+    hrtim_pwm_dt(hrtim, leg1_tu, dead_time_ns, dead_time_ns); // Set the dead time. Note: this must be done before enable counter
+    hrtim_cnt_en(hrtim, leg1_tu); // Enable counter 
+    hrtim_rst_evt_en(hrtim, leg1_tu, LL_HRTIM_RESETTRIG_MASTER_PER); // We synchronize the Timer A with the master timer, with a reset on period event
 
-    /* Timer B initialization for leg 2 */
-    hrtim_init_tu(hrtim, TIMB, freq, Lft_aligned);
-    hrtim_pwm_dt(hrtim, TIMB, dead_time_ns, dead_time_ns);  // Set the dead time. Note: this must be done before enable counter
-    hrtim_cnt_en(hrtim, TIMB);  // Enable the counter
-    hrtim_rst_evt_en(hrtim, TIMB, LL_HRTIM_RESETTRIG_MASTER_PER); // We synchronize the Timer B with the master timer, with a reset on period event
+    /* Timer initialization for leg 2 */
+    hrtim_init_tu(hrtim, leg2_tu, freq, Lft_aligned);
+    hrtim_pwm_dt(hrtim, leg2_tu, dead_time_ns, dead_time_ns);  // Set the dead time. Note: this must be done before enable counter
+    hrtim_cnt_en(hrtim, leg2_tu);  // Enable the counter
+    hrtim_rst_evt_en(hrtim, leg2_tu, LL_HRTIM_RESETTRIG_MASTER_PER); // We synchronize the Timer B with the master timer, with a reset on period event
 
 
-    hrtim_cmpl_pwm_out1(hrtim, TIMA, leg1_upper_switch_convention, Lft_aligned); // Set the convention for leg 1
-    hrtim_cmpl_pwm_out1(hrtim, TIMB, leg2_upper_switch_convention, Lft_aligned); // Set the convention for leg 2
+    hrtim_cmpl_pwm_out1(hrtim, leg1_tu, leg1_upper_switch_convention, Lft_aligned); // Set the convention for leg 1
+    hrtim_cmpl_pwm_out1(hrtim, leg2_tu, leg2_upper_switch_convention, Lft_aligned); // Set the convention for leg 2
 
     return period;
 }
@@ -195,27 +195,27 @@ void hrtim_update_dead_time(hrtim_t hrtim, hrtim_tu_t tu, uint16_t rise_ns, uint
 
 }
 
-uint16_t hrtim_init_updwn(hrtim_t hrtim, uint32_t *freq, uint16_t dt, uint8_t leg1_upper_switch_convention, uint8_t leg2_upper_switch_convention)
+uint16_t hrtim_init_updwn(hrtim_t hrtim, uint32_t *freq, uint16_t dt, uint8_t leg1_upper_switch_convention, uint8_t leg2_upper_switch_convention, hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 {
     /* Master timer and timing unit frequency initialization */
     uint16_t period = hrtim_init_master(hrtim, freq);
     uint32_t freq_tu = (*freq)*2;
 
-    /* Timer A initialization for leg 1 */
-    hrtim_init_tu(hrtim, TIMA, &freq_tu, UpDwn);
-    hrtim_pwm_dt(hrtim, TIMA, dt, dt); // Set the dead time. Note: this must be done before enable counter
-    hrtim_cnt_en(hrtim, TIMA); // Enable counter 
-    hrtim_rst_evt_en(hrtim, TIMA, LL_HRTIM_RESETTRIG_MASTER_PER); // We synchronize the Timer A with the master timer, with a reset on period event
+    /* Timer initialization for leg 1 */
+    hrtim_init_tu(hrtim, leg1_tu, &freq_tu, UpDwn);
+    hrtim_pwm_dt(hrtim, leg1_tu, dt, dt); // Set the dead time. Note: this must be done before enable counter
+    hrtim_cnt_en(hrtim, leg1_tu); // Enable counter 
+    hrtim_rst_evt_en(hrtim, leg1_tu, LL_HRTIM_RESETTRIG_MASTER_PER); // We synchronize the Timer A with the master timer, with a reset on period event
 
-    /* Timer B initialization for leg 2 */
-    hrtim_init_tu(hrtim, TIMB, &freq_tu, UpDwn);
-    hrtim_pwm_dt(hrtim, TIMB, dt, dt);  // Set the dead time. Note: this must be done before enable counter
-    hrtim_cnt_en(hrtim, TIMB);  // Enable the counter
-    hrtim_rst_evt_en(hrtim, TIMB, LL_HRTIM_RESETTRIG_MASTER_PER); // We synchronize the Timer B with the master timer, with a reset on period event
+    /* Timer initialization for leg 2 */
+    hrtim_init_tu(hrtim, leg2_tu, &freq_tu, UpDwn);
+    hrtim_pwm_dt(hrtim, leg2_tu, dt, dt);  // Set the dead time. Note: this must be done before enable counter
+    hrtim_cnt_en(hrtim, leg2_tu);  // Enable the counter
+    hrtim_rst_evt_en(hrtim, leg2_tu, LL_HRTIM_RESETTRIG_MASTER_PER); // We synchronize the Timer B with the master timer, with a reset on period event
 
 
-    hrtim_cmpl_pwm_out1(hrtim, TIMA, leg1_upper_switch_convention, UpDwn); // Set the convention for leg 1
-    hrtim_cmpl_pwm_out1(hrtim, TIMB, leg2_upper_switch_convention, UpDwn); // Set the convention for leg 2
+    hrtim_cmpl_pwm_out1(hrtim, leg1_tu, leg1_upper_switch_convention, UpDwn); // Set the convention for leg 1
+    hrtim_cmpl_pwm_out1(hrtim, leg2_tu, leg2_upper_switch_convention, UpDwn); // Set the convention for leg 2
 
     return period/2; // return timing unit period which is half the period of the master timer
 }

@@ -71,7 +71,7 @@ static uint8_t _TU_num(hrtim_tu_t tu){
  * on the power converter to a frequency of 200kHz
  * Must be initialized in first position
  */
-uint16_t leg_init(bool leg1_upper_switch_convention, bool leg2_upper_switch_convention)
+uint16_t leg_init(bool leg1_upper_switch_convention, bool leg2_upper_switch_convention, hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 {
     uint32_t freq = LEG_FREQ;
 
@@ -81,7 +81,7 @@ uint16_t leg_init(bool leg1_upper_switch_convention, bool leg2_upper_switch_conv
         leg_conf[_TU_num(leg_config[i].timing_unit)] = leg_config[i];
     }
 
-    period = hrtim_init(0, &freq, LEG_DEFAULT_DT,leg1_upper_switch_convention,leg2_upper_switch_convention);
+    period = hrtim_init(0, &freq, LEG_DEFAULT_DT,leg1_upper_switch_convention,leg2_upper_switch_convention, leg1_tu, leg2_tu);
     dead_time = (period*LEG_DEFAULT_DT*leg_get_freq())/1000000;
     min_pw = (period * 0.1) + dead_time;
     max_pw = (period * 0.9) + dead_time;
@@ -95,7 +95,7 @@ uint16_t leg_init(bool leg1_upper_switch_convention, bool leg2_upper_switch_conv
  * with the counter on up-down mode (center-alligned)
  * Must be initialized in first position
  */
-uint16_t leg_init_center_aligned(bool leg1_upper_switch_convention, bool leg2_upper_switch_convention)
+uint16_t leg_init_center_aligned(bool leg1_upper_switch_convention, bool leg2_upper_switch_convention,hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 {
     uint32_t freq = LEG_FREQ;
 
@@ -105,7 +105,7 @@ uint16_t leg_init_center_aligned(bool leg1_upper_switch_convention, bool leg2_up
         leg_conf[_TU_num(leg_config[i].timing_unit)] = leg_config[i];
     }
 
-    period = hrtim_init_updwn(0, &freq, LEG_DEFAULT_DT,leg1_upper_switch_convention,leg2_upper_switch_convention);
+    period = hrtim_init_updwn(0, &freq, LEG_DEFAULT_DT,leg1_upper_switch_convention,leg2_upper_switch_convention, leg1_tu, leg2_tu);
     dead_time = (period*LEG_DEFAULT_DT*leg_get_freq())/1000000;
     min_pw = (period * 0.1) + dead_time;
     max_pw = (period * 0.9) + dead_time;

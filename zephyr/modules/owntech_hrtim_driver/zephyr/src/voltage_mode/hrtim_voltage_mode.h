@@ -128,10 +128,12 @@ typedef enum {
  * @param[in] leg2_upper_switch_convention   Choice of the switch convention for leg 2, can be one of the following values:
  *            @arg @ref True (Buck mode)
  *            @arg @ref False (Boost mode)
+ * @param[in] leg1_tu   Timer for leg 1
+ * @param[in] leg2_tu   Timer for leg 2
  * @return              actual HRTIM resolution on success
  * @return              0 on error
  */
-uint16_t hrtim_init(hrtim_t dev, uint32_t *freq, uint16_t dead_time_ns, uint8_t leg1_upper_switch_convention, uint8_t leg2_upper_switch_convention);
+uint16_t hrtim_init(hrtim_t dev, uint32_t *freq, uint16_t dead_time_ns, uint8_t leg1_upper_switch_convention, uint8_t leg2_upper_switch_convention, hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu);
 
 /**
  * @brief   Initialize an HRTIM device and all these timing units for
@@ -146,10 +148,12 @@ uint16_t hrtim_init(hrtim_t dev, uint32_t *freq, uint16_t dead_time_ns, uint8_t 
  * @param[in] leg2_upper_switch_convention   Choice of the switch convention for leg 2, can be one of the following values:
  *            @arg @ref True (Buck mode)
  *            @arg @ref False (Boost mode)
+ * @param[in] leg1_tu   Timer for leg 1
+ * @param[in] leg2_tu   Timer for leg 2
  * @return              actual HRTIM resolution on success
  * @return              0 on error
  */
-uint16_t hrtim_init_updwn(hrtim_t dev, uint32_t *freq, uint16_t dt, uint8_t leg1_upper_switch_convention, uint8_t leg2_upper_switch_convention);
+uint16_t hrtim_init_updwn(hrtim_t dev, uint32_t *freq, uint16_t dt, uint8_t leg1_upper_switch_convention, uint8_t leg2_upper_switch_convention,hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu);
 
 /**
  * @brief   Updates the duty cycle

@@ -68,7 +68,7 @@ typedef struct {
  *
  * @return                      HRTIM period
  */
-uint16_t leg_init(bool leg1_upper_switch_convention, bool leg2_upper_switch_convention);
+uint16_t leg_init(bool leg1_upper_switch_convention, bool leg2_upper_switch_convention, hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu);
 
 /**
  * @brief   Initializes all the configured devices with up-down mode and the chosen switch convention
@@ -78,7 +78,7 @@ uint16_t leg_init(bool leg1_upper_switch_convention, bool leg2_upper_switch_conv
  *
  * @return                      HRTIM period
  */
-uint16_t leg_init_center_aligned(bool leg1_upper_switch_convention, bool leg2_upper_switch_convention);
+uint16_t leg_init_center_aligned(bool leg1_upper_switch_convention, bool leg2_upper_switch_convention, hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu);
 
 /**
  * @brief   Set the PWM pulse width for a given leg device

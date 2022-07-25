@@ -32,16 +32,22 @@
 #include "leg.h"
 
 
-void _hrtim_init_events()
-{
+void _hrtim_init_events(hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
+{	
+	if(leg1_tu == TIMA && leg2_tu == TIMB){
 	hrtim_adc_trigger_en(1, 1, LL_HRTIM_ADCTRIG_SRC13_TIMACMP3);
 	hrtim_adc_trigger_en(3, 2, LL_HRTIM_ADCTRIG_SRC13_TIMBCMP4);
-	hrtim_update_adc_trig_interleaved(1);
+	}else if(leg1_tu == TIMA && leg2_tu == TIMC){
+	hrtim_adc_trigger_en(1, 1, LL_HRTIM_ADCTRIG_SRC13_TIMACMP3);
+	hrtim_adc_trigger_en(3, 3, LL_HRTIM_ADCTRIG_SRC24_TIMCCMP4);
+	}
+
+	hrtim_update_adc_trig_interleaved(1, leg1_tu, leg2_tu);
 }
 
-void _hrtim_init_events_center_aligned()
+void _hrtim_init_events_center_aligned(hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 {
-	
+	if(leg1_tu == TIMA && leg2_tu == TIMB){
 	// setting the adc roll-over mode on period event
 	LL_HRTIM_TIM_SetADCRollOverMode(HRTIM1, LL_HRTIM_TIMER_A, LL_HRTIM_ROLLOVER_MODE_PER);
 	LL_HRTIM_TIM_SetADCRollOverMode(HRTIM1, LL_HRTIM_TIMER_B, LL_HRTIM_ROLLOVER_MODE_PER);
@@ -49,12 +55,26 @@ void _hrtim_init_events_center_aligned()
 	// setting adc trigger
 	hrtim_adc_trigger_en(1, 1, LL_HRTIM_ADCTRIG_SRC13_TIMAPER);
 	hrtim_adc_trigger_en(3, 2, LL_HRTIM_ADCTRIG_SRC13_TIMBPER);
+	}else if(leg1_tu == TIMA && leg2_tu == TIMC){
+	// setting the adc roll-over mode on period event
+	LL_HRTIM_TIM_SetADCRollOverMode(HRTIM1, LL_HRTIM_TIMER_A, LL_HRTIM_ROLLOVER_MODE_PER);
+	LL_HRTIM_TIM_SetADCRollOverMode(HRTIM1, LL_HRTIM_TIMER_C, LL_HRTIM_ROLLOVER_MODE_PER);
+	
+	// setting adc trigger
+	hrtim_adc_trigger_en(1, 1, LL_HRTIM_ADCTRIG_SRC13_TIMAPER);
+	hrtim_adc_trigger_en(3, 2, LL_HRTIM_ADCTRIG_SRC24_TIMCPER);	
+	}
 }
 
-void hrtim_update_adc_trig_interleaved(uint16_t new_trig)
+void hrtim_update_adc_trig_interleaved(uint16_t new_trig, hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 {
+	if(leg1_tu == TIMA && leg2_tu == TIMB){
 	hrtim_cmp_set(0, TIMA, CMP3xR, new_trig);
 	hrtim_cmp_set(0, TIMB, CMP4xR, new_trig);
+	}else if(leg1_tu == TIMA && leg2_tu == TIMC){
+	hrtim_cmp_set(0, TIMA, CMP3xR, new_trig);
+	hrtim_cmp_set(0, TIMC, CMP4xR, new_trig);
+	}
 }
 
 
@@ -65,50 +85,50 @@ void hrtim_init_current()
 	hrtim_cm_enable();
 }
 
-void hrtim_init_voltage_buck()
+void hrtim_init_voltage_buck(hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 {
-	leg_init(true,true);
-	_hrtim_init_events();
+	leg_init(true,true, leg1_tu, leg2_tu);
+	_hrtim_init_events(leg1_tu, leg2_tu);
 }
 
-void hrtim_init_voltage_buck_center_aligned()
+void hrtim_init_voltage_buck_center_aligned(hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 {
-	leg_init_center_aligned(true,true);
-	_hrtim_init_events_center_aligned();
+	leg_init_center_aligned(true,true, leg1_tu, leg2_tu);
+	_hrtim_init_events_center_aligned(leg1_tu, leg2_tu);
 }
 
-void hrtim_init_voltage_boost()
+void hrtim_init_voltage_boost(hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 {
-	leg_init(false,false);
-	_hrtim_init_events();
+	leg_init(false,false, leg1_tu, leg2_tu);
+	_hrtim_init_events(leg1_tu, leg2_tu);
 }
 
-void hrtim_init_voltage_boost_center_aligned()
+void hrtim_init_voltage_boost_center_aligned(hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 {
-	leg_init_center_aligned(false,false);
-	_hrtim_init_events_center_aligned();
+	leg_init_center_aligned(false,false, leg1_tu, leg2_tu);
+	_hrtim_init_events_center_aligned(leg1_tu, leg2_tu);
 }
 
-void hrtim_init_voltage_leg1_buck_leg2_boost()
+void hrtim_init_voltage_leg1_buck_leg2_boost(hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 {
-	leg_init(true,false);
-	_hrtim_init_events();
+	leg_init(true,false, leg1_tu, leg2_tu);
+	_hrtim_init_events(leg1_tu, leg2_tu);
 }
 
-void hrtim_init_voltage_leg1_buck_leg2_boost_center_aligned()
+void hrtim_init_voltage_leg1_buck_leg2_boost_center_aligned(hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 {
-	leg_init_center_aligned(true,false);
-	_hrtim_init_events_center_aligned();
+	leg_init_center_aligned(true,false, leg1_tu, leg2_tu);
+	_hrtim_init_events_center_aligned(leg1_tu, leg2_tu);
 }
 
-void hrtim_init_voltage_leg1_boost_leg2_buck()
+void hrtim_init_voltage_leg1_boost_leg2_buck(hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 {
-	leg_init(false,true);
-	_hrtim_init_events();
+	leg_init(false,true, leg1_tu, leg2_tu);
+	_hrtim_init_events(leg1_tu, leg2_tu);
 }
 
-void hrtim_init_voltage_leg1_boost_leg2_buck_center_aligned()
+void hrtim_init_voltage_leg1_boost_leg2_buck_center_aligned(hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 {
-	leg_init_center_aligned(false,true);
-	_hrtim_init_events_center_aligned();
+	leg_init_center_aligned(false,true, leg1_tu, leg2_tu);
+	_hrtim_init_events_center_aligned(leg1_tu, leg2_tu);
 }
