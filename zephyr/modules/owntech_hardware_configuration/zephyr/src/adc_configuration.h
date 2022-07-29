@@ -104,4 +104,17 @@ void configure_adc_discontinuous_mode(uint8_t adc_number, uint32_t dicontinuous_
 void configure_adc_default_all_measurements();
 
 
+/**
+ * This function is used to configure all ADC channels in default configuration.
+ * Channels will be attributed as follows:
+ * ADC1 -   V1_LOW      ADC2 -  I1_LOW
+ *          V2_LOW              I2_LOW
+ *          V_HIGH              I_HIGH
+ *                              EXTRA_MEAS
+ *
+ * This function must be called BEFORE ADC is started.
+ */
+void configure_adc_default_all_measurements_and_extra();
+
+
 #endif // ADC_CONFIGURATION_H_

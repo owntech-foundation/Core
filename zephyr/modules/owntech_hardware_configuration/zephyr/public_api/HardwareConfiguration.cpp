@@ -329,6 +329,11 @@ void HardwareConfiguration::configureAdcDefaultAllMeasurements()
 	configure_adc_default_all_measurements();
 }
 
+void HardwareConfiguration::configureAdcDefaultAllMeasurementsAndExtra()
+{
+	configure_adc_default_all_measurements_and_extra();
+}
+
 
 void HardwareConfiguration::setLeg1DeadTime(uint16_t rise_ns, uint16_t fall_ns)
 {

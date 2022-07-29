@@ -97,6 +97,14 @@ float32_t data_conversion_convert_i_high(uint16_t raw_value);
  */
 float32_t data_conversion_convert_temp(uint16_t raw_value);
 
+/**
+ * @brief    Converts the values of the extra parameter into a physical unit
+ *
+ * @param[in] raw_value
+ *
+ * @return  a foat32_t value for the extra measurement
+ */
+float32_t data_conversion_convert_extra(uint16_t raw_value);
 
 
 /**
@@ -154,6 +162,14 @@ void data_conversion_set_i_high_parameters(float32_t gain, float32_t offset);
  * @param[in] offset    offset of the sensor
  */
 void data_conversion_set_temp_parameters(float32_t gain, float32_t offset);
+
+/**
+ * @brief    Change the parameters for the extra measurement
+ *
+ * @param[in] gain      gain of temp sensor
+ * @param[in] offset    offset of the sensor
+ */
+void data_conversion_set_extra_parameters(float32_t gain, float32_t offset);
 
 
 #ifdef __cplusplus

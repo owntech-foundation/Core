@@ -46,8 +46,12 @@ static float32_t offset_currents[3] = {25.9, 29.28, 0};       //i1_low, i2_low o
 static float32_t gain_voltages[3] = {0.0462, 0.0462, 0.0640}; //v1_low, v2_low and v_high
 static float32_t offset_voltages[3] = {94.04, 94.04, 4.408};  //v1_low, v2_low and v_high
 
+static float32_t gain_extra = 1.0; //gain for the extra
+static float32_t offset_extra = 1.0;  //offset for the extra
+
+
 // Temperature
-static float32_t gain_temperature = 0.0;
+static float32_t gain_temperature = 1.0;
 static float32_t offset_temperature = 0.0;
 
 
@@ -91,6 +95,11 @@ float32_t data_conversion_convert_i_high(uint16_t raw_value)
 float32_t data_conversion_convert_temp(uint16_t raw_value)
 {
 	return (raw_value*gain_temperature)+offset_temperature;
+}
+
+float32_t data_conversion_convert_extra(uint16_t raw_value)
+{
+	return (raw_value*gain_extra)+offset_extra;
 }
 
 
@@ -138,4 +147,10 @@ void data_conversion_set_temp_parameters(float32_t gain, float32_t offset)
 {
 	gain_temperature = gain;
 	offset_temperature = offset;
+}
+
+void data_conversion_set_extra_parameters(float32_t gain, float32_t offset)
+{
+	gain_extra = gain;
+	offset_extra = offset;
 }

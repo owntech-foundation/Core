@@ -100,6 +100,7 @@ public:
 	static uint16_t* getI2LowRawValues(uint32_t& number_of_values_acquired);
 	static uint16_t* getIHighRawValues(uint32_t& number_of_values_acquired);
 	static uint16_t* getTemperatureRawValues(uint32_t& number_of_values_acquired);
+	static uint16_t* getExtraRawValues(uint32_t& number_of_values_acquired);
 
 	/**
 	 * These functions return the latest acquired measure expressed
@@ -118,6 +119,7 @@ public:
 	static float32_t getI2Low();
 	static float32_t getIHigh();
 	static float32_t getTemperature();
+	static float32_t getExtra();
 
 	/**
 	 * Use these functions to convert values obtained using
@@ -131,6 +133,7 @@ public:
 	static float32_t convertI2Low(uint16_t raw_value);
 	static float32_t convertIHigh(uint16_t raw_value);
 	static float32_t convertTemperature(uint16_t raw_value);
+	static float32_t convertExtra(uint16_t raw_value);
 
 	/**
 	 * Use these functions to tweak the conversion values for
@@ -143,6 +146,7 @@ public:
 	static void setVHighParameters(float32_t gain, float32_t offset);
 	static void setIHighParameters(float32_t gain, float32_t offset);
 	static void setTemperatureParameters(float32_t gain, float32_t offset);
+	static void setExtraParameters(float32_t gain, float32_t offset);
 
 
 private:
@@ -162,6 +166,7 @@ private:
 	static channel_assignment_t i2_low_assignement;
 	static channel_assignment_t i_high_assignement;
 	static channel_assignment_t temp_sensor_assignement;
+	static channel_assignment_t extra_sensor_assignement;
 
 };
 

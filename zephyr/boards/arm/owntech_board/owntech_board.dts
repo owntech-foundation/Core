@@ -168,7 +168,7 @@
 };
 
 &adc2 {
-	pinctrl-0 = <&adc2_in1_pa0 &adc2_in2_pa1 &adc2_in3_pa6>;
+	pinctrl-0 = <&adc2_in1_pa0 &adc2_in2_pa1 &adc2_in3_pa6 &adc2_in5_pc4>;
 	status = "okay";
 };
 

@@ -73,6 +73,11 @@
 			label = "I_HIGH";
 		};
 
+		extra-meas-adc2 {
+			io-channels = <&adc2 5>;
+			label = "EXTRA_MEAS";
+		};
+
 		/* Temperature channel */
 /*
 		temp-sensor {

@@ -150,3 +150,28 @@ void configure_adc_default_all_measurements()
 	configure_adc_channels(1, adc1_channels, number_of_channels_adc1);
 	configure_adc_channels(2, adc2_channels, number_of_channels_adc2);
 }
+
+
+void configure_adc_default_all_measurements_and_extra()
+{
+	uint8_t number_of_channels_adc1 = 3;
+	uint8_t number_of_channels_adc2 = 4;
+
+	const char* adc1_channels[] =
+	{
+		"I1_LOW",
+		"V1_LOW",
+		"V_HIGH"
+	};
+
+	const char* adc2_channels[] =
+	{
+		"I2_LOW",
+		"V2_LOW",
+		"I_HIGH",
+		"EXTRA_MEAS"
+	};
+
+	configure_adc_channels(1, adc1_channels, number_of_channels_adc1);
+	configure_adc_channels(2, adc2_channels, number_of_channels_adc2);
+}

@@ -142,6 +142,7 @@ public:
 	static void configureAdcTriggerSource(uint8_t adc_number, adc_ev_src_t trigger_source);
 	static void configureAdcDiscontinuousMode(uint8_t adc_number, uint32_t dicontinuous_count);
 	static void configureAdcDefaultAllMeasurements();
+	static void configureAdcDefaultAllMeasurementsAndExtra();
 
 };
 
