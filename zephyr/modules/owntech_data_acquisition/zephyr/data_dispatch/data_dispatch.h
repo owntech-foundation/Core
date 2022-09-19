@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 LAAS-CNRS
+ * Copyright (c) 2021-2022 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,6 +18,8 @@
  */
 
 /**
+ * @date   2022
+ *
  * @author Clément Foucher <clement.foucher@laas.fr>
  *
  * @brief Data dispatch is intended at dispatching ADCs
@@ -79,6 +81,22 @@ void data_dispatch_do_dispatch(uint8_t adc_num, uint16_t* dma_buffer);
  *         adc number/channel rank.
  */
 uint16_t* data_dispatch_get_acquired_values(uint8_t adc_number, uint8_t channel_rank, uint32_t* number_of_values_acquired);
+
+
+/**
+ * Peek data for a specific channel:
+ * obtain the latest value from the channel without
+ * removing it from the buffer.
+ *
+ * @param  adc_number Number of the ADC from which to
+ *         obtain data.
+ * @param  channel_rank Rank of the channel from which
+ *         to obtain data.
+ * @return Latest available value from the buffer.
+ *         Note that if no value has been acquired,
+ *         returned value will be 0.
+ */
+uint16_t data_dispatch_peek_acquired_value(uint8_t adc_number, uint8_t channel_rank);
 
 
 #ifdef __cplusplus

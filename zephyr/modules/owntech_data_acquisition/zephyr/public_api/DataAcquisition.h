@@ -62,6 +62,14 @@ public:
 	 */
 	static void start();
 
+	/**
+	 * Check if the module is already started.
+	 * For auto-spawning threads, please make sure
+	 * the module has already been started before
+	 * trying to access measures.
+	 */
+	static bool started();
+
 
 	/////
 	// Accessor API
@@ -103,13 +111,30 @@ public:
 	static uint16_t* getExtraRawValues(uint32_t& number_of_values_acquired);
 
 	/**
+	 * Functions to access the latest value available from a channel expressed
+	 * in the relevant unit for the data: Volts, Amperes, Degree Celcius.
+	 * These functions will not touch anything in the buffer, and thus can
+	 * be called safely at any time.
+	 *
+	 * @return Latest available value available from the given channel.
+	 */
+	static float32_t peekV1Low();
+	static float32_t peekV2Low();
+	static float32_t peekVHigh();
+	static float32_t peekI1Low();
+	static float32_t peekI2Low();
+	static float32_t peekIHigh();
+	static float32_t peekTemperature();
+	static float32_t peekExtra();
+
+	/**
 	 * These functions return the latest acquired measure expressed
 	 * in the relevant unit for the data: Volts, Amperes, Degree Celcius.
 	 *
 	 * @return Latest acquired measure for the channel.
 	 *
 	 * NOTE: When using these functions for a channel, you loose the
-	 *       abiility to access raw values using get***RawValues() functions,
+	 *       ability to access raw values using get***RawValues() functions,
 	 *       as get***() functions clear the buffers on each call.
 	 */
 	static float32_t getV1Low();
@@ -128,8 +153,8 @@ public:
 	 */
 	static float32_t convertV1Low(uint16_t raw_value);
 	static float32_t convertV2Low(uint16_t raw_value);
-	static float32_t convertI1Low(uint16_t raw_value);
 	static float32_t convertVHigh(uint16_t raw_value);
+	static float32_t convertI1Low(uint16_t raw_value);
 	static float32_t convertI2Low(uint16_t raw_value);
 	static float32_t convertIHigh(uint16_t raw_value);
 	static float32_t convertTemperature(uint16_t raw_value);
@@ -157,7 +182,7 @@ private:
 	} channel_assignment_t;
 
 private:
-
+	static bool is_started;
 
 	static channel_assignment_t v1_low_assignement;
 	static channel_assignment_t v2_low_assignement;

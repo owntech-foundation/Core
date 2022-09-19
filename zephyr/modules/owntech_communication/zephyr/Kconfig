@@ -1,0 +1,7 @@
+config OWNTECH_COMMUNICATION
+	bool "Enable OwnTech communication (Thingset over CAN)"
+	default n
+	select CAN
+	select ISOTP
+	select THINGSET
+	select OWNTECH_DATA_ACQUISITION

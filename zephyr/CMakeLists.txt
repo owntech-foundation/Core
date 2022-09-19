@@ -16,6 +16,12 @@ SUBDIRLIST(SUBDIRS ${CMAKE_CURRENT_SOURCE_DIR}/modules)
 # Append found modules to zephyr extra modules variable
 list(APPEND ZEPHYR_EXTRA_MODULES ${SUBDIRS})
 
+# Check for third party modules
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/third_party_modules)
+  SUBDIRLIST(THIRDPARTY ${CMAKE_CURRENT_SOURCE_DIR}/third_party_modules)
+  list(APPEND ZEPHYR_EXTRA_MODULES ${THIRDPARTY})
+endif()
+
 # Board
 list(APPEND BOARD_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 

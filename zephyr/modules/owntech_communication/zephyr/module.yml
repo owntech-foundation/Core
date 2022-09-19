@@ -1,0 +1,4 @@
+name: owntech_communication
+build:
+  cmake: zephyr
+  kconfig: zephyr/Kconfig
