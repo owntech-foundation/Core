@@ -48,6 +48,7 @@ typedef enum
 	nucleo_G474RE,
 	O2_v_0_9,
 	O2_v_1_1_2,
+	SPIN_v_0_1,
 	SPIN_v_0_9
 } hardware_version_t;
 
