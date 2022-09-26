@@ -115,8 +115,8 @@ void data_conversion_set_v1_low_parameters(float32_t gain, float32_t offset)
 
 void data_conversion_set_v2_low_parameters(float32_t gain, float32_t offset)
 {
-	gain_voltages[0] = gain;
-	offset_voltages[0] = offset;
+	gain_voltages[1] = gain;
+	offset_voltages[1] = offset;
 }
 
 void data_conversion_set_v_high_parameters(float32_t gain, float32_t offset)
@@ -127,8 +127,8 @@ void data_conversion_set_v_high_parameters(float32_t gain, float32_t offset)
 
 void data_conversion_set_i1_low_parameters(float32_t gain, float32_t offset)
 {
-	gain_currents[1] = gain;
-	offset_currents[1] = offset;
+	gain_currents[0] = gain;
+	offset_currents[0] = offset;
 }
 
 void data_conversion_set_i2_low_parameters(float32_t gain, float32_t offset)
