@@ -1,0 +1,34 @@
+/*
+ * Copyright (c) 2022 OwnTech.
+ *
+ * SPDX-License-Identifier: LGLPV2.1
+ */
+
+
+&gpioa {
+	ngpios = <16>;
+};	
+
+&gpiob {
+	ngpios = <16>;
+};
+
+&gpioc {
+	ngpios = <15>;
+};	
+
+&gpiod {
+	ngpios = <3>;
+};	
+
+&gpioe {
+	ngpios = <0>;
+};
+
+&gpiof {
+	ngpios = <0>;
+};
+
+&gpiog {
+	ngpios = <0>;
+};

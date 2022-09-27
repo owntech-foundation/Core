@@ -18,6 +18,7 @@
 #include "dts/adc-channels.dtsi"
 #include "dts/ngnd.dtsi"
 #include "dts/can-standby-switch.dtsi"
+#include "dts/gpio.dtsi"
 
 
 / {
