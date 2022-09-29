@@ -1,0 +1,3 @@
+config OWNTECH_GPIO_API
+	bool "Enable OwnTech GPIO API"
+	default y

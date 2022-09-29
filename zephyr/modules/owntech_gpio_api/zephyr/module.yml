@@ -1,0 +1,4 @@
+name: owntech_gpio_api
+build:
+  cmake: zephyr
+  kconfig: zephyr/Kconfig
