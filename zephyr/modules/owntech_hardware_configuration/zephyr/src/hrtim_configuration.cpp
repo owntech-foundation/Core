@@ -136,6 +136,7 @@ void hrtim_init_independent_mode(bool leg1_buck_mode, bool leg2_buck_mode)
 	pwm_period = leg_period();
 	pwm_phase_shift_leg1 = 0;
 	pwm_phase_shift_leg2 = pwm_period / 2;
+	pwm_phase_shift = pwm_period/2;
 	pwm_low_pulse_width = pwm_period * LOW_DUTY;
 	pwm_high_pulse_width = pwm_period * HIGH_DUTY;
 }
@@ -169,9 +170,13 @@ void hrtim_init_independent_mode_center_aligned(bool leg1_buck_mode, bool leg2_b
 /**
  * This function initializes both legs in full-bridge mode
  */
-void hrtim_init_full_bridge_buck_mode()
+void hrtim_init_full_bridge_buck_mode(bool SPIN_board_V_1_1_2)
 {
-	hrtim_init_voltage_buck(leg1_tu, leg1_tu);
+	if(SPIN_board_V_1_1_2){
+		hrtim_init_voltage_leg1_buck_leg2_boost(leg1_tu, leg2_tu); //patch for the spin v0.9 - the second leg is inverted
+	}else{
+		hrtim_init_voltage_buck(leg1_tu, leg2_tu);
+	}
 	full_bridge_bipolar_mode = false; //left-aligned inverter is always on unipolar mode
 
 	pwm_period = leg_period();
@@ -185,9 +190,14 @@ void hrtim_init_full_bridge_buck_mode()
 /**
  * This function initializes both legs in full-bridge mode
  */
-void hrtim_init_full_bridge_buck_mode_center_aligned(bool bipolar_mode)
+void hrtim_init_full_bridge_buck_mode_center_aligned(bool bipolar_mode,bool SPIN_board_V_1_1_2)
 {
-	hrtim_init_voltage_buck_center_aligned(leg1_tu, leg2_tu);
+	if(SPIN_board_V_1_1_2){
+		hrtim_init_voltage_leg1_buck_leg2_boost_center_aligned(leg1_tu, leg2_tu); //patch for the spin v0.9 - the second leg is inverted
+	}else{
+		hrtim_init_voltage_buck_center_aligned(leg1_tu, leg2_tu);
+	}
+
 	full_bridge_bipolar_mode = bipolar_mode;
 
 	pwm_period = leg_period();

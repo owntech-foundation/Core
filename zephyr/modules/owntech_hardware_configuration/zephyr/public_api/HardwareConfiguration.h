@@ -49,7 +49,8 @@ typedef enum
 	O2_v_0_9,
 	O2_v_1_1_2,
 	SPIN_v_0_1,
-	SPIN_v_0_9
+	SPIN_v_0_9,
+	TWIST_v_1_1_2
 } hardware_version_t;
 
 /** Switch leg operation type.
@@ -144,6 +145,9 @@ public:
 	static void configureAdcDiscontinuousMode(uint8_t adc_number, uint32_t dicontinuous_count);
 	static void configureAdcDefaultAllMeasurements();
 	static void configureAdcDefaultAllMeasurementsAndExtra();
+
+private:
+	static hardware_version_t hardware_version;
 
 };
 

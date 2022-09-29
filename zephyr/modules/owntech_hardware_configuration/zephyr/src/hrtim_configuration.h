@@ -62,14 +62,16 @@ void hrtim_init_interleaved_boost_mode();
 /**
  * @brief     This function initializes the converter in full bridge mode
  * with the input on the high side and the output on the low side with the HRTIM on left aligned
- */
-void hrtim_init_full_bridge_buck_mode();
+ * @param[in] SPIN_board_V_1_1_2 boolean to treat the case of the spin board V 0.9 -- Patch
+*/
+void hrtim_init_full_bridge_buck_mode(bool SPIN_board_V_1_1_2);
 
 /**
  * @brief     This function initializes the converter in full bridge mode
  * with the input on the high side and the output on the low side with the HRTIM as center aligned
+ * @param[in] SPIN_board_V_1_1_2 boolean to treat the case of the spin board V 0.9 -- Patch
  */
-void hrtim_init_full_bridge_buck_mode_center_aligned(bool bipolar_mode);
+void hrtim_init_full_bridge_buck_mode_center_aligned(bool bipolar_mode, bool SPIN_board_V_1_1_2);
 
 
 /**

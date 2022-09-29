@@ -47,6 +47,10 @@
 
 HardwareConfiguration hwConfig;
 
+/////
+// Static class members
+
+hardware_version_t HardwareConfiguration::hardware_version = nucleo_G474RE;
 
 /////
 // Public static configuration functions
@@ -63,6 +67,8 @@ HardwareConfiguration hwConfig;
  */
 void HardwareConfiguration::setBoardVersion(hardware_version_t hardware_version)
 {
+	HardwareConfiguration::hardware_version = hardware_version;
+
 	if (hardware_version == O2_v_1_1_2 || hardware_version == O2_v_0_9)
 	{
 		uart_lpuart1_swap_rx_tx();
@@ -70,7 +76,7 @@ void HardwareConfiguration::setBoardVersion(hardware_version_t hardware_version)
 	}else if(hardware_version == SPIN_v_0_1){
 		uart_lpuart1_swap_rx_tx();
 		hrtim_leg_tu(TIMA, TIMC);
-	}else if(hardware_version == SPIN_v_0_9){
+	}else if(hardware_version == SPIN_v_0_9 || hardware_version == TWIST_v_1_1_2){
 		hrtim_leg_tu(TIMA, TIMC);
 	}else if(hardware_version == nucleo_G474RE){
 		hrtim_leg_tu(TIMA, TIMB);
@@ -140,52 +146,91 @@ uint32_t HardwareConfiguration::getIncrementalEncoderValue()
 
 void HardwareConfiguration::initInterleavedBuckMode()
 {
-	hrtim_init_interleaved_buck_mode();
+	if(HardwareConfiguration::hardware_version == TWIST_v_1_1_2){
+		hrtim_init_independent_mode(false, true); //patch for the TWIST v0.9 - the second leg is inverted
+	}else{
+		hrtim_init_interleaved_buck_mode();
+	}
 }
 
 void HardwareConfiguration::initInterleavedBuckModeCenterAligned()
 {
-	hrtim_init_interleaved_buck_mode_center_aligned();
+	if(HardwareConfiguration::hardware_version == TWIST_v_1_1_2){
+		hrtim_init_independent_mode_center_aligned(false, true); //patch for the TWIST v0.9 - the second leg is inverted
+	}else{
+		hrtim_init_interleaved_buck_mode_center_aligned();
+	}
 }
 
 void HardwareConfiguration::initInterleavedBoostMode()
 {
-	hrtim_init_interleaved_boost_mode();
+	if(HardwareConfiguration::hardware_version == TWIST_v_1_1_2){
+		hrtim_init_independent_mode(true, false); //patch for the TWIST v0.9 - the second leg is inverted
+	}else{
+		hrtim_init_interleaved_boost_mode();
+	}
 }
 
 void HardwareConfiguration::initInterleavedBoostModeCenterAligned()
 {
-	hrtim_init_interleaved_boost_mode_center_aligned();
+	if(HardwareConfiguration::hardware_version == TWIST_v_1_1_2){
+		hrtim_init_independent_mode_center_aligned(true, false); //patch for the TWIST v0.9 - the second leg is inverted
+	}else{
+		hrtim_init_interleaved_boost_mode_center_aligned();
+	}
 }
 
 void HardwareConfiguration::initFullBridgeBuckMode()
 {
-	hrtim_init_full_bridge_buck_mode();
+	if(HardwareConfiguration::hardware_version == TWIST_v_1_1_2){
+		hrtim_init_full_bridge_buck_mode(true); //patch for the TWIST v0.9 - the second leg is inverted
+	}else{
+		hrtim_init_full_bridge_buck_mode(false);
+	}
+
 }
 
 void HardwareConfiguration::initFullBridgeBuckModeCenterAligned(inverter_modulation_t inverter_modulation_type)
 {
 	bool bipolar_mode;
 	if (inverter_modulation_type == bipolar) bipolar_mode = true; else bipolar_mode = false;
-	hrtim_init_full_bridge_buck_mode_center_aligned(bipolar_mode);
+
+	if(HardwareConfiguration::hardware_version == TWIST_v_1_1_2){
+		hrtim_init_full_bridge_buck_mode_center_aligned(bipolar_mode,true); //patch for the TWIST v0.9 - the second leg is inverted
+	}else{
+		hrtim_init_full_bridge_buck_mode_center_aligned(bipolar_mode,false);
+	}
+
 }
 
 void HardwareConfiguration::initFullBridgeBoostMode()
 {
-	hrtim_init_interleaved_boost_mode();
+	if(HardwareConfiguration::hardware_version == TWIST_v_1_1_2){
+		hrtim_init_independent_mode(true, false); //patch for the TWIST v0.9 - the second leg is inverted
+	}else{
+		hrtim_init_interleaved_boost_mode();
+	}
 }
 
 void HardwareConfiguration::initFullBridgeBoostModeCenterAligned()
 {
-	hrtim_init_interleaved_boost_mode_center_aligned();
+	if(HardwareConfiguration::hardware_version == TWIST_v_1_1_2){
+		hrtim_init_independent_mode_center_aligned(true, false); //patch for the TWIST v0.9 - the second leg is inverted
+	}else{
+		hrtim_init_interleaved_boost_mode_center_aligned();
+	}
 }
 
 void HardwareConfiguration::initIndependentMode(leg_operation_t leg1_operation_type, leg_operation_t leg2_operation_type)
 {
 	bool leg1_mode, leg2_mode;
 	if (leg1_operation_type == buck) leg1_mode = true; else leg1_mode = false;
-	if (leg2_operation_type == buck) leg2_mode = true; else leg2_mode = false;
 
+	if (HardwareConfiguration::hardware_version == TWIST_v_1_1_2){										//patch for the TWIST v0.9 - the second leg is inverted
+		if (leg2_operation_type == buck) leg2_mode = false; else leg2_mode = true;
+	}else{
+		if (leg2_operation_type == buck) leg2_mode = true; else leg2_mode = false;
+	}
 	hrtim_init_independent_mode(leg1_mode, leg2_mode);
 }
 
@@ -193,7 +238,12 @@ void HardwareConfiguration::initIndependentModeCenterAligned(leg_operation_t leg
 {
 	bool leg1_mode, leg2_mode;
 	if (leg1_operation_type == buck) leg1_mode = true; else leg1_mode = false;
-	if (leg2_operation_type == buck) leg2_mode = true; else leg2_mode = false;
+
+	if (HardwareConfiguration::hardware_version == TWIST_v_1_1_2){										//patch for the TWIST v0.9 - the second leg is inverted
+		if (leg2_operation_type == buck) leg2_mode = false; else leg2_mode = true;
+	}else{
+		if (leg2_operation_type == buck) leg2_mode = true; else leg2_mode = false;
+	}
 
 	hrtim_init_independent_mode_center_aligned(leg1_mode, leg2_mode);
 }
