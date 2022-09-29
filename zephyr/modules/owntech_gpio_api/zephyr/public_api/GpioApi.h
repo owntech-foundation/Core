@@ -123,6 +123,7 @@ public:
 	void resetPin(pin_t pin);
 	void togglePin(pin_t pin);
 	void writePin(pin_t pin, uint8_t value);
+	uint8_t readPin(pin_t pin);
 
 private:
 	gpio_pin_t getPinNumber(pin_t pin);

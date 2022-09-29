@@ -84,6 +84,18 @@ void GpioApi::writePin(pin_t pin, uint8_t value)
 	}
 }
 
+uint8_t GpioApi::readPin(pin_t pin)
+{
+	gpio_pin_t pin_number = this->getPinNumber(pin);
+	const struct device* port = this->getGpioDevice(pin);
+	if (port != nullptr)
+	{
+		return (uint8_t) gpio_pin_get(port, pin_number);
+	}
+
+	return 0;
+}
+
 gpio_pin_t GpioApi::getPinNumber(pin_t pin)
 {
 	return (((uint8_t)pin) & 0x0F) + 1;
