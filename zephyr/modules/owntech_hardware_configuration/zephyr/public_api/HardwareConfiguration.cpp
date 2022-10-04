@@ -289,6 +289,27 @@ void HardwareConfiguration::setLeg2PhaseShiftCenterAligned(float32_t phase_shift
 	hrtim_leg2_phase_shift_update_center_aligned(phase_shift);
 }
 
+
+void HardwareConfiguration::setHrtimFrequency(uint32_t frequency_Hz)
+{
+	hrtim_set_frequency(frequency_Hz);
+}
+
+uint32_t HardwareConfiguration::getHrtimFrequency()
+{
+	return hrtim_get_frequency();
+}
+
+void HardwareConfiguration::setHrtimMinDutyCycle(float32_t duty_cycle)
+{
+	hrtim_set_min_duty_cycle(duty_cycle);
+}
+
+void HardwareConfiguration::setHrtimMaxDutyCycle(float32_t duty_cycle)
+{
+	hrtim_set_max_duty_cycle(duty_cycle);
+}
+
 void HardwareConfiguration::setInterleavedOn()
 {
 	power_driver_interleaved_on();

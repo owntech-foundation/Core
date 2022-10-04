@@ -120,6 +120,10 @@ public:
 	static void setLeg1DeadTime(uint16_t rise_ns, uint16_t fall_ns);
 	static void setLeg2DeadTime(uint16_t rise_ns, uint16_t fall_ns);
 
+	static void setHrtimFrequency(uint32_t frequency_Hz);
+	static uint32_t getHrtimFrequency();
+	static void setHrtimMinDutyCycle(float32_t duty_cycle);
+	static void setHrtimMaxDutyCycle(float32_t duty_cycle);
 
 	static void setInterleavedOn();
 	static void setFullBridgeBuckOn();

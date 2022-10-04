@@ -36,10 +36,6 @@
 /////
 // Defines
 
-// Saturation values used for the PWM duty cycle
-#define LOW_DUTY 0.1
-#define HIGH_DUTY 0.9
-
 /////
 // Local variables
 static uint16_t pwm_period;
@@ -74,8 +70,6 @@ void hrtim_init_interleaved_buck_mode()
 
 	pwm_period = leg_period();
 	pwm_phase_shift = pwm_period / 2;
-	pwm_low_pulse_width = pwm_period * LOW_DUTY;
-	pwm_high_pulse_width = pwm_period * HIGH_DUTY;
 }
 
 /**
@@ -87,8 +81,6 @@ void hrtim_init_interleaved_buck_mode_center_aligned()
 
 	pwm_period = leg_period();
 	pwm_phase_shift = pwm_period;
-	pwm_low_pulse_width = pwm_period * LOW_DUTY;
-	pwm_high_pulse_width = pwm_period * HIGH_DUTY;
 }
 
 /**
@@ -100,8 +92,6 @@ void hrtim_init_interleaved_boost_mode()
 
 	pwm_period = leg_period();
 	pwm_phase_shift = pwm_period / 2;
-	pwm_low_pulse_width = pwm_period * LOW_DUTY;
-	pwm_high_pulse_width = pwm_period * HIGH_DUTY;
 }
 
 void hrtim_init_interleaved_boost_mode_center_aligned()
@@ -110,8 +100,6 @@ void hrtim_init_interleaved_boost_mode_center_aligned()
 
 	pwm_period = leg_period();
 	pwm_phase_shift = pwm_period;
-	pwm_low_pulse_width = pwm_period * LOW_DUTY;
-	pwm_high_pulse_width = pwm_period * HIGH_DUTY;
 }
 
 /**
@@ -137,8 +125,6 @@ void hrtim_init_independent_mode(bool leg1_buck_mode, bool leg2_buck_mode)
 	pwm_phase_shift_leg1 = 0;
 	pwm_phase_shift_leg2 = pwm_period / 2;
 	pwm_phase_shift = pwm_period/2;
-	pwm_low_pulse_width = pwm_period * LOW_DUTY;
-	pwm_high_pulse_width = pwm_period * HIGH_DUTY;
 }
 
 /**
@@ -163,8 +149,6 @@ void hrtim_init_independent_mode_center_aligned(bool leg1_buck_mode, bool leg2_b
 
 	pwm_period = leg_period();
 	pwm_phase_shift = pwm_period;
-	pwm_low_pulse_width = pwm_period * LOW_DUTY;
-	pwm_high_pulse_width = pwm_period * HIGH_DUTY;
 }
 
 /**
@@ -180,9 +164,6 @@ void hrtim_init_full_bridge_buck_mode(bool SPIN_board_V_1_1_2)
 	full_bridge_bipolar_mode = false; //left-aligned inverter is always on unipolar mode
 
 	pwm_period = leg_period();
-	pwm_low_pulse_width = pwm_period * LOW_DUTY;
-	pwm_high_pulse_width = pwm_period * HIGH_DUTY;
-
 	pwm_phase_shift = pwm_period / 2;
 
 }
@@ -201,8 +182,6 @@ void hrtim_init_full_bridge_buck_mode_center_aligned(bool bipolar_mode,bool SPIN
 	full_bridge_bipolar_mode = bipolar_mode;
 
 	pwm_period = leg_period();
-	pwm_low_pulse_width = pwm_period * LOW_DUTY;
-	pwm_high_pulse_width = pwm_period * HIGH_DUTY;
 
 	if (bipolar_mode){
 		pwm_phase_shift = 0;
@@ -223,29 +202,9 @@ void hrtim_interleaved_pwm_update(float32_t pwm_duty_cycle)
 {
 	uint16_t pwm_pulse_width;
 
-	// TESTING PWM VALUE TO AVOID OVERFLOW AND PWM UPDATE//
-	if (pwm_duty_cycle > HIGH_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
-	{
-		pwm_duty_cycle = HIGH_DUTY;
-		pwm_pulse_width = pwm_high_pulse_width;
-		leg_set(leg1_tu, pwm_pulse_width, 0);
-		leg_set(leg2_tu, pwm_pulse_width, pwm_phase_shift);
-	}
-
-	else if (pwm_duty_cycle < LOW_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
-	{
-		pwm_duty_cycle = LOW_DUTY;
-		pwm_pulse_width = pwm_low_pulse_width;
-		leg_set(leg1_tu, pwm_pulse_width, 0);
-		leg_set(leg2_tu, pwm_pulse_width, pwm_phase_shift);
-	}
-
-	else
-	{
-		pwm_pulse_width = (pwm_duty_cycle * pwm_period);
-		leg_set(leg1_tu, pwm_pulse_width, 0);
-		leg_set(leg2_tu, pwm_pulse_width, pwm_phase_shift);
-	}
+	pwm_pulse_width = (pwm_duty_cycle * pwm_period);
+	leg_set(leg1_tu, pwm_pulse_width, 0);
+	leg_set(leg2_tu, pwm_pulse_width, pwm_phase_shift);
 
 }
 
@@ -263,55 +222,17 @@ void hrtim_full_bridge_buck_pwm_update(float32_t pwm_duty_cycle)
 	// TESTING PWM VALUE TO AVOID OVERFLOW AND PWM UPDATE//
 	if(full_bridge_bipolar_mode)
 	{
-		if (pwm_duty_cycle > HIGH_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
-		{
-			pwm_duty_cycle = HIGH_DUTY;
-			pwm_pulse_width = pwm_high_pulse_width;
-			pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
-			leg_set(leg1_tu, pwm_pulse_width, 0);
-			leg_set(leg2_tu, pwm_reverse_pulse_width, pwm_period*pwm_duty_cycle);
-		}
-		else if (pwm_duty_cycle < LOW_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
-		{
-			pwm_duty_cycle = LOW_DUTY;
-			pwm_pulse_width = pwm_low_pulse_width;
-			pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
-			leg_set(leg1_tu, pwm_pulse_width, 0);
-			leg_set(leg2_tu, pwm_reverse_pulse_width, pwm_period*pwm_duty_cycle);
-		}
-		else
-		{
-			pwm_pulse_width = (pwm_duty_cycle * pwm_period);
-			pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
-			leg_set(leg1_tu, pwm_pulse_width, 0);
-			leg_set(leg2_tu, pwm_reverse_pulse_width, pwm_period*pwm_duty_cycle);
-		}
+		pwm_pulse_width = (pwm_duty_cycle * pwm_period);
+		pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
+		leg_set(leg1_tu, pwm_pulse_width, 0);
+		leg_set(leg2_tu, pwm_reverse_pulse_width, pwm_period*pwm_duty_cycle);
 	}
 	else
 	{
-		if (pwm_duty_cycle > HIGH_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
-		{
-			pwm_duty_cycle = HIGH_DUTY;
-			pwm_pulse_width = pwm_high_pulse_width;
-			pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
-			leg_set(leg1_tu, pwm_pulse_width, 0);
-			leg_set(leg2_tu, pwm_reverse_pulse_width, pwm_phase_shift);
-		}
-		else if (pwm_duty_cycle < LOW_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
-		{
-			pwm_duty_cycle = LOW_DUTY;
-			pwm_pulse_width = pwm_low_pulse_width;
-			pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
-			leg_set(leg1_tu, pwm_pulse_width, 0);
-			leg_set(leg2_tu, pwm_reverse_pulse_width, pwm_phase_shift);
-		}
-		else
-		{
-			pwm_pulse_width = (pwm_duty_cycle * pwm_period);
-			pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
-			leg_set(leg1_tu, pwm_pulse_width, 0);
-			leg_set(leg2_tu, pwm_reverse_pulse_width, pwm_phase_shift);
-		}
+		pwm_pulse_width = (pwm_duty_cycle * pwm_period);
+		pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
+		leg_set(leg1_tu, pwm_pulse_width, 0);
+		leg_set(leg2_tu, pwm_reverse_pulse_width, pwm_phase_shift);
 	}
 }
 
@@ -325,26 +246,8 @@ void hrtim_leg1_pwm_update(float32_t pwm_duty_cycle)
 {
 	uint16_t pwm_pulse_width;
 
-	// TESTING PWM VALUE TO AVOID OVERFLOW AND PWM UPDATE//
-	if (pwm_duty_cycle > HIGH_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
-	{
-		pwm_duty_cycle = HIGH_DUTY;
-		pwm_pulse_width = pwm_high_pulse_width;
-		leg_set(leg1_tu, pwm_pulse_width, pwm_phase_shift_leg1);
-	}
-
-	else if (pwm_duty_cycle < LOW_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
-	{
-		pwm_duty_cycle = LOW_DUTY;
-		pwm_pulse_width = pwm_low_pulse_width;
-		leg_set(leg1_tu, pwm_pulse_width, pwm_phase_shift_leg1);
-	}
-
-	else
-	{
-		pwm_pulse_width = (pwm_duty_cycle * pwm_period);
-		leg_set(leg1_tu, pwm_pulse_width, pwm_phase_shift_leg1);
-	}
+	pwm_pulse_width = (pwm_duty_cycle * pwm_period);
+	leg_set(leg1_tu, pwm_pulse_width, pwm_phase_shift_leg1);
 }
 
 /**
@@ -356,26 +259,8 @@ void hrtim_leg2_pwm_update(float32_t pwm_duty_cycle)
 {
 	uint16_t pwm_pulse_width;
 
-	// TESTING PWM VALUE TO AVOID OVERFLOW AND PWM UPDATE//
-	if (pwm_duty_cycle > HIGH_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
-	{
-		pwm_duty_cycle = HIGH_DUTY;
-		pwm_pulse_width = pwm_high_pulse_width;
-		leg_set(leg2_tu, pwm_pulse_width, pwm_phase_shift_leg2);
-	}
-
-	else if (pwm_duty_cycle < LOW_DUTY) // SATURATION CONDITIONS TO AVOID DIVERGENCE.
-	{
-		pwm_duty_cycle = LOW_DUTY;
-		pwm_pulse_width = pwm_low_pulse_width;
-		leg_set(leg2_tu, pwm_pulse_width, pwm_phase_shift_leg2);
-	}
-
-	else
-	{
-		pwm_pulse_width = (pwm_duty_cycle * pwm_period);
-		leg_set(leg2_tu, pwm_pulse_width, pwm_phase_shift_leg2);
-	}
+	pwm_pulse_width = (pwm_duty_cycle * pwm_period);
+	leg_set(leg2_tu, pwm_pulse_width, pwm_phase_shift_leg2);
 }
 
 /**
@@ -511,10 +396,44 @@ void hrtim_set_dead_time_leg1(uint16_t rise_ns, uint16_t fall_ns)
 {
 	leg_set_dt(leg1_tu, rise_ns, fall_ns);
 }
+
 /**
  * This updates the dead time of the leg 2
  */
 void hrtim_set_dead_time_leg2(uint16_t rise_ns, uint16_t fall_ns)
 {
 	leg_set_dt(leg2_tu, rise_ns, fall_ns);
+}
+
+
+/**
+ * This sets the frequency of the HRTIMER
+ */
+void hrtim_set_frequency(uint32_t frequency_Hz)
+{
+	leg_set_freq(frequency_Hz);
+}
+
+/**
+ * This gets the frequency of the HRTIMER
+ */
+uint32_t hrtim_get_frequency()
+{
+	return leg_get_freq();
+}
+
+/**
+ * This updates the minimum duty cycle of both legs
+ */
+void hrtim_set_min_duty_cycle(float32_t duty_cycle)
+{
+	leg_set_min_duty_cycle(duty_cycle);
+}
+
+/**
+ * This updates the minimum duty cycle of both legs
+ */
+void hrtim_set_max_duty_cycle(float32_t duty_cycle)
+{
+	leg_set_max_duty_cycle(duty_cycle);
 }

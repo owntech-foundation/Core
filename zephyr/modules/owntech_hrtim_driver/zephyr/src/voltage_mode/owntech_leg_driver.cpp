@@ -32,7 +32,18 @@
 #include "owntech_leg_driver.h"
 #include "hrtim_voltage_mode.h"
 
+// Saturation values used for the PWM duty cycle
+#define LOW_DUTY 0.03
+#define HIGH_DUTY 0.97
+
+
 static uint16_t period, min_pw, max_pw, dead_time;
+
+// default configurations of the HRTIMER
+static uint32_t  frequency = 200000;
+static float32_t min_duty_cycle = 0.1;
+static float32_t max_duty_cycle = 0.9;
+
 
 static leg_conf_t leg_conf[6]; /* a copy of leg_config with index
                                 * corresponding to timing unit */
@@ -73,16 +84,14 @@ static uint8_t _TU_num(hrtim_tu_t tu){
  */
 uint16_t leg_init(bool leg1_upper_switch_convention, bool leg2_upper_switch_convention, hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 {
-    uint32_t freq = LEG_FREQ;
-
     /* ensures that timing_unit can be used as leg identifier */
     for (unsigned int i = 0; i < LEG_NUMOF; i++)
     {
         leg_conf[_TU_num(leg_config[i].timing_unit)] = leg_config[i];
     }
 
-    period = hrtim_init(0, &freq, LEG_DEFAULT_DT,leg1_upper_switch_convention,leg2_upper_switch_convention, leg1_tu, leg2_tu);
-    dead_time = (period*LEG_DEFAULT_DT*leg_get_freq())/1000000;
+    period = hrtim_init(0, &frequency, LEG_DEFAULT_DT,leg1_upper_switch_convention,leg2_upper_switch_convention, leg1_tu, leg2_tu);
+    dead_time = (uint16_t)((((double)period)*LEG_DEFAULT_DT*((double)frequency))/1000000000.0); //this line is overflow safe
     min_pw = (period * 0.1) + dead_time;
     max_pw = (period * 0.9) + dead_time;
     return period;
@@ -97,18 +106,16 @@ uint16_t leg_init(bool leg1_upper_switch_convention, bool leg2_upper_switch_conv
  */
 uint16_t leg_init_center_aligned(bool leg1_upper_switch_convention, bool leg2_upper_switch_convention,hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 {
-    uint32_t freq = LEG_FREQ;
-
     /* ensures that timing_unit can be used as leg identifier */
     for (unsigned int i = 0; i < LEG_NUMOF; i++)
     {
         leg_conf[_TU_num(leg_config[i].timing_unit)] = leg_config[i];
     }
 
-    period = hrtim_init_updwn(0, &freq, LEG_DEFAULT_DT,leg1_upper_switch_convention,leg2_upper_switch_convention, leg1_tu, leg2_tu);
-    dead_time = (period*LEG_DEFAULT_DT*leg_get_freq())/1000000;
-    min_pw = (period * 0.1) + dead_time;
-    max_pw = (period * 0.9) + dead_time;
+    period = hrtim_init_updwn(0, &frequency, LEG_DEFAULT_DT,leg1_upper_switch_convention,leg2_upper_switch_convention, leg1_tu, leg2_tu);
+    dead_time = (uint16_t)((((double)period)*LEG_DEFAULT_DT*((double)frequency))/1000000000.0); //this line is overflow safe
+    min_pw = (period * min_duty_cycle) + dead_time;
+    max_pw = (period * max_duty_cycle) + dead_time;
     return period;
 }
 
@@ -120,7 +127,7 @@ void leg_set(hrtim_tu_t timing_unit, uint16_t pulse_width, uint16_t phase_shift)
     //Second check for duty cycle saturation
     if (pulse_width<min_pw)
     {
-        pulse_width = max_pw;
+        pulse_width = min_pw;
     }
     else if (pulse_width > max_pw)
     {
@@ -172,7 +179,30 @@ leg_conf_t leg_get_conf(uint8_t leg)
     return leg_conf[leg_config[leg].timing_unit];
 }
 
-uint16_t leg_get_freq(void)
+uint32_t leg_get_freq(void)
 {
-    return LEG_FREQ / 1000;
+    return frequency;
+}
+
+void leg_set_freq(uint32_t frequency_Hz)
+{
+    frequency = frequency_Hz;
+}
+
+void leg_set_min_duty_cycle(float32_t duty_cycle)
+{
+    if (duty_cycle>=LOW_DUTY) {
+        min_duty_cycle = duty_cycle;
+    }else{
+        min_duty_cycle = LOW_DUTY;
+    }
+}
+
+void leg_set_max_duty_cycle(float32_t duty_cycle)
+{
+    if (duty_cycle<=HIGH_DUTY) {
+        max_duty_cycle = duty_cycle;
+    }else{
+        max_duty_cycle = HIGH_DUTY;
+    }
 }

@@ -221,5 +221,26 @@ void hrtim_set_dead_time_leg1(uint16_t rise_ns, uint16_t fall_ns);
  */
 void hrtim_set_dead_time_leg2(uint16_t rise_ns, uint16_t fall_ns);
 
+/**
+ * @brief Sets the frequency of the HRTIMER
+ */
+void hrtim_set_frequency(uint32_t frequency_Hz);
+
+/**
+ * @brief Gets the frequency of the HRTIMER
+ */
+uint32_t hrtim_get_frequency();
+
+/**
+ * @brief Updates the minimum duty cycle of both legs
+ */
+void hrtim_set_min_duty_cycle(float32_t duty_cycle);
+
+/**
+ * @brief This updates the minimum duty cycle of both legs
+ */
+void hrtim_set_max_duty_cycle(float32_t duty_cycle);
+
+
 
 #endif // HRTIM_CONFIGURATION_H_

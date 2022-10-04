@@ -37,6 +37,7 @@
 
 #include <assert.h>
 #include <stdint.h>
+#include "arm_math.h"
 
 #include <zephyr.h>
 
@@ -46,8 +47,8 @@
 extern "C" {
 #endif
 
-#define LEG_DEFAULT_DT  (100U)      /**< dead-time in ns */
-#define LEG_FREQ        KHZ(200U)   /**< frequency in Hz*/
+#define LEG_DEFAULT_DT          (100U)      /**< dead-time in ns */
+#define LEG_DEFAULT_FREQ        KHZ(200U)   /**< frequency in Hz*/
 
 /**
  * @brief   Inverter leg configuration data structure
@@ -115,7 +116,7 @@ void leg_start(hrtim_tu_t timing_unit);
 /**
  * @brief   period getter
  *
- * @return                      period value returned by leg_init()
+ * @return                      period in micro-seconds value returned by leg_init()
  */
 uint16_t leg_period(void);
 
@@ -136,11 +137,26 @@ uint8_t leg_numof(void);
 leg_conf_t leg_get_conf(uint8_t leg);
 
 /**
- * @brief   LEG_FREQ getter
- *
- * @return                      value of LEG_FREQ in KHz
+ * @brief   Gets the frequency in Hz
  */
-uint16_t leg_get_freq(void);
+uint32_t leg_get_freq(void);
+
+/**
+ * @brief   Sets the frequency in Hz
+ */
+void leg_set_freq(uint32_t frequency_Hz);
+
+
+/**
+ * @brief   Minimum duty cycle setter. Minimum of 0.02.
+ */
+void leg_set_min_duty_cycle(float32_t duty_cycle);
+
+/**
+ * @brief   Maximum duty cycle setter. Maximum of 0.98.
+ */
+void leg_set_max_duty_cycle(float32_t duty_cycle);
+
 
 #ifdef __cplusplus
 }
