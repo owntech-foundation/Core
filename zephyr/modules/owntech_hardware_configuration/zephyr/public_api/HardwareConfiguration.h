@@ -131,7 +131,7 @@ public:
 	static void setLeg1Off();
 	static void setLeg2Off();
 
-	static void setHrtimAdcTrigInterleaved(uint16_t new_trig);
+	static void setHrtimAdcTrigInterleaved(float32_t new_trig);
 
 	// Extra UART
 	static void extraUartInit();

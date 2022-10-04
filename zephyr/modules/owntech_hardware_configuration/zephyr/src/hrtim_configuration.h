@@ -209,7 +209,7 @@ void hrtim_start_leg2();
  *
  * @param[in] new_trig    defines the triggering moment
  */
-void set_adc_trig_interleaved(uint16_t new_trig);
+void set_adc_trig_interleaved(float32_t new_trig);
 
 /**
  * @brief This function sets the dead time of the leg 1

@@ -247,7 +247,6 @@ void hrtim_interleaved_pwm_update(float32_t pwm_duty_cycle)
 		leg_set(leg2_tu, pwm_pulse_width, pwm_phase_shift);
 	}
 
-	hrtim_update_adc_trig_interleaved( (pwm_pulse_width>>1) + (pwm_pulse_width>>2), leg1_tu, leg2_tu);  //works only on left aligned as center aligned does not use the same comparators
 }
 
 /**
@@ -497,9 +496,10 @@ void hrtim_start_leg2()
 	leg_start(leg2_tu);
 }
 
-void set_adc_trig_interleaved(uint16_t new_trig)
+void set_adc_trig_interleaved(float32_t new_trig)
 {
-	hrtim_update_adc_trig_interleaved(new_trig, leg1_tu, leg2_tu);
+	uint16_t new_trig_int = new_trig * pwm_period; 
+	hrtim_update_adc_trig_interleaved(new_trig_int, leg1_tu, leg2_tu);
 }
 
 

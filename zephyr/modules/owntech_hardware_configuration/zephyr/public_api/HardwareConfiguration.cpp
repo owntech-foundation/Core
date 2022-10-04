@@ -34,6 +34,7 @@
 #include "../src/hrtim_configuration.h"
 #include "../src/uart_configuration.h"
 #include "../src/adc_configuration.h"
+#include "../src/power_driver_configuration.h"
 
 // Current class header
 #include "HardwareConfiguration.h"
@@ -290,45 +291,53 @@ void HardwareConfiguration::setLeg2PhaseShiftCenterAligned(float32_t phase_shift
 
 void HardwareConfiguration::setInterleavedOn()
 {
+	power_driver_interleaved_on();
 	hrtim_start_interleaved();
 }
 
 void HardwareConfiguration::setFullBridgeBuckOn()
 {
+	power_driver_interleaved_on();
 	hrtim_start_full_bridge_buck();
 }
 
 void HardwareConfiguration::setLeg1On()
 {
+	power_driver_leg1_on();
 	hrtim_start_leg1();
 }
 
 void HardwareConfiguration::setLeg2On()
 {
+	power_driver_leg2_on();
 	hrtim_start_leg2();
 }
 
 void HardwareConfiguration::setInterleavedOff()
 {
+	power_driver_interleaved_off();
 	hrtim_stop_interleaved();
 }
 
 void HardwareConfiguration::setFullBridgeBuckOff()
 {
+	power_driver_interleaved_off();
 	hrtim_stop_full_bridge_buck();
 }
 
 void HardwareConfiguration::setLeg1Off()
 {
+	power_driver_leg1_off();
 	hrtim_stop_leg1();
 }
 
 void HardwareConfiguration::setLeg2Off()
 {
+	power_driver_leg2_off();
 	hrtim_stop_leg2();
 }
 
-void HardwareConfiguration::setHrtimAdcTrigInterleaved(uint16_t new_trig)
+void HardwareConfiguration::setHrtimAdcTrigInterleaved(float32_t new_trig)
 {
 	set_adc_trig_interleaved(new_trig);
 }

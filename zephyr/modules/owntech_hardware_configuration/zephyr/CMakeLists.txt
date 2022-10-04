@@ -15,6 +15,7 @@ if(CONFIG_OWNTECH_HARDWARE_CONFIGURATION)
 	src/hrtim_configuration.cpp
 	src/uart_configuration.cpp
 	src/adc_configuration.cpp
+	src/power_driver_configuration.cpp
 	public_api/HardwareConfiguration.cpp
     )
 endif()
