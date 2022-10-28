@@ -157,7 +157,7 @@ void hrtim_init_independent_mode_center_aligned(bool leg1_buck_mode, bool leg2_b
 void hrtim_init_full_bridge_buck_mode(bool SPIN_board_V_1_1_2)
 {
 	if(SPIN_board_V_1_1_2){
-		hrtim_init_voltage_leg1_buck_leg2_boost(leg1_tu, leg2_tu); //patch for the spin v0.9 - the second leg is inverted
+		hrtim_init_voltage_leg1_boost_leg2_buck(leg1_tu, leg2_tu); //patch for the spin v0.9 - the second leg is inverted
 	}else{
 		hrtim_init_voltage_buck(leg1_tu, leg2_tu);
 	}
@@ -174,7 +174,7 @@ void hrtim_init_full_bridge_buck_mode(bool SPIN_board_V_1_1_2)
 void hrtim_init_full_bridge_buck_mode_center_aligned(bool bipolar_mode,bool SPIN_board_V_1_1_2)
 {
 	if(SPIN_board_V_1_1_2){
-		hrtim_init_voltage_leg1_buck_leg2_boost_center_aligned(leg1_tu, leg2_tu); //patch for the spin v0.9 - the second leg is inverted
+		hrtim_init_voltage_leg1_boost_leg2_buck_center_aligned(leg1_tu, leg2_tu); //patch for the spin v0.9 - the second leg is inverted
 	}else{
 		hrtim_init_voltage_buck_center_aligned(leg1_tu, leg2_tu);
 	}
