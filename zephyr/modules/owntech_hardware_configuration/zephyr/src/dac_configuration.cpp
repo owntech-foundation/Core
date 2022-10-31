@@ -24,11 +24,11 @@
  */
 
 
+
 // Zephyr
 #include <zephyr.h>
 
-// Owntech driver
-#include "dac.h"
+#include "dac_configuration.h"
 
 
 void dac_config_dac1_dac3_current_mode_init()
@@ -58,4 +58,36 @@ void dac_config_dac1_dac3_current_mode_init()
 	dac_set_function(dac3, 1, &function_config);
 	dac_pin_configure(dac3, 1, dac_pin_internal);
 	dac_start(dac3, 1);
+}
+
+void dac_config_const_value_init(uint8_t dac_number)
+{
+	const struct device* dac_dev;
+
+	if (dac_number == 1){
+		dac_dev = device_get_binding(DAC1_DEVICE);
+	}else if(dac_number == 2){
+		dac_dev = device_get_binding(DAC2_DEVICE);
+	}else{
+		dac_dev = device_get_binding(DAC3_DEVICE);
+	}
+	// const struct device* dac2 = device_get_binding(DAC2_DEVICE);
+	dac_set_const_value(dac_dev,1,0);
+	dac_pin_configure(dac_dev, 1, dac_pin_external);
+	dac_start(dac_dev, 1);
+}
+
+void dac_set_const_value(uint8_t dac_number, uint8_t channel, uint32_t const_value)
+{
+	const struct device* dac_dev;
+
+	if (dac_number == 1){
+		dac_dev = device_get_binding(DAC1_DEVICE);
+	}else if(dac_number == 2){
+		dac_dev = device_get_binding(DAC2_DEVICE);
+	}else{
+		dac_dev = device_get_binding(DAC3_DEVICE);
+	}
+
+	dac_set_const_value(dac_dev,channel,const_value);
 }

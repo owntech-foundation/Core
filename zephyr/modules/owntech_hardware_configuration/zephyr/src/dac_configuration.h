@@ -26,8 +26,16 @@
 #ifndef DAC_CONFIGURATION_H_
 #define DAC_CONFIGURATION_H_
 
+// Stdlib
+#include <stdint.h>
+
+// Owntech driver
+#include "dac.h"
+
 
 void dac_config_dac1_dac3_current_mode_init();
+void dac_config_const_value_init(uint8_t dac_number);
+void dac_set_const_value(uint8_t dac_number, uint8_t channel, uint32_t const_value);
 
 
 #endif // DAC_CONFIGURATION_H_
