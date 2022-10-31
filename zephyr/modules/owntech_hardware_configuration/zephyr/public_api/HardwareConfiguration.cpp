@@ -197,7 +197,7 @@ void HardwareConfiguration::initFullBridgeBuckModeCenterAligned(inverter_modulat
 	if (inverter_modulation_type == bipolar) bipolar_mode = true; else bipolar_mode = false;
 
 	if(HardwareConfiguration::hardware_version == TWIST_v_1_1_2){
-		hrtim_init_full_bridge_buck_mode_center_aligned(bipolar_mode,true); //patch for the TWIST v0.9 - the second leg is inverted
+		hrtim_init_full_bridge_buck_mode_center_aligned(bipolar_mode,true); //patch for the TWIST v0.9 - the first leg is inverted
 	}else{
 		hrtim_init_full_bridge_buck_mode_center_aligned(bipolar_mode,false);
 	}
@@ -207,7 +207,7 @@ void HardwareConfiguration::initFullBridgeBuckModeCenterAligned(inverter_modulat
 void HardwareConfiguration::initFullBridgeBoostMode()
 {
 	if(HardwareConfiguration::hardware_version == TWIST_v_1_1_2){
-		hrtim_init_independent_mode(true, false); //patch for the TWIST v0.9 - the second leg is inverted
+		hrtim_init_independent_mode(true, false); //patch for the TWIST v1.2 - the first leg is inverted
 	}else{
 		hrtim_init_interleaved_boost_mode();
 	}
@@ -216,7 +216,7 @@ void HardwareConfiguration::initFullBridgeBoostMode()
 void HardwareConfiguration::initFullBridgeBoostModeCenterAligned()
 {
 	if(HardwareConfiguration::hardware_version == TWIST_v_1_1_2){
-		hrtim_init_independent_mode_center_aligned(true, false); //patch for the TWIST v0.9 - the second leg is inverted
+		hrtim_init_independent_mode_center_aligned(true, false); //patch for the TWIST v0.9 - the first leg is inverted
 	}else{
 		hrtim_init_interleaved_boost_mode_center_aligned();
 	}
@@ -225,26 +225,27 @@ void HardwareConfiguration::initFullBridgeBoostModeCenterAligned()
 void HardwareConfiguration::initIndependentMode(leg_operation_t leg1_operation_type, leg_operation_t leg2_operation_type)
 {
 	bool leg1_mode, leg2_mode;
-	if (leg1_operation_type == buck) leg1_mode = true; else leg1_mode = false;
-
 	if (HardwareConfiguration::hardware_version == TWIST_v_1_1_2){										//patch for the TWIST v0.9 - the second leg is inverted
-		if (leg2_operation_type == buck) leg2_mode = false; else leg2_mode = true;
+		if (leg1_operation_type == buck) leg1_mode = false; else leg1_mode = true;
 	}else{
-		if (leg2_operation_type == buck) leg2_mode = true; else leg2_mode = false;
+		if (leg1_operation_type == buck) leg1_mode = true; else leg1_mode = false;
 	}
+
+	if (leg2_operation_type == buck) leg2_mode = true; else leg2_mode = false;
+
 	hrtim_init_independent_mode(leg1_mode, leg2_mode);
 }
 
 void HardwareConfiguration::initIndependentModeCenterAligned(leg_operation_t leg1_operation_type, leg_operation_t leg2_operation_type)
 {
 	bool leg1_mode, leg2_mode;
-	if (leg1_operation_type == buck) leg1_mode = true; else leg1_mode = false;
-
 	if (HardwareConfiguration::hardware_version == TWIST_v_1_1_2){										//patch for the TWIST v0.9 - the second leg is inverted
-		if (leg2_operation_type == buck) leg2_mode = false; else leg2_mode = true;
+		if (leg1_operation_type == buck) leg1_mode = false; else leg1_mode = true;
 	}else{
-		if (leg2_operation_type == buck) leg2_mode = true; else leg2_mode = false;
+		if (leg1_operation_type == buck) leg1_mode = true; else leg1_mode = false;
 	}
+
+	if (leg2_operation_type == buck) leg2_mode = true; else leg2_mode = false;
 
 	hrtim_init_independent_mode_center_aligned(leg1_mode, leg2_mode);
 }
