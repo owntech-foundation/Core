@@ -7,7 +7,6 @@
 / {
 	can-standby-switch {
 		compatible = "gpio-device";
-		label = "CAN_STANDBY";
 		can-standby-gpio-pin {
 			gpios = <&gpiob 10 GPIO_ACTIVE_HIGH>;
 			label = "CAN Standby output";

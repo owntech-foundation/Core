@@ -51,10 +51,7 @@
 /////
 // DT definitions
 
-#define DMA1_NODELABEL DT_NODELABEL(dma1)
-#define DMA1_LABEL     DT_PROP(DMA1_NODELABEL, label)
-
-static const struct device* dma1;
+static const struct device* dma1 = DEVICE_DT_GET(DT_NODELABEL(dma1));
 
 
 /////
@@ -154,18 +151,19 @@ static void _dma_channel_init(uint8_t adc_num, uint32_t source_address, uint32_t
 
 void dma_configure_and_start(uint8_t adc_count)
 {
-	dma1 = device_get_binding(DMA1_LABEL);
-
 	half_buffer_1 = k_malloc(adc_count * sizeof(uint16_t*));
 	half_buffer_2 = k_malloc(adc_count * sizeof(uint16_t*));
 
-	for (uint8_t adc_index = 0 ; adc_index < adc_count ; adc_index++)
+	if (device_is_ready(dma1) == true)
 	{
-		uint8_t adc_num = adc_index +1;
-		if (adc_get_enabled_channels_count(adc_num) > 0)
+		for (uint8_t adc_index = 0 ; adc_index < adc_count ; adc_index++)
 		{
-			_dma_channel_init(adc_num, source_registers[adc_index], source_triggers[adc_index]);
-			dma_start(dma1, adc_num);
+			uint8_t adc_num = adc_index +1;
+			if (adc_get_enabled_channels_count(adc_num) > 0)
+			{
+				_dma_channel_init(adc_num, source_registers[adc_index], source_triggers[adc_index]);
+				dma_start(dma1, adc_num);
+			}
 		}
 	}
 }

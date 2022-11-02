@@ -5,9 +5,11 @@
  */
 
 /**
+ * @date   2022
  * @author Martin Jäger <martin@libre.solar>
  * @author Jean Alinei <jean.alinei@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
+ * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
 #include <canbus/isotp.h>
@@ -16,6 +18,7 @@
 
 extern ThingSet ts;
 extern uint16_t can_node_addr;
+static const struct device* can_dev = DEVICE_DT_GET(DT_NODELABEL(can1));
 
 #define RX_THREAD_STACK_SIZE 1024
 #define RX_THREAD_PRIORITY 2
@@ -52,8 +55,6 @@ void can_isotp_thread()
     struct net_buf *buf;
     static uint8_t rx_buffer[600];      // large enough to receive a 512k flash page for DFU
     static uint8_t tx_buffer[1000];
-
-	const struct device* can_dev = device_get_binding(CAN_DEVICE);
 
 	enable_can();
 

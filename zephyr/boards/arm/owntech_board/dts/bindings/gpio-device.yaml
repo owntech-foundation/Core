@@ -2,12 +2,6 @@ description: GPIO-controllable device
 
 compatible: "gpio-device"
 
-properties:
-  label:
-    required: true
-    type: string
-    description: Name of the peripheral (used as device_get_binding() argument)
-
 child-binding:
   description: GPIO node
   properties:

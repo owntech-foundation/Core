@@ -33,7 +33,7 @@
 /////
 // Static variables
 
-const struct device* Scheduling::timer6 = NULL;
+const struct device* Scheduling::timer6 = DEVICE_DT_GET(TIMER6_DEVICE);
 
 const int Scheduling::DEFAULT_PRIORITY = 5;
 
@@ -68,10 +68,9 @@ void Scheduling::threadEntryPoint(void* thread_function_p, void*, void*)
 
 void Scheduling::startControlTask(void (*periodic_task)(), uint32_t task_period_us)
 {
-	if (periodic_task != NULL)
+	if ( (periodic_task != NULL) && (device_is_ready(timer6) == true) )
 	{
-		// Configure timer
-		timer6 = device_get_binding(TIMER6_DEVICE);
+		// Configure and start timer
 
 		struct timer_config_t timer_cfg = {0};
 		timer_cfg.timer_enable_irq   = 1;

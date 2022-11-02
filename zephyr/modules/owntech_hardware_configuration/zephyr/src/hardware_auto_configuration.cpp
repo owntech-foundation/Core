@@ -41,6 +41,7 @@
 // Owntech driver
 #include "dac.h"
 
+static const struct device* dac2 = DEVICE_DT_GET(DAC2_DEVICE);
 
 /////
 // Functions to be run
@@ -57,11 +58,12 @@ static int _vrefbuf_init(const struct device* dev)
 
 static int _dac2_init(const struct device* dev)
 {
-	const struct device* dac2 = device_get_binding(DAC2_DEVICE);
-
-	dac_set_const_value(dac2, 1, 2048U);
-	dac_pin_configure(dac2, 1, dac_pin_external);
-	dac_start(dac2, 1);
+	if (device_is_ready(dac2) == true)
+	{
+		dac_set_const_value(dac2, 1, 2048U);
+		dac_pin_configure(dac2, 1, dac_pin_external);
+		dac_start(dac2, 1);
+	}
 
 	return 0;
 }

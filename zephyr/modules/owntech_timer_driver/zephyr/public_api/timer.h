@@ -51,9 +51,9 @@ extern "C" {
 /////
 // Public devices names
 
-#define TIMER4_DEVICE DT_LABEL(DT_NODELABEL(timers4))
-#define TIMER6_DEVICE DT_LABEL(DT_NODELABEL(timers6))
-#define TIMER7_DEVICE DT_LABEL(DT_NODELABEL(timers7))
+#define TIMER4_DEVICE DT_NODELABEL(timers4)
+#define TIMER6_DEVICE DT_NODELABEL(timers6)
+#define TIMER7_DEVICE DT_NODELABEL(timers7)
 
 
 /////

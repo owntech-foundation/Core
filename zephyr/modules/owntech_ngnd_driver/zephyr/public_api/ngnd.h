@@ -40,7 +40,7 @@ extern "C" {
 /////
 // Public device name
 
-#define NGND_DEVICE DT_LABEL(DT_NODELABEL(ngnd))
+#define NGND_DEVICE DT_NODELABEL(ngnd)
 
 
 /////

@@ -5,9 +5,11 @@
  */
 
 /**
+ * @date   2022
  * @author Martin Jäger <martin@libre.solar>
  * @author Jean Alinei <jean.alinei@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
+ * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
 
@@ -29,6 +31,7 @@ extern ThingSet ts;
 extern uint16_t can_node_addr;
 uint16_t broadcast_time = 10; //the time of the measurement variables broadcast (multiples of 100ms)
 uint16_t control_time = 10;  //the time of the control variables broadcast/receive (multiples of 100ms)
+static const struct device* can_dev = DEVICE_DT_GET(DT_NODELABEL(can1));
 
 // below defines should go into the ThingSet library
 #define TS_CAN_SOURCE_GET(id)           (((uint32_t)id & TS_CAN_SOURCE_MASK) >> TS_CAN_SOURCE_POS)
@@ -51,8 +54,6 @@ void can_pub_isr(uint32_t err_flags, void *arg)
 
 void can_pub_send(uint32_t can_id, uint8_t can_data[8], uint8_t data_len)
 {
-	const struct device* can_dev = device_get_binding(CAN_DEVICE);
-
     if (!device_is_ready(can_dev))
 	{
         return;
@@ -118,8 +119,6 @@ void update_ts_data_nodes(struct zcan_frame rx_frame)
 void can_pubsub_thread()
 {
 	enable_can();
-
-	const struct device* can_dev = device_get_binding(CAN_DEVICE);
 
     if (!device_is_ready(can_dev))
 	{

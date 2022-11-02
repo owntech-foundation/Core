@@ -25,25 +25,21 @@
 
 #include "ngnd.h"
 
-static const struct device* ngnd_switch = nullptr;
+static const struct device* ngnd_switch = DEVICE_DT_GET(NGND_DEVICE);
 
 
 void ngnd_config_on()
 {
-	if (ngnd_switch == NULL)
+	if (device_is_ready(ngnd_switch) == true)
 	{
-		ngnd_switch = device_get_binding(NGND_DEVICE);
+		ngnd_set(ngnd_switch, 1);
 	}
-
-	ngnd_set(ngnd_switch, 1);
 }
 
 void ngnd_config_off()
 {
-	if (ngnd_switch == NULL)
+	if (device_is_ready(ngnd_switch) == true)
 	{
-		ngnd_switch = device_get_binding(NGND_DEVICE);
+		ngnd_set(ngnd_switch, 0);
 	}
-
-	ngnd_set(ngnd_switch, 0);
 }

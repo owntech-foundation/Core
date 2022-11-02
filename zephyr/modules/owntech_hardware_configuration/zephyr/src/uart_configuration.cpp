@@ -32,18 +32,20 @@
 
 
 /////
-//USART 1 defines
+// USART 1 defines
+
 #define CONFIG_OWNTECH_SERIAL_TX_BUF_SIZE 5
 #define CONFIG_OWNTECH_SERIAL_RX_BUF_SIZE 5
 #define USART1_DEVICE DT_PROP(DT_NODELABEL(usart1), label)
 
-static const struct device* uart_dev = NULL;
+static const struct device* uart_dev = DEVICE_DT_GET(DT_NODELABEL(usart1));
 static char buf_req[CONFIG_OWNTECH_SERIAL_RX_BUF_SIZE];
 static bool command_flag = false;
 
+/////
+// USART 1 private functions
 
-
-void _uart_usart1_process_input(const struct device *dev, void* user_data)
+static void _uart_usart1_process_input(const struct device *dev, void* user_data)
 {
 	uint8_t c;
 
@@ -60,6 +62,9 @@ void _uart_usart1_process_input(const struct device *dev, void* user_data)
 	}
 }
 
+/////
+// USART 1 public functions
+
 void uart_usart1_init()
 {
 	const struct uart_config usart1_config =
@@ -71,10 +76,12 @@ void uart_usart1_init()
 		.flow_ctrl = UART_CFG_FLOW_CTRL_NONE
 	};
 
-	uart_dev = device_get_binding(USART1_DEVICE);
-	uart_configure(uart_dev, &usart1_config);
-	uart_irq_callback_user_data_set(uart_dev, _uart_usart1_process_input, NULL);
-	uart_irq_rx_enable(uart_dev);
+	if (device_is_ready(uart_dev) == true)
+	{
+		uart_configure(uart_dev, &usart1_config);
+		uart_irq_callback_user_data_set(uart_dev, _uart_usart1_process_input, NULL);
+		uart_irq_rx_enable(uart_dev);
+	}
 }
 
 char uart_usart1_get_data()
@@ -89,7 +96,10 @@ char uart_usart1_get_data()
 
 void uart_usart1_write_single(char data)
 {
-	uart_poll_out(uart_dev,data);
+	if (device_is_ready(uart_dev) == true)
+	{
+		uart_poll_out(uart_dev,data);
+	}
 }
 
 void uart_lpuart1_swap_rx_tx()

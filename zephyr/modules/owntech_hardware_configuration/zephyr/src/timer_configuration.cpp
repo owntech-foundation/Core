@@ -25,7 +25,7 @@
 #include "timer.h"
 
 
-static const struct device* timer4 = NULL;
+static const struct device* timer4 = DEVICE_DT_GET(TIMER4_DEVICE);
 
 static bool timer4init    = false;
 static bool timer4started = false;
@@ -33,17 +33,19 @@ static bool timer4started = false;
 
 static void _timer_incremental_encoder_tim4_init()
 {
-	// Configure timer
-	timer4 = device_get_binding(TIMER4_DEVICE);
-	struct timer_config_t timer_cfg =
+	if (device_is_ready(timer4) == true)
 	{
-		.timer_enable_irq = 0,
-		.timer_enable_encoder = 1,
-		.timer_enc_pin_mode = pull_up
+		// Configure timer
+		struct timer_config_t timer_cfg =
+		{
+			.timer_enable_irq = 0,
+			.timer_enable_encoder = 1,
+			.timer_enc_pin_mode = pull_up
 
-	};
-	timer_config(timer4, &timer_cfg);
-	timer4init = true;
+		};
+		timer_config(timer4, &timer_cfg);
+		timer4init = true;
+	}
 }
 
 void timer_incremental_encoder_tim4_start()
@@ -55,8 +57,11 @@ void timer_incremental_encoder_tim4_start()
 
 	if (timer4started == false)
 	{
-		timer_start(timer4);
-		timer4started = true;
+		if (device_is_ready(timer4) == true)
+		{
+			timer_start(timer4);
+			timer4started = true;
+		}
 	}
 }
 

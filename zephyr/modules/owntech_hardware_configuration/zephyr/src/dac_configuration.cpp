@@ -31,31 +31,35 @@
 #include "dac.h"
 
 
+static const struct device* dac1 = DEVICE_DT_GET(DAC1_DEVICE);
+static const struct device* dac3 = DEVICE_DT_GET(DAC3_DEVICE);
+
+
 void dac_config_dac1_dac3_current_mode_init()
 {
-	const struct device* dac1 = device_get_binding(DAC1_DEVICE);
-	const struct device* dac3 = device_get_binding(DAC3_DEVICE);
-
-	// DAC 1
-	dac_function_config_t function_config =
+	if ( (device_is_ready(dac1) == true) && (device_is_ready(dac3) == true) )
 	{
-		.dac_function = dac_function_sawtooth,
-		.reset_trigger_source = hrtim_trig1,
-		.step_trigger_source = hrtim_trig1,
-		.polarity = dac_polarity_decrement,
-		.reset_data = 4000,
-		.step_data = 200
-	};
+		// DAC 1
+		dac_function_config_t function_config =
+		{
+			.dac_function = dac_function_sawtooth,
+			.reset_trigger_source = hrtim_trig1,
+			.step_trigger_source = hrtim_trig1,
+			.polarity = dac_polarity_decrement,
+			.reset_data = 4000,
+			.step_data = 200
+		};
 
-	dac_set_function(dac1, 1, &function_config);
-	dac_pin_configure(dac1, 1, dac_pin_internal);
-	dac_start(dac1, 1);
+		dac_set_function(dac1, 1, &function_config);
+		dac_pin_configure(dac1, 1, dac_pin_internal);
+		dac_start(dac1, 1);
 
-	// DAC 3
-	function_config.reset_trigger_source = hrtim_trig2;
-	function_config.step_trigger_source = hrtim_trig2;
+		// DAC 3
+		function_config.reset_trigger_source = hrtim_trig2;
+		function_config.step_trigger_source = hrtim_trig2;
 
-	dac_set_function(dac3, 1, &function_config);
-	dac_pin_configure(dac3, 1, dac_pin_internal);
-	dac_start(dac3, 1);
+		dac_set_function(dac3, 1, &function_config);
+		dac_pin_configure(dac3, 1, dac_pin_internal);
+		dac_start(dac3, 1);
+	}
 }

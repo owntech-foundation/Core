@@ -38,9 +38,9 @@ extern "C" {
 /////
 // Public devices names
 
-#define DAC1_DEVICE DT_LABEL(DT_NODELABEL(dac1))
-#define DAC2_DEVICE DT_LABEL(DT_NODELABEL(dac2))
-#define DAC3_DEVICE DT_LABEL(DT_NODELABEL(dac3))
+#define DAC1_DEVICE DT_NODELABEL(dac1)
+#define DAC2_DEVICE DT_NODELABEL(dac2)
+#define DAC3_DEVICE DT_NODELABEL(dac3)
 
 
 /////

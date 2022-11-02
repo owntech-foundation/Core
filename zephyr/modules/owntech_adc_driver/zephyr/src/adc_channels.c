@@ -57,7 +57,7 @@ typedef struct
 #define ADC_INPUTS_NODELABEL DT_NODELABEL(mychannels)
 
 // Channel properties
-#define CHANNEL_NAME(node_id)    DT_LABEL(node_id)
+#define CHANNEL_NAME(node_id)    DT_PROP(node_id, label)
 #define CHANNEL_IS_DIFF(node_id) DT_PROP(node_id, differential)
 #define CHANNEL_NUMBER(node_id)  DT_PHA_BY_IDX(node_id, io_channels, 0, input)
 #define CHANNEL_ADC(node_id)     DT_PROP_BY_PHANDLE_IDX(node_id, io_channels, 0, label)
