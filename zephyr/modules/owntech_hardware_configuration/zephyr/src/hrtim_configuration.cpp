@@ -42,12 +42,10 @@ static uint16_t pwm_period;
 static uint16_t pwm_phase_shift;
 static uint16_t pwm_phase_shift_leg1;
 static uint16_t pwm_phase_shift_leg2;
-static uint16_t pwm_low_pulse_width;
-static uint16_t pwm_high_pulse_width;
 static bool     full_bridge_bipolar_mode;
 
 static hrtim_tu_t leg1_tu;
-static hrtim_tu_t leg2_tu; 
+static hrtim_tu_t leg2_tu;
 
 
 /**
@@ -59,7 +57,6 @@ void hrtim_leg_tu(hrtim_tu_t tu1, hrtim_tu_t tu2)
 	leg1_tu = tu1;
 	leg2_tu = tu2;
 }
-
 
 /**
  * This function initializes both legs in buck mode
@@ -191,7 +188,6 @@ void hrtim_init_full_bridge_buck_mode_center_aligned(bool bipolar_mode,bool SPIN
 
 }
 
-
 /**
  * This function transfer the calculated PWM value to the
  * HRTIM peripheral and make sure it is between saturation
@@ -236,7 +232,6 @@ void hrtim_full_bridge_buck_pwm_update(float32_t pwm_duty_cycle)
 	}
 }
 
-
 /**
  * This function transfer the calculated PWM value of leg_1 to the
  * HRTIM peripheral and make sure it is between saturation
@@ -268,19 +263,18 @@ void hrtim_leg2_pwm_update(float32_t pwm_duty_cycle)
  */
 void hrtim_leg1_phase_shift_update(float32_t phase_shift)
 {
-	phase_shift = int(phase_shift)%360; // modulo 
-    if(phase_shift<0) phase_shift = phase_shift + 360; // case of negative phase
+	phase_shift = int(phase_shift)%360; // modulo
+	if(phase_shift<0) phase_shift = phase_shift + 360; // case of negative phase
 	pwm_phase_shift_leg1 = (uint16_t)(pwm_period * (phase_shift/360) );
 }
-
 
 /**
  * This function updates the phase shift between leg 2 and hrtim master
  */
 void hrtim_leg2_phase_shift_update(float32_t phase_shift)
 {
-	phase_shift = int(phase_shift)%360; // modulo 
-    if(phase_shift<0) phase_shift = phase_shift + 360; // case of negative phase
+	phase_shift = int(phase_shift)%360; // modulo
+	if(phase_shift<0) phase_shift = phase_shift + 360; // case of negative phase
 	pwm_phase_shift_leg2 = (uint16_t)(pwm_period * (phase_shift/360) );
 }
 
@@ -290,11 +284,10 @@ void hrtim_leg2_phase_shift_update(float32_t phase_shift)
  */
 void hrtim_leg1_phase_shift_update_center_aligned(float32_t phase_shift)
 {
-	phase_shift = int(phase_shift)%360; // modulo 
-    if(phase_shift<0) phase_shift = phase_shift + 360; // case of negative phase
+	phase_shift = int(phase_shift)%360; // modulo
+	if(phase_shift<0) phase_shift = phase_shift + 360; // case of negative phase
 	pwm_phase_shift_leg1 = (uint16_t)(2*pwm_period * (phase_shift/360) );
 }
-
 
 /**
  * This function updates the phase shift between leg 2 and hrtim master for the center aligned application
@@ -302,11 +295,10 @@ void hrtim_leg1_phase_shift_update_center_aligned(float32_t phase_shift)
  */
 void hrtim_leg2_phase_shift_update_center_aligned(float32_t phase_shift)
 {
-	phase_shift = int(phase_shift)%360; // modulo 
-    if(phase_shift<0) phase_shift = phase_shift + 360; // case of negative phase
+	phase_shift = int(phase_shift)%360; // modulo
+	if(phase_shift<0) phase_shift = phase_shift + 360; // case of negative phase
 	pwm_phase_shift_leg2 = (uint16_t)(2*pwm_period * (phase_shift/360) );
 }
-
 
 /**
  * This stops the converter by putting both timing
@@ -328,7 +320,6 @@ void hrtim_stop_full_bridge_buck()
 	leg_stop(leg2_tu);
 }
 
-
 /**
  * This stops only leg 1
  */
@@ -344,6 +335,7 @@ void hrtim_stop_leg2()
 {
 	leg_stop(leg2_tu);
 }
+
 /**
  * This stops the converter by putting both timing
  * units outputs low
@@ -372,6 +364,7 @@ void hrtim_start_leg1()
 {
 	leg_start(leg1_tu);
 }
+
 /**
  * This stops the converter by putting both timing
  * units outputs low
@@ -383,10 +376,9 @@ void hrtim_start_leg2()
 
 void set_adc_trig_interleaved(float32_t new_trig)
 {
-	uint16_t new_trig_int = new_trig * pwm_period; 
+	uint16_t new_trig_int = new_trig * pwm_period;
 	hrtim_update_adc_trig_interleaved(new_trig_int, leg1_tu, leg2_tu);
 }
-
 
 /**
  * This updates the dead time of the leg 1
@@ -404,7 +396,6 @@ void hrtim_set_dead_time_leg2(uint16_t rise_ns, uint16_t fall_ns)
 {
 	leg_set_dt(leg2_tu, rise_ns, fall_ns);
 }
-
 
 /**
  * This sets the frequency of the HRTIMER
