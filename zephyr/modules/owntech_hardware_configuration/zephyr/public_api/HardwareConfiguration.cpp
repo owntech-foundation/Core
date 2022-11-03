@@ -94,6 +94,15 @@ void HardwareConfiguration::initDac1Dac3CurrentMode()
 	dac_config_dac1_dac3_current_mode_init();
 }
 
+void HardwareConfiguration::initDacConstValue(uint8_t dac_number)
+{
+	dac_config_const_value_init(dac_number);
+}
+
+void HardwareConfiguration::setDacConstValue(uint8_t dac_number, uint8_t channel, uint32_t const_value)
+{
+	dac_set_const_value(dac_number, channel, const_value);
+}
 
 /////
 // NGND

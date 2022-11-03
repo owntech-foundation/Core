@@ -21,6 +21,7 @@
  * @date   2022
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Luiz Villa <luiz.villa@laas.fr>
  */
 
 
@@ -32,6 +33,7 @@
 
 
 static const struct device* dac1 = DEVICE_DT_GET(DAC1_DEVICE);
+static const struct device* dac2 = DEVICE_DT_GET(DAC2_DEVICE);
 static const struct device* dac3 = DEVICE_DT_GET(DAC3_DEVICE);
 
 
@@ -61,5 +63,53 @@ void dac_config_dac1_dac3_current_mode_init()
 		dac_set_function(dac3, 1, &function_config);
 		dac_pin_configure(dac3, 1, dac_pin_internal);
 		dac_start(dac3, 1);
+	}
+}
+
+void dac_config_const_value_init(uint8_t dac_number)
+{
+	const struct device* dac_dev;
+
+	if (dac_number == 1)
+	{
+		dac_dev = dac1;
+	}
+	else if (dac_number == 3)
+	{
+		dac_dev = dac3;
+	}
+	else
+	{
+		dac_dev = dac2; //sets the dac 2 as default
+	}
+
+	if (device_is_ready(dac_dev) == true)
+	{
+		dac_set_const_value(dac_dev,1,0);
+		dac_pin_configure(dac_dev, 1, dac_pin_external);
+		dac_start(dac_dev, 1);
+	}
+}
+
+void dac_set_const_value(uint8_t dac_number, uint8_t channel, uint32_t const_value)
+{
+	const struct device* dac_dev;
+
+	if (dac_number == 1)
+	{
+		dac_dev = dac1;
+	}
+	else if (dac_number == 3)
+	{
+		dac_dev = dac3;
+	}
+	else
+	{
+		dac_dev = dac2; //sets the dac 2 as default
+	}
+
+	if (device_is_ready(dac_dev) == true)
+	{
+		dac_set_const_value(dac_dev,channel,const_value);
 	}
 }
