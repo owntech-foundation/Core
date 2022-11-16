@@ -43,6 +43,8 @@ ADC_TypeDef* _get_adc_by_name(char* name)
 		adc = ADC2;
 	else if ( strcmp(name, "ADC_3") == 0)
 		adc = ADC3;
+	else if ( strcmp(name, "ADC_4") == 0)
+		adc = ADC3;
 
 	return adc;
 }
@@ -57,6 +59,8 @@ ADC_TypeDef* _get_adc_by_number(uint8_t adc_number)
 		adc = ADC2;
 	else if (adc_number == 3)
 		adc = ADC3;
+	else if (adc_number == 4)
+		adc = ADC4;
 
 	return adc;
 }
@@ -71,6 +75,8 @@ uint8_t _get_adc_number_by_name(char* name)
 		adc_number = 2;
 	else if ( strcmp(name, "ADC_3") == 0)
 		adc_number = 3;
+	else if ( strcmp(name, "ADC_4") == 0)
+		adc_number = 4;
 
 	return adc_number;
 }

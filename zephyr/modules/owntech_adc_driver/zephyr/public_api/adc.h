@@ -144,6 +144,18 @@ void adc_start();
  */
 const char* adc_get_channel_name(uint8_t adc_number, uint8_t channel_rank);
 
+
+/**
+ * This function triggers a single conversion in the case of a software triggered adc.
+ *
+ * This function must only be called after
+ * adc_configure_adc_channels has been called.
+ *
+ * @param  adc_number Number of the ADC.
+ */
+void adc_software_trigger_conversion(uint8_t adc_number);
+
+
 #ifdef __cplusplus
 }
 #endif
