@@ -108,6 +108,16 @@ float32_t data_conversion_convert_extra(uint16_t raw_value);
 
 
 /**
+ * @brief    Converts the values of the analog communication into a physical unit
+ *
+ * @param[in] raw_value
+ *
+ * @return  a foat32_t value for the analog communication
+ */
+float32_t data_conversion_convert_analog_comm(uint16_t raw_value);
+
+
+/**
  * @brief    Change the parameters for the data conversion of V1_low
  *
  * @param[in] gain      gain of V1_low sensor
@@ -170,6 +180,15 @@ void data_conversion_set_temp_parameters(float32_t gain, float32_t offset);
  * @param[in] offset    offset of the sensor
  */
 void data_conversion_set_extra_parameters(float32_t gain, float32_t offset);
+
+
+/**
+ * @brief    Change the parameters for the analog communication measurement
+ *
+ * @param[in] gain      gain of the analog communication bus
+ * @param[in] offset    offset of the analog communication
+ */
+void data_conversion_set_analog_comm_parameters(float32_t gain, float32_t offset);
 
 
 #ifdef __cplusplus
