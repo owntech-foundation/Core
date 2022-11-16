@@ -49,6 +49,7 @@ void _initialize()
 		configure_adc_trigger_source(1, hrtim_ev1);
 		configure_adc_trigger_source(2, hrtim_ev3);
 		configure_adc_trigger_source(3, software);
+		configure_adc_trigger_source(4, software);
 
 		adc_configure_discontinuous_mode(1, 1);
 		adc_configure_discontinuous_mode(2, 1);
