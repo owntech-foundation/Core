@@ -178,6 +178,11 @@
 	status = "okay";
 };
 
+&adc4 {
+	pinctrl-0 = <&adc4_in5_pb15 >;
+	status = "okay";
+};
+
 /*******/
 /* DAC */
 /*******/

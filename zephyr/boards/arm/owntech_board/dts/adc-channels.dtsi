@@ -85,5 +85,10 @@
 			label = "TEMP_SENSOR";
 		};*/
 
+		current-share {
+			io-channels = <&adc4 5>;
+			label = "ANALOG_COMM";
+		};
+
 	};
 };

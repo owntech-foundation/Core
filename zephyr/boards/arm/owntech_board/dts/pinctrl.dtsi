@@ -10,6 +10,9 @@
 			tim4_etr_pb3: tim4_etr_pb3 {
 				pinmux = <STM32_PINMUX('B', 3, AF2)>;
 			};
+			adc4_in5_pb15: adc4_in5_pb15 {
+				pinmux = <STM32_PINMUX('B', 15, ANALOG)>;
+			};
 		};
 	};
 };
