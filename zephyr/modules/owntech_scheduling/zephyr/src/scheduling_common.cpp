@@ -30,7 +30,7 @@ void scheduling_common_start_task(task_information_t& task_info, k_thread_entry_
 {
 	k_tid_t tid = k_thread_create(&task_info.thread_data,
 	                              task_info.stack,
-	                              K_THREAD_STACK_SIZEOF(task_info.stack),
+	                              task_info.stack_size,
 	                              entry_point,
 	                              (void*)task_info.routine, NULL, NULL,
 	                              task_info.priority,

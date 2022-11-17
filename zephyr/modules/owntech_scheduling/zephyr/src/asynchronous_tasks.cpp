@@ -57,6 +57,7 @@ int8_t scheduling_define_asynchronous_task(task_function_t routine)
 		tasks_informations[task_number].priority    = ASYNCHRONOUS_THREADS_PRIORITY;
 		tasks_informations[task_number].task_number = task_number;
 		tasks_informations[task_number].stack       = asynchronous_thread_stack[task_number];
+		tasks_informations[task_number].stack_size  = K_THREAD_STACK_SIZEOF(asynchronous_thread_stack[task_number]);
 
 		return task_number;
 	}

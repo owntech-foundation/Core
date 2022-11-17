@@ -35,6 +35,7 @@ typedef struct
 	int priority;
 	uint8_t task_number;
 	k_thread_stack_t* stack;
+	size_t stack_size;
 	k_tid_t thread_id;
 	k_thread thread_data;
 } task_information_t;
