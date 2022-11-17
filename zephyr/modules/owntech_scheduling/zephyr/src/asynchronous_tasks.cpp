@@ -34,7 +34,7 @@ static K_THREAD_STACK_ARRAY_DEFINE(asynchronous_thread_stack, CONFIG_OWNTECH_SCH
 static task_information_t tasks_informations[CONFIG_OWNTECH_SCHEDULING_MAX_ASYNCHRONOUS_TASKS];
 static uint8_t task_count = 0;
 
-static const int ASYNCHRONOUS_THREADS_PRIORITY = 50;
+static const int ASYNCHRONOUS_THREADS_PRIORITY = 14;
 
 
 void _scheduling_user_asynchronous_task_entry_point(void* thread_function_p, void*, void*)
