@@ -24,7 +24,9 @@
 
 
 // OwnTech Power API
-#include "timer.h"
+#include "../src/uninterruptible_synchronous_task.hpp"
+#include "../src/asynchronous_tasks.hpp"
+
 
 // Current class header
 #include "Scheduling.h"
@@ -33,18 +35,7 @@
 /////
 // Static variables
 
-const struct device* Scheduling::timer6 = DEVICE_DT_GET(TIMER6_DEVICE);
-
 const int Scheduling::DEFAULT_PRIORITY = 5;
-
-k_tid_t Scheduling::communicationThreadTid;
-k_tid_t Scheduling::applicationThreadTid;
-
-k_thread Scheduling::communicationThreadData;
-k_thread Scheduling::applicationThreadData;
-
-K_THREAD_STACK_DEFINE(communication_thread_stack, 512);
-K_THREAD_STACK_DEFINE(application_thread_stack,   512);
 
 
 /////
@@ -54,54 +45,33 @@ Scheduling scheduling;
 
 
 /////
-// Private API
-
-void Scheduling::threadEntryPoint(void* thread_function_p, void*, void*)
-{
-	thread_function_t thread_function = (thread_function_t)thread_function_p;
-	thread_function();
-}
-
-
-/////
 // Public API
 
-void Scheduling::startControlTask(void (*periodic_task)(), uint32_t task_period_us)
+// Non-interruptible control task
+
+int8_t Scheduling::defineUninterruptibleSynchronousTask(void (*periodic_task)(), uint32_t task_period_us)
 {
-	if ( (periodic_task != NULL) && (device_is_ready(timer6) == true) )
-	{
-		// Configure and start timer
-
-		struct timer_config_t timer_cfg = {0};
-		timer_cfg.timer_enable_irq   = 1;
-		timer_cfg.timer_irq_callback = periodic_task;
-		timer_cfg.timer_irq_t_usec   = task_period_us;
-
-		timer_config(timer6, &timer_cfg);
-		timer_start(timer6);
-	}
+	return scheduling_define_uninterruptible_synchronous_task(periodic_task, task_period_us);
 }
 
-void Scheduling::startCommunicationTask(thread_function_t routine, int priority)
+void Scheduling::startUninterruptibleSynchronousTask()
 {
-	communicationThreadTid = k_thread_create(&communicationThreadData,
-                                             communication_thread_stack,
-                                             K_THREAD_STACK_SIZEOF(communication_thread_stack),
-                                             threadEntryPoint,
-                                             (void*)routine, NULL, NULL,
-                                             priority,
-                                             0,
-                                             K_NO_WAIT);
+	scheduling_start_uninterruptible_synchronous_task();
 }
 
-void Scheduling::startApplicationTask(thread_function_t routine, int priority)
+
+// Asynchronous tasks
+
+#ifdef CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
+
+int8_t Scheduling::defineAsynchronousTask(task_function_t routine)
 {
-	applicationThreadTid = k_thread_create(&applicationThreadData,
-                                           application_thread_stack,
-                                           K_THREAD_STACK_SIZEOF(application_thread_stack),
-                                           threadEntryPoint,
-                                           (void*)routine, NULL, NULL,
-                                           priority,
-                                           0,
-                                           K_NO_WAIT);
+	return scheduling_define_asynchronous_task(routine);
 }
+
+void Scheduling::startAsynchronousTask(uint8_t task_number)
+{
+	scheduling_start_asynchronous_task(task_number);
+}
+
+#endif // CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
