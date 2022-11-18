@@ -75,3 +75,16 @@ void Scheduling::startAsynchronousTask(uint8_t task_number)
 }
 
 #endif // CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
+
+
+// Suspend asynchronous tasks
+
+void Scheduling::suspendCurrentTaskMs(uint32_t duration_ms)
+{
+	k_sleep(K_MSEC(duration_ms));
+}
+
+void Scheduling::suspendCurrentTaskUs(uint32_t duration_us)
+{
+	k_sleep(K_USEC(duration_us));
+}

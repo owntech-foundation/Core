@@ -91,6 +91,27 @@ public:
 
 #endif // CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
 
+	/**
+	 * @brief This function allows to suspend an asynchronous
+	 * task for a specified duration expressed in milliseconds.
+	 * For example, you can call this function at the end of an
+	 * asynchronous task main function, when there is no need
+	 * for the task to run permanently.
+	 *
+	 * DO NOT use this function in a synchronous task!
+	 */
+	void suspendCurrentTaskMs(uint32_t duration_ms);
+
+	/**
+	 * @brief This function allows to suspend an asynchronous
+	 * task for a specified duration expressed in microseconds.
+	 * For example, you can call this function at the end of an
+	 * asynchronous task main function, when there is no need
+	 * for the task to run permanently.
+	 *
+	 * DO NOT use this function in a synchronous task!
+	 */
+	void suspendCurrentTaskUs(uint32_t duration_us);
 
 private:
 	static const int DEFAULT_PRIORITY;
