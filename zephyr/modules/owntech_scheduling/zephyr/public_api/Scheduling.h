@@ -33,63 +33,68 @@
 #include <zephyr.h>
 
 
-typedef void (*thread_function_t)();
+typedef void (*task_function_t)();
 
 /////
 // Static class definition
 
 class Scheduling
 {
-private:
-	static void threadEntryPoint(void* thread_function_p, void*, void*);
-
 public:
 	/**
-	 * @brief This function uses Timer 6 to execute the periodic user task.
-	 *        The task is immediately started.
+	 * @brief Uninterruptible synchronous task uses a timer to
+	 * execute a periodic, non-interruptible user task.
+	 * Use this function to define such a task.
+	 * Only one task of this kind can be defined.
 	 *
 	 * @param periodic_task Pointer to the void(void) function
 	 *        to be executed periodically.
-	 *        Can be NULL if no task has to be executed.
 	 * @param task_period_us Period of the function in µs.
 	 *        Allowed range: 1 to 6553 µs.
 	 *        Value is ignored if first parameter is NULL.
+	 * @return 0 if everything went well,
+	 * -1 if there was an error defining the task.
+	 * An error can occur notably when an uninterruptible
+	 * task has already been defined previously.
 	 */
-	static void startControlTask(void (*periodic_task)(), uint32_t task_period_us);
+	int8_t defineUninterruptibleSynchronousTask(void (*periodic_task)(), uint32_t task_period_us);
 
 	/**
-	 * @brief Schedule the communication thread.
-	 *        The task is immediately started.
-	 *
-	 * @param routine Pointer to the void(void) function
-	 *        that will act as the thread main function.
-	 * @param priority Priority of the thread. This
-	 *        parameter can be omitted and will take
-	 *        its default value.
-	 */
-	static void startCommunicationTask(thread_function_t routine, int priority = DEFAULT_PRIORITY);
+	 * @brief Use this function to start the previously defined
+	 * uninterruptible synchronous task.
+	*/
+	void startUninterruptibleSynchronousTask();
+
+
+#ifdef CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
 
 	/**
-	 * @brief Schedule the application thread.
-	 *        The task is immediately started.
+	 * @brief Define an asynchronous task.
+	 * Asynchronous tasks are run in background when there
+	 * is no synchronous task running.
 	 *
 	 * @param routine Pointer to the void(void) function
-	 *        that will act as the thread main function.
-	 * @param priority Priority of the thread. This
-	 *        parameter can be omitted and will take
-	 *        its default value.
+	 *        that will act as the task main function.
+	 * @return Number assigned to the task. Will be -1
+	 * if max number of asynchronous task has been reached.
+	 * In such a case, the task definition is cancelled.
+	 * Increase maximum number of asynchronous tasks in
+	 * prj.conf if required.
 	 */
-	static void startApplicationTask(thread_function_t routine, int priority = DEFAULT_PRIORITY);
+	int8_t defineAsynchronousTask(task_function_t routine);
+
+	/**
+	 * @brief Use this function to start a previously defined
+	 * asynchronous task using its task number.
+	 */
+	void startAsynchronousTask(uint8_t task_number);
+
+#endif // CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
+
 
 private:
-	static const struct device* timer6;
 	static const int DEFAULT_PRIORITY;
 
-	static k_tid_t communicationThreadTid;
-	static k_tid_t applicationThreadTid;
-
-	static k_thread communicationThreadData;
-	static k_thread applicationThreadData;
 };
 
 
