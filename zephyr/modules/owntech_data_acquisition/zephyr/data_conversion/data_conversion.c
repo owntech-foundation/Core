@@ -54,6 +54,10 @@ static float32_t offset_extra = 1.0;  //offset for the extra
 static float32_t gain_temperature = 1.0;
 static float32_t offset_temperature = 0.0;
 
+// Analog Communication Bus
+static float32_t gain_analog_comm = 1.0;
+static float32_t offset_analog_comm = 0.0;
+
 
 /////
 // Public Functions
@@ -100,6 +104,11 @@ float32_t data_conversion_convert_temp(uint16_t raw_value)
 float32_t data_conversion_convert_extra(uint16_t raw_value)
 {
 	return (raw_value*gain_extra)+offset_extra;
+}
+
+float32_t data_conversion_convert_analog_comm(uint16_t raw_value)
+{
+	return (raw_value*gain_analog_comm)+offset_analog_comm;
 }
 
 
@@ -153,4 +162,10 @@ void data_conversion_set_extra_parameters(float32_t gain, float32_t offset)
 {
 	gain_extra = gain;
 	offset_extra = offset;
+}
+
+void data_conversion_set_analog_comm_parameters(float32_t gain, float32_t offset)
+{
+	gain_analog_comm = gain;
+	offset_analog_comm = offset;
 }

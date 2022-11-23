@@ -48,6 +48,8 @@ void dma_configure_and_start(uint8_t adc_count);
 // For debug purpose
 uint16_t* dma_get_dma1_buffer();
 uint16_t* dma_get_dma2_buffer();
+uint16_t* dma_get_dma3_buffer();
+uint16_t* dma_get_dma4_buffer();
 
 
 #ifdef __cplusplus

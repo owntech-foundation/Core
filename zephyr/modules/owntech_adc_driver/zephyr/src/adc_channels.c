@@ -87,6 +87,7 @@ static channel_prop_t available_channels_props[] =
 static uint8_t adc1_available_channels_count;
 static uint8_t adc2_available_channels_count;
 static uint8_t adc3_available_channels_count;
+static uint8_t adc4_available_channels_count;
 
 // List of available channels as defined in device tree.
 // These are arrays (range 0 to adcX_available_channels_count-1)
@@ -94,11 +95,13 @@ static uint8_t adc3_available_channels_count;
 static channel_prop_t** adc1_available_channels_list;
 static channel_prop_t** adc2_available_channels_list;
 static channel_prop_t** adc3_available_channels_list;
+static channel_prop_t** adc4_available_channels_list;
 
 // Number of enabled channels defined by the user configuration
 static uint8_t adc1_enabled_channels_count;
 static uint8_t adc2_enabled_channels_count;
 static uint8_t adc3_enabled_channels_count;
+static uint8_t adc4_enabled_channels_count;
 
 // List of channels enabled by user configuration.
 // These are arrays (range 0 to adcX_enabled_channels_count-1)
@@ -106,6 +109,7 @@ static uint8_t adc3_enabled_channels_count;
 static channel_prop_t** adc1_enabled_channels_list;
 static channel_prop_t** adc2_enabled_channels_list;
 static channel_prop_t** adc3_enabled_channels_list;
+static channel_prop_t** adc4_enabled_channels_list;
 
 
 /////
@@ -120,6 +124,7 @@ static void _adc_channels_build_available_channels_lists()
 	adc1_available_channels_count = 0;
 	adc2_available_channels_count = 0;
 	adc3_available_channels_count = 0;
+	adc4_available_channels_count = 0;
 
 	for (int i = 0 ; i < CHANNEL_COUNT ; i++)
 	{
@@ -136,16 +141,22 @@ static void _adc_channels_build_available_channels_lists()
 		{
 			adc3_available_channels_count++;
 		}
+		else if (adc_number == 4)
+		{
+			adc4_available_channels_count++;
+		}
 	}
 
 	// Build a list of channels by ADC
 	adc1_available_channels_list = k_malloc(sizeof(channel_prop_t*) * adc1_available_channels_count);
 	adc2_available_channels_list = k_malloc(sizeof(channel_prop_t*) * adc2_available_channels_count);
 	adc3_available_channels_list = k_malloc(sizeof(channel_prop_t*) * adc3_available_channels_count);
+	adc4_available_channels_list = k_malloc(sizeof(channel_prop_t*) * adc4_available_channels_count);
 
 	int adc1_index = 0;
 	int adc2_index = 0;
 	int adc3_index = 0;
+	int adc4_index = 0;
 	for (int i = 0 ; i < CHANNEL_COUNT ; i++)
 	{
 		uint8_t adc_number = _get_adc_number_by_name(available_channels_props[i].adc);
@@ -163,6 +174,11 @@ static void _adc_channels_build_available_channels_lists()
 		{
 			adc3_available_channels_list[adc3_index] = &available_channels_props[i];
 			adc3_index++;
+		}
+		else if (adc_number == 4)
+		{
+			adc4_available_channels_list[adc4_index] = &available_channels_props[i];
+			adc4_index++;
 		}
 	}
 }
@@ -215,6 +231,9 @@ static channel_prop_t** _adc_channels_get_enabled_channels_list(uint8_t adc_num)
 		case 3:
 			enabled_channels_list = adc3_enabled_channels_list;
 			break;
+		case 4:
+			enabled_channels_list = adc4_enabled_channels_list;
+			break;
 	}
 	return enabled_channels_list;
 }
@@ -232,6 +251,9 @@ static channel_prop_t** _adc_channels_get_available_channels_list(uint8_t adc_nu
 			break;
 		case 3:
 			available_channels_list = adc3_available_channels_list;
+			break;
+		case 4:
+			available_channels_list = adc4_available_channels_list;
 			break;
 	}
 	return available_channels_list;
@@ -251,6 +273,9 @@ static uint8_t _adc_channels_get_available_channels_count(uint8_t adc_num)
 		case 3:
 			available_channels_count = adc3_available_channels_count;
 			break;
+		case 4:
+			available_channels_count = adc4_available_channels_count;
+			break;
 	}
 	return available_channels_count;
 }
@@ -268,6 +293,9 @@ static uint8_t _adc_channels_get_enabled_channels_count(uint8_t adc_num)
 			break;
 		case 3:
 			enabled_channels_count = adc3_enabled_channels_count;
+			break;
+		case 4:
+			enabled_channels_count = adc4_enabled_channels_count;
 			break;
 	}
 	return enabled_channels_count;
@@ -288,6 +316,10 @@ static void _adc_channels_set_enabled_channels(uint8_t adc_num, channel_prop_t**
 		case 3:
 			adc3_enabled_channels_list = enabled_channels;
 			adc3_enabled_channels_count = enabled_channels_count;
+			break;
+		case 4:
+			adc4_enabled_channels_list = enabled_channels;
+			adc4_enabled_channels_count = enabled_channels_count;
 			break;
 	}
 }
@@ -450,6 +482,9 @@ uint8_t adc_channels_get_enabled_channels_count(uint8_t adc_num)
 			break;
 		case 3:
 			enabled_channels = adc3_enabled_channels_count;
+			break;
+		case 4:
+			enabled_channels = adc4_enabled_channels_count;
 			break;
 	}
 

@@ -57,18 +57,20 @@ static const struct device* dma1 = DEVICE_DT_GET(DT_NODELABEL(dma1));
 /////
 // LL definitions
 
-static uint32_t source_registers[3] =
+static uint32_t source_registers[4] =
 {
 	(uint32_t)(&(ADC1->DR)),
 	(uint32_t)(&(ADC2->DR)),
-	(uint32_t)(&(ADC3->DR))
+	(uint32_t)(&(ADC3->DR)),
+	(uint32_t)(&(ADC4->DR))
 };
 
-static uint32_t source_triggers[3] =
+static uint32_t source_triggers[4] =
 {
 	LL_DMAMUX_REQ_ADC1,
 	LL_DMAMUX_REQ_ADC2,
-	LL_DMAMUX_REQ_ADC3
+	LL_DMAMUX_REQ_ADC3,
+	LL_DMAMUX_REQ_ADC4
 };
 
 
@@ -91,7 +93,7 @@ static uint16_t** half_buffer_2;
  */
 static void _dma_callback(const struct device* dev, void* user_data, uint32_t channel, int status)
 {
-	static uint8_t current_half_buffer[3] = {0};
+	static uint8_t current_half_buffer[4] = {0};
 	uint8_t adc_number = channel + 1;
 
 	if (current_half_buffer[channel] == 0)
@@ -176,4 +178,14 @@ uint16_t* dma_get_dma1_buffer()
 uint16_t* dma_get_dma2_buffer()
 {
 	return half_buffer_1[1];
+}
+
+uint16_t* dma_get_dma3_buffer()
+{
+	return half_buffer_1[2];
+}
+
+uint16_t* dma_get_dma4_buffer()
+{
+	return half_buffer_1[3];
 }

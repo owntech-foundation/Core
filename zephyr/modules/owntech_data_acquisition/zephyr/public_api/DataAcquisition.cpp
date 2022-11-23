@@ -57,6 +57,7 @@ DataAcquisition::channel_assignment_t DataAcquisition::i2_low_assignement       
 DataAcquisition::channel_assignment_t DataAcquisition::i_high_assignement       = {0};
 DataAcquisition::channel_assignment_t DataAcquisition::temp_sensor_assignement  = {0};
 DataAcquisition::channel_assignment_t DataAcquisition::extra_sensor_assignement = {0};
+DataAcquisition::channel_assignment_t DataAcquisition::analog_comm_assignement = {0};
 
 bool DataAcquisition::is_started = false;
 
@@ -105,11 +106,16 @@ void DataAcquisition::setChannnelAssignment(uint8_t adc_number, const char* chan
 		extra_sensor_assignement.adc_number   = adc_number;
 		extra_sensor_assignement.channel_rank = channel_rank;
 	}
+	else if (strcmp(channel_name, "ANALOG_COMM") == 0)
+	{
+		analog_comm_assignement.adc_number   = adc_number;
+		analog_comm_assignement.channel_rank = channel_rank;
+	}
 }
 
 void DataAcquisition::start()
 {
-	uint8_t number_of_adcs = 2;
+	uint8_t number_of_adcs = 4;
 
 	for (uint8_t adc_num = 1 ; adc_num <= number_of_adcs ; adc_num++)
 	{
@@ -192,6 +198,12 @@ uint16_t* DataAcquisition::getExtraRawValues(uint32_t& number_of_values_acquired
 {
 	return data_dispatch_get_acquired_values(extra_sensor_assignement.adc_number, extra_sensor_assignement.channel_rank, &number_of_values_acquired);
 }
+
+uint16_t* DataAcquisition::getAnalogCommRawValues(uint32_t& number_of_values_acquired)
+{
+	return data_dispatch_get_acquired_values(analog_comm_assignement.adc_number, analog_comm_assignement.channel_rank, &number_of_values_acquired);
+}
+
 
 float32_t DataAcquisition::peekV1Low()
 {
@@ -361,6 +373,20 @@ float32_t DataAcquisition::getExtra()
 	return converted_data;
 }
 
+float32_t DataAcquisition::getAnalogComm()
+{
+	uint32_t data_count;
+	static float32_t converted_data = -10000; // Return an impossible value if no data has been acquired yet
+	uint16_t* buffer = getAnalogCommRawValues(data_count);
+
+	if (data_count > 0) // If data was received it gets converted
+	{
+		uint16_t raw_value = buffer[data_count - 1];
+		converted_data = data_conversion_convert_analog_comm(raw_value);
+	}
+
+	return converted_data;
+}
 
 float32_t DataAcquisition::convertV1Low(uint16_t raw_value)
 {
@@ -402,6 +428,11 @@ float32_t DataAcquisition::convertExtra(uint16_t raw_value)
 	return data_conversion_convert_extra(raw_value);
 }
 
+float32_t DataAcquisition::convertAnalogComm(uint16_t raw_value)
+{
+	return data_conversion_convert_analog_comm(raw_value);
+}
+
 
 void DataAcquisition::setV1LowParameters(float32_t gain, float32_t offset)
 {
@@ -441,4 +472,9 @@ void DataAcquisition::setTemperatureParameters(float32_t gain, float32_t offset)
 void DataAcquisition::setExtraParameters(float32_t gain, float32_t offset)
 {
 	data_conversion_set_extra_parameters(gain, offset);
+}
+
+void DataAcquisition::setAnalogCommParameters(float32_t gain, float32_t offset)
+{
+	data_conversion_set_analog_comm_parameters(gain, offset);
 }

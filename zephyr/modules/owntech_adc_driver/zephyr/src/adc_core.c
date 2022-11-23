@@ -177,6 +177,7 @@ void adc_core_init()
 	_adc_core_wakeup(1);
 	_adc_core_wakeup(2);
 	_adc_core_wakeup(3);
+	_adc_core_wakeup(4);
 
 	// Set common clock between ADC 1 and ADC 2
 	// Refer to RM 21.4.3 and 21.7.2
@@ -187,4 +188,5 @@ void adc_core_init()
 	_adc_core_calibrate(1);
 	_adc_core_calibrate(2);
 	_adc_core_calibrate(3);
+	_adc_core_calibrate(4);
 }

@@ -38,7 +38,7 @@
 /////
 // Constants
 
-#define NUMBER_OF_ADCS 3
+#define NUMBER_OF_ADCS 4
 
 
 /////
@@ -183,4 +183,9 @@ const char* adc_get_channel_name(uint8_t adc_number, uint8_t channel_rank)
 uint8_t adc_get_enabled_channels_count(uint8_t adc_num)
 {
 	return adc_channels_get_enabled_channels_count(adc_num);
+}
+
+void adc_software_trigger_conversion(uint8_t adc_number)
+{
+	adc_core_start(adc_number);
 }
