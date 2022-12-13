@@ -29,7 +29,10 @@
 // OwnTech Power API
 #include "Scheduling.h"
 
+
 int8_t scheduling_define_uninterruptible_synchronous_task(void (*periodic_task)(), uint32_t task_period_us);
 void scheduling_start_uninterruptible_synchronous_task();
+void scheduling_stop_uninterruptible_synchronous_task();
+
 
 #endif // UNINTERRUPTIBLESYNCHRONOUSTASK_HPP_

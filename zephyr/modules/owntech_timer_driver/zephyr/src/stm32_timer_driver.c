@@ -76,6 +76,7 @@ static const struct timer_driver_api timer_funcs =
 {
 	.config    = timer_stm32_config,
 	.start     = timer_stm32_start,
+	.stop      = timer_stm32_stop,
 	.get_count = timer_stm32_get_count
 };
 
@@ -158,6 +159,28 @@ void timer_stm32_start(const struct device* dev)
 		if (data->timer_mode == incremental_coder)
 		{
 			LL_TIM_EnableCounter(tim_dev);
+		}
+	}
+}
+
+void timer_stm32_stop(const struct device* dev)
+{
+	struct stm32_timer_driver_data* data = (struct stm32_timer_driver_data*)dev->data;
+	TIM_TypeDef* tim_dev = data->timer_struct;
+
+	if ( (tim_dev == TIM6) || (tim_dev == TIM7) )
+	{
+		if (data->timer_mode == periodic_interrupt)
+		{
+			LL_TIM_DisableCounter(tim_dev);
+			LL_TIM_DisableIT_UPDATE(tim_dev);
+		}
+	}
+	else if (tim_dev == TIM4)
+	{
+		if (data->timer_mode == incremental_coder)
+		{
+			LL_TIM_DisableCounter(tim_dev);
 		}
 	}
 }
