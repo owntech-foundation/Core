@@ -35,7 +35,7 @@
 
 #include <stm32_ll_rcc.h>
 #include <stm32_ll_bus.h>
-
+#include "stm32g4xx_ll_gpio.h"
 
 #include "hrtim_voltage_mode.h"
 #include "assert.h"
@@ -348,14 +348,85 @@ uint16_t hrtim_init_tu(hrtim_t hrtim, hrtim_tu_t tu, uint32_t *freq, hrtim_cnt_t
 {
     uint16_t period;
     uint8_t ckpsc;
+    LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
 
     /* Outputs initialization */
 
     hrtim_out_dis(hrtim, tu, OUT1);
     hrtim_out_dis(hrtim, tu, OUT2);
     
-    stm32_dt_pinctrl_configure(tim_pinctrl, ARRAY_SIZE(tim_pinctrl), HRTIM1_BASE);
+    //stm32_dt_pinctrl_configure(tim_pinctrl, ARRAY_SIZE(tim_pinctrl), HRTIM1_BASE);
+    if(tu==TIMA){
+        LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOA);
+            /**HRTIM1 GPIO Configuration
+            PA8     ------> HRTIM1_CHA1
+            PA9     ------> HRTIM1_CHA2
+            */
+        GPIO_InitStruct.Pin = LL_GPIO_PIN_8;
+        GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
+        GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+        GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+        GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+        GPIO_InitStruct.Alternate = LL_GPIO_AF_13;
+        LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+        GPIO_InitStruct.Pin = LL_GPIO_PIN_9;
+        GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
+        GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+        GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+        GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+        GPIO_InitStruct.Alternate = LL_GPIO_AF_13;
+        LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    }else if (tu == TIMB){
+        
+        LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOA);
+        /**HRTIM1 GPIO Configuration
+        PA10     ------> HRTIM1_CHB1
+        PA11     ------> HRTIM1_CHB2
+        */
+        GPIO_InitStruct.Pin = LL_GPIO_PIN_10;
+        GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
+        GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+        GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+        GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+        GPIO_InitStruct.Alternate = LL_GPIO_AF_13;
+        LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+        GPIO_InitStruct.Pin = LL_GPIO_PIN_11;
+        GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
+        GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+        GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+        GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+        GPIO_InitStruct.Alternate = LL_GPIO_AF_13;
+        LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    
+    } else {
+        LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOB);
+        /* USER CODE END HRTIM1_Init 2 */
+            /**HRTIM1 GPIO Configuration
+            PB12     ------> HRTIM1_CHC1
+            PB13     ------> HRTIM1_CHC2
+            */
+        GPIO_InitStruct.Pin = LL_GPIO_PIN_12;
+        GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
+        GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+        GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+        GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+        GPIO_InitStruct.Alternate = LL_GPIO_AF_13;
+        LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+        GPIO_InitStruct.Pin = LL_GPIO_PIN_13;
+        GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
+        GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+        GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+        GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+        GPIO_InitStruct.Alternate = LL_GPIO_AF_13;
+        LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    }
+
+
+    
     /* At start-up, it is mandatory to initialize first the prescaler
      * bitfields before writing the compare and period registers. */
    

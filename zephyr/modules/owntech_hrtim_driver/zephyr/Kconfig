@@ -1,3 +1,4 @@
 config OWNTECH_HRTIM_DRIVER
 	bool "Enable OwnTech High-resolution timer driver for STM32"
 	default y
+	select USE_STM32_LL_GPIO
