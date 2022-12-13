@@ -25,26 +25,45 @@
 
 // OwnTech Power API
 #include "timer.h"
+#include "scheduling_common.hpp"
 
+
+/////
+// Local variables
+
+// Timer device
 static const struct device* timer6 = DEVICE_DT_GET(TIMER6_DEVICE);
-static bool uninterruptibleTaskDefined = false;
+
+// Task status
+static task_status_t uninterruptibleTaskStatus = task_status_t::inexistent;
+
+
+/////
+// API
 
 int8_t scheduling_define_uninterruptible_synchronous_task(void (*periodic_task)(), uint32_t task_period_us)
 {
-	if ( (periodic_task != NULL) && (device_is_ready(timer6) == true) && (uninterruptibleTaskDefined == false) )
+	if (device_is_ready(timer6) == true)
 	{
-		// Configure and start timer
+		if ( (uninterruptibleTaskStatus == task_status_t::inexistent) || (uninterruptibleTaskStatus == task_status_t::suspended))
+		{
+			// Configure and start timer
 
-		struct timer_config_t timer_cfg = {0};
-		timer_cfg.timer_enable_irq   = 1;
-		timer_cfg.timer_irq_callback = periodic_task;
-		timer_cfg.timer_irq_t_usec   = task_period_us;
+			struct timer_config_t timer_cfg = {0};
+			timer_cfg.timer_enable_irq   = 1;
+			timer_cfg.timer_irq_callback = periodic_task;
+			timer_cfg.timer_irq_t_usec   = task_period_us;
 
-		timer_config(timer6, &timer_cfg);
+			timer_config(timer6, &timer_cfg);
 
-		uninterruptibleTaskDefined = true;
+			uninterruptibleTaskStatus = task_status_t::defined;
 
-		return 0;
+			return 0;
+		}
+		else
+		{
+			return -1;
+		}
 	}
 	else
 	{
@@ -54,8 +73,24 @@ int8_t scheduling_define_uninterruptible_synchronous_task(void (*periodic_task)(
 
 void scheduling_start_uninterruptible_synchronous_task()
 {
-	if ( (device_is_ready(timer6) == true) && (uninterruptibleTaskDefined == true ) )
+	if (device_is_ready(timer6) == true)
 	{
-		timer_start(timer6);
+		if ( (uninterruptibleTaskStatus == task_status_t::defined) || (uninterruptibleTaskStatus == task_status_t::suspended) )
+		{
+			timer_start(timer6);
+			uninterruptibleTaskStatus = task_status_t::running;
+		}
+	}
+}
+
+void scheduling_stop_uninterruptible_synchronous_task()
+{
+	if (device_is_ready(timer6) == true)
+	{
+		if (uninterruptibleTaskStatus == task_status_t::running)
+		{
+			timer_stop(timer6);
+			uninterruptibleTaskStatus = task_status_t::suspended;
+		}
 	}
 }

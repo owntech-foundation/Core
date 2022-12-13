@@ -29,6 +29,14 @@
 // OwnTech Power API
 #include "Scheduling.h"
 
+enum class task_status_t
+{
+	inexistent,
+	defined,
+	running,
+	suspended
+};
+
 typedef struct
 {
 	task_function_t routine;
@@ -38,8 +46,11 @@ typedef struct
 	size_t stack_size;
 	k_tid_t thread_id;
 	k_thread thread_data;
+	task_status_t status;
 } task_information_t;
 
 void scheduling_common_start_task(task_information_t& task_info, k_thread_entry_t entry_point);
+void scheduling_common_suspend_task(task_information_t& task_info);
+void scheduling_common_resume_task(task_information_t& task_info);
 
 #endif // SCHEDULING_COMMON_HPP_

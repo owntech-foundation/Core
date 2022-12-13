@@ -59,6 +59,11 @@ void Scheduling::startUninterruptibleSynchronousTask()
 	scheduling_start_uninterruptible_synchronous_task();
 }
 
+void Scheduling::stopUninterruptibleSynchronousTask()
+{
+	scheduling_stop_uninterruptible_synchronous_task();
+}
+
 
 // Asynchronous tasks
 
@@ -74,8 +79,10 @@ void Scheduling::startAsynchronousTask(uint8_t task_number)
 	scheduling_start_asynchronous_task(task_number);
 }
 
-#endif // CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
-
+void Scheduling::stopAsynchronousTask(uint8_t task_number)
+{
+	scheduling_stop_asynchronous_task(task_number);
+}
 
 // Suspend asynchronous tasks
 
@@ -88,3 +95,5 @@ void Scheduling::suspendCurrentTaskUs(uint32_t duration_us)
 {
 	k_sleep(K_USEC(duration_us));
 }
+
+#endif // CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS

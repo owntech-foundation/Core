@@ -35,6 +35,7 @@
 
 int8_t scheduling_define_asynchronous_task(task_function_t routine);
 void scheduling_start_asynchronous_task(uint8_t task_number);
+void scheduling_stop_asynchronous_task(uint8_t task_number);
 
 
 #endif // CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS

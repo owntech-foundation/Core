@@ -82,6 +82,7 @@ struct stm32_timer_driver_data
 static int timer_stm32_init(const struct device* dev);
 void timer_stm32_config(const struct device* dev, const struct timer_config_t* config);
 void timer_stm32_start(const struct device* dev);
+void timer_stm32_stop(const struct device* dev);
 uint32_t timer_stm32_get_count(const struct device* dev);
 void timer_stm32_clear(const struct device* dev);
 

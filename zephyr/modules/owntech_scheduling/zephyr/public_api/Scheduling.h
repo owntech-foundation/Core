@@ -46,6 +46,11 @@ public:
 	 * execute a periodic, non-interruptible user task.
 	 * Use this function to define such a task.
 	 * Only one task of this kind can be defined.
+	 * This function can be used to redefine (replace) a
+	 * previously defined uninterruptible synchronous task,
+	 * but the previously defined task must have been suspended
+	 * (or never started). An error will be returned if the
+	 * previously defined task is still running.
 	 *
 	 * @param periodic_task Pointer to the void(void) function
 	 *        to be executed periodically.
@@ -64,6 +69,14 @@ public:
 	 * uninterruptible synchronous task.
 	*/
 	void startUninterruptibleSynchronousTask();
+
+	/**
+	 * @brief Stop the previously started uninterruptible
+	 * synchronous task.
+	 * The task can be then resumed by calling
+	 * startAsynchronousTask() again.
+	 */
+	void stopUninterruptibleSynchronousTask();
 
 
 #ifdef CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
@@ -86,10 +99,24 @@ public:
 	/**
 	 * @brief Use this function to start a previously defined
 	 * asynchronous task using its task number.
+	 *
+	 * @param task_number
+	 * Number of the task to start, obtained using the
+	 * defineAsynchronousTask() function.
 	 */
 	void startAsynchronousTask(uint8_t task_number);
 
-#endif // CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
+	/**
+	 * @brief Use this function to stop a previously started
+	 * asynchronous task using its task number.
+	 * The task can be then resumed by calling
+	 * startAsynchronousTask() again.
+	 *
+	 * @param task_number
+	 * Number of the task to stop, obtained using the
+	 * defineAsynchronousTask() function.
+	 */
+	void stopAsynchronousTask(uint8_t task_number);
 
 	/**
 	 * @brief This function allows to suspend an asynchronous
@@ -112,6 +139,8 @@ public:
 	 * DO NOT use this function in a synchronous task!
 	 */
 	void suspendCurrentTaskUs(uint32_t duration_us);
+
+#endif // CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
 
 private:
 	static const int DEFAULT_PRIORITY;

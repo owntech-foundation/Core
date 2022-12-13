@@ -39,3 +39,13 @@ void scheduling_common_start_task(task_information_t& task_info, k_thread_entry_
 
 	task_info.thread_id = tid;
 }
+
+void scheduling_common_suspend_task(task_information_t& task_info)
+{
+	k_thread_suspend(task_info.thread_id);
+}
+
+void scheduling_common_resume_task(task_information_t& task_info)
+{
+	k_thread_resume(task_info.thread_id);
+}
