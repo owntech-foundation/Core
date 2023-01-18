@@ -77,6 +77,23 @@ void hrtim_update_adc_trig_interleaved(uint16_t new_trig, hrtim_tu_t leg1_tu, hr
 	}
 }
 
+void hrtim_PeriodicEvent_en(hrtim_tu_t tu_src)
+{
+	LL_HRTIM_TIM_SetRepetition(HRTIM1, tu_src , 9); /* We initialize the ISR interrupt frequency
+														to 1/10 of the switching frequency first */
+
+	LL_HRTIM_EnableIT_REP(HRTIM1, tu_src);         /* Enabling the interrupt on repetition counter event*/
+}
+
+void hrtim_PeriodicEvent_dis(hrtim_tu_t tu_src)
+{
+	LL_HRTIM_DisableIT_REP(HRTIM1, tu_src);        /* Disabling the interrupt on repetition counter event*/
+}
+
+void hrtim_PeriodicEvent_SetRep(uint32_t repetition, hrtim_tu_t tu_src)
+{
+	LL_HRTIM_TIM_SetRepetition(HRTIM1, tu_src , repetition);
+}
 
 void hrtim_init_current()
 {

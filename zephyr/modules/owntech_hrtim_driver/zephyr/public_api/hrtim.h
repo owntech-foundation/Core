@@ -92,7 +92,45 @@ void hrtim_init_voltage_leg1_boost_leg2_buck(hrtim_tu_t leg1_tu, hrtim_tu_t leg2
 void hrtim_init_voltage_leg1_boost_leg2_buck_center_aligned(hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu);
 void hrtim_update_adc_trig_interleaved(uint16_t new_trig, hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu);
 
+/**
+ * @brief Enable interrupt on repetition counter for the chosen timing unit
+ * @param tu_src timing unit which will be the source for the ISR : 
+ *         @arg @ref MSTR   
+ *         @arg @ref TIMA
+ *         @arg @ref TIMB
+ *         @arg @ref TIMC
+ *         @arg @ref TIMD
+ *         @arg @ref TIME
+ *         @arg @ref TIMF
+*/
+void hrtim_PeriodicEvent_en(hrtim_tu_t tu_src);
 
+/**
+ * @brief Disable interrupt on repetition counter for the chosen timing unit
+ * @param tu_src timing unit which will be the source for the ISR : 
+ *         @arg @ref MSTR   
+ *         @arg @ref TIMA
+ *         @arg @ref TIMB
+ *         @arg @ref TIMC
+ *         @arg @ref TIMD
+ *         @arg @ref TIME
+ *         @arg @ref TIMF
+ */
+void hrtim_PeriodicEvent_dis(hrtim_tu_t tu_src);
+
+/**
+ * @brief Change the repetition counter value to control the ISR interrupt
+ * @param repetion value between 0 and 255 for the repetition counter
+ * @param tu_src timing unit which will be the source for the ISR : 
+ *         @arg @ref MSTR   
+ *         @arg @ref TIMA
+ *         @arg @ref TIMB
+ *         @arg @ref TIMC
+ *         @arg @ref TIMD
+ *         @arg @ref TIME
+ *         @arg @ref TIMF
+ */
+void hrtim_PeriodicEvent_SetRep(uint32_t repetition, hrtim_tu_t tu_src);
 
 #ifdef __cplusplus
 }
