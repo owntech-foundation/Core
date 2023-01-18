@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 LAAS-CNRS
+ * Copyright (c) 2021-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -17,7 +17,9 @@
  * SPDX-License-Identifier: LGLPV2.1
  */
 
-/**
+/*
+ * @date   2023
+ *
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
@@ -94,7 +96,7 @@ void hrtim_update_adc_trig_interleaved(uint16_t new_trig, hrtim_tu_t leg1_tu, hr
 
 /**
  * @brief Enable interrupt on repetition counter for the chosen timing unit
- * @param tu_src timing unit which will be the source for the ISR : 
+ * @param tu_src timing unit which will be the source for the ISR:
  *         @arg @ref MSTR   
  *         @arg @ref TIMA
  *         @arg @ref TIMB
@@ -102,12 +104,15 @@ void hrtim_update_adc_trig_interleaved(uint16_t new_trig, hrtim_tu_t leg1_tu, hr
  *         @arg @ref TIMD
  *         @arg @ref TIME
  *         @arg @ref TIMF
-*/
-void hrtim_PeriodicEvent_en(hrtim_tu_t tu_src);
+ * @param repetition value between 1 and 256 for the repetition counter:
+ * period of the event wrt. periods of the HRTIM.
+ * E.g. when set to 10, one event will be triggered every 10 HRTIM period.
+ */
+void hrtim_PeriodicEvent_en(hrtim_tu_t tu_src, uint32_t repetition);
 
 /**
  * @brief Disable interrupt on repetition counter for the chosen timing unit
- * @param tu_src timing unit which will be the source for the ISR : 
+ * @param tu_src timing unit which will be the source for the ISR:
  *         @arg @ref MSTR   
  *         @arg @ref TIMA
  *         @arg @ref TIMB
@@ -120,8 +125,7 @@ void hrtim_PeriodicEvent_dis(hrtim_tu_t tu_src);
 
 /**
  * @brief Change the repetition counter value to control the ISR interrupt
- * @param repetion value between 0 and 255 for the repetition counter
- * @param tu_src timing unit which will be the source for the ISR : 
+ * @param tu_src timing unit which will be the source for the ISR:
  *         @arg @ref MSTR   
  *         @arg @ref TIMA
  *         @arg @ref TIMB
@@ -129,8 +133,11 @@ void hrtim_PeriodicEvent_dis(hrtim_tu_t tu_src);
  *         @arg @ref TIMD
  *         @arg @ref TIME
  *         @arg @ref TIMF
+ * @param repetion value between 1 and 256 for the repetition counter:
+ * period of the event wrt. periods of the HRTIM.
+ * E.g. when set to 10, one event will be triggered every 10 HRTIM period.
  */
-void hrtim_PeriodicEvent_SetRep(uint32_t repetition, hrtim_tu_t tu_src);
+void hrtim_PeriodicEvent_SetRep(hrtim_tu_t tu_src, uint32_t repetition);
 
 #ifdef __cplusplus
 }

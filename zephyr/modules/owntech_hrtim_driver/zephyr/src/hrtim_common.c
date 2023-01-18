@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 LAAS-CNRS
+ * Copyright (c) 2021-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -17,8 +17,8 @@
  * SPDX-License-Identifier: LGLPV2.1
  */
 
-/**
- * @date   2022
+/*
+ * @date   2023
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
@@ -77,10 +77,12 @@ void hrtim_update_adc_trig_interleaved(uint16_t new_trig, hrtim_tu_t leg1_tu, hr
 	}
 }
 
-void hrtim_PeriodicEvent_en(hrtim_tu_t tu_src)
+void hrtim_PeriodicEvent_en(hrtim_tu_t tu_src, uint32_t repetition)
 {
-	LL_HRTIM_TIM_SetRepetition(HRTIM1, tu_src , 9); /* We initialize the ISR interrupt frequency
-														to 1/10 of the switching frequency first */
+	/* Set repetition counter to repetition-1 so that an event
+	 * is triggered every "repetition" number of periods.
+	 */
+	LL_HRTIM_TIM_SetRepetition(HRTIM1, tu_src, repetition-1);
 
 	LL_HRTIM_EnableIT_REP(HRTIM1, tu_src);         /* Enabling the interrupt on repetition counter event*/
 }
@@ -90,9 +92,12 @@ void hrtim_PeriodicEvent_dis(hrtim_tu_t tu_src)
 	LL_HRTIM_DisableIT_REP(HRTIM1, tu_src);        /* Disabling the interrupt on repetition counter event*/
 }
 
-void hrtim_PeriodicEvent_SetRep(uint32_t repetition, hrtim_tu_t tu_src)
+void hrtim_PeriodicEvent_SetRep(hrtim_tu_t tu_src, uint32_t repetition)
 {
-	LL_HRTIM_TIM_SetRepetition(HRTIM1, tu_src , repetition);
+	/* Set repetition counter to repetition-1 so that an event
+	 * is triggered every "repetition" number of periods.
+	 */
+	LL_HRTIM_TIM_SetRepetition(HRTIM1, tu_src, repetition-1);
 }
 
 void hrtim_init_current()
