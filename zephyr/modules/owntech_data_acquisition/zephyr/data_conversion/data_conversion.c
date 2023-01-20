@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 LAAS-CNRS
+ * Copyright (c) 2021-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,10 +18,11 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  * @author Antoine Boche <antoine.boche@laas.fr>
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
+ * @author Thomas Walter <thomas.walter@laas.fr>
  */
 
 /////
@@ -68,7 +69,7 @@ static float32_t offset_analog_comm = 0.0;
  */
 float32_t data_conversion_convert_v1_low(uint16_t raw_value)
 {
-	return (raw_value*gain_voltages[0])-offset_voltages[0];
+	return (raw_value*gain_voltages[0])+offset_voltages[0];
 }
 
 float32_t data_conversion_convert_i1_low(uint16_t raw_value)
@@ -78,7 +79,7 @@ float32_t data_conversion_convert_i1_low(uint16_t raw_value)
 
 float32_t data_conversion_convert_v2_low(uint16_t raw_value)
 {
-	return (raw_value*gain_voltages[1])-offset_voltages[1];
+	return (raw_value*gain_voltages[1])+offset_voltages[1];
 }
 
 float32_t data_conversion_convert_i2_low(uint16_t raw_value)
