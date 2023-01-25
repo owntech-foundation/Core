@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 LAAS-CNRS
+ * Copyright (c) 2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -19,7 +19,7 @@
 
 /**
  * @brief  Owntech GPIO API
- * @date   2022
+ * @date   2023
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
@@ -33,6 +33,11 @@ const struct device* const GPIO_A = DEVICE_DT_GET(DT_NODELABEL(gpioa));
 const struct device* const GPIO_B = DEVICE_DT_GET(DT_NODELABEL(gpiob));
 const struct device* const GPIO_C = DEVICE_DT_GET(DT_NODELABEL(gpioc));
 const struct device* const GPIO_D = DEVICE_DT_GET(DT_NODELABEL(gpiod));
+
+const gpio_flags_t INPUT        = GPIO_INPUT;
+const gpio_flags_t INPUT_PULLUP = GPIO_INPUT | GPIO_PULL_UP;
+const gpio_flags_t OUTPUT       = GPIO_OUTPUT;
+
 
 void GpioApi::configurePin(pin_t pin, gpio_flags_t flags)
 {

@@ -41,7 +41,7 @@
 #include "assert.h"
 
 
-static const struct soc_gpio_pinctrl tim_pinctrl[] = ST_STM32_DT_INST_PINCTRL(0, 0);
+//static const struct soc_gpio_pinctrl tim_pinctrl[] = ST_STM32_DT_INST_PINCTRL(0, 0);
 
 static uint8_t _TU_num1(hrtim_tu_t tu) /* Return the number associated to the timing unit */
 {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 LAAS-CNRS
+ * Copyright (c) 2022-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -19,7 +19,7 @@
 
 /**
  * @brief  Owntech GPIO API
- * @date   2022
+ * @date   2023
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
@@ -34,31 +34,31 @@ extern const struct device* const GPIO_B;
 extern const struct device* const GPIO_C;
 extern const struct device* const GPIO_D;
 
-const gpio_flags_t INPUT        = GPIO_INPUT;
-const gpio_flags_t INPUT_PULLUP = GPIO_INPUT | GPIO_PULL_UP;
-const gpio_flags_t OUTPUT       = GPIO_OUTPUT;
+extern const gpio_flags_t INPUT;
+extern const gpio_flags_t INPUT_PULLUP;
+extern const gpio_flags_t OUTPUT;
 
-const uint8_t PA = 0x00;
-const uint8_t PB = 0x10;
-const uint8_t PC = 0x20;
-const uint8_t PD = 0x30;
+static const uint8_t PA = 0x00;
+static const uint8_t PB = 0x10;
+static const uint8_t PC = 0x20;
+static const uint8_t PD = 0x30;
 
-const uint8_t P1  = 0x0;
-const uint8_t P2  = 0x1;
-const uint8_t P3  = 0x2;
-const uint8_t P4  = 0x3;
-const uint8_t P5  = 0x4;
-const uint8_t P6  = 0x5;
-const uint8_t P7  = 0x6;
-const uint8_t P8  = 0x7;
-const uint8_t P9  = 0x8;
-const uint8_t P10 = 0x9;
-const uint8_t P11 = 0xA;
-const uint8_t P12 = 0xB;
-const uint8_t P13 = 0xC;
-const uint8_t P14 = 0xD;
-const uint8_t P15 = 0xE;
-const uint8_t P16 = 0xF;
+static const uint8_t P1  = 0x0;
+static const uint8_t P2  = 0x1;
+static const uint8_t P3  = 0x2;
+static const uint8_t P4  = 0x3;
+static const uint8_t P5  = 0x4;
+static const uint8_t P6  = 0x5;
+static const uint8_t P7  = 0x6;
+static const uint8_t P8  = 0x7;
+static const uint8_t P9  = 0x8;
+static const uint8_t P10 = 0x9;
+static const uint8_t P11 = 0xA;
+static const uint8_t P12 = 0xB;
+static const uint8_t P13 = 0xC;
+static const uint8_t P14 = 0xD;
+static const uint8_t P15 = 0xE;
+static const uint8_t P16 = 0xF;
 
 typedef enum
 {
@@ -118,16 +118,68 @@ typedef enum
 class GpioApi
 {
 public:
+
+	/**
+	 * @brief Configure an I/O pin. This must be done
+	 *        prior to accessing any other function
+	 *        from this API on the pin.
+	 *
+	 * @param pin STM32-style name of the pin,
+	 *        e.g. PA1, PB10, etc. See pin_t type for
+	 *        the full list of existing pins on
+	 *        Spin board.
+	 * @param flags Pin configuration flags.
+	 *        Authorized values:
+	 *        - INPUT
+	 *        - INPUT_PULLUP
+	 *        - OUTPUT
+	 */
 	void configurePin(pin_t pin, gpio_flags_t flags);
+
+	/**
+	 * @brief Set the value of a pin configured as output to 1.
+	 *
+	 * @param pin STM32-style name of the pin.
+	 */
 	void setPin(pin_t pin);
+
+	/**
+	 * @brief Reset the value of a pin configured as output to 0.
+	 *
+	 * @param pin STM32-style name of the pin.
+	 */
 	void resetPin(pin_t pin);
+
+	/**
+	 * @brief Toggle the value of a pin configured as output:
+	 *        - if pin value is 1, it will be set to 0
+	 *        - if pin value is 0, it will be set to 1.
+	 *
+	 * @param pin STM32-style name of the pin.
+	 */
 	void togglePin(pin_t pin);
+
+	/**
+	 * @brief Set the value of a pin configured as output
+	 *        to a given value.
+	 *
+	 * @param pin STM32-style name of the pin.
+	 * @param value Value (0 or 1) to assign to the pin.
+	 */
 	void writePin(pin_t pin, uint8_t value);
+
+	/**
+	 * @brief Get the current value of a pin configured as input.
+	 *
+	 * @param pin STM32-style name of the pin.
+	 * @return Current value (0 or 1) of the pin.
+	 */
 	uint8_t readPin(pin_t pin);
 
 private:
 	gpio_pin_t getPinNumber(pin_t pin);
 	const struct device* getGpioDevice(pin_t pin);
+
 };
 
 extern GpioApi gpio;
