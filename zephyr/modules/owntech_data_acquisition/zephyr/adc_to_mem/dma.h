@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 LAAS-CNRS
+ * Copyright (c) 2021-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,15 +18,21 @@
  */
 
 /**
+ * @date   2023
+ *
  * @author Clément Foucher <clement.foucher@laas.fr>
  *
- * @brief  This file provides DMA configuration.
+ * @brief  This file provides DMA configuration to automatically
+ *         store ADC acquisitions in a provided buffer.
+ *         DMA 1 is used for all acquisitions, with channel n
+ *         acquiring values from ADC n.
  */
 
 #ifndef DMA_H_
 #define DMA_H_
 
 
+// Stdlib
 #include <stdint.h>
 
 
@@ -36,20 +42,24 @@ extern "C" {
 
 
 /**
- * This function configures and starts the DMA.
+ * This function configures a channel from DMA 1
+ * to transfer measures  from an ADC to buffers,
+ * then starts the channels.
  * It must only be called after all the ADCs configuration
  * has been carried out, as it uses its channels
  * configuration to determine the size of the buffers.
  *
- * @param adc_count Number of configured ADCs.
+ * @param adc_number Number of the ADC to acquire measures from.
+ * @param enable_double_buffering Boolean indicating whether
+ *        double buffering is to be activated.
+ *        - If false, the buffer will be treated as a single buffer with
+ *          interrupt being triggered only when it is full.
+ *        - If true the buffer will be treated as two consecutive sub-buffers,
+ *          with interrupt being triggered as soon as a sub-buffer is full.
+ * @param buffer Pointer to buffer.
+ * @param buffer_size Size of the buffer in bytes.
  */
-void dma_configure_and_start(uint8_t adc_count);
-
-// For debug purpose
-uint16_t* dma_get_dma1_buffer();
-uint16_t* dma_get_dma2_buffer();
-uint16_t* dma_get_dma3_buffer();
-uint16_t* dma_get_dma4_buffer();
+void dma_configure_adc_acquisition(uint8_t adc_number, bool enable_double_buffering, uint16_t* buffer, size_t buffer_size);
 
 
 #ifdef __cplusplus

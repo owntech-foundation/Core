@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 LAAS-CNRS
+ * Copyright (c) 2022-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
@@ -28,16 +28,15 @@
 // Stdlib
 #include <string.h>
 
-// Current module private functions
-#include "../dma/dma.h"
-#include "../data_dispatch/data_dispatch.h"
-#include "../data_conversion/data_conversion.h"
+// Current class header
+#include "DataAcquisition.h"
 
 // OwnTech Power API
 #include "adc.h"
 
-// Current class header
-#include "DataAcquisition.h"
+// Current module private functions
+#include "../adc_to_mem/data_dispatch.h"
+#include "../data_conversion/data_conversion.h"
 
 
 /////
@@ -115,9 +114,7 @@ void DataAcquisition::setChannnelAssignment(uint8_t adc_number, const char* chan
 
 void DataAcquisition::start()
 {
-	uint8_t number_of_adcs = 4;
-
-	for (uint8_t adc_num = 1 ; adc_num <= number_of_adcs ; adc_num++)
+	for (uint8_t adc_num = 1 ; adc_num <= 4 ; adc_num++)
 	{
 		uint8_t channel_rank = 0;
 
@@ -138,11 +135,8 @@ void DataAcquisition::start()
 
 	}
 
-	// DMAs
-	dma_configure_and_start(number_of_adcs);
-
 	// Initialize data dispatch
-	data_dispatch_init(number_of_adcs);
+	data_dispatch_init();
 
 	// Launch ADC conversion
 	adc_start();

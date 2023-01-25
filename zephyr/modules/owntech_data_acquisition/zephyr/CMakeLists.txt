@@ -7,8 +7,8 @@ if(CONFIG_OWNTECH_DATA_ACQUISITION)
 
   # Select source files to be compiled
   zephyr_library_sources(
-    ./dma/dma.c
-    ./data_dispatch/data_dispatch.c
+    ./adc_to_mem/dma.c
+    ./adc_to_mem/data_dispatch.c
 	./data_conversion/data_conversion.c
     ./public_api/DataAcquisition.cpp
    )

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 LAAS-CNRS
+ * Copyright (c) 2021-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  *
@@ -45,22 +45,17 @@ extern "C" {
 
 /**
  * Init function to be called first.
- *
- * @param adc_count Number of enabled ADCs
  */
-void data_dispatch_init(uint8_t adc_count);
+void data_dispatch_init();
 
 /**
- * Dispatch function: gets the readings and store
- * them in per-channel arrays. This functon is
- * called by DMA callback when the DMA has filled
- * one of its buffers.
+ * Dispatch function: gets the readings and store them
+ * in per-channel arrays. This functon is called by DMA
+ * callback when the DMA has filled one of its buffers.
  *
- * @param adc_num Number of the ADC from which data
- *        comes from.
- * @param dma_buffer Buffer in which data is stored.
+ * @param adc_number Number of the ADC from which data comes.
  */
-void data_dispatch_do_dispatch(uint8_t adc_num, uint16_t* dma_buffer);
+void data_dispatch_do_dispatch(uint8_t adc_number);
 
 /**
  * Obtain data for a specific channel.
@@ -81,7 +76,6 @@ void data_dispatch_do_dispatch(uint8_t adc_num, uint16_t* dma_buffer);
  *         adc number/channel rank.
  */
 uint16_t* data_dispatch_get_acquired_values(uint8_t adc_number, uint8_t channel_rank, uint32_t* number_of_values_acquired);
-
 
 /**
  * Peek data for a specific channel:
