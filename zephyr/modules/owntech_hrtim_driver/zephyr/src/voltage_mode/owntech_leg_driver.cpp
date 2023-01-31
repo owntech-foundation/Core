@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2022 LAAS-CNRS
+ * Copyright (c) 2020-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -21,11 +21,12 @@
 /**
  * @file
  * @brief   PWM management layer by inverter leg
- * @date    2022
+ * @date    2023
  * @author  Hugues Larrive <hugues.larrive@laas.fr>
  * @author  Antoine Boche <antoine.boche@laas.fr>
  * @author  Luiz Villa <luiz.villa@laas.fr>
  * @author  Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
+ * @author  Clément Foucher <clement.foucher@laas.fr>
  */
 
 #include "leg.h"
@@ -53,23 +54,23 @@ static uint8_t _TU_num(hrtim_tu_t tu){
     switch(tu){
         case TIMA:
             return 0;
-        
+
         case TIMB:
              return 1;
-        
-        case TIMC: 
+
+        case TIMC:
              return 2;
-        
+
         case TIMD:
              return 3;
              break;
-        
+
         case TIME:
-             return 4; 
-        
-        case TIMF: 
+             return 4;
+
+        case TIMF:
              return 5;
-        
+
         default:
             return 100;
 
@@ -100,7 +101,7 @@ uint16_t leg_init(bool leg1_upper_switch_convention, bool leg2_upper_switch_conv
 /**
  * This function Initialize the hrtim and all the legs
  * with the chosen convention for the switch controlled
- * on the power converter to a frequency of 200kHz 
+ * on the power converter to a frequency of 200kHz
  * with the counter on up-down mode (center-alligned)
  * Must be initialized in first position
  */
@@ -155,7 +156,7 @@ void leg_set_dt(hrtim_tu_t timing_unit, uint16_t rise_ns, uint16_t fall_ns)
 void leg_stop(hrtim_tu_t timing_unit)
 {
     hrtim_out_dis(leg_conf[_TU_num(timing_unit)].hrtim, leg_conf[_TU_num(timing_unit)].timing_unit, OUT1);
-    hrtim_out_dis(leg_conf[_TU_num(timing_unit)].hrtim, leg_conf[_TU_num(timing_unit)].timing_unit, OUT2); 
+    hrtim_out_dis(leg_conf[_TU_num(timing_unit)].hrtim, leg_conf[_TU_num(timing_unit)].timing_unit, OUT2);
 }
 
 void leg_start(hrtim_tu_t timing_unit)
@@ -167,6 +168,11 @@ void leg_start(hrtim_tu_t timing_unit)
 uint16_t leg_period(void)
 {
     return period;
+}
+
+uint32_t leg_get_period_us()
+{
+    return period*184e-6;
 }
 
 uint8_t leg_numof(void)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2022 LAAS-CNRS
+ * Copyright (c) 2020-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -25,11 +25,12 @@
  *
  * @file
  * @brief   PWM management layer by inverter leg interface definitions
- * @date    2022
+ * @date    2023
  * @author  Hugues Larrive <hugues.larrive@laas.fr>
  * @author  Antoine Boche <antoine.boche@laas.fr>
  * @author  Luiz Villa <luiz.villa@laas.fr>
  * @author  Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
+ * @author  Clément Foucher <clement.foucher@laas.fr>
  */
 
 #ifndef LEG_H_
@@ -65,7 +66,7 @@ typedef struct {
  * @brief   Initializes all the configured devices with the chosen switch convention
  *
  * @param[in]   leg1_upper_switch_convention    Choice of the switch convention for leg 1
- * @param[in]   leg2_upper_switch_convention    Choice of the switch convention for leg 2 
+ * @param[in]   leg2_upper_switch_convention    Choice of the switch convention for leg 2
  *
  * @return                      HRTIM period
  */
@@ -75,7 +76,7 @@ uint16_t leg_init(bool leg1_upper_switch_convention, bool leg2_upper_switch_conv
  * @brief   Initializes all the configured devices with up-down mode and the chosen switch convention
  *
  * @param[in]   leg1_upper_switch_convention    Choice of the switch convention for leg 1
- * @param[in]   leg2_upper_switch_convention    Choice of the switch convention for leg 2 
+ * @param[in]   leg2_upper_switch_convention    Choice of the switch convention for leg 2
  *
  * @return                      HRTIM period
  */
@@ -111,14 +112,21 @@ void leg_stop(hrtim_tu_t timing_unit);
  *
  * @param[in]   timing_unit     timing_unit from TIMA to TIMF
  */
-void leg_start(hrtim_tu_t timing_unit); 
+void leg_start(hrtim_tu_t timing_unit);
 
 /**
  * @brief   period getter
  *
- * @return                      period in micro-seconds value returned by leg_init()
+ * @return  period counter within the register
  */
 uint16_t leg_period(void);
+
+/**
+ * @brief   period getter
+ *
+ * @return  period in micro-seconds
+ */
+uint32_t leg_get_period_us();
 
 /**
  * @brief   LEG_NUMOF getter

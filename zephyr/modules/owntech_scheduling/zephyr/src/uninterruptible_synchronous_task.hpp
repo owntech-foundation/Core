@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 LAAS-CNRS
+ * Copyright (c) 2022-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
@@ -30,7 +30,8 @@
 #include "Scheduling.h"
 
 
-int8_t scheduling_define_uninterruptible_synchronous_task(void (*periodic_task)(), uint32_t task_period_us);
+void scheduling_set_uninterruptible_synchronous_task_interrupt_source(scheduling_interrupt_source_t int_source);
+int8_t scheduling_define_uninterruptible_synchronous_task(task_function_t periodic_task, uint32_t task_period_us);
 void scheduling_start_uninterruptible_synchronous_task();
 void scheduling_stop_uninterruptible_synchronous_task();
 

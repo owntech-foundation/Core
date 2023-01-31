@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 LAAS-CNRS
+ * Copyright (c) 2022-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
@@ -49,8 +49,9 @@ Scheduling scheduling;
 
 // Non-interruptible control task
 
-int8_t Scheduling::defineUninterruptibleSynchronousTask(void (*periodic_task)(), uint32_t task_period_us)
+int8_t Scheduling::defineUninterruptibleSynchronousTask(task_function_t periodic_task, uint32_t task_period_us, scheduling_interrupt_source_t int_source)
 {
+	scheduling_set_uninterruptible_synchronous_task_interrupt_source(int_source);
 	return scheduling_define_uninterruptible_synchronous_task(periodic_task, task_period_us);
 }
 

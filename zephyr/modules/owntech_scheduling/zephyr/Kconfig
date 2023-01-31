@@ -2,6 +2,7 @@ config OWNTECH_SCHEDULING
 	bool "Enable OwnTech scheduling"
 	default y
 	depends on OWNTECH_TIMER_DRIVER
+	depends on OWNTECH_HRTIM_DRIVER
 
 if OWNTECH_SCHEDULING
 
