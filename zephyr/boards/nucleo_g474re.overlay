@@ -1,14 +1,10 @@
 /*
- * Copyright (c) 2022-2023 OwnTech.
+ * Copyright (c) 2022 OwnTech.
  *
  * SPDX-License-Identifier: LGLPV2.1
  */
 
-/dts-v1/;
 
-// SOC defintions
-#include <st/g4/stm32g474Xe.dtsi>
-#include <st/g4/stm32g474r(b-c-e)tx-pinctrl.dtsi>
 
 // Board-related definitions
 #include "pinctrl.dtsi"
@@ -20,76 +16,6 @@
 #include "can-standby-switch.dtsi"
 #include "gpio.dtsi"
 
-
-/ {
-	model = "OwnTech Power Converter board";
-	compatible = "owntech,owntech-board", "st,stm32g474re-nucleo";
-
-	chosen {
-		zephyr,console = &lpuart1;
-		zephyr,shell-uart = &lpuart1;
-		zephyr,sram = &sram0;
-		zephyr,flash = &flash0;
-		zephyr,can-primary = &can1;
-	};
-
-	aliases {
-		led0 = &green_led;
-	};
-};
-
-&clk_hse {
-	clock-frequency = <DT_FREQ_M(24)>;
-	status = "okay";
-};
-
-&pll {
-	div-m = <6>;
-	mul-n = <85>;
-	div-p = <7>;
-	div-q = <2>;
-	div-r = <2>;
-	clocks = <&clk_hse>;
-	status = "okay";
-};
-
-&rcc {
-	clocks = <&pll>;
-	clock-frequency = <DT_FREQ_M(170)>;
-	ahb-prescaler = <1>;
-	apb1-prescaler = <1>;
-	apb2-prescaler = <1>;
-};
-
-&rtc {
-	status = "okay";
-};
-
-&flash0 {
-	/*
-	 * For more information, see:
-	 * http://docs.zephyrproject.org/latest/guides/dts/index.html#flash-partitions
-	 */
-	partitions {
-		compatible = "fixed-partitions";
-		#address-cells = <1>;
-		#size-cells = <1>;
-
-		/* Set 2Kb of storage at the end of the 128Kb of flash */
-		storage_partition: partition@1f800 {
-			label = "storage";
-			reg = <0x0001f800 0x00000800>;
-		};
-	};
-};
-
-&iwdg {
-	status = "okay";
-};
-
-&rng {
-	status = "okay";
-};
 
 /*****************/
 /* Communication */

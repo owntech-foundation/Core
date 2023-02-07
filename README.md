@@ -30,7 +30,9 @@ owntech_power_api
 |  └─ owntech.ini
 └─ zephyr
 |  └─ boards
+|  └─ dts
 |  └─ modules
+|  └─ scripts
 |  └─ [...]
 └─ LICENSE
 └─ README.md
