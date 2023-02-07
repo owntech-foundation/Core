@@ -45,7 +45,7 @@ static float32_t offset_currents[3] = {25.9, 29.28, 0};       //i1_low, i2_low o
 
 // Voltages
 static float32_t gain_voltages[3] = {0.0462, 0.0462, 0.0640}; //v1_low, v2_low and v_high
-static float32_t offset_voltages[3] = {94.04, 94.04, 4.408};  //v1_low, v2_low and v_high
+static float32_t offset_voltages[3] = {-94.04, -94.04, 4.408};  //v1_low, v2_low and v_high
 
 static float32_t gain_extra = 1.0; //gain for the extra
 static float32_t offset_extra = 1.0;  //offset for the extra

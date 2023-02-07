@@ -29,6 +29,10 @@
 
 #include <drivers/gpio.h>
 
+
+/////
+// Public constants
+
 extern const struct device* const GPIO_A;
 extern const struct device* const GPIO_B;
 extern const struct device* const GPIO_C;
@@ -59,6 +63,10 @@ static const uint8_t P13 = 0xC;
 static const uint8_t P14 = 0xD;
 static const uint8_t P15 = 0xE;
 static const uint8_t P16 = 0xF;
+
+
+/////
+// Public types
 
 typedef enum
 {
@@ -114,6 +122,10 @@ typedef enum
 	PD2  = PD | P2,
 	PD3  = PD | P3
 } pin_t;
+
+
+/////
+// Class definition
 
 class GpioApi
 {

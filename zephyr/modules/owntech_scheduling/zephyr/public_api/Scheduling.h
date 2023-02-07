@@ -33,9 +33,12 @@
 #include <zephyr.h>
 
 
+/////
+// Public types
+
 typedef void (*task_function_t)();
 
-enum class scheduling_interrupt_source_t { source_hrtim, source_tim6 };
+typedef enum { source_uninitialized, source_hrtim, source_tim6 } scheduling_interrupt_source_t;
 
 
 /////
@@ -66,12 +69,13 @@ public:
 	 *        parameter can be provided to set TIM6 as the source in
 	 *        case the HRTIM is not used or if the task can't be
 	 *        correlated to an HRTIM event.
+	 *        Allowed values are source_hrtim and source_tim6.
 	 * @return 0 if everything went well,
 	 *         -1 if there was an error defining the task.
 	 *         An error can occur notably when an uninterruptible
 	 *         task has already been defined previously.
 	 */
-	int8_t defineUninterruptibleSynchronousTask(task_function_t periodic_task, uint32_t task_period_us, scheduling_interrupt_source_t int_source = scheduling_interrupt_source_t::source_hrtim);
+	int8_t defineUninterruptibleSynchronousTask(task_function_t periodic_task, uint32_t task_period_us, scheduling_interrupt_source_t int_source = source_hrtim);
 
 	/**
 	 * @brief Use this function to start the previously defined

@@ -42,7 +42,7 @@ static const struct device* timer6 = DEVICE_DT_GET(TIMER6_DEVICE);
 static task_status_t uninterruptibleTaskStatus = task_status_t::inexistent;
 
 // Interrupt source
-static scheduling_interrupt_source_t interrupt_source = scheduling_interrupt_source_t::source_hrtim;
+static scheduling_interrupt_source_t interrupt_source = source_uninitialized;
 
 // For HRTIM interrupts
 static uint32_t repetition = 0;
@@ -66,7 +66,7 @@ int8_t scheduling_define_uninterruptible_synchronous_task(task_function_t period
 	if (periodic_task == NULL)
 		return -1;
 
-	if (interrupt_source == scheduling_interrupt_source_t::source_tim6)
+	if (interrupt_source == source_tim6)
 	{
 		if (device_is_ready(timer6) == false)
 			return -1;
@@ -83,7 +83,7 @@ int8_t scheduling_define_uninterruptible_synchronous_task(task_function_t period
 
 		return 0;
 	}
-	else if (interrupt_source == scheduling_interrupt_source_t::source_hrtim)
+	else if (interrupt_source == source_hrtim)
 	{
 		uint32_t hrtim_period_us = leg_get_period_us();
 
@@ -110,7 +110,7 @@ void scheduling_start_uninterruptible_synchronous_task()
 	if ( (uninterruptibleTaskStatus != task_status_t::defined) && (uninterruptibleTaskStatus != task_status_t::suspended) )
 		return;
 
-	if (interrupt_source == scheduling_interrupt_source_t::source_tim6)
+	if (interrupt_source == source_tim6)
 	{
 		if (device_is_ready(timer6) == false)
 			return;
@@ -119,7 +119,7 @@ void scheduling_start_uninterruptible_synchronous_task()
 
 		uninterruptibleTaskStatus = task_status_t::running;
 	}
-	else if (interrupt_source == scheduling_interrupt_source_t::source_hrtim)
+	else if (interrupt_source == source_hrtim)
 	{
 		if ( (repetition == 0) || (user_periodic_task == NULL) )
 			return;
@@ -135,7 +135,7 @@ void scheduling_stop_uninterruptible_synchronous_task()
 	if (uninterruptibleTaskStatus != task_status_t::running)
 		return;
 
-	if (interrupt_source == scheduling_interrupt_source_t::source_tim6)
+	if (interrupt_source == source_tim6)
 	{
 		if (device_is_ready(timer6) == false)
 			return;
@@ -144,7 +144,7 @@ void scheduling_stop_uninterruptible_synchronous_task()
 
 		uninterruptibleTaskStatus = task_status_t::suspended;
 	}
-	else if (interrupt_source == scheduling_interrupt_source_t::source_hrtim)
+	else if (interrupt_source == source_hrtim)
 	{
 		hrtim_PeriodicEvent_dis(MSTR);
 

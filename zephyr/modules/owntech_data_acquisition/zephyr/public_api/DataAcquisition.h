@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 LAAS-CNRS
+ * Copyright (c) 2022-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
@@ -35,8 +35,6 @@
 #include <arm_math.h>
 
 
-
-
 /////
 // Static class definition
 
@@ -51,24 +49,40 @@ private:
 	 * @param channel_name Channel name
 	 * @param channel_rannk Channel rank
 	 */
-	static void setChannnelAssignment(uint8_t adc_number, const char* channel_name, uint8_t channel_rank);
+	void setChannnelAssignment(uint8_t adc_number, const char* channel_name, uint8_t channel_rank);
 
 public:
 
 	/**
 	 * This functions starts the acquisition chain. It must be called
-	 * after all module configuration has been carried out. No ADC
+	 * after ADC module configuration has been fully carried out. No ADC
 	 * configuration change is allowed after module has been started.
+	 * If you're not sure how to initialize ADC, just use the Hardware
+	 * Configuration module API: hwConfig.configureAdcDefaultAllMeasurements()
+	 *
+	 * NOTE: This function must be called before accessing any dataAcquisition.get*()
+	 * or dataAcquisition.peek*() function. Other functions are safe to
+	 * use before starting the module.
+	 *
+	 * @return 0 if everything went well, -1 if there was an error.
+	 *         Error is triggered when dispatch method is set to
+	 *         uninterruptible task start, but the task has not been
+	 *         defined yet.
 	 */
-	static void start();
+	void start();
 
 	/**
 	 * Check if the module is already started.
-	 * For auto-spawning threads, please make sure
-	 * the module has already been started before
-	 * trying to access measures.
+	 *
+	 * For auto-spawning threads, this allows to make sure the module
+	 * has already been started before trying to access measures.
+	 *
+	 * If you don't use (or don't know what are) auto-spawning threads,
+	 * just make sure you call dataAcquisition.start() before accessing
+	 * any dataAcquisition.get*() or dataAcquisition.peek*() function,
+	 * and ignore this one.
 	 */
-	static bool started();
+	bool started();
 
 
 	/////
@@ -86,9 +100,10 @@ public:
 	 *
 	 * NOTE 1: When calling one of these functions, it invalidates
 	 *         the buffer returned by a previous call to the same function.
-	 * NOTE 2: All function buffers are independent.
-	 * NOTE 3: When using these functions, the user is responsible for
-	 *         data conversion. Use convert***() functions for this purpose.
+	 * NOTE 2: All function buffers are independent from each other.
+	 * NOTE 3: When using these functions, the user is responsible for data
+	 *         conversion. Use dataAcquisition.convert*() functions for this
+	 *         purpose.
 	 * NOTE 4: When using these functions for a channel, DO NOT use the
 	 *         functions to get the latest converted value for the same channel
 	 *         as these functions clear the buffer and disregard all values
@@ -101,15 +116,15 @@ public:
 	 *         If number_of_values_acquired is 0, do not try to access the
 	 *         buffer as it may be NULL.
 	 */
-	static uint16_t* getV1LowRawValues(uint32_t& number_of_values_acquired);
-	static uint16_t* getV2LowRawValues(uint32_t& number_of_values_acquired);
-	static uint16_t* getVHighRawValues(uint32_t& number_of_values_acquired);
-	static uint16_t* getI1LowRawValues(uint32_t& number_of_values_acquired);
-	static uint16_t* getI2LowRawValues(uint32_t& number_of_values_acquired);
-	static uint16_t* getIHighRawValues(uint32_t& number_of_values_acquired);
-	static uint16_t* getTemperatureRawValues(uint32_t& number_of_values_acquired);
-	static uint16_t* getExtraRawValues(uint32_t& number_of_values_acquired);
-	static uint16_t* getAnalogCommRawValues(uint32_t& number_of_values_acquired);
+	uint16_t* getV1LowRawValues(uint32_t& number_of_values_acquired);
+	uint16_t* getV2LowRawValues(uint32_t& number_of_values_acquired);
+	uint16_t* getVHighRawValues(uint32_t& number_of_values_acquired);
+	uint16_t* getI1LowRawValues(uint32_t& number_of_values_acquired);
+	uint16_t* getI2LowRawValues(uint32_t& number_of_values_acquired);
+	uint16_t* getIHighRawValues(uint32_t& number_of_values_acquired);
+	uint16_t* getTemperatureRawValues(uint32_t& number_of_values_acquired);
+	uint16_t* getExtraRawValues(uint32_t& number_of_values_acquired);
+	uint16_t* getAnalogCommRawValues(uint32_t& number_of_values_acquired);
 
 	/**
 	 * Functions to access the latest value available from a channel expressed
@@ -119,63 +134,64 @@ public:
 	 *
 	 * @return Latest available value available from the given channel.
 	 */
-	static float32_t peekV1Low();
-	static float32_t peekV2Low();
-	static float32_t peekVHigh();
-	static float32_t peekI1Low();
-	static float32_t peekI2Low();
-	static float32_t peekIHigh();
-	static float32_t peekTemperature();
-	static float32_t peekExtra();
+	float32_t peekV1Low();
+	float32_t peekV2Low();
+	float32_t peekVHigh();
+	float32_t peekI1Low();
+	float32_t peekI2Low();
+	float32_t peekIHigh();
+	float32_t peekTemperature();
+	float32_t peekExtra();
 
 	/**
 	 * These functions return the latest acquired measure expressed
 	 * in the relevant unit for the data: Volts, Amperes, Degree Celcius.
 	 *
-	 * @return Latest acquired measure for the channel.
-	 *
 	 * NOTE: When using these functions for a channel, you loose the
-	 *       ability to access raw values using get***RawValues() functions,
-	 *       as get***() functions clear the buffers on each call.
+	 *       ability to access raw values using dataAcquisition.get*RawValues()
+	 *       functions, as dataAcquisition.get*() functions clear the buffers
+	 *       on each call.
+	 *
+	 * @return Latest acquired measure for the channel.
 	 */
-	static float32_t getV1Low();
-	static float32_t getV2Low();
-	static float32_t getVHigh();
-	static float32_t getI1Low();
-	static float32_t getI2Low();
-	static float32_t getIHigh();
-	static float32_t getTemperature();
-	static float32_t getExtra();
-	static float32_t getAnalogComm();
+	float32_t getV1Low();
+	float32_t getV2Low();
+	float32_t getVHigh();
+	float32_t getI1Low();
+	float32_t getI2Low();
+	float32_t getIHigh();
+	float32_t getTemperature();
+	float32_t getExtra();
+	float32_t getAnalogComm();
 
 	/**
 	 * Use these functions to convert values obtained using
-	 * get***RawValues() functions to relevant unit for the data:
-	 * Volts, Amperes, Degree Celcius.
+	 * dataAcquisition.get*RawValues() functions to relevant
+	 * unit for the data: Volts, Amperes, Degree Celcius.
 	 */
-	static float32_t convertV1Low(uint16_t raw_value);
-	static float32_t convertV2Low(uint16_t raw_value);
-	static float32_t convertVHigh(uint16_t raw_value);
-	static float32_t convertI1Low(uint16_t raw_value);
-	static float32_t convertI2Low(uint16_t raw_value);
-	static float32_t convertIHigh(uint16_t raw_value);
-	static float32_t convertTemperature(uint16_t raw_value);
-	static float32_t convertExtra(uint16_t raw_value);
-	static float32_t convertAnalogComm(uint16_t raw_value);
+	float32_t convertV1Low(uint16_t raw_value);
+	float32_t convertV2Low(uint16_t raw_value);
+	float32_t convertVHigh(uint16_t raw_value);
+	float32_t convertI1Low(uint16_t raw_value);
+	float32_t convertI2Low(uint16_t raw_value);
+	float32_t convertIHigh(uint16_t raw_value);
+	float32_t convertTemperature(uint16_t raw_value);
+	float32_t convertExtra(uint16_t raw_value);
+	float32_t convertAnalogComm(uint16_t raw_value);
 
 	/**
 	 * Use these functions to tweak the conversion values for
 	 * a specific sensor if default values are not accurate enough.
 	 */
-	static void setV1LowParameters(float32_t gain, float32_t offset);
-	static void setI1LowParameters(float32_t gain, float32_t offset);
-	static void setV2LowParameters(float32_t gain, float32_t offset);
-	static void setI2LowParameters(float32_t gain, float32_t offset);
-	static void setVHighParameters(float32_t gain, float32_t offset);
-	static void setIHighParameters(float32_t gain, float32_t offset);
-	static void setTemperatureParameters(float32_t gain, float32_t offset);
-	static void setExtraParameters(float32_t gain, float32_t offset);
-	static void setAnalogCommParameters(float32_t gain, float32_t offset);
+	void setV1LowParameters(float32_t gain, float32_t offset);
+	void setI1LowParameters(float32_t gain, float32_t offset);
+	void setV2LowParameters(float32_t gain, float32_t offset);
+	void setI2LowParameters(float32_t gain, float32_t offset);
+	void setVHighParameters(float32_t gain, float32_t offset);
+	void setIHighParameters(float32_t gain, float32_t offset);
+	void setTemperatureParameters(float32_t gain, float32_t offset);
+	void setExtraParameters(float32_t gain, float32_t offset);
+	void setAnalogCommParameters(float32_t gain, float32_t offset);
 
 
 private:
@@ -186,17 +202,17 @@ private:
 	} channel_assignment_t;
 
 private:
-	static bool is_started;
+	bool is_started = false;
 
-	static channel_assignment_t v1_low_assignement;
-	static channel_assignment_t v2_low_assignement;
-	static channel_assignment_t v_high_assignement;
-	static channel_assignment_t i1_low_assignement;
-	static channel_assignment_t i2_low_assignement;
-	static channel_assignment_t i_high_assignement;
-	static channel_assignment_t temp_sensor_assignement;
-	static channel_assignment_t extra_sensor_assignement;
-	static channel_assignment_t analog_comm_assignement;
+	channel_assignment_t v1_low_assignement       = {0};
+	channel_assignment_t v2_low_assignement       = {0};
+	channel_assignment_t v_high_assignement       = {0};
+	channel_assignment_t i1_low_assignement       = {0};
+	channel_assignment_t i2_low_assignement       = {0};
+	channel_assignment_t i_high_assignement       = {0};
+	channel_assignment_t temp_sensor_assignement  = {0};
+	channel_assignment_t extra_sensor_assignement = {0};
+	channel_assignment_t analog_comm_assignement  = {0};
 
 };
 
