@@ -93,7 +93,7 @@ void hrtim_update_adc_trig_interleaved(uint16_t new_trig, hrtim_tu_t leg1_tu, hr
 	}
 }
 
-void hrtim_PeriodicEvent_en(hrtim_tu_t tu_src, uint32_t repetition, hrtim_callback_t callback)
+void hrtim_PeriodicEvent_configure(hrtim_tu_t tu_src, uint32_t repetition, hrtim_callback_t callback)
 {
 	/* Memorize user callback */
 	user_callback = callback;
@@ -102,7 +102,10 @@ void hrtim_PeriodicEvent_en(hrtim_tu_t tu_src, uint32_t repetition, hrtim_callba
 	 * is triggered every "repetition" number of periods.
 	 */
 	LL_HRTIM_TIM_SetRepetition(HRTIM1, tu_src, repetition-1);
+}
 
+void hrtim_PeriodicEvent_en(hrtim_tu_t tu_src)
+{
 	LL_HRTIM_EnableIT_REP(HRTIM1, tu_src);         /* Enabling the interrupt on repetition counter event*/
 
 	IRQ_CONNECT(HRTIM_IRQ_NUMBER, HRTIM_IRQ_PRIO, _hrtim_callback, NULL, HRTIM_IRQ_FLAGS);
@@ -121,6 +124,11 @@ void hrtim_PeriodicEvent_SetRep(hrtim_tu_t tu_src, uint32_t repetition)
 	 * is triggered every "repetition" number of periods.
 	 */
 	LL_HRTIM_TIM_SetRepetition(HRTIM1, tu_src, repetition-1);
+}
+
+uint32_t hrtim_PeriodicEvent_GetRep(hrtim_tu_t tu_src)
+{
+	return LL_HRTIM_TIM_GetRepetition(HRTIM1, tu_src)+1;
 }
 
 void hrtim_init_current()

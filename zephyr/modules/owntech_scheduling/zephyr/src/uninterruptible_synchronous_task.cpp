@@ -124,7 +124,8 @@ void scheduling_start_uninterruptible_synchronous_task()
 		if ( (repetition == 0) || (user_periodic_task == NULL) )
 			return;
 
-		hrtim_PeriodicEvent_en(MSTR, repetition, user_periodic_task);
+		hrtim_PeriodicEvent_configure(MSTR, repetition, user_periodic_task);
+		hrtim_PeriodicEvent_en(MSTR);
 
 		uninterruptibleTaskStatus = task_status_t::running;
 	}
