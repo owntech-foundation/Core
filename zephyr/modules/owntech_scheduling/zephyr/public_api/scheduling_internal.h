@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 LAAS-CNRS
+ * Copyright (c) 2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -20,26 +20,43 @@
 /**
  * @date   2023
  * @author Clément Foucher <clement.foucher@laas.fr>
+ *
+ * Header to give access to scheduling internal API
+ * to other OwnTech modules.
+ *
+ * Only for use in OwnTech modules.
  */
 
+#ifndef SCHEDULING_INTERNAL_H_
+#define SCHEDULING_INTERNAL_H_
 
-#ifndef UNINTERRUPTIBLESYNCHRONOUSTASK_HPP_
-#define UNINTERRUPTIBLESYNCHRONOUSTASK_HPP_
 
-// Stdlib
 #include <stdint.h>
 
-// OwnTech Power API
 #include "Scheduling.h"
 
 
-void scheduling_set_uninterruptible_synchronous_task_interrupt_source(scheduling_interrupt_source_t int_source);
-scheduling_interrupt_source_t scheduling_get_uninterruptible_synchronous_task_interrupt_source();
-int8_t scheduling_define_uninterruptible_synchronous_task(task_function_t periodic_task, uint32_t task_period_us);
-void scheduling_start_uninterruptible_synchronous_task();
-void scheduling_stop_uninterruptible_synchronous_task();
-void scheduling_set_data_dispatch_at_task_start(bool enable);
+/**
+ * @brief Get the period of the uninterruptible task in µs.
+ *
+ * For internal use only, do not call in user code.
+ */
 uint32_t scheduling_get_uninterruptible_synchronous_task_period_us();
 
+/**
+ * @brief Obtain the configured interrupt source for
+ * uninterruptible synchronous task.
+ *
+ * For internal use only, do not call in user code.
+ */
+scheduling_interrupt_source_t scheduling_get_uninterruptible_synchronous_task_interrupt_source();
 
-#endif // UNINTERRUPTIBLESYNCHRONOUSTASK_HPP_
+/**
+ * @brief Set uninterruptible task in charge of data dispatch.
+ *
+ * For internal use only, do not call in user code.
+ */
+void scheduling_set_data_dispatch_at_task_start(bool enable);
+
+
+#endif // SCHEDULING_INTERNAL_H_

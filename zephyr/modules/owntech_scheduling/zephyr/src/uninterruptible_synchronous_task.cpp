@@ -30,6 +30,8 @@
 #include "timer.h"
 #include "leg.h"
 #include "hrtim.h"
+#include "DataAcquisition.h"
+#include "data_acquisition_internal.h"
 
 
 /////
@@ -45,9 +47,27 @@ static task_status_t uninterruptibleTaskStatus = task_status_t::inexistent;
 static scheduling_interrupt_source_t interrupt_source = source_uninitialized;
 
 // For HRTIM interrupts
-static uint32_t repetition = 0;
 static task_function_t user_periodic_task = NULL;
 
+// Data dispatch
+static bool do_data_dispatch = false;
+static uint32_t task_period = 0;
+
+
+/////
+// Private API
+
+void user_task_proxy()
+{
+	if (user_periodic_task == NULL) return;
+
+	if (do_data_dispatch == true)
+	{
+		data_dispatch_do_full_dispatch();
+	}
+
+	user_periodic_task();
+}
 
 /////
 // Public API
@@ -56,6 +76,11 @@ static task_function_t user_periodic_task = NULL;
 void scheduling_set_uninterruptible_synchronous_task_interrupt_source(scheduling_interrupt_source_t int_source)
 {
 	interrupt_source = int_source;
+}
+
+scheduling_interrupt_source_t scheduling_get_uninterruptible_synchronous_task_interrupt_source()
+{
+	return interrupt_source;
 }
 
 int8_t scheduling_define_uninterruptible_synchronous_task(task_function_t periodic_task, uint32_t task_period_us)
@@ -71,10 +96,13 @@ int8_t scheduling_define_uninterruptible_synchronous_task(task_function_t period
 		if (device_is_ready(timer6) == false)
 			return -1;
 
+		task_period = task_period_us;
+		user_periodic_task = periodic_task;
+
 		// Everything OK, go on with timer configuration
 		struct timer_config_t timer_cfg = {0};
 		timer_cfg.timer_enable_irq   = 1;
-		timer_cfg.timer_irq_callback = periodic_task;
+		timer_cfg.timer_irq_callback = user_task_proxy;
 		timer_cfg.timer_irq_t_usec   = task_period_us;
 
 		timer_config(timer6, &timer_cfg);
@@ -87,15 +115,20 @@ int8_t scheduling_define_uninterruptible_synchronous_task(task_function_t period
 	{
 		uint32_t hrtim_period_us = leg_get_period_us();
 
+		if (hrtim_period_us == 0)
+			return -1;
+
 		if (task_period_us % hrtim_period_us != 0)
 			return -1;
 
-		repetition = task_period_us / hrtim_period_us;
+		uint32_t repetition = task_period_us / hrtim_period_us;
 
 		if (repetition == 0)
 			return -1;
 
+		task_period = task_period_us;
 		user_periodic_task = periodic_task;
+		hrtim_PeriodicEvent_configure(MSTR, repetition, user_task_proxy);
 
 		uninterruptibleTaskStatus = task_status_t::defined;
 
@@ -110,6 +143,11 @@ void scheduling_start_uninterruptible_synchronous_task()
 	if ( (uninterruptibleTaskStatus != task_status_t::defined) && (uninterruptibleTaskStatus != task_status_t::suspended) )
 		return;
 
+	if (dataAcquisition.started() == false)
+	{
+		dataAcquisition.start(at_uninterruptible_task_start);
+	}
+
 	if (interrupt_source == source_tim6)
 	{
 		if (device_is_ready(timer6) == false)
@@ -121,10 +159,9 @@ void scheduling_start_uninterruptible_synchronous_task()
 	}
 	else if (interrupt_source == source_hrtim)
 	{
-		if ( (repetition == 0) || (user_periodic_task == NULL) )
+		if (user_periodic_task == NULL)
 			return;
 
-		hrtim_PeriodicEvent_configure(MSTR, repetition, user_periodic_task);
 		hrtim_PeriodicEvent_en(MSTR);
 
 		uninterruptibleTaskStatus = task_status_t::running;
@@ -151,4 +188,14 @@ void scheduling_stop_uninterruptible_synchronous_task()
 
 		uninterruptibleTaskStatus = task_status_t::suspended;
 	}
+}
+
+void scheduling_set_data_dispatch_at_task_start(bool enable)
+{
+	do_data_dispatch = enable;
+}
+
+uint32_t scheduling_get_uninterruptible_synchronous_task_period_us()
+{
+	return task_period;
 }

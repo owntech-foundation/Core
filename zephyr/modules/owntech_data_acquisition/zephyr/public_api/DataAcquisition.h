@@ -36,21 +36,26 @@
 
 
 /////
+// Public definitions
+
+typedef enum
+{
+	on_dma_interrupt,
+	at_uninterruptible_task_start
+} dispatch_method_t;
+
+// Define "no value" as an impossible, out of range value
+const float32_t NO_VALUE = -10000;
+
+const uint8_t DATA_IS_OK = 0;
+const uint8_t DATA_IS_OLD = 1;
+const uint8_t DATA_IS_MISSING = 2;
+
+/////
 // Static class definition
 
 class DataAcquisition
 {
-private:
-	/**
-	 * This function is used to indicate to the DataAcquisition module
-	 * what the underlying ADC channel configuration is.
-	 *
-	 * @param adc_number ADC number
-	 * @param channel_name Channel name
-	 * @param channel_rannk Channel rank
-	 */
-	void setChannnelAssignment(uint8_t adc_number, const char* channel_name, uint8_t channel_rank);
-
 public:
 
 	/**
@@ -60,16 +65,38 @@ public:
 	 * If you're not sure how to initialize ADC, just use the Hardware
 	 * Configuration module API: hwConfig.configureAdcDefaultAllMeasurements()
 	 *
-	 * NOTE: This function must be called before accessing any dataAcquisition.get*()
-	 * or dataAcquisition.peek*() function. Other functions are safe to
-	 * use before starting the module.
+	 * NOTE 1: If your code uses an uninterruptible task, you do not need to start
+	 * Data Acquisition manually, it will automatically be started at the same
+	 * time as the task as their internal behavior are intrinsically linked.
+	 *
+	 * NOTE 2: Data Acquisition must be started before accessing any
+	 * dataAcquisition.get*() or dataAcquisition.peek*() function.
+	 * Other Data Acquisition functions are safe to use before starting
+	 * the module.
+	 *
+	 * @param dispatch_method Indicates when the dispatch should be done.
+	 *        Dispatch makes data from ADCs available to dataAcquisition.get*()
+	 *        functions, thus available to the user.
+	 *        You should not worry too much about this parameter, as if you
+	 *        call this function manually, the default value is what you want,
+	 *        so just call the function without any parameter.
+	 *        By default, Data Acquisition is started automatically when
+	 *        the uninterruptible task is started, with dispatch method
+	 *        set to at_uninterruptible_task_start. However, if you do not
+	 *        use an uninterrptible task in your application, default parameter
+	 *        on_dma_interrupt is the correct value.
+	 *        If for some reason you have an uninterruptible task in your code,
+	 *        but stoill want the dispatch to be done on DMA interrupt,
+	 *        you need to call this function prior to starting the task.
+	 *        Note that using DMA interrupts will consume a non-negligible
+	 *        amount of processor time and it is not advised.
 	 *
 	 * @return 0 if everything went well, -1 if there was an error.
 	 *         Error is triggered when dispatch method is set to
 	 *         uninterruptible task start, but the task has not been
 	 *         defined yet.
 	 */
-	void start();
+	int8_t start(dispatch_method_t dispatch_method = on_dma_interrupt);
 
 	/**
 	 * Check if the module is already started.
@@ -133,6 +160,8 @@ public:
 	 * be called safely at any time.
 	 *
 	 * @return Latest available value available from the given channel.
+	 *         If there was no value acquired in this channel yet,
+	 *         return value is NO_VALUE.
 	 */
 	float32_t peekV1Low();
 	float32_t peekV2Low();
@@ -142,6 +171,7 @@ public:
 	float32_t peekIHigh();
 	float32_t peekTemperature();
 	float32_t peekExtra();
+	float32_t peekAnalogComm();
 
 	/**
 	 * These functions return the latest acquired measure expressed
@@ -152,17 +182,25 @@ public:
 	 *       functions, as dataAcquisition.get*() functions clear the buffers
 	 *       on each call.
 	 *
+	 * @param dataValid Pointer to an uint8_t variable. This parameter is
+	 *        facultative. If this parameter is provided, it will be updated
+	 *        to indicate information about data. Possible values for this
+	 *        parameter will be: DATA_IS_OK if returned data is a newly acquired
+	 *        data, DATA_IS_OLD if returned data has already been provided before
+	 *        (no new data available since latest time this function was called),
+	 *        DATA_IS_MISSING if returned data is NO_VALUE.
 	 * @return Latest acquired measure for the channel.
+	 *         If no value was acquired in this channel yet, return value is NO_VALUE.
 	 */
-	float32_t getV1Low();
-	float32_t getV2Low();
-	float32_t getVHigh();
-	float32_t getI1Low();
-	float32_t getI2Low();
-	float32_t getIHigh();
-	float32_t getTemperature();
-	float32_t getExtra();
-	float32_t getAnalogComm();
+	float32_t getV1Low(uint8_t* dataValid = nullptr);
+	float32_t getV2Low(uint8_t* dataValid = nullptr);
+	float32_t getVHigh(uint8_t* dataValid = nullptr);
+	float32_t getI1Low(uint8_t* dataValid = nullptr);
+	float32_t getI2Low(uint8_t* dataValid = nullptr);
+	float32_t getIHigh(uint8_t* dataValid = nullptr);
+	float32_t getTemperature(uint8_t* dataValid = nullptr);
+	float32_t getExtra(uint8_t* dataValid = nullptr);
+	float32_t getAnalogComm(uint8_t* dataValid = nullptr);
 
 	/**
 	 * Use these functions to convert values obtained using
@@ -193,13 +231,27 @@ public:
 	void setExtraParameters(float32_t gain, float32_t offset);
 	void setAnalogCommParameters(float32_t gain, float32_t offset);
 
-
 private:
 	typedef struct
 	{
 		uint8_t adc_number;
 		uint8_t channel_rank;
 	} channel_assignment_t;
+
+private:
+	/**
+	 * This function is used to indicate to the DataAcquisition module
+	 * what the underlying ADC channel configuration is.
+	 *
+	 * @param adc_number ADC number
+	 * @param channel_name Channel name
+	 * @param channel_rannk Channel rank
+	 */
+	void setChannnelAssignment(uint8_t adc_number, const char* channel_name, uint8_t channel_rank);
+
+	float32_t _getChannel(channel_assignment_t assignment, float32_t(*convert)(uint16_t), uint8_t* dataValid);
+	uint16_t* _getRawValues(channel_assignment_t assignment, uint32_t& number_of_values_acquired);
+	float32_t _peek(channel_assignment_t assignment, float32_t(*convert)(uint16_t));
 
 private:
 	bool is_started = false;
@@ -221,7 +273,6 @@ private:
 // Public object to interact with the class
 
 extern DataAcquisition dataAcquisition;
-
 
 
 #endif // DATAACQUISITION_H_

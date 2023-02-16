@@ -80,6 +80,10 @@ public:
 	/**
 	 * @brief Use this function to start the previously defined
 	 * uninterruptible synchronous task.
+	 * If Data Acquisition was not started previously,
+	 * starting the uninterruptible task will start it.
+	 * Thus, make sure all ADC configuration has been carried
+	 * out before starting the uninterruptible task.
 	 */
 	void startUninterruptibleSynchronousTask();
 

@@ -35,18 +35,21 @@
 #define DATA_DISPATCH_H_
 
 
+// Stdlib
 #include <stdint.h>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+const uint16_t PEEK_NO_VALUE = 0xFFFF;
 
+/**
+ * Dispatch method
+ */
+typedef enum {task, interrupt} dispatch_t;
 
 /**
  * Init function to be called first.
  */
-void data_dispatch_init();
+void data_dispatch_init(dispatch_t dispatch_method);
 
 /**
  * Dispatch function: gets the readings and store them
@@ -56,6 +59,12 @@ void data_dispatch_init();
  * @param adc_number Number of the ADC from which data comes.
  */
 void data_dispatch_do_dispatch(uint8_t adc_number);
+
+/**
+ * Function to proceed to all chanels dispatch when
+ * it is done at uninterruptible task start.
+ */
+void data_dispatch_do_full_dispatch();
 
 /**
  * Obtain data for a specific channel.
@@ -75,7 +84,7 @@ void data_dispatch_do_dispatch(uint8_t adc_number);
  *         by further calls to the function with same
  *         adc number/channel rank.
  */
-uint16_t* data_dispatch_get_acquired_values(uint8_t adc_number, uint8_t channel_rank, uint32_t* number_of_values_acquired);
+uint16_t* data_dispatch_get_acquired_values(uint8_t adc_number, uint8_t channel_rank, uint32_t& number_of_values_acquired);
 
 /**
  * Peek data for a specific channel:
@@ -92,9 +101,5 @@ uint16_t* data_dispatch_get_acquired_values(uint8_t adc_number, uint8_t channel_
  */
 uint16_t data_dispatch_peek_acquired_value(uint8_t adc_number, uint8_t channel_rank);
 
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif // DATA_DISPATCH_H_

@@ -3,3 +3,6 @@ config OWNTECH_DATA_ACQUISITION
 	default y
 	select DMA
 	depends on OWNTECH_ADC_DRIVER
+	depends on OWNTECH_HRTIM_DRIVER
+	# Force-select the following to avoid dependency loop
+	select OWNTECH_SCHEDULING

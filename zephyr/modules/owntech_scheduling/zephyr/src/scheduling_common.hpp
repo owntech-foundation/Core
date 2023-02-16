@@ -26,8 +26,16 @@
 #ifndef SCHEDULING_COMMON_HPP_
 #define SCHEDULING_COMMON_HPP_
 
+
+// Stdlib
+#include <stdint.h>
+
+// Zephyr
+#include <zephyr.h>
+
 // OwnTech Power API
 #include "Scheduling.h"
+
 
 enum class task_status_t
 {
@@ -52,5 +60,6 @@ typedef struct
 void scheduling_common_start_task(task_information_t& task_info, k_thread_entry_t entry_point);
 void scheduling_common_suspend_task(task_information_t& task_info);
 void scheduling_common_resume_task(task_information_t& task_info);
+
 
 #endif // SCHEDULING_COMMON_HPP_

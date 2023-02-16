@@ -36,34 +36,32 @@
 #include <stdint.h>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
 /**
- * This function configures a channel from DMA 1
- * to transfer measures  from an ADC to buffers,
+ * @brief This function configures a channel from DMA 1
+ * to transfer measures from an ADC to buffers,
  * then starts the channels.
  * It must only be called after all the ADCs configuration
  * has been carried out, as it uses its channels
  * configuration to determine the size of the buffers.
  *
  * @param adc_number Number of the ADC to acquire measures from.
- * @param enable_double_buffering Boolean indicating whether
- *        double buffering is to be activated.
- *        - If false, the buffer will be treated as a single buffer with
- *          interrupt being triggered only when it is full.
- *        - If true the buffer will be treated as two consecutive sub-buffers,
- *          with interrupt being triggered as soon as a sub-buffer is full.
+ * @param disable_interrupts Boolean indicating whether interrupts
+ *        shoud be disabled. Warning: this override Zephyr DMA
+ *        driver defalt behavior.
  * @param buffer Pointer to buffer.
- * @param buffer_size Size of the buffer in bytes.
+ * @param buffer_size Number of uint16_t words the buffer can contain.
  */
-void dma_configure_adc_acquisition(uint8_t adc_number, bool enable_double_buffering, uint16_t* buffer, size_t buffer_size);
+void dma_configure_adc_acquisition(uint8_t adc_number, bool disable_interrupts, uint16_t* buffer, size_t buffer_size);
 
+/**
+ * @brief Obtain the number of acquired data since
+ *        last time this function was called.
+ *
+ * @param adc_number Number of the ADC.
+ *
+ * @return Number of acquired data modulo buffer size.
+ */
+size_t dma_get_retreived_data_count(uint8_t adc_number);
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif // DMA_H_

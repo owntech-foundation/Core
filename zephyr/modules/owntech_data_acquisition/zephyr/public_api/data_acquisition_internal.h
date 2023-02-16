@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 LAAS-CNRS
+ * Copyright (c) 2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,30 +18,25 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  * @author Clément Foucher <clement.foucher@laas.fr>
+ *
+ * Header to give access to scheduling internal API
+ * to other OwnTech modules.
+ *
+ * Only for use in OwnTech modules.
  */
 
-
-#ifndef ASYNCHRONOUSTASKS_HPP_
-#define ASYNCHRONOUSTASKS_HPP_
-
-
-// Stdlib
-#include <stdint.h>
-
-// OwnTech Power API
-#include "Scheduling.h"
+#ifndef DATA_ACQUISITION_INTERNAL_H_
+#define DATA_ACQUISITION_INTERNAL_H_
 
 
-#ifdef CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
+/**
+ * @brief Force full dispatch.
+ *
+ * For internal use only, do not call in user code.
+ */
+void data_dispatch_do_full_dispatch();
 
 
-int8_t scheduling_define_asynchronous_task(task_function_t routine);
-void scheduling_start_asynchronous_task(uint8_t task_number);
-void scheduling_stop_asynchronous_task(uint8_t task_number);
-
-
-#endif // CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
-
-#endif // ASYNCHRONOUSTASKS_HPP_
+#endif // DATA_ACQUISITION_INTERNAL_H_

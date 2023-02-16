@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 LAAS-CNRS
+ * Copyright (c) 2021-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  * @author Antoine Boche <antoine.boche@laas.fr>
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
@@ -28,10 +28,6 @@
 #define DATA_CONVERSION_H_
 
 #include <arm_math.h>   // adds all the CMSIS library
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 /**
@@ -190,9 +186,5 @@ void data_conversion_set_extra_parameters(float32_t gain, float32_t offset);
  */
 void data_conversion_set_analog_comm_parameters(float32_t gain, float32_t offset);
 
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif // DATA_CONVERSION_H_
