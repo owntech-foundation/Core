@@ -37,7 +37,6 @@
 
 // Current module private functions
 #include "../adc_to_mem/data_dispatch.h"
-#include "../data_conversion/data_conversion.h"
 
 
 /////
@@ -47,67 +46,16 @@ DataAcquisition dataAcquisition;
 
 
 /////
-// Public static configuration functions
-
-void DataAcquisition::setChannnelAssignment(uint8_t adc_number, const char* channel_name, uint8_t channel_rank)
-{
-	if (strcmp(channel_name, "V1_LOW") == 0)
-	{
-		v1_low_assignement.adc_number   = adc_number;
-		v1_low_assignement.channel_rank = channel_rank;
-	}
-	else if (strcmp(channel_name, "V2_LOW") == 0)
-	{
-		v2_low_assignement.adc_number   = adc_number;
-		v2_low_assignement.channel_rank = channel_rank;
-	}
-	else if (strcmp(channel_name, "V_HIGH") == 0)
-	{
-		v_high_assignement.adc_number   = adc_number;
-		v_high_assignement.channel_rank = channel_rank;
-	}
-	else if (strcmp(channel_name, "I1_LOW") == 0)
-	{
-		i1_low_assignement.adc_number   = adc_number;
-		i1_low_assignement.channel_rank = channel_rank;
-	}
-	else if (strcmp(channel_name, "I2_LOW") == 0)
-	{
-		i2_low_assignement.adc_number   = adc_number;
-		i2_low_assignement.channel_rank = channel_rank;
-	}
-	else if (strcmp(channel_name, "I_HIGH") == 0)
-	{
-		i_high_assignement.adc_number   = adc_number;
-		i_high_assignement.channel_rank = channel_rank;
-	}
-	else if (strcmp(channel_name, "TEMP_SENSOR") == 0)
-	{
-		temp_sensor_assignement.adc_number   = adc_number;
-		temp_sensor_assignement.channel_rank = channel_rank;
-	}
-	else if (strcmp(channel_name, "EXTRA_MEAS") == 0)
-	{
-		extra_sensor_assignement.adc_number   = adc_number;
-		extra_sensor_assignement.channel_rank = channel_rank;
-	}
-	else if (strcmp(channel_name, "ANALOG_COMM") == 0)
-	{
-		analog_comm_assignement.adc_number   = adc_number;
-		analog_comm_assignement.channel_rank = channel_rank;
-	}
-}
+// Public configuration functions
 
 int8_t DataAcquisition::start(dispatch_method_t dispatch_method)
 {
 	if (this->is_started == true)
 		return -1;
 
-	scheduling_interrupt_source_t int_source;
 	if (dispatch_method == dispatch_method_t::at_uninterruptible_task_start)
 	{
-		int_source = scheduling_get_uninterruptible_synchronous_task_interrupt_source();
-		if (int_source == scheduling_interrupt_source_t::source_uninitialized)
+		if (scheduling_get_uninterruptible_synchronous_task_interrupt_source() == scheduling_interrupt_source_t::source_uninitialized)
 		{
 			return -1;
 		}
@@ -123,9 +71,45 @@ int8_t DataAcquisition::start(dispatch_method_t dispatch_method)
 		{
 			const char* channel_name = adc_get_channel_name(adc_num, channel_rank);
 
-			if (channel_name != NULL)
+			if (channel_name != nullptr)
 			{
-				setChannnelAssignment(adc_num, channel_name, channel_rank);
+				if (strcmp(channel_name, "V1_LOW") == 0)
+				{
+					_setAssignment(v1_low_assignement, adc_num, channel_rank);
+				}
+				else if (strcmp(channel_name, "V2_LOW") == 0)
+				{
+					_setAssignment(v2_low_assignement, adc_num, channel_rank);
+				}
+				else if (strcmp(channel_name, "V_HIGH") == 0)
+				{
+					_setAssignment(v_high_assignement, adc_num, channel_rank);
+				}
+				else if (strcmp(channel_name, "I1_LOW") == 0)
+				{
+					_setAssignment(i1_low_assignement, adc_num, channel_rank);
+				}
+				else if (strcmp(channel_name, "I2_LOW") == 0)
+				{
+					_setAssignment(i2_low_assignement, adc_num, channel_rank);
+				}
+				else if (strcmp(channel_name, "I_HIGH") == 0)
+				{
+					_setAssignment(i_high_assignement, adc_num, channel_rank);
+				}
+				else if (strcmp(channel_name, "TEMP_SENSOR") == 0)
+				{
+					_setAssignment(temp_sensor_assignement, adc_num, channel_rank);
+				}
+				else if (strcmp(channel_name, "EXTRA_MEAS") == 0)
+				{
+					_setAssignment(extra_sensor_assignement, adc_num, channel_rank);
+				}
+				else if (strcmp(channel_name, "ANALOG_COMM") == 0)
+				{
+					_setAssignment(analog_comm_assignement, adc_num, channel_rank);
+				}
+
 				channel_rank++;
 			}
 			else
@@ -136,7 +120,7 @@ int8_t DataAcquisition::start(dispatch_method_t dispatch_method)
 	}
 
 	// Initialize data dispatch
-	dispatch_t dispatch_type = dispatch_method == on_dma_interrupt ? interrupt : task;
+	dispatch_t dispatch_type = (dispatch_method == on_dma_interrupt) ? interrupt : task;
 	data_dispatch_init(dispatch_type);
 
 	// Launch ADC conversion
@@ -154,7 +138,7 @@ bool DataAcquisition::started()
 
 
 /////
-// Public static accessors
+// Public accessors
 
 // Get raw values
 
@@ -207,193 +191,199 @@ uint16_t* DataAcquisition::getAnalogCommRawValues(uint32_t& number_of_values_acq
 
 float32_t DataAcquisition::peekV1Low()
 {
-	return _peek(v1_low_assignement, data_conversion_convert_v1_low);
+	return _peek(v1_low_assignement);
 }
 
 float32_t DataAcquisition::peekV2Low()
 {
-	return _peek(v2_low_assignement, data_conversion_convert_v2_low);
+	return _peek(v2_low_assignement);
 }
 
 float32_t DataAcquisition::peekVHigh()
 {
-	return _peek(v_high_assignement, data_conversion_convert_v_high);
+	return _peek(v_high_assignement);
 }
 
 float32_t DataAcquisition::peekI1Low()
 {
-	return _peek(i1_low_assignement, data_conversion_convert_i1_low);
+	return _peek(i1_low_assignement);
 }
 
 float32_t DataAcquisition::peekI2Low()
 {
-	return _peek(i2_low_assignement, data_conversion_convert_i2_low);
+	return _peek(i2_low_assignement);
 }
 
 float32_t DataAcquisition::peekIHigh()
 {
-	return _peek(i_high_assignement, data_conversion_convert_i_high);
+	return _peek(i_high_assignement);
 }
 
 float32_t DataAcquisition::peekTemperature()
 {
-	return _peek(temp_sensor_assignement, data_conversion_convert_temp);
+	return _peek(temp_sensor_assignement);
 }
 
 float32_t DataAcquisition::peekExtra()
 {
-	return _peek(extra_sensor_assignement, data_conversion_convert_extra);
+	return _peek(extra_sensor_assignement);
 }
 
 float32_t DataAcquisition::peekAnalogComm()
 {
-	return _peek(analog_comm_assignement, data_conversion_convert_analog_comm);
+	return _peek(analog_comm_assignement);
 }
 
 // Get latest value
 
 float32_t DataAcquisition::getV1Low(uint8_t* dataValid)
 {
-	return this->_getChannel(v1_low_assignement, data_conversion_convert_v1_low, dataValid);
+	return _getLatest(v1_low_assignement, dataValid);
 }
 
 float32_t DataAcquisition::getV2Low(uint8_t* dataValid)
 {
-	return this->_getChannel(v2_low_assignement, data_conversion_convert_v2_low, dataValid);
+	return _getLatest(v2_low_assignement, dataValid);
 }
 
 float32_t DataAcquisition::getVHigh(uint8_t* dataValid)
 {
-	return this->_getChannel(v_high_assignement, data_conversion_convert_v_high, dataValid);
+	return _getLatest(v_high_assignement, dataValid);
 }
 
 float32_t DataAcquisition::getI1Low(uint8_t* dataValid)
 {
-	return this->_getChannel(i1_low_assignement, data_conversion_convert_i1_low, dataValid);
+	return _getLatest(i1_low_assignement, dataValid);
 }
 
 float32_t DataAcquisition::getI2Low(uint8_t* dataValid)
 {
-	return this->_getChannel(i2_low_assignement, data_conversion_convert_i2_low, dataValid);
+	return _getLatest(i2_low_assignement, dataValid);
 }
 
 float32_t DataAcquisition::getIHigh(uint8_t* dataValid)
 {
-	return this->_getChannel(i_high_assignement, data_conversion_convert_i_high, dataValid);
+	return _getLatest(i_high_assignement, dataValid);
 }
 
 float32_t DataAcquisition::getTemperature(uint8_t* dataValid)
 {
-	return this->_getChannel(temp_sensor_assignement, data_conversion_convert_temp, dataValid);
+	return _getLatest(temp_sensor_assignement, dataValid);
 }
 
 float32_t DataAcquisition::getExtra(uint8_t* dataValid)
 {
-	return this->_getChannel(extra_sensor_assignement, data_conversion_convert_extra, dataValid);
+	return _getLatest(extra_sensor_assignement, dataValid);
 }
 
 float32_t DataAcquisition::getAnalogComm(uint8_t* dataValid)
 {
-	return this->_getChannel(analog_comm_assignement, data_conversion_convert_analog_comm, dataValid);
+	return _getLatest(analog_comm_assignement, dataValid);
 }
 
 // Convertion
 
 float32_t DataAcquisition::convertV1Low(uint16_t raw_value)
 {
-	return data_conversion_convert_v1_low(raw_value);
+	return _convert(v1_low_assignement, raw_value);
 }
 
 float32_t DataAcquisition::convertV2Low(uint16_t raw_value)
 {
-	return data_conversion_convert_v2_low(raw_value);
+	return _convert(v2_low_assignement, raw_value);
 }
 
 float32_t DataAcquisition::convertVHigh(uint16_t raw_value)
 {
-	return data_conversion_convert_v_high(raw_value);
+	return _convert(v_high_assignement, raw_value);
 }
 
 float32_t DataAcquisition::convertI1Low(uint16_t raw_value)
 {
-	return data_conversion_convert_i1_low(raw_value);
+	return _convert(i1_low_assignement, raw_value);
 }
 
 float32_t DataAcquisition::convertI2Low(uint16_t raw_value)
 {
-	return data_conversion_convert_i2_low(raw_value);
+	return _convert(i2_low_assignement, raw_value);
 }
 
 float32_t DataAcquisition::convertIHigh(uint16_t raw_value)
 {
-	return data_conversion_convert_i_high(raw_value);
+	return _convert(i_high_assignement, raw_value);
 }
 
 float32_t DataAcquisition::convertTemperature(uint16_t raw_value)
 {
-	return data_conversion_convert_temp(raw_value);
+	return _convert(temp_sensor_assignement, raw_value);
 }
 
 float32_t DataAcquisition::convertExtra(uint16_t raw_value)
 {
-	return data_conversion_convert_extra(raw_value);
+	return _convert(extra_sensor_assignement, raw_value);
 }
 
 float32_t DataAcquisition::convertAnalogComm(uint16_t raw_value)
 {
-	return data_conversion_convert_analog_comm(raw_value);
+	return _convert(analog_comm_assignement, raw_value);
 }
 
 // Parameter setters
 
 void DataAcquisition::setV1LowParameters(float32_t gain, float32_t offset)
 {
-	data_conversion_set_v1_low_parameters(gain, offset);
+	_setParameters(v1_low_assignement, gain, offset);
 }
 
 void DataAcquisition::setV2LowParameters(float32_t gain, float32_t offset)
 {
-	data_conversion_set_v2_low_parameters(gain, offset);
+	_setParameters(v2_low_assignement, gain, offset);
 }
 
 void DataAcquisition::setVHighParameters(float32_t gain, float32_t offset)
 {
-	data_conversion_set_v_high_parameters(gain, offset);
+	_setParameters(v_high_assignement, gain, offset);
 }
 
 void DataAcquisition::setI1LowParameters(float32_t gain, float32_t offset)
 {
-	data_conversion_set_i1_low_parameters(gain, offset);
+	_setParameters(i1_low_assignement, gain, offset);
 }
 
 void DataAcquisition::setI2LowParameters(float32_t gain, float32_t offset)
 {
-	data_conversion_set_i2_low_parameters(gain, offset);
+	_setParameters(i2_low_assignement, gain, offset);
 }
 
 void DataAcquisition::setIHighParameters(float32_t gain, float32_t offset)
 {
-	data_conversion_set_i_high_parameters(gain, offset);
+	_setParameters(i_high_assignement, gain, offset);
 }
 
 void DataAcquisition::setTemperatureParameters(float32_t gain, float32_t offset)
 {
-	data_conversion_set_temp_parameters(gain, offset);
+	_setParameters(temp_sensor_assignement, gain, offset);
 }
 
 void DataAcquisition::setExtraParameters(float32_t gain, float32_t offset)
 {
-	data_conversion_set_extra_parameters(gain, offset);
+	_setParameters(extra_sensor_assignement, gain, offset);
 }
 
 void DataAcquisition::setAnalogCommParameters(float32_t gain, float32_t offset)
 {
-	data_conversion_set_analog_comm_parameters(gain, offset);
+	_setParameters(analog_comm_assignement, gain, offset);
 }
 
-// Internal private functions
+// Private helper functions
 
-float32_t DataAcquisition::_getChannel(channel_assignment_t assignment, float32_t(*convert)(uint16_t), uint8_t* dataValid)
+void DataAcquisition::_setAssignment(channel_assignment_t& assignment, uint8_t adc_number, uint8_t channel_rank)
+{
+	assignment.adc_number   = adc_number;
+	assignment.channel_rank = channel_rank;
+}
+
+float32_t DataAcquisition::_getLatest(channel_assignment_t assignment, uint8_t* dataValid)
 {
 	if (this->is_started == false)
 	{
@@ -414,7 +404,7 @@ float32_t DataAcquisition::_getChannel(channel_assignment_t assignment, float32_
 		{
 			*dataValid = DATA_IS_OK;
 		}
-		return convert(raw_value);
+		return assignment.convert(raw_value);
 	}
 	else
 	{
@@ -423,7 +413,7 @@ float32_t DataAcquisition::_getChannel(channel_assignment_t assignment, float32_
 		float32_t peekValue;
 		if (rawValue != PEEK_NO_VALUE)
 		{
-			peekValue = convert(rawValue);
+			peekValue = assignment.convert(rawValue);
 		}
 		else
 		{
@@ -458,14 +448,14 @@ uint16_t* DataAcquisition::_getRawValues(channel_assignment_t assignment, uint32
 	}
 }
 
-float32_t DataAcquisition::_peek(channel_assignment_t assignment, float32_t(*convert)(uint16_t))
+float32_t DataAcquisition::_peek(channel_assignment_t assignment)
 {
 	if (this->is_started == true)
 	{
 		uint16_t rawValue = data_dispatch_peek_acquired_value(assignment.adc_number, assignment.channel_rank);
 		if (rawValue != PEEK_NO_VALUE)
 		{
-			return convert(rawValue);
+			return assignment.convert(rawValue);
 		}
 		else
 		{
@@ -476,4 +466,14 @@ float32_t DataAcquisition::_peek(channel_assignment_t assignment, float32_t(*con
 	{
 		return NO_VALUE;
 	}
+}
+
+float32_t DataAcquisition::_convert(channel_assignment_t assignment, uint16_t raw_value)
+{
+	return assignment.convert(raw_value);
+}
+
+void DataAcquisition::_setParameters(channel_assignment_t assignment, float32_t gain, float32_t offset)
+{
+	assignment.set_parameters(gain, offset);
 }
