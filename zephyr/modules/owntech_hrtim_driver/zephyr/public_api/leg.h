@@ -165,6 +165,25 @@ void leg_set_min_duty_cycle(float32_t duty_cycle);
  */
 void leg_set_max_duty_cycle(float32_t duty_cycle);
 
+/**
+ * @brief   Set the timer and phase shift for given leg device with current mode initialization
+ *
+ * @param[in]   timing_unit     timing_unit from TIMA to TIMF
+ * @param[in]   pulse_width     pulse width to set
+ * @param[in]   phase_shift     phase shift
+ */
+void CM_leg_set(hrtim_tu_t timing_unit, uint16_t phase_shift);
+
+/**
+ * @brief   Initializes all the configured devices with the chosen switch convention with current mode initialization
+ *
+ * @param[in]   leg1_upper_switch_convention    Choice of the switch convention for leg 1
+ * @param[in]   leg2_upper_switch_convention    Choice of the switch convention for leg 2 
+ *
+ * @return                                      HRTIM period
+ */
+uint16_t leg_init_CM(bool leg1_upper_switch_convention, bool leg2_upper_switch_convention, hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu);
+
 
 #ifdef __cplusplus
 }

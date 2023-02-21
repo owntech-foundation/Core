@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 LAAS-CNRS
+ * Copyright (c) 2021-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,10 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  * @author Luiz Villa <luiz.villa@laas.fr>
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
 #ifndef HRTIM_CONFIGURATION_H_
@@ -93,6 +94,29 @@ void hrtim_init_independent_mode(bool leg1_buck_mode, bool leg2_buck_mode);
  * is set to up-down (center aligned).
  */
 void hrtim_init_independent_mode_center_aligned(bool leg1_buck_mode, bool leg2_buck_mode);
+
+
+/**
+ * @brief initialize the converter in current mode
+ * @param[in] leg1_buck  bool parameter, 0->leg1 in boost mode 1->leg1 in buck mode
+ * @param[in] leg2_buck  bool parameter, 0->leg2 in boost mode 1->leg2 in buck mode
+ * @param[in] leg1_tu    one of the timing unit, from TIMA to TIMF :
+ *            @arg @ref   TIMA
+ *            @arg @ref   TIMB
+ *            @arg @ref   TIMC
+ *            @arg @ref   TIMD
+ *            @arg @ref   TIME
+ *            @arg @ref   TIMF
+ * @param[in] leg2_tu    one of the timing unit, from TIMA to TIMF :
+ *            @arg @ref   TIMA
+ *            @arg @ref   TIMB
+ *            @arg @ref   TIMC
+ *            @arg @ref   TIMD
+ *            @arg @ref   TIME
+ *            @arg @ref   TIMF             
+*/
+void hrtim_init_CurrentMode(bool leg1_buck, bool leg2_buck, hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu);
+
 
 /**
  * @brief     This function transfer the calculated PWM value to the

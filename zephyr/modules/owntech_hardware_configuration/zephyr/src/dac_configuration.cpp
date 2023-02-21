@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 LAAS-CNRS
+ * Copyright (c) 2021-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,12 +18,12 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
-
 
 // Zephyr
 #include <zephyr.h>
@@ -31,40 +31,17 @@
 // Owntech driver
 #include "dac.h"
 
+// Header
+#include "dac_configuration.h"
+
+// Define the voltage reference used for ADC.
+// It depends on the board used (On nucleo, choose Vref = 2.48V).
+
+#define VREF 2.048f
 
 static const struct device* dac1 = DEVICE_DT_GET(DAC1_DEVICE);
 static const struct device* dac2 = DEVICE_DT_GET(DAC2_DEVICE);
 static const struct device* dac3 = DEVICE_DT_GET(DAC3_DEVICE);
-
-
-void dac_config_dac1_dac3_current_mode_init()
-{
-	if ( (device_is_ready(dac1) == true) && (device_is_ready(dac3) == true) )
-	{
-		// DAC 1
-		dac_function_config_t function_config =
-		{
-			.dac_function = dac_function_sawtooth,
-			.reset_trigger_source = hrtim_trig1,
-			.step_trigger_source = hrtim_trig1,
-			.polarity = dac_polarity_decrement,
-			.reset_data = 4000,
-			.step_data = 200
-		};
-
-		dac_set_function(dac1, 1, &function_config);
-		dac_pin_configure(dac1, 1, dac_pin_internal);
-		dac_start(dac1, 1);
-
-		// DAC 3
-		function_config.reset_trigger_source = hrtim_trig2;
-		function_config.step_trigger_source = hrtim_trig2;
-
-		dac_set_function(dac3, 1, &function_config);
-		dac_pin_configure(dac3, 1, dac_pin_internal);
-		dac_start(dac3, 1);
-	}
-}
 
 void dac_config_const_value_init(uint8_t dac_number)
 {
@@ -80,12 +57,12 @@ void dac_config_const_value_init(uint8_t dac_number)
 	}
 	else
 	{
-		dac_dev = dac2; //sets the dac 2 as default
+		dac_dev = dac2; // sets the dac 2 as default
 	}
 
 	if (device_is_ready(dac_dev) == true)
 	{
-		dac_set_const_value(dac_dev,1,0);
+		dac_set_const_value(dac_dev, 1, 0);
 		dac_pin_configure(dac_dev, 1, dac_pin_external);
 		dac_start(dac_dev, 1);
 	}
@@ -105,11 +82,158 @@ void dac_set_const_value(uint8_t dac_number, uint8_t channel, uint32_t const_val
 	}
 	else
 	{
-		dac_dev = dac2; //sets the dac 2 as default
+		dac_dev = dac2; // sets the dac 2 as default
 	}
 
 	if (device_is_ready(dac_dev) == true)
 	{
-		dac_set_const_value(dac_dev,channel,const_value);
+		dac_set_const_value(dac_dev, channel, const_value);
 	}
+}
+
+void dac_config_dac1_current_mode_init(hrtim_tu_t tu_src)
+{
+	// DAC 1
+	dac_function_config_t function_config =
+		{
+			.dac_function = dac_function_sawtooth,
+			.reset_trigger_source = hrtim_trig1,
+			.step_trigger_source = hrtim_trig1,
+			.polarity = dac_polarity_decrement,
+			.reset_data = 4000,
+			.step_data = 200};
+
+	switch (tu_src)
+	{
+	case TIMB:
+		function_config.reset_trigger_source = hrtim_trig2;
+		function_config.step_trigger_source = hrtim_trig2;
+		break;
+
+	case TIMC:
+		function_config.reset_trigger_source = hrtim_trig3;
+		function_config.step_trigger_source = hrtim_trig3;
+		break;
+
+	case TIMD:
+		function_config.reset_trigger_source = hrtim_trig4;
+		function_config.step_trigger_source = hrtim_trig4;
+		break;
+
+	case TIME:
+		function_config.reset_trigger_source = hrtim_trig5;
+		function_config.step_trigger_source = hrtim_trig5;
+		break;
+
+	case TIMF:
+		function_config.reset_trigger_source = hrtim_trig6;
+		function_config.step_trigger_source = hrtim_trig6;
+		break;
+
+	default:
+		break;
+	}
+
+	dac_set_function(dac1, 1, &function_config);
+	dac_pin_configure(dac1, 1, dac_pin_internal_and_external);
+	dac_start(dac1, 1);
+}
+
+void dac_config_dac3_current_mode_init(hrtim_tu_t tu_src)
+{
+	// DAC 3
+	dac_function_config_t function_config =
+		{
+			.dac_function = dac_function_sawtooth,
+			.reset_trigger_source = hrtim_trig1,
+			.step_trigger_source = hrtim_trig1,
+			.polarity = dac_polarity_decrement,
+			.reset_data = 4000,
+			.step_data = 200};
+
+	switch (tu_src)
+	{
+	case TIMB:
+		function_config.reset_trigger_source = hrtim_trig2;
+		function_config.step_trigger_source = hrtim_trig2;
+		break;
+
+	case TIMC:
+		function_config.reset_trigger_source = hrtim_trig3;
+		function_config.step_trigger_source = hrtim_trig3;
+		break;
+
+	case TIMD:
+		function_config.reset_trigger_source = hrtim_trig4;
+		function_config.step_trigger_source = hrtim_trig4;
+		break;
+
+	case TIME:
+		function_config.reset_trigger_source = hrtim_trig5;
+		function_config.step_trigger_source = hrtim_trig5;
+		break;
+
+	case TIMF:
+		function_config.reset_trigger_source = hrtim_trig6;
+		function_config.step_trigger_source = hrtim_trig6;
+		break;
+
+	default:
+		break;
+	}
+
+	dac_set_function(dac3, 1, &function_config);
+	dac_pin_configure(dac3, 1, dac_pin_internal);
+	dac_start(dac3, 1);
+}
+
+void set_satwtooth_DAC3(float32_t set_voltage, float32_t reset_voltage)
+{
+	float32_t Dv = set_voltage - reset_voltage;
+
+	if (Dv < 0)
+		Dv = 0;
+
+	if (Dv > set_voltage)
+	{
+		Dv = set_voltage;
+		if (Dv > VREF)
+			Dv = VREF;
+	}
+
+	uint32_t set_data = (uint32_t)(4096U * set_voltage) / (VREF);
+
+	if (set_data > 4095U)
+		set_data = 4095U;
+
+	dac_function_update_reset(dac3, 1, set_data);
+
+	uint32_t reset_data = (uint32_t)(Dv * 65536) / (VREF * 100); // divided by 100 because we have 100 voltage steps
+
+	dac_function_update_step(dac3, 1, reset_data);
+}
+
+void set_satwtooth_DAC1(float32_t set_voltage, float32_t reset_voltage)
+{
+	float32_t Dv = set_voltage - reset_voltage;
+
+	if (Dv < 0)
+		Dv = 0;
+
+	if (Dv > set_voltage)
+		Dv = set_voltage;
+
+	if (Dv > VREF)
+		Dv = VREF;
+
+	uint32_t set_data = (uint32_t)(4096U * set_voltage) / (VREF);
+
+	if (set_data > 4095U)
+		set_data = 4095U;
+
+	dac_function_update_reset(dac1, 1, set_data);
+
+	uint32_t reset_data = (uint32_t)(Dv * 65536U) / (VREF * 100); // divided by 100 because we have 100 voltage steps
+
+	dac_function_update_step(dac1, 1, reset_data);
 }

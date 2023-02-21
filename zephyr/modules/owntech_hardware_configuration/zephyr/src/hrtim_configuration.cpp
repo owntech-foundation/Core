@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 LAAS-CNRS
+ * Copyright (c) 2021-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  * @author Luiz Villa <luiz.villa@laas.fr>
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
@@ -187,6 +187,19 @@ void hrtim_init_full_bridge_buck_mode_center_aligned(bool bipolar_mode,bool SPIN
 	}
 
 }
+
+/**
+ * This function initializes both legs in Current Mode configuration
+ */
+void hrtim_init_CurrentMode(bool leg1_buck, bool leg2_buck, hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
+{
+	hrtim_init_current(leg1_buck, leg2_buck, leg1_tu, leg2_tu);
+	pwm_period = leg_period();
+	pwm_phase_shift = 0;
+	CM_leg_set(leg1_tu, 0);
+	CM_leg_set(leg2_tu, pwm_phase_shift);
+}
+
 
 /**
  * This function transfer the calculated PWM value to the

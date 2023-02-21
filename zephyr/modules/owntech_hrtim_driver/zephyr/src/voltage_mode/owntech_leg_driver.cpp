@@ -25,13 +25,14 @@
  * @author  Hugues Larrive <hugues.larrive@laas.fr>
  * @author  Antoine Boche <antoine.boche@laas.fr>
  * @author  Luiz Villa <luiz.villa@laas.fr>
- * @author  Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  * @author  Clément Foucher <clement.foucher@laas.fr>
+ * @author  Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
 #include "leg.h"
 #include "owntech_leg_driver.h"
 #include "hrtim_voltage_mode.h"
+#include "../current_mode/hrtim_current_mode.h"
 
 // Saturation values used for the PWM duty cycle
 #define LOW_DUTY 0.03
@@ -120,6 +121,24 @@ uint16_t leg_init_center_aligned(bool leg1_upper_switch_convention, bool leg2_up
     return period;
 }
 
+/**
+ * This function Initialize in current mode the hrtim and all the legs
+ * with the chosen convention for the switch controlled on the power 
+ * converter to a frequency of 200kHz
+ */
+uint16_t leg_init_CM(bool leg1_upper_switch_convention, bool leg2_upper_switch_convention, hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
+{
+    /* ensures that timing_unit can be used as leg identifier */
+    for (unsigned int i = 0; i < LEG_NUMOF; i++)
+    {
+        leg_conf[_TU_num(leg_config[i].timing_unit)] = leg_config[i];
+    }
+    
+    period = CM_hrtim_init(&frequency, LEG_DEFAULT_DT,leg1_upper_switch_convention,leg2_upper_switch_convention, leg1_tu, leg2_tu);
+
+    return period; 
+}
+
 void leg_set(hrtim_tu_t timing_unit, uint16_t pulse_width, uint16_t phase_shift)
 {
     //addition of the dead time for the rectification of the centered dead time configuration cf:hrtim_pwm_dt()
@@ -141,6 +160,11 @@ void leg_set(hrtim_tu_t timing_unit, uint16_t pulse_width, uint16_t phase_shift)
                     phase_shift);
     /* save the pulse_width */
     leg_conf[_TU_num(timing_unit)].pulse_width = pulse_width;
+}
+
+void CM_leg_set(hrtim_tu_t timing_unit, uint16_t phase_shift)
+{
+    CM_hrtim_pwm_set( timing_unit,phase_shift);
 }
 
 void leg_set_dt(hrtim_tu_t timing_unit, uint16_t rise_ns, uint16_t fall_ns)

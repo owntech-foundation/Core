@@ -85,7 +85,7 @@ void hrtim_pwm_set(hrtim_t dev, hrtim_tu_t tu, uint16_t value, uint16_t shift);
 
 
 
-void hrtim_init_current();
+void hrtim_init_current(bool leg1_convention, bool leg2_convention, hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu);
 void hrtim_init_voltage_buck(hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu);
 void hrtim_init_voltage_buck_center_aligned(hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu);
 void hrtim_init_voltage_boost(hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu);

@@ -43,10 +43,10 @@ void _hrtim_init_events(hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 {
 	if(leg1_tu == TIMA && leg2_tu == TIMB){
 		hrtim_adc_trigger_en(1, 1, LL_HRTIM_ADCTRIG_SRC13_TIMACMP3);
-		hrtim_adc_trigger_en(3, 2, LL_HRTIM_ADCTRIG_SRC13_TIMBCMP4);
+		hrtim_adc_trigger_en(3, 2, LL_HRTIM_ADCTRIG_SRC13_TIMBCMP3);
 	}else if(leg1_tu == TIMA && leg2_tu == TIMC){
 		hrtim_adc_trigger_en(3, 1, LL_HRTIM_ADCTRIG_SRC13_TIMACMP3);
-		hrtim_adc_trigger_en(1, 3, LL_HRTIM_ADCTRIG_SRC13_TIMCCMP4);
+		hrtim_adc_trigger_en(1, 3, LL_HRTIM_ADCTRIG_SRC13_TIMCCMP3);
 	}
 
 	hrtim_update_adc_trig_interleaved(1, leg1_tu, leg2_tu);
@@ -86,10 +86,10 @@ void hrtim_update_adc_trig_interleaved(uint16_t new_trig, hrtim_tu_t leg1_tu, hr
 {
 	if(leg1_tu == TIMA && leg2_tu == TIMB){
 		hrtim_cmp_set(0, TIMA, CMP3xR, new_trig);
-		hrtim_cmp_set(0, TIMB, CMP4xR, new_trig);
+		hrtim_cmp_set(0, TIMB, CMP3xR, new_trig);
 	}else if(leg1_tu == TIMA && leg2_tu == TIMC){
 		hrtim_cmp_set(0, TIMA, CMP3xR, new_trig);
-		hrtim_cmp_set(0, TIMC, CMP4xR, new_trig);
+		hrtim_cmp_set(0, TIMC, CMP3xR, new_trig);
 	}
 }
 
@@ -131,11 +131,10 @@ uint32_t hrtim_PeriodicEvent_GetRep(hrtim_tu_t tu_src)
 	return LL_HRTIM_TIM_GetRepetition(HRTIM1, tu_src)+1;
 }
 
-void hrtim_init_current()
+void hrtim_init_current(bool leg1_convention, bool leg2_convention, hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 {
-	hrtim_cm_init();
-	hrtim_cm_init_gpio();
-	hrtim_cm_enable();
+	leg_init_CM(leg1_convention, leg2_convention, leg1_tu,  leg2_tu);
+	_hrtim_init_events(leg1_tu, leg2_tu);
 }
 
 void hrtim_init_voltage_buck(hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)

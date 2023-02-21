@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 LAAS-CNRS
+ * Copyright (c) 2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
@@ -35,6 +35,7 @@
 #include "../src/uart_configuration.h"
 #include "../src/adc_configuration.h"
 #include "../src/power_driver_configuration.h"
+#include "../src/comparator_configuration.h"
 
 // Current class header
 #include "HardwareConfiguration.h"
@@ -89,11 +90,6 @@ void HardwareConfiguration::setBoardVersion(hardware_version_t hardware_version)
 /////
 // DAC
 
-void HardwareConfiguration::initDac1Dac3CurrentMode()
-{
-	dac_config_dac1_dac3_current_mode_init();
-}
-
 void HardwareConfiguration::initDacConstValue(uint8_t dac_number)
 {
 	dac_config_const_value_init(dac_number);
@@ -103,6 +99,17 @@ void HardwareConfiguration::setDacConstValue(uint8_t dac_number, uint8_t channel
 {
 	dac_set_const_value(dac_number, channel, const_value);
 }
+
+void HardwareConfiguration::slopeCompensationLeg1(float32_t peak_voltage, float32_t low_voltage)
+{
+	set_satwtooth_DAC3(peak_voltage, low_voltage);
+}
+
+void HardwareConfiguration::slopeCompensationLeg2(float32_t peak_voltage, float32_t low_voltage)
+{
+	set_satwtooth_DAC1(peak_voltage, low_voltage);
+}
+
 
 /////
 // NGND
@@ -257,6 +264,24 @@ void HardwareConfiguration::initIndependentModeCenterAligned(leg_operation_t leg
 	if (leg2_operation_type == buck) leg2_mode = true; else leg2_mode = false;
 
 	hrtim_init_independent_mode_center_aligned(leg1_mode, leg2_mode);
+}
+
+void HardwareConfiguration::initBuckCurrentMode()
+{
+	if(HardwareConfiguration::hardware_version == TWIST_v_1_1_2)
+	{
+		hrtim_init_CurrentMode(false,true,TIMA,TIMC);
+		dac_config_dac3_current_mode_init(TIMA);
+		dac_config_dac1_current_mode_init(TIMC);
+	}
+	else
+	{
+		hrtim_init_CurrentMode(true,true,TIMA,TIMB);
+		dac_config_dac3_current_mode_init(TIMA);
+		dac_config_dac1_current_mode_init(TIMB);
+	}
+
+	comparator_initialization();
 }
 
 void HardwareConfiguration::setInterleavedDutyCycle(float32_t duty_cycle)

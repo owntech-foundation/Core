@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 LAAS-CNRS
+ * Copyright (c) 2021-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,8 +18,9 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
 
@@ -63,7 +64,7 @@ void comparator_gpio_init()
 
 void comparator_comp1_init()
 {
-	LL_COMP_ConfigInputs(COMP1, LL_COMP_INPUT_MINUS_DAC1_CH1, LL_COMP_INPUT_PLUS_IO1);
+	LL_COMP_ConfigInputs(COMP1, LL_COMP_INPUT_MINUS_DAC3_CH1, LL_COMP_INPUT_PLUS_IO1);
 	LL_COMP_SetInputHysteresis(COMP1, LL_COMP_HYSTERESIS_NONE);
 	LL_COMP_SetOutputPolarity(COMP1, LL_COMP_OUTPUTPOL_NONINVERTED);
 	LL_COMP_SetOutputBlankingSource(COMP1, LL_COMP_BLANKINGSRC_NONE);
@@ -78,7 +79,7 @@ void comparator_comp1_init()
 
 void comparator_comp3_init()
 {
-	LL_COMP_ConfigInputs(COMP3, LL_COMP_INPUT_MINUS_DAC3_CH1, LL_COMP_INPUT_PLUS_IO2);
+	LL_COMP_ConfigInputs(COMP3, LL_COMP_INPUT_MINUS_DAC1_CH1, LL_COMP_INPUT_PLUS_IO2);
 	LL_COMP_SetInputHysteresis(COMP3, LL_COMP_HYSTERESIS_NONE);
 	LL_COMP_SetOutputPolarity(COMP3, LL_COMP_OUTPUTPOL_NONINVERTED);
 	LL_COMP_SetOutputBlankingSource(COMP3, LL_COMP_BLANKINGSRC_NONE);

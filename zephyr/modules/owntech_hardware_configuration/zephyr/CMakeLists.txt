@@ -17,5 +17,6 @@ if(CONFIG_OWNTECH_HARDWARE_CONFIGURATION)
 	src/adc_configuration.cpp
 	src/power_driver_configuration.cpp
 	public_api/HardwareConfiguration.cpp
+	src/comparator_configuration.cpp
     )
 endif()

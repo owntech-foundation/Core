@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 LAAS-CNRS
+ * Copyright (c) 2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
@@ -81,9 +81,10 @@ public:
 	static void setBoardVersion(hardware_version_t hardware_version);
 
 	// DAC
-	static void initDac1Dac3CurrentMode();
 	static void initDacConstValue(uint8_t dac_number);
 	static void setDacConstValue(uint8_t dac_number, uint8_t channel, uint32_t const_value);
+	static void slopeCompensationLeg1(float32_t peak_voltage, float32_t low_voltage);
+	static void slopeCompensationLeg2(float32_t peak_voltage, float32_t low_voltage);
 
 	// NGND
 	static void setNgndOn();
@@ -109,6 +110,7 @@ public:
 	static void initFullBridgeBoostModeCenterAligned();
 	static void initIndependentMode(leg_operation_t leg1_operation_type, leg_operation_t leg2_operation_type);
 	static void initIndependentModeCenterAligned(leg_operation_t leg1_operation_type, leg_operation_t leg2_operation_type);
+	static void initBuckCurrentMode();
 
 	static void setInterleavedDutyCycle(float32_t duty_cycle);
 	static void setFullBridgeBuckDutyCycle(float32_t duty_cycle);

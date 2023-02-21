@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 LAAS-CNRS
+ * Copyright (c) 2021-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,8 +18,9 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
 
@@ -62,7 +63,11 @@ typedef enum
 typedef enum
 {
 	hrtim_trig1,
-	hrtim_trig2
+	hrtim_trig2,
+	hrtim_trig3,
+	hrtim_trig4,
+	hrtim_trig5,
+	hrtim_trig6 
 } dac_trigger_t;
 
 typedef struct
@@ -78,7 +83,8 @@ typedef struct
 typedef enum
 {
 	dac_pin_internal,
-	dac_pin_external
+	dac_pin_external,
+	dac_pin_internal_and_external
 } dac_pin_config_t;
 
 /////
@@ -151,7 +157,6 @@ static inline void dac_stop(const struct device* dev, uint8_t channel)
 
 	api->stop(dev, channel);
 }
-
 
 #ifdef __cplusplus
 }

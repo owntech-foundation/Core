@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 LAAS-CNRS
+ * Copyright (c) 2021-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,10 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
 
@@ -114,11 +115,43 @@ static void dac_stm32_set_function(const struct device* dev, uint8_t channel, co
 		{
 			reset_trigger_source = LL_DAC_TRIG_EXT_HRTIM_RST_TRG2;
 		}
+		else if (function_config->reset_trigger_source == hrtim_trig3)
+		{
+			reset_trigger_source = LL_DAC_TRIG_EXT_HRTIM_RST_TRG3;
+		}
+		else if (function_config->reset_trigger_source == hrtim_trig4)
+		{
+			reset_trigger_source = LL_DAC_TRIG_EXT_HRTIM_RST_TRG4;
+		}
+		else if (function_config->reset_trigger_source == hrtim_trig5)
+		{
+			reset_trigger_source = LL_DAC_TRIG_EXT_HRTIM_RST_TRG5;
+		}
+		else if (function_config->reset_trigger_source == hrtim_trig6)
+		{
+			reset_trigger_source = LL_DAC_TRIG_EXT_HRTIM_RST_TRG6;
+		}
 
 		uint32_t step_trigger_source = LL_DAC_TRIG_EXT_HRTIM_STEP_TRG1;
 		if (function_config->step_trigger_source == hrtim_trig2)
 		{
 			step_trigger_source = LL_DAC_TRIG_EXT_HRTIM_STEP_TRG2;
+		}
+		else if (function_config->step_trigger_source == hrtim_trig3)
+		{
+			step_trigger_source = LL_DAC_TRIG_EXT_HRTIM_STEP_TRG3;
+		}
+		else if (function_config->step_trigger_source == hrtim_trig4)
+		{
+			step_trigger_source = LL_DAC_TRIG_EXT_HRTIM_STEP_TRG4;
+		}
+		else if (function_config->step_trigger_source == hrtim_trig5)
+		{
+			step_trigger_source = LL_DAC_TRIG_EXT_HRTIM_STEP_TRG5;
+		}
+		else if (function_config->step_trigger_source == hrtim_trig6)
+		{
+			step_trigger_source = LL_DAC_TRIG_EXT_HRTIM_STEP_TRG6;
 		}
 
 		uint32_t polarity = LL_DAC_SAWTOOTH_POLARITY_DECREMENT;
@@ -152,22 +185,7 @@ static void dac_stm32_function_update_reset(const struct device* dev, uint8_t ch
 	{
 		data->dac_config->function_config.reset_data = reset_data;
 
-		if (data->started[channel-1] == 1)
-		{
-			LL_DAC_Disable(dac_dev, dac_channel);
-		}
-
 		LL_DAC_SetWaveSawtoothResetData(dac_dev, dac_channel, reset_data);
-
-		if (data->started[channel-1] == 1)
-		{
-			LL_DAC_Enable(dac_dev, dac_channel);
-
-			while (LL_DAC_IsReady(dac_dev, dac_channel) == 0)
-			{
-				// Wait
-			}
-		}
 	}
 }
 
@@ -182,22 +200,7 @@ static void dac_stm32_function_update_step(const struct device* dev, uint8_t cha
 	{
 		data->dac_config->function_config.step_data = step_data;
 
-		if (data->started[channel-1] == 1)
-		{
-			LL_DAC_Disable(dac_dev, dac_channel);
-		}
-
-		LL_DAC_SetWaveSawtoothStepData(dac_dev, dac_channel, step_data);
-
-		if (data->started[channel-1] == 1)
-		{
-			LL_DAC_Enable(dac_dev, dac_channel);
-
-			while (LL_DAC_IsReady(dac_dev, dac_channel) == 0)
-			{
-				// Wait
-			}
-		}
+		LL_DAC_SetWaveSawtoothStepData(dac_dev, dac_channel, step_data);	
 	}
 }
 
@@ -216,6 +219,11 @@ static void dac_stm32_pin_configure(const struct device* dev, uint8_t channel, d
 	{
 		LL_DAC_ConfigOutput(dac_dev, dac_channel, LL_DAC_OUTPUT_MODE_NORMAL, LL_DAC_OUTPUT_BUFFER_ENABLE, LL_DAC_OUTPUT_CONNECT_GPIO);
 	}
+	else if (pin_config == dac_pin_internal_and_external)
+	{
+		LL_DAC_ConfigOutput(dac_dev, dac_channel, LL_DAC_OUTPUT_MODE_NORMAL, LL_DAC_OUTPUT_BUFFER_ENABLE, LL_DAC_OUTPUT_CONNECT_INTERNAL);
+	}
+
 }
 
 static void dac_stm32_start(const struct device* dev, uint8_t channel)
