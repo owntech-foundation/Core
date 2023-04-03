@@ -28,11 +28,12 @@
 // Zephyr
 #include <zephyr.h>
 
-// Owntech driver
+// Owntech drivers
 #include "dac.h"
+#include "hrtim.h"
 
-// Header
-#include "dac_configuration.h"
+// Current file header
+#include "HardwareConfiguration.h"
 
 // Define the voltage reference used for ADC.
 // It depends on the board used (On nucleo, choose Vref = 2.48V).
@@ -43,7 +44,7 @@ static const struct device* dac1 = DEVICE_DT_GET(DAC1_DEVICE);
 static const struct device* dac2 = DEVICE_DT_GET(DAC2_DEVICE);
 static const struct device* dac3 = DEVICE_DT_GET(DAC3_DEVICE);
 
-void dac_config_const_value_init(uint8_t dac_number)
+void HardwareConfiguration::initDacConstValue(uint8_t dac_number)
 {
 	const struct device* dac_dev;
 
@@ -68,7 +69,7 @@ void dac_config_const_value_init(uint8_t dac_number)
 	}
 }
 
-void dac_set_const_value(uint8_t dac_number, uint8_t channel, uint32_t const_value)
+void HardwareConfiguration::setDacConstValue(uint8_t dac_number, uint8_t channel, uint32_t const_value)
 {
 	const struct device* dac_dev;
 
@@ -91,7 +92,7 @@ void dac_set_const_value(uint8_t dac_number, uint8_t channel, uint32_t const_val
 	}
 }
 
-void dac_config_dac1_current_mode_init(hrtim_tu_t tu_src)
+void HardwareConfiguration::dacConfigDac1CurrentmodeInit(hrtim_tu_t tu_src)
 {
 	// DAC 1
 	dac_function_config_t function_config =
@@ -139,7 +140,7 @@ void dac_config_dac1_current_mode_init(hrtim_tu_t tu_src)
 	dac_start(dac1, 1);
 }
 
-void dac_config_dac3_current_mode_init(hrtim_tu_t tu_src)
+void HardwareConfiguration::dacConfigDac3CurrentmodeInit(hrtim_tu_t tu_src)
 {
 	// DAC 3
 	dac_function_config_t function_config =
@@ -187,7 +188,7 @@ void dac_config_dac3_current_mode_init(hrtim_tu_t tu_src)
 	dac_start(dac3, 1);
 }
 
-void set_satwtooth_DAC3(float32_t set_voltage, float32_t reset_voltage)
+void HardwareConfiguration::slopeCompensationLeg1(float32_t set_voltage, float32_t reset_voltage)
 {
 	float32_t Dv = set_voltage - reset_voltage;
 
@@ -213,7 +214,7 @@ void set_satwtooth_DAC3(float32_t set_voltage, float32_t reset_voltage)
 	dac_function_update_step(dac3, 1, reset_data);
 }
 
-void set_satwtooth_DAC1(float32_t set_voltage, float32_t reset_voltage)
+void HardwareConfiguration::slopeCompensationLeg2(float32_t set_voltage, float32_t reset_voltage)
 {
 	float32_t Dv = set_voltage - reset_voltage;
 

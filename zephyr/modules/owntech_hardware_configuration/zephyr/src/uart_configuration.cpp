@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 LAAS-CNRS
+ * Copyright (c) 2022-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  * @author Luiz Villa <luiz.villa@laas.fr>
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
@@ -29,6 +29,9 @@
 
 // Zephyr
 #include <drivers/uart.h>
+
+// Current file header
+#include "HardwareConfiguration.h"
 
 
 /////
@@ -41,6 +44,7 @@
 static const struct device* uart_dev = DEVICE_DT_GET(DT_NODELABEL(usart1));
 static char buf_req[CONFIG_OWNTECH_SERIAL_RX_BUF_SIZE];
 static bool command_flag = false;
+
 
 /////
 // USART 1 private functions
@@ -65,7 +69,7 @@ static void _uart_usart1_process_input(const struct device *dev, void* user_data
 /////
 // USART 1 public functions
 
-void uart_usart1_init()
+void HardwareConfiguration::extraUartInit()
 {
 	const struct uart_config usart1_config =
 	{
@@ -84,7 +88,7 @@ void uart_usart1_init()
 	}
 }
 
-char uart_usart1_get_data()
+char HardwareConfiguration::extraUartReadChar()
 {
 	if (command_flag){
 		command_flag = false;
@@ -94,7 +98,7 @@ char uart_usart1_get_data()
 	}
 }
 
-void uart_usart1_write_single(char data)
+void HardwareConfiguration::extraUartWriteChar(char data)
 {
 	if (device_is_ready(uart_dev) == true)
 	{
@@ -102,7 +106,7 @@ void uart_usart1_write_single(char data)
 	}
 }
 
-void uart_lpuart1_swap_rx_tx()
+void HardwareConfiguration::uart1SwapRxTx()
 {
 	LL_LPUART_Disable(LPUART1);
 	LL_LPUART_SetTXRXSwap(LPUART1, LL_LPUART_TXRX_SWAPPED);

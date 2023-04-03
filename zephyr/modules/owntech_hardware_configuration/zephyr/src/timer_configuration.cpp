@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 LAAS-CNRS
+ * Copyright (c) 2022-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,20 +18,25 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
+
+// OwnTech Power API
 #include "timer.h"
+
+// Current file header
+#include "HardwareConfiguration.h"
 
 
 static const struct device* timer4 = DEVICE_DT_GET(TIMER4_DEVICE);
 
-static bool timer4init    = false;
-static bool timer4started = false;
+bool HardwareConfiguration::timer4init    = false;
+bool HardwareConfiguration::timer4started = false;
 
 
-static void _timer_incremental_encoder_tim4_init()
+void HardwareConfiguration::timerInitialize()
 {
 	if (device_is_ready(timer4) == true)
 	{
@@ -48,11 +53,11 @@ static void _timer_incremental_encoder_tim4_init()
 	}
 }
 
-void timer_incremental_encoder_tim4_start()
+void HardwareConfiguration::startLoggingIncrementalEncoder()
 {
 	if (timer4init == false)
 	{
-		_timer_incremental_encoder_tim4_init();
+		timerInitialize();
 	}
 
 	if (timer4started == false)
@@ -65,7 +70,7 @@ void timer_incremental_encoder_tim4_start()
 	}
 }
 
-uint32_t timer_incremental_encoder_tim4_get_step()
+uint32_t HardwareConfiguration::getIncrementalEncoderValue()
 {
 	if (timer4started == true)
 	{

@@ -21,13 +21,16 @@
  * @date   2023
  *
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
+ * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
-// OwnTech api
-
+// OwnTech API
 #include "comparator.h"
-#include "comparator_configuration.h"
 
-void comparator_initialization(){
+// Current file header
+#include "HardwareConfiguration.h"
+
+
+void HardwareConfiguration::comparatorInitialize(){
 	comparator_init();
 }

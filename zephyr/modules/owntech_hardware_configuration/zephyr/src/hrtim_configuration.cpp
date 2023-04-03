@@ -28,162 +28,325 @@
 // OwnTech Power API
 #include "leg.h"    // PWM management layer by inverter leg interface
 
-
 // Current file header
-#include "hrtim_configuration.h"
+#include "HardwareConfiguration.h"
 
 
-/////
-// Defines
+uint16_t HardwareConfiguration::hrtimPwmPeriod;
+uint16_t HardwareConfiguration::hrtimPwmPhaseShift;
+uint16_t HardwareConfiguration::hrtimPwmPhaseShiftLeg1;
+uint16_t HardwareConfiguration::hrtimPwmPhaseShiftLeg2;
+bool     HardwareConfiguration::hrtimFullBridgeBipolarMode;
 
-/////
-// Local variables
-static uint16_t pwm_period;
-static uint16_t pwm_phase_shift;
-static uint16_t pwm_phase_shift_leg1;
-static uint16_t pwm_phase_shift_leg2;
-static bool     full_bridge_bipolar_mode;
-
-static hrtim_tu_t leg1_tu;
-static hrtim_tu_t leg2_tu;
+hrtim_tu_t HardwareConfiguration::hrtimLeg1Tu;
+hrtim_tu_t HardwareConfiguration::hrtimLeg2Tu;
 
 
-/**
- * This function initializes the timer managing each leg
- */
 
-void hrtim_leg_tu(hrtim_tu_t tu1, hrtim_tu_t tu2)
+void HardwareConfiguration::hrtimLegTu(hrtim_tu_t tu1, hrtim_tu_t tu2)
 {
-	leg1_tu = tu1;
-	leg2_tu = tu2;
+	hrtimLeg1Tu = tu1;
+	hrtimLeg2Tu = tu2;
 }
+
+void HardwareConfiguration::initInterleavedBuckMode()
+{
+	if(HardwareConfiguration::hardware_version == TWIST_v_1_1_2){
+		hrtimInitIndependentMode(false, true); //patch for the TWIST v0.9 - the second leg is inverted
+	}else{
+		hrtimInitInterleavedBuckMode();
+	}
+}
+
+void HardwareConfiguration::initInterleavedBuckModeCenterAligned()
+{
+	if(HardwareConfiguration::hardware_version == TWIST_v_1_1_2){
+		hrtimInitIndependentModeCenterAligned(false, true); //patch for the TWIST v0.9 - the second leg is inverted
+	}else{
+		hrtimInitInterleavedBuckModeCenterAligned();
+	}
+}
+
+void HardwareConfiguration::initInterleavedBoostMode()
+{
+	if(HardwareConfiguration::hardware_version == TWIST_v_1_1_2){
+		hrtimInitIndependentMode(true, false); //patch for the TWIST v0.9 - the second leg is inverted
+	}else{
+		hrtimInitInterleavedBoostMode();
+	}
+}
+
+void HardwareConfiguration::initInterleavedBoostModeCenterAligned()
+{
+	if(HardwareConfiguration::hardware_version == TWIST_v_1_1_2){
+		hrtimInitIndependentModeCenterAligned(true, false); //patch for the TWIST v0.9 - the second leg is inverted
+	}else{
+		hrtimInitInterleavedBoostModeCenterAligned();
+	}
+}
+
+void HardwareConfiguration::initFullBridgeBuckMode()
+{
+	if(HardwareConfiguration::hardware_version == TWIST_v_1_1_2){
+		hrtimInitFullBridgeBuckMode(true); //patch for the TWIST v0.9 - the second leg is inverted
+	}else{
+		hrtimInitFullBridgeBuckMode(false);
+	}
+
+}
+
+void HardwareConfiguration::initFullBridgeBuckModeCenterAligned(inverter_modulation_t inverter_modulation_type)
+{
+	bool bipolar_mode;
+	if (inverter_modulation_type == bipolar) bipolar_mode = true; else bipolar_mode = false;
+
+	if(HardwareConfiguration::hardware_version == TWIST_v_1_1_2){
+		hrtimInitFullBridgeBuckModeCenterAligned(bipolar_mode,true); //patch for the TWIST v0.9 - the first leg is inverted
+	}else{
+		hrtimInitFullBridgeBuckModeCenterAligned(bipolar_mode,false);
+	}
+
+}
+
+void HardwareConfiguration::initFullBridgeBoostMode()
+{
+	if(HardwareConfiguration::hardware_version == TWIST_v_1_1_2){
+		hrtimInitIndependentMode(true, false); //patch for the TWIST v1.2 - the first leg is inverted
+	}else{
+		hrtimInitInterleavedBoostMode();
+	}
+}
+
+void HardwareConfiguration::initFullBridgeBoostModeCenterAligned()
+{
+	if(HardwareConfiguration::hardware_version == TWIST_v_1_1_2){
+		hrtimInitIndependentModeCenterAligned(true, false); //patch for the TWIST v0.9 - the first leg is inverted
+	}else{
+		hrtimInitInterleavedBoostModeCenterAligned();
+	}
+}
+
+void HardwareConfiguration::initBuckCurrentMode()
+{
+	if(HardwareConfiguration::hardware_version == TWIST_v_1_1_2)
+	{
+		hrtimInitCurrentMode(false,true,TIMA,TIMC);
+		dacConfigDac3CurrentmodeInit(TIMA);
+		dacConfigDac1CurrentmodeInit(TIMC);
+	}
+	else
+	{
+		hrtimInitCurrentMode(true,true,TIMA,TIMB);
+		dacConfigDac3CurrentmodeInit(TIMA);
+		dacConfigDac1CurrentmodeInit(TIMB);
+	}
+
+	comparatorInitialize();
+}
+
+void HardwareConfiguration::initIndependentMode(leg_operation_t leg1_operation_type, leg_operation_t leg2_operation_type)
+{
+	bool leg1_mode, leg2_mode;
+	if (HardwareConfiguration::hardware_version == TWIST_v_1_1_2){										//patch for the TWIST v0.9 - the second leg is inverted
+		if (leg1_operation_type == buck) leg1_mode = false; else leg1_mode = true;
+	}else{
+		if (leg1_operation_type == buck) leg1_mode = true; else leg1_mode = false;
+	}
+
+	if (leg2_operation_type == buck) leg2_mode = true; else leg2_mode = false;
+
+	hrtimInitIndependentMode(leg1_mode, leg2_mode);
+}
+
+void HardwareConfiguration::initIndependentModeCenterAligned(leg_operation_t leg1_operation_type, leg_operation_t leg2_operation_type)
+{
+	bool leg1_mode, leg2_mode;
+	if (HardwareConfiguration::hardware_version == TWIST_v_1_1_2){										//patch for the TWIST v0.9 - the second leg is inverted
+		if (leg1_operation_type == buck) leg1_mode = false; else leg1_mode = true;
+	}else{
+		if (leg1_operation_type == buck) leg1_mode = true; else leg1_mode = false;
+	}
+
+	if (leg2_operation_type == buck) leg2_mode = true; else leg2_mode = false;
+
+	hrtimInitIndependentModeCenterAligned(leg1_mode, leg2_mode);
+}
+
+void HardwareConfiguration::setInterleavedOn()
+{
+	powerDriverInterleavedOn();
+	hrtimStartInterleaved();
+}
+
+void HardwareConfiguration::setFullBridgeBuckOn()
+{
+	powerDriverInterleavedOn();
+	hrtimStartFullBridgeBuck();
+}
+
+void HardwareConfiguration::setLeg1On()
+{
+	powerDriverLeg1On();
+	hrtimStartLeg1();
+}
+
+void HardwareConfiguration::setLeg2On()
+{
+	powerDriverLeg2On();
+	hrtimStartLeg2();
+}
+
+void HardwareConfiguration::setInterleavedOff()
+{
+	powerDriverInterleavedOff();
+	hrtimStopInterleaved();
+}
+
+void HardwareConfiguration::setFullBridgeBuckOff()
+{
+	powerDriverInterleavedOff();
+	hrtimStopFullBridgeBuck();
+}
+
+void HardwareConfiguration::setLeg1Off()
+{
+	powerDriverLeg1Off();
+	hrtimStopLeg1();
+}
+
+void HardwareConfiguration::setLeg2Off()
+{
+	powerDriverLeg2Off();
+	hrtimStopLeg2();
+}
+
 
 /**
  * This function initializes both legs in buck mode
  */
-void hrtim_init_interleaved_buck_mode()
+void HardwareConfiguration::hrtimInitInterleavedBuckMode()
 {
-	hrtim_init_voltage_buck(leg1_tu,leg2_tu);
+	hrtim_init_voltage_buck(hrtimLeg1Tu, hrtimLeg2Tu);
 
-	pwm_period = leg_period();
-	pwm_phase_shift = pwm_period / 2;
+	hrtimPwmPeriod = leg_period();
+	hrtimPwmPhaseShift = hrtimPwmPeriod / 2;
 }
 
 /**
  * This function initializes both legs in buck mode in up-down mode
  */
-void hrtim_init_interleaved_buck_mode_center_aligned()
+void HardwareConfiguration::hrtimInitInterleavedBuckModeCenterAligned()
 {
-	hrtim_init_voltage_buck_center_aligned(leg1_tu, leg2_tu);
+	hrtim_init_voltage_buck_center_aligned(hrtimLeg1Tu, hrtimLeg2Tu);
 
-	pwm_period = leg_period();
-	pwm_phase_shift = pwm_period;
+	hrtimPwmPeriod = leg_period();
+	hrtimPwmPhaseShift = hrtimPwmPeriod;
 }
 
 /**
  * This function initializes both legs in boost mode
  */
-void hrtim_init_interleaved_boost_mode()
+void HardwareConfiguration::hrtimInitInterleavedBoostMode()
 {
-	hrtim_init_voltage_boost(leg1_tu, leg2_tu);
+	hrtim_init_voltage_boost(hrtimLeg1Tu, hrtimLeg2Tu);
 
-	pwm_period = leg_period();
-	pwm_phase_shift = pwm_period / 2;
+	hrtimPwmPeriod = leg_period();
+	hrtimPwmPhaseShift = hrtimPwmPeriod / 2;
 }
 
-void hrtim_init_interleaved_boost_mode_center_aligned()
+void HardwareConfiguration::hrtimInitInterleavedBoostModeCenterAligned()
 {
-	hrtim_init_voltage_boost_center_aligned(leg1_tu, leg2_tu);
+	hrtim_init_voltage_boost_center_aligned(hrtimLeg1Tu, hrtimLeg2Tu);
 
-	pwm_period = leg_period();
-	pwm_phase_shift = pwm_period;
+	hrtimPwmPeriod = leg_period();
+	hrtimPwmPhaseShift = hrtimPwmPeriod;
 }
 
 /**
  * This leg initializes each leg independently. It receives the modes of each leg and triggers them accordingly.
  */
-void hrtim_init_independent_mode(bool leg1_buck_mode, bool leg2_buck_mode)
+void HardwareConfiguration::hrtimInitIndependentMode(bool leg1_buck_mode, bool leg2_buck_mode)
 {
 	// High resolution timer initialization
 	if (leg1_buck_mode && !leg2_buck_mode){
-		hrtim_init_voltage_leg1_buck_leg2_boost(leg1_tu, leg2_tu);
+		hrtim_init_voltage_leg1_buck_leg2_boost(hrtimLeg1Tu, hrtimLeg2Tu);
 	}
 	else if (!leg1_buck_mode && leg2_buck_mode){
-		hrtim_init_voltage_leg1_boost_leg2_buck(leg1_tu, leg2_tu);
+		hrtim_init_voltage_leg1_boost_leg2_buck(hrtimLeg1Tu, hrtimLeg2Tu);
 	}
 	else if (leg1_buck_mode && leg2_buck_mode){
-		hrtim_init_voltage_buck(leg1_tu, leg2_tu);
+		hrtim_init_voltage_buck(hrtimLeg1Tu, hrtimLeg2Tu);
 	}
 	else if (!leg1_buck_mode && !leg2_buck_mode){
-		hrtim_init_voltage_boost(leg1_tu, leg2_tu);
+		hrtim_init_voltage_boost(hrtimLeg1Tu, hrtimLeg2Tu);
 	}
 
-	pwm_period = leg_period();
-	pwm_phase_shift_leg1 = 0;
-	pwm_phase_shift_leg2 = pwm_period / 2;
-	pwm_phase_shift = pwm_period/2;
+	hrtimPwmPeriod = leg_period();
+	hrtimPwmPhaseShiftLeg1 = 0;
+	hrtimPwmPhaseShiftLeg2 = hrtimPwmPeriod / 2;
+	hrtimPwmPhaseShift = hrtimPwmPeriod/2;
 }
 
 /**
  * This leg initializes each leg independently. It receives the modes of each leg and triggers them accordingly.
  * The counting mode is set to up-down (center aligned).
  */
-void hrtim_init_independent_mode_center_aligned(bool leg1_buck_mode, bool leg2_buck_mode)
+void HardwareConfiguration::hrtimInitIndependentModeCenterAligned(bool leg1_buck_mode, bool leg2_buck_mode)
 {
 	// High resolution timer initialization
 	if (leg1_buck_mode && !leg2_buck_mode){
-		hrtim_init_voltage_leg1_buck_leg2_boost_center_aligned(leg1_tu, leg2_tu);
+		hrtim_init_voltage_leg1_buck_leg2_boost_center_aligned(hrtimLeg1Tu, hrtimLeg2Tu);
 	}
 	else if (!leg1_buck_mode && leg2_buck_mode){
-		hrtim_init_voltage_leg1_boost_leg2_buck_center_aligned(leg1_tu,leg2_tu);
+		hrtim_init_voltage_leg1_boost_leg2_buck_center_aligned(hrtimLeg1Tu, hrtimLeg2Tu);
 	}
 	else if (leg1_buck_mode && leg2_buck_mode){
-		hrtim_init_voltage_buck_center_aligned(leg1_tu, leg2_tu);
+		hrtim_init_voltage_buck_center_aligned(hrtimLeg1Tu, hrtimLeg2Tu);
 	}
 	else if (!leg1_buck_mode && !leg2_buck_mode){
-		hrtim_init_voltage_boost_center_aligned(leg1_tu, leg2_tu);
+		hrtim_init_voltage_boost_center_aligned(hrtimLeg1Tu, hrtimLeg2Tu);
 	}
 
-	pwm_period = leg_period();
-	pwm_phase_shift = pwm_period;
+	hrtimPwmPeriod = leg_period();
+	hrtimPwmPhaseShift = hrtimPwmPeriod;
 }
 
 /**
  * This function initializes both legs in full-bridge mode
  */
-void hrtim_init_full_bridge_buck_mode(bool SPIN_board_V_1_1_2)
+void HardwareConfiguration::hrtimInitFullBridgeBuckMode(bool SPIN_board_V_1_1_2)
 {
 	if(SPIN_board_V_1_1_2){
-		hrtim_init_voltage_leg1_boost_leg2_buck(leg1_tu, leg2_tu); //patch for the spin v0.9 - the second leg is inverted
+		hrtim_init_voltage_leg1_boost_leg2_buck(hrtimLeg1Tu, hrtimLeg2Tu); //patch for the spin v0.9 - the second leg is inverted
 	}else{
-		hrtim_init_voltage_buck(leg1_tu, leg2_tu);
+		hrtim_init_voltage_buck(hrtimLeg1Tu, hrtimLeg2Tu);
 	}
-	full_bridge_bipolar_mode = false; //left-aligned inverter is always on unipolar mode
+	hrtimFullBridgeBipolarMode = false; //left-aligned inverter is always on unipolar mode
 
-	pwm_period = leg_period();
-	pwm_phase_shift = pwm_period / 2;
+	hrtimPwmPeriod = leg_period();
+	hrtimPwmPhaseShift = hrtimPwmPeriod / 2;
 
 }
 
 /**
  * This function initializes both legs in full-bridge mode
  */
-void hrtim_init_full_bridge_buck_mode_center_aligned(bool bipolar_mode,bool SPIN_board_V_1_1_2)
+void HardwareConfiguration::hrtimInitFullBridgeBuckModeCenterAligned(bool bipolar_mode,bool SPIN_board_V_1_1_2)
 {
 	if(SPIN_board_V_1_1_2){
-		hrtim_init_voltage_leg1_boost_leg2_buck_center_aligned(leg1_tu, leg2_tu); //patch for the spin v0.9 - the second leg is inverted
+		hrtim_init_voltage_leg1_boost_leg2_buck_center_aligned(hrtimLeg1Tu, hrtimLeg2Tu); //patch for the spin v0.9 - the second leg is inverted
 	}else{
-		hrtim_init_voltage_buck_center_aligned(leg1_tu, leg2_tu);
+		hrtim_init_voltage_buck_center_aligned(hrtimLeg1Tu, hrtimLeg2Tu);
 	}
 
-	full_bridge_bipolar_mode = bipolar_mode;
+	hrtimFullBridgeBipolarMode = bipolar_mode;
 
-	pwm_period = leg_period();
+	hrtimPwmPeriod = leg_period();
 
 	if (bipolar_mode){
-		pwm_phase_shift = 0;
+		hrtimPwmPhaseShift = 0;
 	}else{
-		pwm_phase_shift = pwm_period;
+		hrtimPwmPhaseShift = hrtimPwmPeriod;
 	}
 
 }
@@ -191,13 +354,13 @@ void hrtim_init_full_bridge_buck_mode_center_aligned(bool bipolar_mode,bool SPIN
 /**
  * This function initializes both legs in Current Mode configuration
  */
-void hrtim_init_CurrentMode(bool leg1_buck, bool leg2_buck, hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
+void HardwareConfiguration::hrtimInitCurrentMode(bool leg1_buck, bool leg2_buck, hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 {
 	hrtim_init_current(leg1_buck, leg2_buck, leg1_tu, leg2_tu);
-	pwm_period = leg_period();
-	pwm_phase_shift = 0;
+	hrtimPwmPeriod = leg_period();
+	hrtimPwmPhaseShift = 0;
 	CM_leg_set(leg1_tu, 0);
-	CM_leg_set(leg2_tu, pwm_phase_shift);
+	CM_leg_set(leg2_tu, hrtimPwmPhaseShift);
 }
 
 
@@ -207,13 +370,13 @@ void hrtim_init_CurrentMode(bool leg1_buck, bool leg2_buck, hrtim_tu_t leg1_tu, 
  * bounds
  */
 
-void hrtim_interleaved_pwm_update(float32_t pwm_duty_cycle)
+void HardwareConfiguration::setInterleavedDutyCycle(float32_t pwm_duty_cycle)
 {
 	uint16_t pwm_pulse_width;
 
-	pwm_pulse_width = (pwm_duty_cycle * pwm_period);
-	leg_set(leg1_tu, pwm_pulse_width, 0);
-	leg_set(leg2_tu, pwm_pulse_width, pwm_phase_shift);
+	pwm_pulse_width = (pwm_duty_cycle * hrtimPwmPeriod);
+	leg_set(hrtimLeg1Tu, pwm_pulse_width, 0);
+	leg_set(hrtimLeg2Tu, pwm_pulse_width, hrtimPwmPhaseShift);
 
 }
 
@@ -223,25 +386,25 @@ void hrtim_interleaved_pwm_update(float32_t pwm_duty_cycle)
  * bounds
  */
 
-void hrtim_full_bridge_buck_pwm_update(float32_t pwm_duty_cycle)
+void HardwareConfiguration::setFullBridgeBuckDutyCycle(float32_t pwm_duty_cycle)
 {
 	uint16_t pwm_pulse_width;
 	uint16_t pwm_reverse_pulse_width;
 
 	// TESTING PWM VALUE TO AVOID OVERFLOW AND PWM UPDATE//
-	if(full_bridge_bipolar_mode)
+	if(hrtimFullBridgeBipolarMode)
 	{
-		pwm_pulse_width = (pwm_duty_cycle * pwm_period);
-		pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
-		leg_set(leg1_tu, pwm_pulse_width, 0);
-		leg_set(leg2_tu, pwm_reverse_pulse_width, pwm_period*pwm_duty_cycle);
+		pwm_pulse_width = (pwm_duty_cycle * hrtimPwmPeriod);
+		pwm_reverse_pulse_width = (1-pwm_duty_cycle) * hrtimPwmPeriod;
+		leg_set(hrtimLeg1Tu, pwm_pulse_width, 0);
+		leg_set(hrtimLeg2Tu, pwm_reverse_pulse_width, hrtimPwmPeriod*pwm_duty_cycle);
 	}
 	else
 	{
-		pwm_pulse_width = (pwm_duty_cycle * pwm_period);
-		pwm_reverse_pulse_width = (1-pwm_duty_cycle) * pwm_period;
-		leg_set(leg1_tu, pwm_pulse_width, 0);
-		leg_set(leg2_tu, pwm_reverse_pulse_width, pwm_phase_shift);
+		pwm_pulse_width = (pwm_duty_cycle * hrtimPwmPeriod);
+		pwm_reverse_pulse_width = (1-pwm_duty_cycle) * hrtimPwmPeriod;
+		leg_set(hrtimLeg1Tu, pwm_pulse_width, 0);
+		leg_set(hrtimLeg2Tu, pwm_reverse_pulse_width, hrtimPwmPhaseShift);
 	}
 }
 
@@ -250,12 +413,12 @@ void hrtim_full_bridge_buck_pwm_update(float32_t pwm_duty_cycle)
  * HRTIM peripheral and make sure it is between saturation
  * bounds
  */
-void hrtim_leg1_pwm_update(float32_t pwm_duty_cycle)
+void HardwareConfiguration::setLeg1DutyCycle(float32_t pwm_duty_cycle)
 {
 	uint16_t pwm_pulse_width;
 
-	pwm_pulse_width = (pwm_duty_cycle * pwm_period);
-	leg_set(leg1_tu, pwm_pulse_width, pwm_phase_shift_leg1);
+	pwm_pulse_width = (pwm_duty_cycle * hrtimPwmPeriod);
+	leg_set(hrtimLeg1Tu, pwm_pulse_width, hrtimPwmPhaseShiftLeg1);
 }
 
 /**
@@ -263,157 +426,157 @@ void hrtim_leg1_pwm_update(float32_t pwm_duty_cycle)
  * HRTIM peripheral and make sure it is between saturation
  * bounds
  */
-void hrtim_leg2_pwm_update(float32_t pwm_duty_cycle)
+void HardwareConfiguration::setLeg2DutyCycle(float32_t pwm_duty_cycle)
 {
 	uint16_t pwm_pulse_width;
 
-	pwm_pulse_width = (pwm_duty_cycle * pwm_period);
-	leg_set(leg2_tu, pwm_pulse_width, pwm_phase_shift_leg2);
+	pwm_pulse_width = (pwm_duty_cycle * hrtimPwmPeriod);
+	leg_set(hrtimLeg2Tu, pwm_pulse_width, hrtimPwmPhaseShiftLeg2);
 }
 
 /**
  * This function updates the phase shift between leg 1 and hrtim master
  */
-void hrtim_leg1_phase_shift_update(float32_t phase_shift)
+void HardwareConfiguration::setLeg1PhaseShift(float32_t phase_shift)
 {
 	phase_shift = int(phase_shift)%360; // modulo
 	if(phase_shift<0) phase_shift = phase_shift + 360; // case of negative phase
-	pwm_phase_shift_leg1 = (uint16_t)(pwm_period * (phase_shift/360) );
+	hrtimPwmPhaseShiftLeg1 = (uint16_t)(hrtimPwmPeriod * (phase_shift/360) );
 }
 
 /**
  * This function updates the phase shift between leg 2 and hrtim master
  */
-void hrtim_leg2_phase_shift_update(float32_t phase_shift)
+void HardwareConfiguration::setLeg2PhaseShift(float32_t phase_shift)
 {
 	phase_shift = int(phase_shift)%360; // modulo
 	if(phase_shift<0) phase_shift = phase_shift + 360; // case of negative phase
-	pwm_phase_shift_leg2 = (uint16_t)(pwm_period * (phase_shift/360) );
+	hrtimPwmPhaseShiftLeg2 = (uint16_t)(hrtimPwmPeriod * (phase_shift/360) );
 }
 
 /**
  * This function updates the phase shift between leg 1 and hrtim master for the center aligned application.
  * In center aligned, the master timer has a frequency 2 times higher than the timers.
  */
-void hrtim_leg1_phase_shift_update_center_aligned(float32_t phase_shift)
+void HardwareConfiguration::setLeg1PhaseShiftCenterAligned(float32_t phase_shift)
 {
 	phase_shift = int(phase_shift)%360; // modulo
 	if(phase_shift<0) phase_shift = phase_shift + 360; // case of negative phase
-	pwm_phase_shift_leg1 = (uint16_t)(2*pwm_period * (phase_shift/360) );
+	hrtimPwmPhaseShiftLeg1 = (uint16_t)(2*hrtimPwmPeriod * (phase_shift/360) );
 }
 
 /**
  * This function updates the phase shift between leg 2 and hrtim master for the center aligned application
  * In center aligned, the master timer has a frequency 2 times higher than the timers.
  */
-void hrtim_leg2_phase_shift_update_center_aligned(float32_t phase_shift)
+void HardwareConfiguration::setLeg2PhaseShiftCenterAligned(float32_t phase_shift)
 {
 	phase_shift = int(phase_shift)%360; // modulo
 	if(phase_shift<0) phase_shift = phase_shift + 360; // case of negative phase
-	pwm_phase_shift_leg2 = (uint16_t)(2*pwm_period * (phase_shift/360) );
+	hrtimPwmPhaseShiftLeg2 = (uint16_t)(2*hrtimPwmPeriod * (phase_shift/360) );
 }
 
 /**
  * This stops the converter by putting both timing
  * units outputs low
  */
-void hrtim_stop_interleaved()
+void HardwareConfiguration::hrtimStopInterleaved()
 {
-	leg_stop(leg1_tu);
-	leg_stop(leg2_tu);
+	leg_stop(hrtimLeg1Tu);
+	leg_stop(hrtimLeg2Tu);
 }
 
 /**
  * This stops the converter by putting both timing
  * units outputs low
  */
-void hrtim_stop_full_bridge_buck()
+void HardwareConfiguration::hrtimStopFullBridgeBuck()
 {
-	leg_stop(leg1_tu);
-	leg_stop(leg2_tu);
+	leg_stop(hrtimLeg1Tu);
+	leg_stop(hrtimLeg2Tu);
 }
 
 /**
  * This stops only leg 1
  */
-void hrtim_stop_leg1()
+void HardwareConfiguration::hrtimStopLeg1()
 {
-	leg_stop(leg1_tu);
+	leg_stop(hrtimLeg1Tu);
 }
 
 /**
  * This stops only leg 2
  */
-void hrtim_stop_leg2()
+void HardwareConfiguration::hrtimStopLeg2()
 {
-	leg_stop(leg2_tu);
+	leg_stop(hrtimLeg2Tu);
 }
 
 /**
  * This stops the converter by putting both timing
  * units outputs low
  */
-void hrtim_start_interleaved()
+void HardwareConfiguration::hrtimStartInterleaved()
 {
-	leg_start(leg1_tu);
-	leg_start(leg2_tu);
+	leg_start(hrtimLeg1Tu);
+	leg_start(hrtimLeg2Tu);
 }
 
 /**
  * This stops the converter by putting both timing
  * units outputs low
  */
-void hrtim_start_full_bridge_buck()
+void HardwareConfiguration::hrtimStartFullBridgeBuck()
 {
-	leg_start(leg1_tu);
-	leg_start(leg2_tu);
+	leg_start(hrtimLeg1Tu);
+	leg_start(hrtimLeg2Tu);
 }
 
 /**
  * This stops the converter by putting both timing
  * units outputs low
  */
-void hrtim_start_leg1()
+void HardwareConfiguration::hrtimStartLeg1()
 {
-	leg_start(leg1_tu);
+	leg_start(hrtimLeg1Tu);
 }
 
 /**
  * This stops the converter by putting both timing
  * units outputs low
  */
-void hrtim_start_leg2()
+void HardwareConfiguration::hrtimStartLeg2()
 {
-	leg_start(leg2_tu);
+	leg_start(hrtimLeg2Tu);
 }
 
-void set_adc_trig_interleaved(float32_t new_trig)
+void HardwareConfiguration::setHrtimAdcTrigInterleaved(float32_t new_trig)
 {
-	uint16_t new_trig_int = new_trig * pwm_period;
-	hrtim_update_adc_trig_interleaved(new_trig_int, leg1_tu, leg2_tu);
+	uint16_t new_trig_int = new_trig * hrtimPwmPeriod;
+	hrtim_update_adc_trig_interleaved(new_trig_int, hrtimLeg1Tu, hrtimLeg2Tu);
 }
 
 /**
  * This updates the dead time of the leg 1
 
  */
-void hrtim_set_dead_time_leg1(uint16_t rise_ns, uint16_t fall_ns)
+void HardwareConfiguration::setLeg1DeadTime(uint16_t rise_ns, uint16_t fall_ns)
 {
-	leg_set_dt(leg1_tu, rise_ns, fall_ns);
+	leg_set_dt(hrtimLeg1Tu, rise_ns, fall_ns);
 }
 
 /**
  * This updates the dead time of the leg 2
  */
-void hrtim_set_dead_time_leg2(uint16_t rise_ns, uint16_t fall_ns)
+void HardwareConfiguration::setLeg2DeadTime(uint16_t rise_ns, uint16_t fall_ns)
 {
-	leg_set_dt(leg2_tu, rise_ns, fall_ns);
+	leg_set_dt(hrtimLeg2Tu, rise_ns, fall_ns);
 }
 
 /**
  * This sets the frequency of the HRTIMER
  */
-void hrtim_set_frequency(uint32_t frequency_Hz)
+void HardwareConfiguration::setHrtimFrequency(uint32_t frequency_Hz)
 {
 	leg_set_freq(frequency_Hz);
 }
@@ -421,7 +584,7 @@ void hrtim_set_frequency(uint32_t frequency_Hz)
 /**
  * This gets the frequency of the HRTIMER
  */
-uint32_t hrtim_get_frequency()
+uint32_t HardwareConfiguration::getHrtimFrequency()
 {
 	return leg_get_freq();
 }
@@ -429,7 +592,7 @@ uint32_t hrtim_get_frequency()
 /**
  * This updates the minimum duty cycle of both legs
  */
-void hrtim_set_min_duty_cycle(float32_t duty_cycle)
+void HardwareConfiguration::setHrtimMinDutyCycle(float32_t duty_cycle)
 {
 	leg_set_min_duty_cycle(duty_cycle);
 }
@@ -437,7 +600,7 @@ void hrtim_set_min_duty_cycle(float32_t duty_cycle)
 /**
  * This updates the minimum duty cycle of both legs
  */
-void hrtim_set_max_duty_cycle(float32_t duty_cycle)
+void HardwareConfiguration::setHrtimMaxDutyCycle(float32_t duty_cycle)
 {
 	leg_set_max_duty_cycle(duty_cycle);
 }

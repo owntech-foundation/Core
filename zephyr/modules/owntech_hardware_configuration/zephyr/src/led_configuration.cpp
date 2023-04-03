@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 LAAS-CNRS
+ * Copyright (c) 2022-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
@@ -27,42 +27,46 @@
 #include "zephyr.h"
 #include "drivers/gpio.h"
 
+// Current file header
+#include "HardwareConfiguration.h"
+
+
+bool HardwareConfiguration::ledInitialized = false;
 
 static struct gpio_dt_spec led_pin_spec = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
-static bool init = false;
 
 
-void led_config_init()
+void HardwareConfiguration::ledInitialize()
 {
 	gpio_pin_configure_dt(&led_pin_spec, GPIO_OUTPUT_ACTIVE);
-	init = true;
+	ledInitialized = true;
 }
 
-void led_config_on()
+void HardwareConfiguration::setLedOn()
 {
-	if (init == false)
+	if (ledInitialized == false)
 	{
-		led_config_init();
+		ledInitialize();
 	}
 
 	gpio_pin_set_dt(&led_pin_spec, 1);
 }
 
-void led_config_off()
+void HardwareConfiguration::setLedOff()
 {
-	if (init == false)
+	if (ledInitialized == false)
 	{
-		led_config_init();
+		ledInitialize();
 	}
 
 	gpio_pin_set_dt(&led_pin_spec, 0);
 }
 
-void led_config_toggle()
+void HardwareConfiguration::setLedToggle()
 {
-	if (init == false)
+	if (ledInitialized == false)
 	{
-		led_config_init();
+		ledInitialize();
 	}
 
 	gpio_pin_toggle_dt(&led_pin_spec);

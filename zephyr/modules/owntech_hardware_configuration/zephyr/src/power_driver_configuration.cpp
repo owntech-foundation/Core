@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 LAAS-CNRS
+ * Copyright (c) 2022-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
  */
@@ -28,72 +28,76 @@
 #include "zephyr.h"
 #include "GpioApi.h"
 
-static bool init = false;
+// Current file header
+#include "HardwareConfiguration.h"
 
 
-void power_driver_config_init()
+bool HardwareConfiguration::powerDriverInitialized = false;
+
+
+void HardwareConfiguration::powerDriverInitialize()
 {
 	gpio.configurePin(PC12,OUTPUT); //configures the pin of leg 1 mosfet high
 	gpio.configurePin(PC13,OUTPUT); //configures the pin of leg 2 mosfet high
-	init = true;
+	powerDriverInitialized = true;
 }
 
-void power_driver_leg1_on()
+void HardwareConfiguration::powerDriverLeg1On()
 {
-	if (init == false)
+	if (powerDriverInitialized == false)
 	{
-		power_driver_config_init(); //calls the config automatically during the first execution
+		powerDriverInitialize(); //calls the config automatically during the first execution
 	}
 
 	gpio.setPin(PC12);
 }
 
-void power_driver_leg2_on()
+void HardwareConfiguration::powerDriverLeg2On()
 {
-	if (init == false)
+	if (powerDriverInitialized == false)
 	{
-		power_driver_config_init(); //calls the config automatically during the first execution
+		powerDriverInitialize(); //calls the config automatically during the first execution
 	}
 
 	gpio.setPin(PC13);
 }
 
-void power_driver_leg1_off()
+void HardwareConfiguration::powerDriverLeg1Off()
 {
-	if (init == false)
+	if (powerDriverInitialized == false)
 	{
-		power_driver_config_init(); //calls the config automatically during the first execution
+		powerDriverInitialize(); //calls the config automatically during the first execution
 	}
 
 	gpio.resetPin(PC12);
 }
 
-void power_driver_leg2_off()
+void HardwareConfiguration::powerDriverLeg2Off()
 {
-	if (init == false)
+	if (powerDriverInitialized == false)
 	{
-		power_driver_config_init(); //calls the config automatically during the first execution
+		powerDriverInitialize(); //calls the config automatically during the first execution
 	}
 
 	gpio.resetPin(PC12);
 }
 
-void power_driver_interleaved_on()
+void HardwareConfiguration::powerDriverInterleavedOn()
 {
-	if (init == false)
+	if (powerDriverInitialized == false)
 	{
-		power_driver_config_init(); //calls the config automatically during the first execution
+		powerDriverInitialize(); //calls the config automatically during the first execution
 	}
 
 	gpio.setPin(PC12);
 	gpio.setPin(PC13);
 }
 
-void power_driver_interleaved_off()
+void HardwareConfiguration::powerDriverInterleavedOff()
 {
-	if (init == false)
+	if (powerDriverInitialized == false)
 	{
-		power_driver_config_init(); //calls the config automatically during the first execution
+		powerDriverInitialize(); //calls the config automatically during the first execution
 	}
 
 	gpio.resetPin(PC12);
