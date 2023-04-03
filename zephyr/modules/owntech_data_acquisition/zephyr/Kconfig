@@ -2,8 +2,8 @@ config OWNTECH_DATA_ACQUISITION
 	bool "Enable OwnTech data acquisition using ADCs"
 	default y
 	select DMA
-	depends on OWNTECH_ADC_DRIVER
 	depends on OWNTECH_HRTIM_DRIVER
 	depends on CONSOLE_GETCHAR
+	depends on OWNTECH_HARDWARE_CONFIGURATION
 	# Force-select the following to avoid dependency loop
 	select OWNTECH_SCHEDULING

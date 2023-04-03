@@ -36,7 +36,7 @@
 #include <arm_math.h>
 
 // Current module private functions
-#include "../data_conversion/data_conversion.h"
+#include "../src/data_conversion.h"
 
 
 /////
@@ -61,6 +61,35 @@ const uint8_t DATA_IS_MISSING = 2;
 class DataAcquisition
 {
 public:
+
+	/**
+	 * This function is used to configure all ADC channels in default configuration.
+	 * Channels will be attributed as follows:
+	 * ADC1 -   V1_LOW      ADC2 -  I1_LOW
+	 *          V2_LOW              I2_LOW
+	 *          V_HIGH              I_HIGH
+	 *
+	 * This function must be called BEFORE ADC is started.
+	 */
+	static int8_t configureAdcChannels(uint8_t adc_number, const char* channel_list[], uint8_t channel_count);
+
+	/**
+	 * @brief  This function is used to configure the channels to be
+	 *         enabled on a given ADC.
+	 *
+	 * @param  adc_number Number of the ADC on which channel configuration is
+	 *         to be done.
+	 * @param  channel_list List of channels to configure. This is a list of
+	 *         names as defined in the device tree (field `label`). The order
+	 *         of the names in the array sets the acquisition ranks (order in
+	 *         which the channels are acquired).
+	 * @param  channel_count Number of channels defined in `channel_list`.
+	 * @return 0 is everything went well,
+	 *         ECHANNOTFOUND if at least one of the channels
+	 *           is not available in the given ADC. Available channels are the
+	 *           ones defined in the device tree.
+	 */
+	static void configureAdcDefaultAllMeasurements();
 
 	/**
 	 * @brief This functions starts the acquisition chain.
@@ -271,7 +300,7 @@ public:
 	 * sets these default parameters.
 	 */
 	void setDefaultCalibrationFactors(void);
-	
+
 	/**
 	 * @brief    Retrieve stored parameters from Flash memory and configure ADC parameters
 	 */

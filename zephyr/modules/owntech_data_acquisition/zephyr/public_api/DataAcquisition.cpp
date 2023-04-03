@@ -33,11 +33,12 @@
 #include "DataAcquisition.h"
 
 // OwnTech Power API
-#include "adc.h"
+#include "HardwareConfiguration.h"
 #include "scheduling_internal.h"
 
 // Current module private functions
-#include "../adc_to_mem/data_dispatch.h"
+#include "../src/data_dispatch.h"
+#include "../src/adc_channels.h"
 
 
 /////
@@ -48,6 +49,16 @@ DataAcquisition dataAcquisition;
 
 /////
 // Public configuration functions
+
+int8_t DataAcquisition::configureAdcChannels(uint8_t adc_number, const char* channel_list[], uint8_t channel_count)
+{
+	return adc_channels_configure_adc_channels(adc_number, channel_list, channel_count);
+}
+
+void DataAcquisition::configureAdcDefaultAllMeasurements()
+{
+	configure_adc_default_all_measurements();
+}
 
 int8_t DataAcquisition::start(dispatch_method_t dispatch_method)
 {
@@ -70,7 +81,7 @@ int8_t DataAcquisition::start(dispatch_method_t dispatch_method)
 
 		while (1)
 		{
-			const char* channel_name = adc_get_channel_name(adc_num, channel_rank);
+			const char* channel_name = adc_channels_get_channel_name(adc_num, channel_rank);
 
 			if (channel_name != nullptr)
 			{
@@ -125,7 +136,7 @@ int8_t DataAcquisition::start(dispatch_method_t dispatch_method)
 	data_dispatch_init(dispatch_type);
 
 	// Launch ADC conversion
-	adc_start();
+	hwConfig.adcStart();
 
 	this->is_started = true;
 

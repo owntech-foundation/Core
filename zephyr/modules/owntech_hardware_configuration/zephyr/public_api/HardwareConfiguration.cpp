@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 LAAS-CNRS
+ * Copyright (c) 2022-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -420,35 +420,41 @@ void HardwareConfiguration::extraUartWriteChar(char data)
 /////
 // ADC
 
-void HardwareConfiguration::configureAdc12DualMode(uint8_t dual_mode)
-{
-	configure_adc12_dual_mode(dual_mode);
-}
-
-int8_t HardwareConfiguration::configureAdcChannels(uint8_t adc_number, const char* channel_list[], uint8_t channel_count)
-{
-	return configure_adc_channels(adc_number, channel_list, channel_count);
-}
-
-void HardwareConfiguration::configureAdcTriggerSource(uint8_t adc_number, adc_ev_src_t trigger_source)
+void HardwareConfiguration::adcConfigureTriggerSource(uint8_t adc_number, adc_ev_src_t trigger_source)
 {
 	configure_adc_trigger_source(adc_number, trigger_source);
 }
 
-void HardwareConfiguration::configureAdcDiscontinuousMode(uint8_t adc_number, uint32_t dicontinuous_count)
+void HardwareConfiguration::adcConfigureDiscontinuousMode(uint8_t adc_number, uint32_t dicontinuous_count)
 {
 	configure_adc_discontinuous_mode(adc_number, dicontinuous_count);
 }
 
-void HardwareConfiguration::configureAdcDefaultAllMeasurements()
+void HardwareConfiguration::adcAddChannel(uint8_t adc_number, uint8_t channel)
 {
-	configure_adc_default_all_measurements();
+	configure_adc_add_channel(adc_number, channel);
 }
 
-void HardwareConfiguration::configureAdcDefaultAllMeasurementsAndExtra()
+void HardwareConfiguration::adcRemoveChannel(uint8_t adc_number, uint8_t channel)
 {
-	configure_adc_default_all_measurements_and_extra();
+	configure_adc_remove_channel(adc_number, channel);
 }
+
+void HardwareConfiguration::adcConfigureDma(uint8_t adc_number, bool use_dma)
+{
+	configure_adc_dma_mode(adc_number, use_dma);
+}
+
+void HardwareConfiguration::adcStart()
+{
+	start_adcs();
+}
+
+void HardwareConfiguration::adcStop()
+{
+	stop_adcs();
+}
+
 
 
 void HardwareConfiguration::setLeg1DeadTime(uint16_t rise_ns, uint16_t fall_ns)

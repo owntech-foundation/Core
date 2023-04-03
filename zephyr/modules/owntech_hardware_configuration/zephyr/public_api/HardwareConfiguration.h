@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 LAAS-CNRS
+ * Copyright (c) 2022-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -147,12 +147,13 @@ public:
 	static void extraUartWriteChar(char data);
 
 	// ADC
-	static void configureAdc12DualMode(uint8_t dual_mode);
-	static int8_t configureAdcChannels(uint8_t adc_number, const char* channel_list[], uint8_t channel_count);
-	static void configureAdcTriggerSource(uint8_t adc_number, adc_ev_src_t trigger_source);
-	static void configureAdcDiscontinuousMode(uint8_t adc_number, uint32_t dicontinuous_count);
-	static void configureAdcDefaultAllMeasurements();
-	static void configureAdcDefaultAllMeasurementsAndExtra();
+	static void adcConfigureTriggerSource(uint8_t adc_number, adc_ev_src_t trigger_source);
+	static void adcConfigureDiscontinuousMode(uint8_t adc_number, uint32_t dicontinuous_count);
+	static void adcConfigureDma(uint8_t adc_number, bool use_dma);
+	static void adcAddChannel(uint8_t adc_number, uint8_t channel);
+	static void adcRemoveChannel(uint8_t adc_number, uint8_t channel);
+	static void adcStart();
+	static void adcStop();
 
 private:
 	static hardware_version_t hardware_version;
@@ -164,7 +165,6 @@ private:
 // Public object to interact with the class
 
 extern HardwareConfiguration hwConfig;
-
 
 
 #endif // HARDWARECONFIGURATION_H_

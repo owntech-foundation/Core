@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 LAAS-CNRS
+ * Copyright (c) 2022-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
@@ -39,43 +39,11 @@
 // Public API
 
 /**
- * Use this function to set ADC 1 and ADC 2 in dual mode.
- * By default, ADC 1 and 2 are not in dual mode.
+ * @brief This function is used to change the trigger source of an ADC.
+ *        By default, triggger source for ADC 1 and ADC 2 is on HRTIM1,
+ *        and ADC 3 is software-triggered.
  *
- * This function must be called BEFORE ADC is started.
- *
- * @param  dual_mode Status of the dual mode:
- *         true to enable,
- *         false to disable.
- */
-void configure_adc12_dual_mode(uint8_t dual_mode);
-
-/**
- * This function is used to configure the channels to be
- * enabled on a given ADC.
- *
- * This function must be called BEFORE ADC is started.
- *
- * @param  adc_number Number of the ADC on which channel configuration is
- *         to be done.
- * @param  channel_list List of channels to configure. This is a list of
- *         names as defined in the device tree (field `label`). The order
- *         of the names in the array sets the acquisition ranks (order in
- *         which the channels are acquired).
- * @param  channel_count Number of channels defined in `channel_list`.
- * @return 0 is everything went well,
- *         ECHANNOTFOUND if at least one of the channels
- *           is not available in the given ADC. Available channels are the
- *           ones defined in the device tree.
- */
-int8_t configure_adc_channels(uint8_t adc_number, const char* channel_list[], uint8_t channel_count);
-
-/**
- * This function is used to change the trigger source of an ADC.
- * By default, triggger source for ADC 1 and ADC 2 is on HRTIM1,
- * and ADC 3 is software-triggered.
- *
- * This function must be called BEFORE ADC is started.
+ *        This function must be called BEFORE ADC is started.
  *
  * @param  adc_number Number of the ADC to configure
  * @param  trigger_source Source of the trigger
@@ -83,38 +51,57 @@ int8_t configure_adc_channels(uint8_t adc_number, const char* channel_list[], ui
 void configure_adc_trigger_source(uint8_t adc_number, adc_ev_src_t trigger_source);
 
 /**
- * Registers the discontinuous count for an ADC.
- * It will be applied when ADC is started.
+ * @brief Register the discontinuous count for an ADC.
+ *        It will be applied when ADC is started.
  *
  * @param adc_number Number of the ADC to configure.
- * @param dicontinuous_count Number of channels to acquire on each
+ * @param discontinuous_count Number of channels to acquire on each
  *        trigger event. 0 to disable discontinuous mode (default).
  */
-void configure_adc_discontinuous_mode(uint8_t adc_number, uint32_t dicontinuous_count);
+void configure_adc_discontinuous_mode(uint8_t adc_number, uint32_t discontinuous_count);
 
 /**
- * This function is used to configure all ADC channels in default configuration.
- * Channels will be attributed as follows:
- * ADC1 -   V1_LOW      ADC2 -  I1_LOW
- *          V2_LOW              I2_LOW
- *          V_HIGH              I_HIGH
+ * @brief Adds a channel to the list of channels to be acquired
+ *        for an ADC.
+ *        The order in which channels are added determine
+ *        the order in which they will be acquired.
  *
- * This function must be called BEFORE ADC is started.
+ * @param adc_number Number of the ADC to configure.
+ * @param channel Number of the channel to to be acquired.
  */
-void configure_adc_default_all_measurements();
-
+void configure_adc_add_channel(uint8_t adc_num, uint8_t channel);
 
 /**
- * This function is used to configure all ADC channels in default configuration.
- * Channels will be attributed as follows:
- * ADC1 -   V1_LOW      ADC2 -  I1_LOW
- *          V2_LOW              I2_LOW
- *          V_HIGH              I_HIGH
- *                              EXTRA_MEAS
+ * @brief Removes a channel from the list of channels
+ *        that are acquired by an ADC.
+ *        If a channel has been added multiple times,
+ *        then only the first occurence in the list
+ *        will be removed.
  *
- * This function must be called BEFORE ADC is started.
+ * @param adc_number Number of the ADC to configure.
+ * @param channel Number of the channel to to no longer be acquired.
  */
-void configure_adc_default_all_measurements_and_extra();
+void configure_adc_remove_channel(uint8_t adc_num, uint8_t channel);
+
+/**
+ * @brief ADC DMA mode configuration.
+ *        Enables DMA and circular mode on an ADC.
+ *
+ * @param adc_num Number of the ADC on which to enable DMA.
+ * @param use_dma Set to true to use DMA for this ADC,
+ *        false to not use it (default).
+ */
+void configure_adc_dma_mode(uint8_t adc_num, bool use_dma);
+
+/**
+ * @brief Starts all configured ADCs.
+ */
+void start_adcs();
+
+/**
+ * @brief Stops all configured ADCs.
+ */
+void stop_adcs();
 
 
 #endif // ADC_CONFIGURATION_H_

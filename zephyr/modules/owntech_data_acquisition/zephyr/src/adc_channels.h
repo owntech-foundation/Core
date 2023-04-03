@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 LAAS-CNRS
+ * Copyright (c) 2021-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  *
@@ -35,32 +35,12 @@
 #include <stdint.h>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#define ECHANNOTFOUND -1
+
 
 /**
- * Performs internal data structures initialization
- * and pre-ADC enable init.
- * Must be called before adc_core_enable()
- */
-void adc_channels_init();
-
-/**
- * ADC channel configuration.
- * For each channel enabled by the user, sets its sequencer rank and
- * sampling time, then sets the ADC sequencer length.
- *
- * If must be called only after adc_channnels_configure_adc_channels
- * has been called for this ADC, and ADC is enabled an not running.
- *
- * @param adc_num Number of the adc for which to configure channels.
- */
-void adc_channels_configure(uint8_t adc_num);
-
-/**
- * This function is used to configure the channels to be
- * enabled on a given ADC.
+ * @brief  This function is used to configure the channels to be
+ *         enabled on a given ADC.
  *
  * @param  adc_number Number of the ADC on which channel configuration is
  *         to be done.
@@ -74,13 +54,13 @@ void adc_channels_configure(uint8_t adc_num);
  *           is not available in the given ADC. Available channels are the
  *           ones defined in the device tree.
  */
-int8_t adc_channnels_configure_adc_channels(uint8_t adc_num, const char* channel_list[], uint8_t channel_count);
+int8_t adc_channels_configure_adc_channels(uint8_t adc_num, const char* channel_list[], uint8_t channel_count);
 
 /**
- * This function returns the name of an enabled channel.
+ * @brief  This function returns the name of an enabled channel.
  *
- * This function must onle be called after
- * adc_channnels_configure_adc_channels has been called.
+ *         This function must only be called after
+ *         adc_channels_configure_adc_channels has been called.
  *
  * @param  adc_number Number of the ADC
  * @param  channel_rank Rank of the ADC channel to query.
@@ -92,15 +72,23 @@ int8_t adc_channnels_configure_adc_channels(uint8_t adc_num, const char* channel
 const char* adc_channels_get_channel_name(uint8_t adc_num, uint8_t channel_rank);
 
 /**
- * Get the number of enabled channels for an ADC.
+ * @brief  Get the number of enabled channels for an ADC.
+ *
  * @param  adc_num Number of the ADC
  * @return Number of enabled channels in this ADC.
  */
 uint8_t adc_channels_get_enabled_channels_count(uint8_t adc_num);
 
+/**
+ * This function is used to configure all ADC channels in default configuration.
+ * Channels will be attributed as follows:
+ * ADC1 -   V1_LOW      ADC2 -  I1_LOW
+ *          V2_LOW              I2_LOW
+ *          V_HIGH              I_HIGH
+ *
+ * This function must be called BEFORE ADC is started.
+ */
+void configure_adc_default_all_measurements();
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif // ADC_CHANNELS_H_

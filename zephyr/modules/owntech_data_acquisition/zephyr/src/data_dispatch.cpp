@@ -32,7 +32,7 @@
 #include <zephyr.h>
 
 // OwnTech API
-#include "adc.h"
+#include "HardwareConfiguration.h"
 #include "Scheduling.h"
 #include "scheduling_internal.h"
 #include "hrtim.h"
@@ -41,6 +41,7 @@
 // Current module header
 #include "DataAcquisition.h"
 #include "dma.h"
+#include "adc_channels.h"
 
 // Current file header
 #include "data_dispatch.h"
@@ -140,7 +141,7 @@ void data_dispatch_init(dispatch_t dispatch_method)
 	for (uint8_t adc_num = 1 ; adc_num <= ADC_COUNT ; adc_num++)
 	{
 		uint8_t adc_index = adc_num-1;
-		enabled_channels_count[adc_index] = adc_get_enabled_channels_count(adc_num);
+		enabled_channels_count[adc_index] = adc_channels_get_enabled_channels_count(adc_num);
 
 		if (enabled_channels_count[adc_index] > 0)
 		{

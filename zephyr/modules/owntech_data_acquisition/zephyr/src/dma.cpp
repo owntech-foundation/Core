@@ -34,11 +34,9 @@
 // STM32
 #include <stm32_ll_dma.h>
 
-// OwnTech API
-#include "adc.h"
-
 // Current module private functions
 #include "data_dispatch.h"
+#include "adc_channels.h"
 
 
 /////
@@ -99,7 +97,7 @@ void dma_configure_adc_acquisition(uint8_t adc_number, bool disable_interrupts, 
 	if (device_is_ready(dma1) == false)
 		return;
 
-	if (adc_get_enabled_channels_count(adc_number) == 0)
+	if (adc_channels_get_enabled_channels_count(adc_number) == 0)
 		return;
 
 	uint8_t dma_index = adc_number - 1;

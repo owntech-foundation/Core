@@ -40,6 +40,7 @@
 
 // Stdlib
 #include <stdint.h>
+#include <stdbool.h>
 
 
 #ifdef __cplusplus
@@ -52,11 +53,11 @@ extern "C" {
 
 typedef enum
 {
-	hrtim_ev1,
-	hrtim_ev2,
-	hrtim_ev3,
-	hrtim_ev4,
-	software
+	software  = 0,
+	hrtim_ev1 = 1,
+	hrtim_ev2 = 2,
+	hrtim_ev3 = 3,
+	hrtim_ev4 = 4,
 } adc_ev_src_t;
 
 
@@ -64,24 +65,11 @@ typedef enum
 // Public API
 
 /**
- * @brief Initializes the ADCs. It must be
- * called *before* any configuration is made.
- */
-void adc_init();
-
-/**
- * ADC dual mode: enables ADC 1/ADC 2 synchronization.
- * When ADC 1 acquisition is triggered, it simultaneously
- * triggers an acquisition on ADC 2.
+ * @brief Registers the triger source for an ADC.
  *
- * @param dual_mode true to enable dual moode, false to
- *        disable it. false by default.
- */
-void adc_set_dual_mode(uint8_t dual_mode);
-
-/**
- * Registers the triger source for an ADC.
- * It will be applied when ADC is started.
+ *        This will only be applied when ADC is started.
+ *        If ADC is already started, it must be stopped
+ *        then started again.
  *
  * @param adc_number Number of the ADC to configure.
  * @param triggger_source Source of the trigger.
@@ -89,40 +77,62 @@ void adc_set_dual_mode(uint8_t dual_mode);
 void adc_configure_trigger_source(uint8_t adc_number, adc_ev_src_t trigger_source);
 
 /**
- * Registers the discontinuous count for an ADC.
- * It will be applied when ADC is started.
+ * @brief Registers the discontinuous count for an ADC.
+ *
+ *        This will only be applied when ADC is started.
+ *        If ADC is already started, it must be stopped
+ *        then started again.
  *
  * @param adc_number Number of the ADC to configure.
- * @param dicontinuous_count Number of channels to acquire on each
+ * @param discontinuous_count Number of channels to acquire on each
  *        trigger event. 0 to disable discontinuous mode (default).
  */
-void adc_configure_discontinuous_mode(uint8_t adc_number, uint32_t dicontinuous_count);
+void adc_configure_discontinuous_mode(uint8_t adc_number, uint32_t discontinuous_count);
 
 /**
- * This function is used to configure the channels to be
- * enabled on a given ADC.
+ * @brief Adds a channel to the list of channels to be acquired
+ *        for an ADC.
+ *        The order in which channels are added determine
+ *        the order in which they will be acquired.
  *
- * @param  adc_number Number of the ADC on which channel configuration is
- *         to be done.
- * @param  channel_list List of channels to configure. This is a list of
- *         names as defined in the device tree (field `label`). The order
- *         of the names in the array sets the acquisition ranks (order in
- *         which the channels are acquired).
- * @param  channel_count Number of channels defined in `channel_list`.
- * @return 0 is everything went well,
- *         ECHANNOTFOUND if at least one of the channels
- *           is not available in the given ADC. Available channels are the
- *           ones defined in the device tree.
+ *        This will only be applied when ADC is started.
+ *        If ADC is already started, it must be stopped
+ *        then started again.
+ *
+ * @param adc_number Number of the ADC to configure.
+ * @param channel Number of the channel to to be acquired.
  */
-int8_t adc_configure_adc_channels(uint8_t adc_number, const char* channel_list[], uint8_t channel_count);
+void adc_add_channel(uint8_t adc_number, uint8_t channel);
 
 /**
- * Get the number of enabled channels for an ADC.
+ * @brief Removes a channel from the list of channels
+ *        that are acquired by an ADC.
+ *        If a channel has been added multiple times,
+ *        then only the first occurence in the list
+ *        will be removed.
  *
- * @param  adc_num Number of the ADC.
- * @return Number of enabled channels in this ADC.
+ *        This will only be applied when ADC is started.
+ *        If ADC is already started, it must be stopped
+ *        then started again.
+ *
+ * @param adc_number Number of the ADC to configure.
+ * @param channel Number of the channel to to no longer be acquired.
  */
-uint8_t adc_get_enabled_channels_count(uint8_t adc_num);
+void adc_remove_channel(uint8_t adc_number, uint8_t channel);
+
+/**
+ * @brief Configures an ADC to use DMA.
+ *
+ *        This will only be applied when ADC is started.
+ *        If ADC is already started, it must be stopped
+ *        then started again.
+ *
+ * @param adc_number Number of the ADC to configure.
+ * @param use_dma Set to true to use DMA for this ADC,
+ *        false to not use it (default).
+ */
+void adc_configure_use_dma(uint8_t adc_number, bool use_dma);
+
 
 /**
  * @brief Starts all configured ADCs.
@@ -130,30 +140,20 @@ uint8_t adc_get_enabled_channels_count(uint8_t adc_num);
 void adc_start();
 
 /**
- * This function returns the name of an enabled channel.
- *
- * This function must only be called after
- * adc_configure_adc_channels has been called.
- *
- * @param  adc_number Number of the ADC.
- * @param  channel_rank Rank of the ADC channel to query.
- *         Rank ranges from 0 to (number of enabled channels)-1
- * @return Name of the channel as defined in the device tree, or
- *         NULL if channel configuration has not been made or
- *         channel_rank is over (number of enabled channels)-1.
+ * @brief Stops all configured ADCs.
  */
-const char* adc_get_channel_name(uint8_t adc_number, uint8_t channel_rank);
-
+void adc_stop();
 
 /**
- * This function triggers a single conversion in the case of a software triggered adc.
+ * @brief This function triggers a single conversion in
+ *        the case of a software triggered ADC.
  *
- * This function must only be called after
- * adc_configure_adc_channels has been called.
+ *        This function must only be called after
+ *        ADC has been started.
  *
  * @param  adc_number Number of the ADC.
  */
-void adc_software_trigger_conversion(uint8_t adc_number);
+void adc_trigger_software_conversion(uint8_t adc_number);
 
 
 #ifdef __cplusplus

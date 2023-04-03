@@ -7,9 +7,7 @@ if(CONFIG_OWNTECH_ADC_DRIVER)
 
   # Select source files to be compiled
   zephyr_library_sources(
-    ./src/adc_channels.c
     ./src/adc_core.c
-    ./src/adc_helper.c
     ./public_api/adc.c
     )
 endif()

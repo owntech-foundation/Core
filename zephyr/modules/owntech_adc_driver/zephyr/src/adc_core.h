@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 LAAS-CNRS
+ * Copyright (c) 2021-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,6 +18,8 @@
  */
 
 /**
+ * @date 2023
+ *
  * @author Clément Foucher <clement.foucher@laas.fr>
  *
  * @brief This file implements the core management of the ADCs.
@@ -31,6 +33,7 @@
 
 
 #include <stdint.h>
+#include <stdbool.h>
 
 
 #ifdef __cplusplus
@@ -38,55 +41,55 @@ extern "C" {
 #endif
 
 /////
-// Init, enable, start
+// Init, enable, start, stop
 
 /**
- * ADC initialization procedure for
- * ADC 1, ADC 2 and ADC 3.
+ * @brief ADC initialization procedure for
+ *        ADC 1, ADC 2, ADC 3 and ADC 4.
  */
 void adc_core_init();
 
 /**
- * ADC enable.
- * Refer to RM 21.4.9
+ * @brief ADC enable.
+ *        Refer to RM 21.4.9
  *
  * @param adc_num Number of the ADC to enable.
  */
 void adc_core_enable(uint8_t adc_num);
 
 /**
- * ADC start.
- * Refer to RM 21.4.15
+ * @brief ADC start.
+ *        Refer to RM 21.4.15
  *
  * @param adc_num Number of the ADC to start.
+ * @param sequence_length Length of the sequence configured
+ *        on that ADC.
  */
-void adc_core_start(uint8_t adc_num);
+void adc_core_start(uint8_t adc_num, uint8_t sequence_length);
+
+/**
+ * @brief ADC stop.
+ *
+ * @param adc_num Number of the ADC to stop.
+ */
+void adc_core_stop(uint8_t adc_num);
+
 
 /////
 // Configuration functions
 
 /**
- * ADC dual mode: enables ADC 1/ADC 2 synchronization.
- * When ADC 1 acquisition is triggered, it simultaneously
- * triggers an acquisition on ADC 2.
- *
- * Refer to RM 21.4.30
- *
- * @param dual_mode true to enable dual moode, false to
- *        disable it. false by default.
- */
-void adc_core_set_dual_mode(uint8_t dual_mode);
-
-/**
- * ADC DMA mode configuration.
- * Enables DMA and circular mode on an ADC.
+ * @brief ADC DMA mode configuration.
+ *        Enables DMA in circular mode on an ADC.
  *
  * @param adc_num Number of the ADC on which to enable DMA.
+ * @param use_dma Set to true to use DMA for this ADC,
+ *        false to not use it (default).
  */
-void adc_core_configure_dma_mode(uint8_t adc_num);
+void adc_core_configure_dma_mode(uint8_t adc_num, bool use_dma);
 
 /**
- * Defines the trigger source for an ADC.
+ * @brief Defines the trigger source for an ADC.
  *
  * @param adc_num Number of the ADC to configure.
  * @param external_trigger_edge Edge of the trigger as defined
@@ -97,13 +100,39 @@ void adc_core_configure_dma_mode(uint8_t adc_num);
 void adc_core_configure_trigger_source(uint8_t adc_num, uint32_t external_trigger_edge, uint32_t trigger_source);
 
 /**
- * Configures the discontinuous mode for an ADC.
+ * @brief  Configures the discontinuous mode for an ADC.
  *
  * @param adc_num Number of the ADC to configure.
  * @param discontinuous_count Number of channels to acquire on each
  *        trigger event. 0 to disable discontinuous mode (default).
  */
 void adc_core_configure_discontinuous_mode(uint8_t adc_num, uint32_t discontinuous_count);
+
+/**
+ * @brief ADC differential channel set-up:
+ *        Applies differential mode to specified channel.
+ *        Refer to RM 21.4.7
+ *
+ * @param adc_num Number of the ADC to configure.
+ * @param channel Number of the channel to configure.
+ * @param enable_differential Set true to enable differential mode,
+ *        false to disable it (default).
+ *
+ */
+void adc_core_set_channel_differential(uint8_t adc_num, uint8_t channel, bool enable_differential);
+
+/**
+ * @brief Configures an ADC channel acquisition.
+ *        Acquisition rank is provided as a parameter.
+ *        Channel sampling time is set to 12.5 cycles.
+ *
+ * @param adc_num Number of the ADC to configure.
+ * @param channel Number of the channel to configure.
+ * @param rank Acquisition rank.
+ *
+ */
+void adc_core_configure_channel(uint8_t adc_num, uint8_t channel, uint8_t rank);
+
 
 #ifdef __cplusplus
 }
