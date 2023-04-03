@@ -21,6 +21,7 @@
  * @date   2023
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Thomas Walter <thomas.walter@laas.fr>
  */
 
 
@@ -264,6 +265,17 @@ public:
 	void setExtraParameters(float32_t gain, float32_t offset);
 	void setAnalogCommParameters(float32_t gain, float32_t offset);
 	///@}
+
+	/**
+	 * @brief    Init default gain and offset structures for all ADCs and
+	 * sets these default parameters.
+	 */
+	void setDefaultCalibrationFactors(void);
+	
+	/**
+	 * @brief    Retrieve stored parameters from Flash memory and configure ADC parameters
+	 */
+	void setUserCalibrationFactors(void);
 
 private:
 	/**

@@ -22,6 +22,7 @@
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
+ * @author Thomas Walter <thomas.walter@laas.fr>
  */
 
 
@@ -476,4 +477,14 @@ float32_t DataAcquisition::_convert(channel_assignment_t assignment, uint16_t ra
 void DataAcquisition::_setParameters(channel_assignment_t assignment, float32_t gain, float32_t offset)
 {
 	assignment.set_parameters(gain, offset);
+}
+
+void DataAcquisition::setDefaultCalibrationFactors(void)
+{
+	set_default_acquisition_parameters();
+}
+
+void DataAcquisition::setUserCalibrationFactors(void)
+{
+	set_user_acquisition_parameters();
 }

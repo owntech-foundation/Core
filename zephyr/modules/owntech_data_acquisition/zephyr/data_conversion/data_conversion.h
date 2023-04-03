@@ -22,6 +22,7 @@
  * @author Antoine Boche <antoine.boche@laas.fr>
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
+ * @author Thomas Walter <thomas.walter@laas.fr>
  */
 
 #ifndef DATA_CONVERSION_H_
@@ -186,5 +187,14 @@ void data_conversion_set_extra_parameters(float32_t gain, float32_t offset);
  */
 void data_conversion_set_analog_comm_parameters(float32_t gain, float32_t offset);
 
+/**
+ * @brief    Set calibration coefficients of all gains to 1 and all offsets to 0
+ */
+void set_default_acquisition_parameters();
+
+/**
+ * @brief    Retrieve calibration coefficients via console input and update them
+ */
+void set_user_acquisition_parameters();
 
 #endif // DATA_CONVERSION_H_
