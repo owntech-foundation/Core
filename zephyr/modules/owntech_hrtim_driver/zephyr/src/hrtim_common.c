@@ -24,6 +24,7 @@
  * @author Luiz Villa <luiz.villa@laas.fr>
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  * @author Thomas Walter <thomas.walter@laas.fr>
+ * @author Emmanuel Roux--Palomo <emmanuel.roux-palomo@laas.fr>
  */
 
 #include <stm32_ll_hrtim.h>
@@ -61,16 +62,16 @@ void _hrtim_init_events_center_aligned(hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 		LL_HRTIM_TIM_SetADCRollOverMode(HRTIM1, LL_HRTIM_TIMER_B, LL_HRTIM_ROLLOVER_MODE_PER);
 
 		// setting adc trigger
-		hrtim_adc_trigger_en(1, 1, LL_HRTIM_ADCTRIG_SRC13_TIMACMP3);
-		hrtim_adc_trigger_en(3, 2, LL_HRTIM_ADCTRIG_SRC13_TIMBCMP4);
+		hrtim_adc_trigger_en(1, 1, LL_HRTIM_ADCTRIG_SRC13_TIMAPER);
+		hrtim_adc_trigger_en(3, 2, LL_HRTIM_ADCTRIG_SRC13_TIMBPER);
 	}else if(leg1_tu == TIMA && leg2_tu == TIMC){
 		// setting the adc roll-over mode on period event
 		LL_HRTIM_TIM_SetADCRollOverMode(HRTIM1, LL_HRTIM_TIMER_A, LL_HRTIM_ROLLOVER_MODE_PER);
 		LL_HRTIM_TIM_SetADCRollOverMode(HRTIM1, LL_HRTIM_TIMER_C, LL_HRTIM_ROLLOVER_MODE_PER);
 
 		// setting adc trigger
-		hrtim_adc_trigger_en(3, 1, LL_HRTIM_ADCTRIG_SRC13_TIMACMP3);
-		hrtim_adc_trigger_en(1, 3, LL_HRTIM_ADCTRIG_SRC13_TIMCCMP4);
+		hrtim_adc_trigger_en(3, 1, LL_HRTIM_ADCTRIG_SRC13_TIMAPER);
+		hrtim_adc_trigger_en(1, 3, LL_HRTIM_ADCTRIG_SRC13_TIMCPER);
 	}
 }
 
