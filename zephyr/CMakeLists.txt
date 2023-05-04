@@ -7,6 +7,8 @@ MACRO(SUBDIRLIST result curdir)
       LIST(APPEND dirlist ${curdir}/${child})
     ENDIF()
   ENDFOREACH()
+  # Make sure modules are always in the same order for incremental compilation
+  LIST(SORT dirlist)
   SET(${result} ${dirlist})
 ENDMACRO()
 
