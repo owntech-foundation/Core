@@ -36,7 +36,6 @@
 
 // Current module private functions
 #include "data_dispatch.h"
-#include "adc_channels.h"
 
 
 /////
@@ -48,23 +47,25 @@ static const struct device* dma1 = DEVICE_DT_GET(DT_NODELABEL(dma1));
 /////
 // Local variables
 
-static const uint32_t source_registers[4] =
+static const uint32_t source_registers[5] =
 {
 	(uint32_t)(&(ADC1->DR)),
 	(uint32_t)(&(ADC2->DR)),
 	(uint32_t)(&(ADC3->DR)),
-	(uint32_t)(&(ADC4->DR))
+	(uint32_t)(&(ADC4->DR)),
+	(uint32_t)(&(ADC5->DR))
 };
 
-static const uint32_t source_triggers[4] =
+static const uint32_t source_triggers[5] =
 {
 	LL_DMAMUX_REQ_ADC1,
 	LL_DMAMUX_REQ_ADC2,
 	LL_DMAMUX_REQ_ADC3,
-	LL_DMAMUX_REQ_ADC4
+	LL_DMAMUX_REQ_ADC4,
+	LL_DMAMUX_REQ_ADC5
 };
 
-static size_t buffers_sizes[4] = {0};
+static size_t buffers_sizes[5] = {0};
 
 
 /////
@@ -73,18 +74,18 @@ static size_t buffers_sizes[4] = {0};
 /**
  * DMA callback
  * This callback is called on DMA interrupt.
- * If double-buffering is enabled on the channel, is is
- * called when buffer is half-filled and when buffer is filled.
- * Otherwse is is only called once when buffer is filled.
+ * For ADCs with enabled interrupt, is will be called
+ * twice: when buffer is half-filled and when buffer is filled.
+ * For other ADCs, it will never be called.
  */
-static void _dma_callback(const struct device* dev, void* user_data, uint32_t channel, int status)
+static void _dma_callback(const struct device* dev, void* user_data, uint32_t dma_channel, int status)
 {
 	UNUSED(dev);
 	UNUSED(user_data);
 	UNUSED(status);
 
-	uint8_t adc_number = channel + 1;
-	data_dispatch_do_dispatch(adc_number);
+	// DMA channel matches ADC number
+	data_dispatch_do_dispatch(dma_channel);
 }
 
 
@@ -95,9 +96,6 @@ void dma_configure_adc_acquisition(uint8_t adc_number, bool disable_interrupts, 
 {
 	// Check environment
 	if (device_is_ready(dma1) == false)
-		return;
-
-	if (adc_channels_get_enabled_channels_count(adc_number) == 0)
 		return;
 
 	uint8_t dma_index = adc_number - 1;
@@ -136,11 +134,11 @@ void dma_configure_adc_acquisition(uint8_t adc_number, bool disable_interrupts, 
 	dma_start(dma1, adc_number);
 }
 
-size_t dma_get_retreived_data_count(uint8_t adc_number)
+uint32_t dma_get_retreived_data_count(uint8_t adc_number)
 {
 	// Permanent variable
 	// -1 is equivalent to (buffer size - 1) in modulo arithmetics
-	static int32_t previous_dma_latest_data_pointers[4] = {-1};
+	static int32_t previous_dma_latest_data_pointers[5] = {-1, -1, -1, -1, -1};
 
 	// Get data
 	uint32_t dma_index = adc_number - 1;
@@ -157,7 +155,7 @@ size_t dma_get_retreived_data_count(uint8_t adc_number)
 		corrected_dma_pointer += buffers_sizes[dma_index];
 	}
 
-	size_t retreived_data = corrected_dma_pointer - previous_dma_latest_data_pointer;
+	uint32_t retreived_data = corrected_dma_pointer - previous_dma_latest_data_pointer;
 	previous_dma_latest_data_pointers[dma_index] = dma_latest_data_pointer;
 
 	return retreived_data;

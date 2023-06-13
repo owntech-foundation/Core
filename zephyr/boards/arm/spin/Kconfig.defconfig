@@ -1,0 +1,19 @@
+# Adapted from original file: Zephyr's G474RE Kconfig.defconfig
+# zephyr/boards/arm/nucleo_g474re/Kconfig.defconfig
+# Copyright (c) 2019 STMicroelectronics.
+# This file copyright OwnTech 2023
+
+# SPDX-License-Identifier: Apache-2.0
+
+# OwnTech board configuration
+
+if BOARD_SPIN
+
+config BOARD
+	default "owntech_spin"
+
+config SPI_STM32_INTERRUPT
+	default y
+	depends on SPI
+
+endif # BOARD_SPIN

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 LAAS-CNRS
+ * Copyright (c) 2021-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  *
@@ -121,6 +121,14 @@ void adc_add_channel(uint8_t adc_number, uint8_t channel);
 void adc_remove_channel(uint8_t adc_number, uint8_t channel);
 
 /**
+ * @brief  Returns the number of enabled channels for an ADC.
+ *
+ * @param  adc_number Number of the ADC to fetch.
+ * @return Number of enabled channels on the given ADC.
+ */
+uint32_t adc_get_enabled_channels_count(uint8_t adc_number);
+
+/**
  * @brief Configures an ADC to use DMA.
  *
  *        This will only be applied when ADC is started.
@@ -153,7 +161,7 @@ void adc_stop();
  *
  * @param  adc_number Number of the ADC.
  */
-void adc_trigger_software_conversion(uint8_t adc_number);
+void adc_trigger_software_conversion(uint8_t adc_number, uint8_t number_of_acquisitions);
 
 
 #ifdef __cplusplus

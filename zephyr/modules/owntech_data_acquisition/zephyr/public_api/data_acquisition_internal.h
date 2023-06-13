@@ -21,10 +21,11 @@
  * @date   2023
  * @author Clément Foucher <clement.foucher@laas.fr>
  *
- * Header to give access to scheduling internal API
- * to other OwnTech modules.
+ * Header to give access to Data Acquisition internal
+ * API to other OwnTech modules.
  *
  * Only for use in OwnTech modules.
+ * Do not include this header in user code.
  */
 
 #ifndef DATA_ACQUISITION_INTERNAL_H_

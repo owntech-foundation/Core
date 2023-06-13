@@ -1,22 +1,23 @@
-identifier: owntech_board
-name: OwnTech Board
+# Copyright (c) 2022-2023 OwnTech
+# SPDX-License-Identifier: LGLPV2.1
+
+identifier: spin
+name: OwnTech Spin
 type: mcu
 arch: arm
 toolchain:
   - zephyr
   - gnuarmemb
-  - xtools
 ram: 128
 flash: 512
 supported:
-  - nvs
   - pwm
   - i2c
+  - spi
   - gpio
   - counter
-  - spi
   - watchdog
   - adc
+  - dac
   - dma
   - can
-  - canfd

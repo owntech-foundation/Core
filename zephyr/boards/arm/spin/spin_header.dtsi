@@ -1,0 +1,60 @@
+/*
+ * Copyright (c) 2023 OwnTech.
+ *
+ * SPDX-License-Identifier: LGLPV2.1
+ */
+
+/ {
+	spin_header: connector {
+		compatible = "spin-header";
+		#gpio-cells = <2>;
+		gpio-map-mask = <0xffffffff 0xffffffc0>;
+		gpio-map-pass-thru = <0 0x3f>;
+		gpio-map = <1 0 &gpiob 11 0>,	/*  1 */
+		           <2 0 &gpiob 12 0>,	/*  2 */
+		           <4 0 &gpiob 13 0>,	/*  4 */
+		           <5 0 &gpiob 14 0>,	/*  5 */
+		           <6 0 &gpiob 15 0>,	/*  6 */
+		           <7 0 &gpioc 6 0>,	/*  7 */
+		           <9 0 &gpioc 7 0>,	/*  9 */
+		           <10 0 &gpioc 8 0>,	/* 10 */
+		           <11 0 &gpioc 9 0>,	/* 11 */
+		           <12 0 &gpioc 8 0>,	/* 12 */
+		           <14 0 &gpioa 9 0>,	/* 14 */
+		           <15 0 &gpioa 10 0>,	/* 15 */
+		           <16 0 &gpioc 10 0>,	/* 16 */
+		           <17 0 &gpioc 11 0>,	/* 17 */
+		           <19 0 &gpioc 12 0>,	/* 19 */
+		           <20 0 &gpiob 4 0>,	/* 20 */
+		           <21 0 &gpiob 9 0>,	/* 21 */
+		           <22 0 &gpioc 13 0>,	/* 22 */
+		           <24 0 &gpioc 0 0>,	/* 24 */
+		           <25 0 &gpioc 1 0>,	/* 25 */
+		           <26 0 &gpioc 2 0>,	/* 26 */
+		           <27 0 &gpioc 3 0>,	/* 27 */
+		           <29 0 &gpioa 0 0>,	/* 29 */
+		           <30 0 &gpioa 1 0>,	/* 30 */
+		           <31 0 &gpiob 0 0>,	/* 31 */
+		           <32 0 &gpioa 5 0>,	/* 32 */
+		           <34 0 &gpioa 6 0>,	/* 34 */
+		           <35 0 &gpioc 4 0>,	/* 35 */
+		           <37 0 &gpiob 1 0>,	/* 37 */
+		           <41 0 &gpiob 10 0>,	/* 41 */
+		           <42 0 &gpiob 2 0>,	/* 42 */
+		           <43 0 &gpioc 5 0>,	/* 43 */
+		           <44 0 &gpioa 7 0>,	/* 44 */
+		           <45 0 &gpioa 4 0>,	/* 45 */
+		           <46 0 &gpioa 13 0>,	/* 46 */
+		           <47 0 &gpioa 14 0>,	/* 47 */
+		           <48 0 &gpioa 15 0>,	/* 48 */
+		           <49 0 &gpiod 2 0>,	/* 49 */
+		           <50 0 &gpiob 3 0>,	/* 50 */
+		           <51 0 &gpioa 2 0>,	/* 51 */
+		           <52 0 &gpioa 3 0>,	/* 52 */
+		           <53 0 &gpiob 5 0>,	/* 53 */
+		           <55 0 &gpiob 6 0>,	/* 55 */
+		           <56 0 &gpiob 7 0>,	/* 56 */
+		           <58 0 &gpiob 8 0>,	/* 58 */
+		           <59 0 &gpiog 10 0>;	/* 59 */
+	};
+};

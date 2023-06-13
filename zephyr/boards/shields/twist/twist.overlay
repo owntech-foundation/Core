@@ -1,0 +1,37 @@
+/*
+ * Copyright (c) 2023 OwnTech.
+ *
+ * SPDX-License-Identifier: LGLPV2.1
+ */
+
+#include "can-standby-switch.dtsi"
+#include "adc-channels.dtsi"
+#include "ngnd.dtsi"
+
+&ngnd {
+	status = "okay";
+};
+
+&v1low {
+	status = "okay";
+};
+
+&v2low {
+	status = "okay";
+};
+
+&vhigh {
+	status = "okay";
+};
+
+&i1low {
+	status = "okay";
+};
+
+&i2low {
+	status = "okay";
+};
+
+&ihigh {
+	status = "okay";
+};

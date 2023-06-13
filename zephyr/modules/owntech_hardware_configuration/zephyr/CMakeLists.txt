@@ -9,7 +9,6 @@ if(CONFIG_OWNTECH_HARDWARE_CONFIGURATION)
   zephyr_library_sources(
     src/hardware_auto_configuration.cpp
     src/dac_configuration.cpp
-    src/ngnd_configuration.cpp
     src/led_configuration.cpp
     src/timer_configuration.cpp
     src/hrtim_configuration.cpp
@@ -18,5 +17,13 @@ if(CONFIG_OWNTECH_HARDWARE_CONFIGURATION)
     src/power_driver_configuration.cpp
     src/comparator_configuration.cpp
     src/common_configuration.cpp
+  )
+
+  # Conditional source files
+  if (CONFIG_SHIELD_TWIST)
+    zephyr_library_sources(
+      src/ngnd_configuration.cpp
     )
+  endif()
+
 endif()

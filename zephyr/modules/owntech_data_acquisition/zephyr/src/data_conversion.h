@@ -30,171 +30,27 @@
 
 #include <arm_math.h>   // adds all the CMSIS library
 
+/**
+ * @brief Initialize data conversion.
+ */
+void data_conversion_init();
 
 /**
- * @brief    Converts the values of the given raw_value into a physical unit
+ * @brief    Converts the values of the given raw_value into a physical unit.
  *
  * @param[in] raw_value
  *
- * @return  a foat32_t value for v1 low voltage
+ * @return   A float32_t value representing the value in the physical unit of the given channel.
  */
-float32_t data_conversion_convert_v1_low(uint16_t raw_value);
+float32_t data_conversion_convert_raw_value(uint8_t adc_num, uint8_t channel_num, uint16_t raw_value);
 
 /**
- * @brief    Converts the values of the given raw_value into a physical unit
+ * @brief    Change the parameters for the data conversion of a given channel.
  *
- * @param[in] raw_value
- *
- * @return  a foat32_t value for v2 low voltage
+ * @param[in] gain      gain of the channel
+ * @param[in] offset    offset of the channel
  */
-float32_t data_conversion_convert_v2_low(uint16_t raw_value);
+void data_conversion_set_conversion_parameters(uint8_t adc_num, uint8_t channel_num, float32_t gain, float32_t offset);
 
-/**
- * @brief    Converts the values of the given raw_value into a physical unit
- *
- * @param[in] raw_value
- *
- * @return  a foat32_t value for vhigh voltage
- */
-float32_t data_conversion_convert_v_high(uint16_t raw_value);
-
-/**
- * @brief    Converts the values of the given raw_value into a physical unit
- *
- * @param[in] raw_value
- *
- * @return  a foat32_t value for i1 low voltage
- */
-float32_t data_conversion_convert_i1_low(uint16_t raw_value);
-
-/**
- * @brief    Converts the values of the given raw_value into a physical unit
- *
- * @param[in] raw_value
- *
- * @return  a foat32_t value for i2 low voltage
- */
-float32_t data_conversion_convert_i2_low(uint16_t raw_value);
-
-/**
- * @brief    Converts the values of the given raw_value into a physical unit
- *
- * @param[in] raw_value
- *
- * @return  a foat32_t value for ihigh low voltage
- */
-float32_t data_conversion_convert_i_high(uint16_t raw_value);
-
-/**
- * @brief    Converts the values of the given raw_value into a physical unit
- *
- * @param[in] raw_value
- *
- * @return  a foat32_t value for the temperature probe
- */
-float32_t data_conversion_convert_temp(uint16_t raw_value);
-
-/**
- * @brief    Converts the values of the extra parameter into a physical unit
- *
- * @param[in] raw_value
- *
- * @return  a foat32_t value for the extra measurement
- */
-float32_t data_conversion_convert_extra(uint16_t raw_value);
-
-
-/**
- * @brief    Converts the values of the analog communication into a physical unit
- *
- * @param[in] raw_value
- *
- * @return  a foat32_t value for the analog communication
- */
-float32_t data_conversion_convert_analog_comm(uint16_t raw_value);
-
-
-/**
- * @brief    Change the parameters for the data conversion of V1_low
- *
- * @param[in] gain      gain of V1_low sensor
- * @param[in] offset    offset of the sensor
- */
-void data_conversion_set_v1_low_parameters(float32_t gain, float32_t offset);
-
-/**
- * @brief    Change the parameters for the data conversion of V2_low
- *
- * @param[in] gain      gain of V2_low sensor
- * @param[in] offset    offset of the sensor
- */
-void data_conversion_set_v2_low_parameters(float32_t gain, float32_t offset);
-
-/**
- * @brief    Change the parameters for the data conversion of V_high
- *
- * @param[in] gain      gain of V_high sensor
- * @param[in] offset    offset of the sensor
- */
-void data_conversion_set_v_high_parameters(float32_t gain, float32_t offset);
-
-/**
- * @brief    Change the parameters for the data conversion of I1_low
- *
- * @param[in] gain      gain of I1_low sensor
- * @param[in] offset    offset of the sensor
- */
-void data_conversion_set_i1_low_parameters(float32_t gain, float32_t offset);
-
-/**
- * @brief    Change the parameters for the data conversion of I2_low
- *
- * @param[in] gain      gain of I2_low sensor
- * @param[in] offset    offset of the sensor
- */
-void data_conversion_set_i2_low_parameters(float32_t gain, float32_t offset);
-
-/**
- * @brief    Change the parameters for the data conversion of I_high
- *
- * @param[in] gain      gain of I_high sensor
- * @param[in] offset    offset of the sensor
- */
-void data_conversion_set_i_high_parameters(float32_t gain, float32_t offset);
-
-/**
- * @brief    Change the parameters for the data conversion of temp
- *
- * @param[in] gain      gain of temp sensor
- * @param[in] offset    offset of the sensor
- */
-void data_conversion_set_temp_parameters(float32_t gain, float32_t offset);
-
-/**
- * @brief    Change the parameters for the extra measurement
- *
- * @param[in] gain      gain of temp sensor
- * @param[in] offset    offset of the sensor
- */
-void data_conversion_set_extra_parameters(float32_t gain, float32_t offset);
-
-
-/**
- * @brief    Change the parameters for the analog communication measurement
- *
- * @param[in] gain      gain of the analog communication bus
- * @param[in] offset    offset of the analog communication
- */
-void data_conversion_set_analog_comm_parameters(float32_t gain, float32_t offset);
-
-/**
- * @brief    Set calibration coefficients of all gains to 1 and all offsets to 0
- */
-void set_default_acquisition_parameters();
-
-/**
- * @brief    Retrieve calibration coefficients via console input and update them
- */
-void set_user_acquisition_parameters();
 
 #endif // DATA_CONVERSION_H_

@@ -1,0 +1,38 @@
+description: List of channels connected to ADCs that can be acquired by OwnTech Data Acquisition
+
+compatible: "adc-channels"
+
+properties:
+  channel-name:
+    type: string
+    required: true
+    description: Name under which the channel will be referred to in user code.
+
+  default-gain:
+    type: int
+    required: false
+
+  default-offset:
+    type: int
+    required: false
+
+  spin-pin:
+    type: int
+    required: true
+
+
+child-binding:
+
+  description: Channel node ADC info
+
+  properties:
+
+    io-channels:
+      type: phandle-array
+      required: true
+      description: ADC number and channel description.
+
+    differential:
+      type: boolean
+      required: false
+      description: Set the channel to differential mode. Default is Single Ended.

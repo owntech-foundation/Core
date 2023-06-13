@@ -8,13 +8,8 @@
 
 // Board-related definitions
 #include "pinctrl.dtsi"
-#include "led.dtsi"
 #include "hrtim.dtsi"
 #include "adc.dtsi"
-#include "adc-channels.dtsi"
-#include "ngnd.dtsi"
-#include "can-standby-switch.dtsi"
-#include "gpio.dtsi"
 
 
 /*****************/

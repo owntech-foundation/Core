@@ -38,7 +38,9 @@
 
 // Current module private functions
 #include "../src/data_dispatch.h"
-#include "../src/adc_channels.h"
+#ifdef CONFIG_SHIELD_TWIST
+#include "../src/shield_channels.h"
+#endif
 
 
 /////
@@ -48,16 +50,85 @@ DataAcquisition dataAcquisition;
 
 
 /////
-// Public configuration functions
+// Public functions accessible only when using Twist
 
-int8_t DataAcquisition::configureAdcChannels(uint8_t adc_number, const char* channel_list[], uint8_t channel_count)
+#ifdef CONFIG_SHIELD_TWIST
+
+int8_t DataAcquisition::enableShieldChannel(uint8_t adc_num, channel_t channel_name)
 {
-	return adc_channels_configure_adc_channels(adc_number, channel_list, channel_count);
+	shield_channels_enable_adc_channel(adc_num, channel_name);
+	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel_name);
+	return this->enableChannel(channel_info.adc_num, channel_info.channel_num);
 }
 
-void DataAcquisition::configureAdcDefaultAllMeasurements()
+void DataAcquisition::enableTwistDefaultChannels()
 {
-	configure_adc_default_all_measurements();
+	hwConfig.adcConfigureTriggerSource(1, hrtim_ev1);
+	hwConfig.adcConfigureTriggerSource(2, hrtim_ev3);
+	hwConfig.adcConfigureTriggerSource(3, software);
+	hwConfig.adcConfigureTriggerSource(4, software);
+	hwConfig.adcConfigureTriggerSource(5, software);
+
+	hwConfig.adcConfigureDiscontinuousMode(1, 1);
+	hwConfig.adcConfigureDiscontinuousMode(2, 1);
+
+	this->enableShieldChannel(1, I1_LOW);
+	this->enableShieldChannel(1, V1_LOW);
+	this->enableShieldChannel(1, V_HIGH);
+
+	this->enableShieldChannel(2, I2_LOW);
+	this->enableShieldChannel(2, V2_LOW);
+	this->enableShieldChannel(2, I_HIGH);
+}
+
+uint16_t* DataAcquisition::getRawValues(channel_t channel, uint32_t& number_of_values_acquired)
+{
+	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
+	return this->getChannelRawValues(channel_info.adc_num, channel_info.channel_num, number_of_values_acquired);
+}
+
+float32_t DataAcquisition::peek(channel_t channel)
+{
+	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
+	return this->peekChannel(channel_info.adc_num, channel_info.channel_num);
+}
+
+float32_t DataAcquisition::getLatest(channel_t channel, uint8_t* dataValid)
+{
+	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
+	return this->getChannelLatest(channel_info.adc_num, channel_info.channel_num, dataValid);
+}
+
+float32_t DataAcquisition::convert(channel_t channel, uint16_t raw_value)
+{
+	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
+	return data_conversion_convert_raw_value(channel_info.adc_num, channel_info.channel_num, raw_value);
+}
+
+void DataAcquisition::setParameters(channel_t channel, float32_t gain, float32_t offset)
+{
+	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
+	data_conversion_set_conversion_parameters(channel_info.adc_num, channel_info.channel_num, gain, offset);
+}
+
+void DataAcquisition::setTwistChannelsUserCalibrationFactors()
+{
+	shield_channels_set_user_acquisition_parameters();
+}
+
+#endif // CONFIG_SHIELD_TWIST
+
+
+/////
+// Public functions
+
+int8_t DataAcquisition::enableAcquisition(uint8_t adc_num, uint8_t pin_num)
+{
+	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
+	if (channel_num == 0)
+		return -1;
+
+	return this->enableChannel(adc_num, channel_num);
 }
 
 int8_t DataAcquisition::start(dispatch_method_t dispatch_method)
@@ -75,65 +146,34 @@ int8_t DataAcquisition::start(dispatch_method_t dispatch_method)
 		scheduling_set_data_dispatch_at_task_start(true);
 	}
 
-	for (uint8_t adc_num = 1 ; adc_num <= 4 ; adc_num++)
-	{
-		uint8_t channel_rank = 0;
-
-		while (1)
-		{
-			const char* channel_name = adc_channels_get_channel_name(adc_num, channel_rank);
-
-			if (channel_name != nullptr)
-			{
-				if (strcmp(channel_name, "V1_LOW") == 0)
-				{
-					_setAssignment(v1_low_assignement, adc_num, channel_rank);
-				}
-				else if (strcmp(channel_name, "V2_LOW") == 0)
-				{
-					_setAssignment(v2_low_assignement, adc_num, channel_rank);
-				}
-				else if (strcmp(channel_name, "V_HIGH") == 0)
-				{
-					_setAssignment(v_high_assignement, adc_num, channel_rank);
-				}
-				else if (strcmp(channel_name, "I1_LOW") == 0)
-				{
-					_setAssignment(i1_low_assignement, adc_num, channel_rank);
-				}
-				else if (strcmp(channel_name, "I2_LOW") == 0)
-				{
-					_setAssignment(i2_low_assignement, adc_num, channel_rank);
-				}
-				else if (strcmp(channel_name, "I_HIGH") == 0)
-				{
-					_setAssignment(i_high_assignement, adc_num, channel_rank);
-				}
-				else if (strcmp(channel_name, "TEMP_SENSOR") == 0)
-				{
-					_setAssignment(temp_sensor_assignement, adc_num, channel_rank);
-				}
-				else if (strcmp(channel_name, "EXTRA_MEAS") == 0)
-				{
-					_setAssignment(extra_sensor_assignement, adc_num, channel_rank);
-				}
-				else if (strcmp(channel_name, "ANALOG_COMM") == 0)
-				{
-					_setAssignment(analog_comm_assignement, adc_num, channel_rank);
-				}
-
-				channel_rank++;
-			}
-			else
-			{
-				break;
-			}
-		}
-	}
+	// Initialize conversion
+	data_conversion_init();
 
 	// Initialize data dispatch
-	dispatch_t dispatch_type = (dispatch_method == on_dma_interrupt) ? interrupt : task;
-	data_dispatch_init(dispatch_type);
+	if (dispatch_method == on_dma_interrupt)
+	{
+		data_dispatch_init(interrupt, 0);
+	}
+	else
+	{
+		uint32_t repetition;
+		if (scheduling_get_uninterruptible_synchronous_task_interrupt_source() == source_hrtim)
+		{
+			repetition = hwConfig.getHrtimMasterRepetitionCounter();
+		}
+		else
+		{
+			uint32_t hrtim_period_us = hwConfig.getHrtimPeriod();
+			if (hrtim_period_us == 0)
+			{
+				return -1;
+			}
+			uint32_t task_period_us = scheduling_get_uninterruptible_synchronous_task_period_us();
+			repetition = task_period_us / hrtim_period_us;
+		}
+
+		data_dispatch_init(task, repetition);
+	}
 
 	// Launch ADC conversion
 	hwConfig.adcStart();
@@ -148,254 +188,141 @@ bool DataAcquisition::started()
 	return this->is_started;
 }
 
+void DataAcquisition::triggerAcquisition(uint8_t adc_num)
+{
+	uint8_t enabled_channels = hwConfig.adcGetEnabledChannelsCount(adc_num);
+	hwConfig.adcTriggerSoftwareConversion(adc_num, enabled_channels);
+}
+
+uint16_t* DataAcquisition::getRawValues(uint8_t adc_num, uint8_t pin_num, uint32_t& number_of_values_acquired)
+{
+	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
+	if (channel_num == 0)
+	{
+		number_of_values_acquired = 0;
+		return nullptr;
+	}
+
+	return this->getChannelRawValues(adc_num, channel_num, number_of_values_acquired);
+}
+
+float32_t DataAcquisition::peek(uint8_t adc_num, uint8_t pin_num)
+{
+	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
+	if (channel_num == 0)
+	{
+		return NO_VALUE;
+	}
+
+	return this->peekChannel(adc_num, channel_num);
+}
+
+float32_t DataAcquisition::getLatest(uint8_t adc_num, uint8_t pin_num, uint8_t* dataValid)
+{
+	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
+	if (channel_num == 0)
+	{
+		if (dataValid != nullptr)
+		{
+			*dataValid = DATA_IS_MISSING;
+		}
+		return NO_VALUE;
+	}
+
+	return this->getChannelLatest(adc_num, channel_num, dataValid);
+}
+
+float32_t DataAcquisition::convert(uint8_t adc_num, uint8_t pin_num, uint16_t raw_value)
+{
+	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
+	if (channel_num == 0)
+	{
+		return 0;
+	}
+
+	return data_conversion_convert_raw_value(adc_num, channel_num, raw_value);
+}
+
+void DataAcquisition::setParameters(uint8_t adc_num, uint8_t pin_num, float32_t gain, float32_t offset)
+{
+	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
+	if (channel_num == 0)
+	{
+		return;
+	}
+
+	data_conversion_set_conversion_parameters(adc_num, channel_num, gain, offset);
+}
+
 
 /////
-// Public accessors
+// Private functions
 
-// Get raw values
-
-uint16_t* DataAcquisition::getV1LowRawValues(uint32_t& number_of_values_acquired)
+int8_t DataAcquisition::enableChannel(uint8_t adc_num, uint8_t channel_num)
 {
-	return _getRawValues(v1_low_assignement, number_of_values_acquired);
+	if (this->is_started == true)
+		return -1;
+
+	if ( (adc_num == 0) || (adc_num > ADC_COUNT) )
+		return -1;
+
+	if ( (channel_num == 0) || (channel_num > CHANNELS_PER_ADC) )
+		return -1;
+
+	// Enable channel
+	hwConfig.adcConfigureDma(adc_num, true);
+	hwConfig.adcEnableChannel(adc_num, channel_num);
+
+	// Remember rank
+	uint8_t adc_index = adc_num-1;
+	uint8_t channel_index = channel_num-1;
+	this->current_rank[adc_index]++;
+	this->channels_ranks[adc_index][channel_index] = this->current_rank[adc_index];
+
+	return 0;
 }
 
-uint16_t* DataAcquisition::getV2LowRawValues(uint32_t& number_of_values_acquired)
+uint16_t* DataAcquisition::getChannelRawValues(uint8_t adc_num, uint8_t channel_num, uint32_t& number_of_values_acquired)
 {
-	return _getRawValues(v2_low_assignement, number_of_values_acquired);
+	if (this->is_started == false)
+	{
+		number_of_values_acquired = 0;
+		return nullptr;
+	}
+
+	uint8_t channel_rank = this->getChannelRank(adc_num, channel_num);
+	if (channel_rank == 0)
+	{
+		number_of_values_acquired = 0;
+		return nullptr;
+	}
+
+	return data_dispatch_get_acquired_values(adc_num, channel_rank, number_of_values_acquired);
 }
 
-uint16_t* DataAcquisition::getVHighRawValues(uint32_t& number_of_values_acquired)
+float32_t DataAcquisition::peekChannel(uint8_t adc_num, uint8_t channel_num)
 {
-	return _getRawValues(v_high_assignement, number_of_values_acquired);
+	if (this->is_started == false)
+	{
+		return NO_VALUE;
+	}
+
+	uint8_t channel_rank = this->getChannelRank(adc_num, channel_num);
+	if (channel_rank == 0)
+	{
+		return NO_VALUE;
+	}
+
+	uint16_t raw_value = data_dispatch_peek_acquired_value(adc_num, channel_rank);
+	if (raw_value == PEEK_NO_VALUE)
+	{
+		return NO_VALUE;
+	}
+
+	return data_conversion_convert_raw_value(adc_num, channel_num, raw_value);
 }
 
-uint16_t* DataAcquisition::getI1LowRawValues(uint32_t& number_of_values_acquired)
-{
-	return _getRawValues(i1_low_assignement, number_of_values_acquired);
-}
-
-uint16_t* DataAcquisition::getI2LowRawValues(uint32_t& number_of_values_acquired)
-{
-	return _getRawValues(i2_low_assignement, number_of_values_acquired);
-}
-
-uint16_t* DataAcquisition::getIHighRawValues(uint32_t& number_of_values_acquired)
-{
-	return _getRawValues(i_high_assignement, number_of_values_acquired);
-}
-
-uint16_t* DataAcquisition::getTemperatureRawValues(uint32_t& number_of_values_acquired)
-{
-	return _getRawValues(temp_sensor_assignement, number_of_values_acquired);
-}
-
-uint16_t* DataAcquisition::getExtraRawValues(uint32_t& number_of_values_acquired)
-{
-	return _getRawValues(extra_sensor_assignement, number_of_values_acquired);
-}
-
-uint16_t* DataAcquisition::getAnalogCommRawValues(uint32_t& number_of_values_acquired)
-{
-	return _getRawValues(analog_comm_assignement, number_of_values_acquired);
-}
-
-// Peek
-
-float32_t DataAcquisition::peekV1Low()
-{
-	return _peek(v1_low_assignement);
-}
-
-float32_t DataAcquisition::peekV2Low()
-{
-	return _peek(v2_low_assignement);
-}
-
-float32_t DataAcquisition::peekVHigh()
-{
-	return _peek(v_high_assignement);
-}
-
-float32_t DataAcquisition::peekI1Low()
-{
-	return _peek(i1_low_assignement);
-}
-
-float32_t DataAcquisition::peekI2Low()
-{
-	return _peek(i2_low_assignement);
-}
-
-float32_t DataAcquisition::peekIHigh()
-{
-	return _peek(i_high_assignement);
-}
-
-float32_t DataAcquisition::peekTemperature()
-{
-	return _peek(temp_sensor_assignement);
-}
-
-float32_t DataAcquisition::peekExtra()
-{
-	return _peek(extra_sensor_assignement);
-}
-
-float32_t DataAcquisition::peekAnalogComm()
-{
-	return _peek(analog_comm_assignement);
-}
-
-// Get latest value
-
-float32_t DataAcquisition::getV1Low(uint8_t* dataValid)
-{
-	return _getLatest(v1_low_assignement, dataValid);
-}
-
-float32_t DataAcquisition::getV2Low(uint8_t* dataValid)
-{
-	return _getLatest(v2_low_assignement, dataValid);
-}
-
-float32_t DataAcquisition::getVHigh(uint8_t* dataValid)
-{
-	return _getLatest(v_high_assignement, dataValid);
-}
-
-float32_t DataAcquisition::getI1Low(uint8_t* dataValid)
-{
-	return _getLatest(i1_low_assignement, dataValid);
-}
-
-float32_t DataAcquisition::getI2Low(uint8_t* dataValid)
-{
-	return _getLatest(i2_low_assignement, dataValid);
-}
-
-float32_t DataAcquisition::getIHigh(uint8_t* dataValid)
-{
-	return _getLatest(i_high_assignement, dataValid);
-}
-
-float32_t DataAcquisition::getTemperature(uint8_t* dataValid)
-{
-	return _getLatest(temp_sensor_assignement, dataValid);
-}
-
-float32_t DataAcquisition::getExtra(uint8_t* dataValid)
-{
-	return _getLatest(extra_sensor_assignement, dataValid);
-}
-
-float32_t DataAcquisition::getAnalogComm(uint8_t* dataValid)
-{
-	return _getLatest(analog_comm_assignement, dataValid);
-}
-
-// Convertion
-
-float32_t DataAcquisition::convertV1Low(uint16_t raw_value)
-{
-	return _convert(v1_low_assignement, raw_value);
-}
-
-float32_t DataAcquisition::convertV2Low(uint16_t raw_value)
-{
-	return _convert(v2_low_assignement, raw_value);
-}
-
-float32_t DataAcquisition::convertVHigh(uint16_t raw_value)
-{
-	return _convert(v_high_assignement, raw_value);
-}
-
-float32_t DataAcquisition::convertI1Low(uint16_t raw_value)
-{
-	return _convert(i1_low_assignement, raw_value);
-}
-
-float32_t DataAcquisition::convertI2Low(uint16_t raw_value)
-{
-	return _convert(i2_low_assignement, raw_value);
-}
-
-float32_t DataAcquisition::convertIHigh(uint16_t raw_value)
-{
-	return _convert(i_high_assignement, raw_value);
-}
-
-float32_t DataAcquisition::convertTemperature(uint16_t raw_value)
-{
-	return _convert(temp_sensor_assignement, raw_value);
-}
-
-float32_t DataAcquisition::convertExtra(uint16_t raw_value)
-{
-	return _convert(extra_sensor_assignement, raw_value);
-}
-
-float32_t DataAcquisition::convertAnalogComm(uint16_t raw_value)
-{
-	return _convert(analog_comm_assignement, raw_value);
-}
-
-// Parameter setters
-
-void DataAcquisition::setV1LowParameters(float32_t gain, float32_t offset)
-{
-	_setParameters(v1_low_assignement, gain, offset);
-}
-
-void DataAcquisition::setV2LowParameters(float32_t gain, float32_t offset)
-{
-	_setParameters(v2_low_assignement, gain, offset);
-}
-
-void DataAcquisition::setVHighParameters(float32_t gain, float32_t offset)
-{
-	_setParameters(v_high_assignement, gain, offset);
-}
-
-void DataAcquisition::setI1LowParameters(float32_t gain, float32_t offset)
-{
-	_setParameters(i1_low_assignement, gain, offset);
-}
-
-void DataAcquisition::setI2LowParameters(float32_t gain, float32_t offset)
-{
-	_setParameters(i2_low_assignement, gain, offset);
-}
-
-void DataAcquisition::setIHighParameters(float32_t gain, float32_t offset)
-{
-	_setParameters(i_high_assignement, gain, offset);
-}
-
-void DataAcquisition::setTemperatureParameters(float32_t gain, float32_t offset)
-{
-	_setParameters(temp_sensor_assignement, gain, offset);
-}
-
-void DataAcquisition::setExtraParameters(float32_t gain, float32_t offset)
-{
-	_setParameters(extra_sensor_assignement, gain, offset);
-}
-
-void DataAcquisition::setAnalogCommParameters(float32_t gain, float32_t offset)
-{
-	_setParameters(analog_comm_assignement, gain, offset);
-}
-
-// Private helper functions
-
-void DataAcquisition::_setAssignment(channel_assignment_t& assignment, uint8_t adc_number, uint8_t channel_rank)
-{
-	assignment.adc_number   = adc_number;
-	assignment.channel_rank = channel_rank;
-}
-
-float32_t DataAcquisition::_getLatest(channel_assignment_t assignment, uint8_t* dataValid)
+float32_t DataAcquisition::getChannelLatest(uint8_t adc_num, uint8_t channel_num, uint8_t* dataValid)
 {
 	if (this->is_started == false)
 	{
@@ -406,8 +333,18 @@ float32_t DataAcquisition::_getLatest(channel_assignment_t assignment, uint8_t* 
 		return NO_VALUE;
 	}
 
+	uint8_t channel_rank = this->getChannelRank(adc_num, channel_num);
+	if (channel_rank == 0)
+	{
+		if (dataValid != nullptr)
+		{
+			*dataValid = DATA_IS_MISSING;
+		}
+		return NO_VALUE;
+	}
+
 	uint32_t data_count;
-	uint16_t* buffer = data_dispatch_get_acquired_values(assignment.adc_number, assignment.channel_rank, data_count);
+	uint16_t* buffer = data_dispatch_get_acquired_values(adc_num, channel_rank, data_count);
 
 	if (data_count > 0)
 	{
@@ -416,16 +353,16 @@ float32_t DataAcquisition::_getLatest(channel_assignment_t assignment, uint8_t* 
 		{
 			*dataValid = DATA_IS_OK;
 		}
-		return assignment.convert(raw_value);
+		return data_conversion_convert_raw_value(adc_num, channel_num, raw_value);
 	}
 	else
 	{
-		uint16_t rawValue = data_dispatch_peek_acquired_value(assignment.adc_number, assignment.channel_rank);
+		uint16_t raw_value = data_dispatch_peek_acquired_value(adc_num, channel_rank);
 
 		float32_t peekValue;
-		if (rawValue != PEEK_NO_VALUE)
+		if (raw_value != PEEK_NO_VALUE)
 		{
-			peekValue = assignment.convert(rawValue);
+			data_conversion_convert_raw_value(adc_num, channel_num, raw_value);
 		}
 		else
 		{
@@ -447,55 +384,171 @@ float32_t DataAcquisition::_getLatest(channel_assignment_t assignment, uint8_t* 
 	}
 }
 
-uint16_t* DataAcquisition::_getRawValues(channel_assignment_t assignment, uint32_t& number_of_values_acquired)
+uint8_t DataAcquisition::getChannelRank(uint8_t adc_num, uint8_t channel_num)
 {
-	if (this->is_started == true)
-	{
-		return data_dispatch_get_acquired_values(assignment.adc_number, assignment.channel_rank, number_of_values_acquired);
-	}
-	else
-	{
-		number_of_values_acquired = 0;
-		return nullptr;
-	}
+	if ( (adc_num > ADC_COUNT) || (channel_num > CHANNELS_PER_ADC) )
+		return 0;
+
+	uint8_t adc_index = adc_num-1;
+	uint8_t channel_index = channel_num-1;
+
+	return this->channels_ranks[adc_index][channel_index];
 }
 
-float32_t DataAcquisition::_peek(channel_assignment_t assignment)
+uint8_t DataAcquisition::getChannelNumber(uint8_t adc_num, uint8_t twist_pin)
 {
-	if (this->is_started == true)
+	switch (adc_num)
 	{
-		uint16_t rawValue = data_dispatch_peek_acquired_value(assignment.adc_number, assignment.channel_rank);
-		if (rawValue != PEEK_NO_VALUE)
+	case 1:
+		switch (twist_pin)
 		{
-			return assignment.convert(rawValue);
+			case 1:
+				return 14;
+				break;
+			case 2:
+				return 11;
+				break;
+			case 5:
+				return 5;
+				break;
+			case 24:
+				return 6;
+				break;
+			case 25:
+				return 7;
+				break;
+			case 26:
+				return 8;
+				break;
+			case 27:
+				return 9;
+				break;
+			case 29:
+				return 1;
+				break;
+			case 30:
+				return 2;
+				break;
+			case 31:
+				return 5;
+				break;
+			case 37:
+				return 12;
+				break;
+			case 50:
+				return 3;
+				break;
+			case 51:
+				return 4;
+				break;
+			default:
+				return 0;
+				break;
 		}
-		else
+		break;
+	case 2:
+		switch (twist_pin)
 		{
-			return NO_VALUE;
+			case 1:
+				return 14;
+				break;
+			case 6:
+				return 15;
+				break;
+			case 24:
+				return 6;
+				break;
+			case 25:
+				return 7;
+				break;
+			case 26:
+				return 8;
+				break;
+			case 27:
+				return 9;
+				break;
+			case 29:
+				return 1;
+				break;
+			case 30:
+				return 2;
+				break;
+			case 32:
+				return 13;
+				break;
+			case 34:
+				return 3;
+				break;
+			case 35:
+				return 5;
+				break;
+			case 42:
+				return 12;
+				break;
+			case 43:
+				return 11;
+				break;
+			case 44:
+				return 4;
+				break;
+			case 45:
+				return 17;
+				break;
+			default:
+				return 0;
+				break;
 		}
+		break;
+	case 3:
+		switch (twist_pin)
+		{
+			case 4:
+				return 5;
+				break;
+			case 31:
+				return 12;
+				break;
+			case 37:
+				return 1;
+				break;
+			default:
+				return 0;
+				break;
+		}
+		break;
+	case 4:
+		switch (twist_pin)
+		{
+			case 2:
+				return 3;
+				break;
+			case 5:
+				return 4;
+				break;
+			case 6:
+				return 5;
+				break;
+			default:
+				return 0;
+				break;
+		}
+		break;
+	case 5:
+		switch (twist_pin)
+		{
+			case 12:
+				return 1;
+				break;
+			case 14:
+				return 2;
+				break;
+			default:
+				return 0;
+				break;
+		}
+		break;
+	default:
+		return 0;
+		break;
 	}
-	else
-	{
-		return NO_VALUE;
-	}
-}
-
-float32_t DataAcquisition::_convert(channel_assignment_t assignment, uint16_t raw_value)
-{
-	return assignment.convert(raw_value);
-}
-
-void DataAcquisition::_setParameters(channel_assignment_t assignment, float32_t gain, float32_t offset)
-{
-	assignment.set_parameters(gain, offset);
-}
-
-void DataAcquisition::setDefaultCalibrationFactors(void)
-{
-	set_default_acquisition_parameters();
-}
-
-void DataAcquisition::setUserCalibrationFactors(void)
-{
-	set_user_acquisition_parameters();
 }

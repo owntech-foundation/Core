@@ -1,4 +1,8 @@
-# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022-2023 OwnTech
+# SPDX-License-Identifier: LGLPV2.1
+
+# Spin default Kconfig configuration
+
 
 CONFIG_SOC_SERIES_STM32G4X=y
 CONFIG_SOC_STM32G474XX=y

@@ -47,7 +47,7 @@
  * @param adc_number Number of the ADC to acquire measures from.
  * @param disable_interrupts Boolean indicating whether interrupts
  *        shoud be disabled. Warning: this override Zephyr DMA
- *        driver defalt behavior.
+ *        driver default behavior.
  * @param buffer Pointer to buffer.
  * @param buffer_size Number of uint16_t words the buffer can contain.
  */
@@ -61,7 +61,7 @@ void dma_configure_adc_acquisition(uint8_t adc_number, bool disable_interrupts, 
  *
  * @return Number of acquired data modulo buffer size.
  */
-size_t dma_get_retreived_data_count(uint8_t adc_number);
+uint32_t dma_get_retreived_data_count(uint8_t adc_number);
 
 
 #endif // DMA_H_

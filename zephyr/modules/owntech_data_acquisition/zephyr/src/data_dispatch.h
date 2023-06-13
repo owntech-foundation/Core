@@ -47,30 +47,37 @@ const uint16_t PEEK_NO_VALUE = 0xFFFF;
 typedef enum {task, interrupt} dispatch_t;
 
 /**
- * Init function to be called first.
+ * @brief Init function to be called first.
+ *
+ * @param dispatch_method Indicates when the dispatch
+ *        should be done.
+ * @param repetitions If dispatch is done at task start,
+ *        this value represents the number of acquisitions
+ *        that are done between two execution of the
+ *        task. Ignored if dispatch is done on interrupt.
  */
-void data_dispatch_init(dispatch_t dispatch_method);
+void data_dispatch_init(dispatch_t dispatch_method, uint32_t repetitions);
 
 /**
- * Dispatch function: gets the readings and store them
- * in per-channel arrays. This functon is called by DMA
- * callback when the DMA has filled one of its buffers.
+ * @brief Dispatch function: gets the readings and store them
+ *        in per-channel arrays. This functon is called by DMA
+ *        callback when the DMA has filled one of its buffers.
  *
  * @param adc_number Number of the ADC from which data comes.
  */
 void data_dispatch_do_dispatch(uint8_t adc_number);
 
 /**
- * Function to proceed to all chanels dispatch when
- * it is done at uninterruptible task start.
+ * @brief Function to proceed to all chanels dispatch when
+ *        it is done at uninterruptible task start.
  */
 void data_dispatch_do_full_dispatch();
 
 /**
- * Obtain data for a specific channel.
- * The data is provided as an array of values
- * and the count of data in this buffer is returned
- * as an output parameter.
+ * @brief  Obtain data for a specific channel.
+ *         The data is provided as an array of values
+ *         and the count of data in this buffer is returned
+ *         as an output parameter.
  *
  * @param  adc_number Number of the ADC from which to
  *         obtain data.
@@ -87,9 +94,9 @@ void data_dispatch_do_full_dispatch();
 uint16_t* data_dispatch_get_acquired_values(uint8_t adc_number, uint8_t channel_rank, uint32_t& number_of_values_acquired);
 
 /**
- * Peek data for a specific channel:
- * obtain the latest value from the channel without
- * removing it from the buffer.
+ * @brief  Peek data for a specific channel:
+ *         obtain the latest value from the channel without
+ *         removing it from the buffer.
  *
  * @param  adc_number Number of the ADC from which to
  *         obtain data.

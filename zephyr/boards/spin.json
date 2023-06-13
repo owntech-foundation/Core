@@ -25,7 +25,7 @@
   "frameworks": [
     "zephyr"
   ],
-  "name": "OwnTech Board",
+  "name": "Spin",
   "upload": {
     "maximum_ram_size": 131072,
     "maximum_size": 524288,

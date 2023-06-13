@@ -33,15 +33,10 @@
 
 // OwnTech API
 #include "HardwareConfiguration.h"
-#include "Scheduling.h"
-#include "scheduling_internal.h"
-#include "hrtim.h"
-#include "leg.h"
 
 // Current module header
 #include "DataAcquisition.h"
 #include "dma.h"
-#include "adc_channels.h"
 
 // Current file header
 #include "data_dispatch.h"
@@ -51,7 +46,6 @@
 // Local variables
 
 #define CHANNELS_BUFFERS_SIZE 32
-#define ADC_COUNT 4
 
 // Number of channels in each ADC (cell i is ADC number i+1)
 static uint8_t* enabled_channels_count = nullptr;
@@ -82,8 +76,8 @@ static uint16_t** peek_memory = nullptr;
 // will only be used when double-buffering is activated.
 // Double buffering is activated in Interrupt mode,
 // while Task mode doesn't need it.
-static uint16_t* dma_main_buffers[ADC_COUNT]      = {nullptr};
-static uint16_t* dma_secondary_buffers[ADC_COUNT] = {nullptr};
+static uint16_t* dma_main_buffers[ADC_COUNT]      = {0};
+static uint16_t* dma_secondary_buffers[ADC_COUNT] = {0};
 static uint8_t   current_dma_buffer[ADC_COUNT]    = {0};
 static size_t    dma_buffer_sizes[ADC_COUNT]      = {0};
 
@@ -125,7 +119,7 @@ __STATIC_INLINE void _data_dispatch_swap_buffers(uint8_t adc_index, uint8_t chan
 /////
 // Public API
 
-void data_dispatch_init(dispatch_t dispatch_method)
+void data_dispatch_init(dispatch_t dispatch_method, uint32_t repetitions)
 {
 	// Store dispatch method
 	dispatch_type = dispatch_method;
@@ -141,7 +135,7 @@ void data_dispatch_init(dispatch_t dispatch_method)
 	for (uint8_t adc_num = 1 ; adc_num <= ADC_COUNT ; adc_num++)
 	{
 		uint8_t adc_index = adc_num-1;
-		enabled_channels_count[adc_index] = adc_channels_get_enabled_channels_count(adc_num);
+		enabled_channels_count[adc_index] = hwConfig.adcGetEnabledChannelsCount(adc_num);
 
 		if (enabled_channels_count[adc_index] > 0)
 		{
@@ -157,25 +151,13 @@ void data_dispatch_init(dispatch_t dispatch_method)
 			}
 			else
 			{
-				uint32_t repetition;
-				if (scheduling_get_uninterruptible_synchronous_task_interrupt_source() == source_hrtim)
-				{
-					repetition = hrtim_PeriodicEvent_GetRep(MSTR);
-				}
-				else
-				{
-					uint32_t hrtim_period_us = leg_get_period_us();
-					uint32_t task_period_us = scheduling_get_uninterruptible_synchronous_task_period_us();
-					repetition = task_period_us / hrtim_period_us;
-				}
-
-				dma_buffer_size = repetition;
+				dma_buffer_size = repetitions;
 
 				// Make sure buffer size is a multiple of enabled channels count
 				// so that each channel data will always be at the same position
-				if (repetition % enabled_channels_count[adc_index] != 0)
+				if (repetitions % enabled_channels_count[adc_index] != 0)
 				{
-					dma_buffer_size += enabled_channels_count[adc_index] - (repetition % enabled_channels_count[adc_index]);
+					dma_buffer_size += enabled_channels_count[adc_index] - (repetitions % enabled_channels_count[adc_index]);
 				}
 				else
 				{
@@ -310,18 +292,19 @@ uint16_t* data_dispatch_get_acquired_values(uint8_t adc_number, uint8_t channel_
 		return nullptr;
 
 	// Get and check data count
-	uint32_t current_count = _data_dispatch_get_count(adc_index, channel_rank);
+	uint8_t channel_index = channel_rank-1;
+	uint32_t current_count = _data_dispatch_get_count(adc_index, channel_index);
 	if (current_count == 0)
 		return nullptr;
 
 	// Get and swap buffer
-	uint16_t* active_buffer = _data_dispatch_get_buffer(adc_index, channel_rank);
-	_data_dispatch_swap_buffers(adc_index, channel_rank);
+	uint16_t* active_buffer = _data_dispatch_get_buffer(adc_index, channel_index);
+	_data_dispatch_swap_buffers(adc_index, channel_index);
 
 	// Retain latest value for peek() functions
 	if (current_count > 0)
 	{
-		peek_memory[adc_number][channel_rank] = active_buffer[current_count-1];
+		peek_memory[adc_index][channel_index] = active_buffer[current_count-1];
 	}
 
 	// Return data
@@ -332,11 +315,12 @@ uint16_t* data_dispatch_get_acquired_values(uint8_t adc_number, uint8_t channel_
 uint16_t data_dispatch_peek_acquired_value(uint8_t adc_number, uint8_t channel_rank)
 {
 	uint8_t adc_index = adc_number-1;
+	uint8_t channel_index = channel_rank-1;
 	if (adc_index < ADC_COUNT)
 	{
 		// Get info on buffer
-		uint16_t* active_buffer = _data_dispatch_get_buffer(adc_index, channel_rank);
-		uint32_t  current_count = _data_dispatch_get_count(adc_index, channel_rank);
+		uint16_t* active_buffer = _data_dispatch_get_buffer(adc_index, channel_index);
+		uint32_t  current_count = _data_dispatch_get_count(adc_index, channel_index);
 
 		// Return data
 		if (current_count > 0)
@@ -345,7 +329,7 @@ uint16_t data_dispatch_peek_acquired_value(uint8_t adc_number, uint8_t channel_r
 		}
 		else
 		{
-			return peek_memory[adc_number][channel_rank];
+			return peek_memory[adc_index][channel_index];
 		}
 	}
 	else

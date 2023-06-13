@@ -40,13 +40,11 @@ void HardwareConfiguration::adcInitialize()
 	if (adcInitialized == false)
 	{
 		// Perform default configuration
-		adc_configure_trigger_source(1, hrtim_ev1);
-		adc_configure_trigger_source(2, hrtim_ev3);
+		adc_configure_trigger_source(1, software);
+		adc_configure_trigger_source(2, software);
 		adc_configure_trigger_source(3, software);
 		adc_configure_trigger_source(4, software);
-
-		adc_configure_discontinuous_mode(1, 1);
-		adc_configure_discontinuous_mode(2, 1);
+		adc_configure_trigger_source(5, software);
 
 		adcInitialized = 1;
 	}
@@ -84,7 +82,7 @@ void HardwareConfiguration::adcConfigureDiscontinuousMode(uint8_t adc_number, ui
 	adc_configure_discontinuous_mode(adc_number, discontinuous_count);
 }
 
-void HardwareConfiguration::adcAddChannel(uint8_t adc_num, uint8_t channel)
+void HardwareConfiguration::adcEnableChannel(uint8_t adc_num, uint8_t channel)
 {
 	/////
 	// Make sure module is initialized
@@ -100,7 +98,7 @@ void HardwareConfiguration::adcAddChannel(uint8_t adc_num, uint8_t channel)
 	adc_add_channel(adc_num, channel);
 }
 
-void HardwareConfiguration::adcRemoveChannel(uint8_t adc_num, uint8_t channel)
+void HardwareConfiguration::adcDisableChannel(uint8_t adc_num, uint8_t channel)
 {
 	/////
 	// Make sure module is initialized
@@ -114,6 +112,22 @@ void HardwareConfiguration::adcRemoveChannel(uint8_t adc_num, uint8_t channel)
 	// Proceed
 
 	adc_remove_channel(adc_num, channel);
+}
+
+uint32_t HardwareConfiguration::adcGetEnabledChannelsCount(uint8_t adc_number)
+{
+	/////
+	// Make sure module is initialized
+
+	if (adcInitialized == false)
+	{
+		adcInitialize();
+	}
+
+	/////
+	// Proceed
+
+	return adc_get_enabled_channels_count(adc_number);
 }
 
 void HardwareConfiguration::adcConfigureDma(uint8_t adc_num, bool use_dma)
@@ -164,3 +178,18 @@ void HardwareConfiguration::adcStop()
 	adc_stop();
 }
 
+void HardwareConfiguration::adcTriggerSoftwareConversion(uint8_t adc_number, uint8_t number_of_acquisitions)
+{
+	/////
+	// Make sure module is initialized
+
+	if (adcInitialized == false)
+	{
+		adcInitialize();
+	}
+
+	/////
+	// Proceed
+
+	adc_trigger_software_conversion(adc_number, number_of_acquisitions);
+}

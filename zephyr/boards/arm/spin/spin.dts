@@ -11,19 +11,16 @@
 #include <st/g4/stm32g474r(b-c-e)tx-pinctrl.dtsi>
 
 // Board-related definitions
+#include "spin_header.dtsi"
 #include "pinctrl.dtsi"
-#include "led.dtsi"
 #include "hrtim.dtsi"
 #include "adc.dtsi"
-#include "adc-channels.dtsi"
-#include "ngnd.dtsi"
-#include "can-standby-switch.dtsi"
 #include "gpio.dtsi"
 
 
 / {
-	model = "OwnTech Power Converter board";
-	compatible = "owntech,owntech-board", "st,stm32g474re-nucleo";
+	model = "OwnTech Spin";
+	compatible = "owntech,spin", "st,stm32g474re-nucleo";
 
 	chosen {
 		zephyr,console = &lpuart1;
@@ -33,9 +30,33 @@
 		zephyr,can-primary = &can1;
 	};
 
-	aliases {
-		led0 = &green_led;
+	leds {
+		compatible = "gpio-leds";
+		led: led_0 {
+			gpios = <&gpioa 5 GPIO_ACTIVE_HIGH>;
+		};
 	};
+
+	gpio_keys {
+		compatible = "gpio-keys";
+		btn: button_0 {
+			label = "User button";
+			gpios = <&gpioc 14 (GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH)>;
+		};
+	};
+
+	aliases {
+		led0 = &led;
+		sw0 = &btn;
+	};
+};
+
+/**********/
+/* Clocks */
+/**********/
+
+&clk_lsi {
+	status = "okay";
 };
 
 &clk_hse {
@@ -65,11 +86,11 @@
 	status = "okay";
 };
 
+/***********/
+/* Storage */
+/***********/
+
 &flash0 {
-	/*
-	 * For more information, see:
-	 * http://docs.zephyrproject.org/latest/guides/dts/index.html#flash-partitions
-	 */
 	partitions {
 		compatible = "fixed-partitions";
 		#address-cells = <1>;
@@ -83,14 +104,6 @@
 	};
 };
 
-&iwdg {
-	status = "okay";
-};
-
-&rng {
-	status = "okay";
-};
-
 /*****************/
 /* Communication */
 /*****************/
@@ -99,12 +112,14 @@
 
 &usart1 {
 	pinctrl-0 = <&usart1_tx_pb6 &usart1_rx_pb7>;
+	pinctrl-names = "default";
 	current-speed = <115200>;
 	status = "okay";
 };
 
 &lpuart1 {
 	pinctrl-0 = <&lpuart1_tx_pa2 &lpuart1_rx_pa3>;
+	pinctrl-names = "default";
 	current-speed = <115200>;
 	status = "okay";
 };
@@ -113,6 +128,7 @@
 
 &spi3 {
 	pinctrl-0 = <&spi3_nss_pa4 &spi3_sck_pc10 &spi3_miso_pb4 &spi3_mosi_pb5>;
+	pinctrl-names = "default";
 	status = "okay";
 };
 
@@ -120,6 +136,7 @@
 
 &can1 {
 	pinctrl-0 = <&fdcan1_rx_pb8 &fdcan1_tx_pb9>;
+	pinctrl-names = "default";
 	bus-speed = <500000>;
 	sjw = <1>;
 	sample-point = <875>;
@@ -134,8 +151,8 @@
 /*********/
 
 &timers4 {
+	pinctrl-0 = <&tim4_etr_pb3 &tim4_ch1_pb6 &tim4_ch2_pb7>;
 	pinctrl-names = "incremental_encoder";
-	pinctrl-0 = <&tim4_etr_pb3 &tim4_ch1_pb6 &tim4_ch2_pb7 >;
 	status = "okay";
 };
 
@@ -165,21 +182,31 @@
 
 &adc1 {
 	pinctrl-0 = <&adc1_in6_pc0 &adc1_in7_pc1 &adc1_in8_pc2 &adc1_in9_pc3>;
+	pinctrl-names = "default";
 	status = "okay";
 };
 
 &adc2 {
 	pinctrl-0 = <&adc2_in1_pa0 &adc2_in2_pa1 &adc2_in3_pa6 &adc2_in5_pc4>;
+	pinctrl-names = "default";
 	status = "okay";
 };
 
 &adc3 {
-	pinctrl-0 = <&adc3_in1_pb1 >;
+	pinctrl-0 = <&adc3_in1_pb1>;
+	pinctrl-names = "default";
 	status = "okay";
 };
 
 &adc4 {
-	pinctrl-0 = <&adc4_in5_pb15 >;
+	pinctrl-0 = <&adc4_in5_pb15>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+&adc5 {
+	pinctrl-0 = <&adc5_in1_pa8 &adc5_in2_pa9>;
+	pinctrl-names = "default";
 	status = "okay";
 };
 
@@ -199,10 +226,14 @@
 	status = "okay";
 };
 
-/********/
-/* NGND */
-/********/
+/***********/
+/* Various */
+/***********/
 
-&ngnd {
+&iwdg {
+	status = "okay";
+};
+
+&rng {
 	status = "okay";
 };

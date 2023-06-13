@@ -100,8 +100,10 @@ public:
 	/////
 	// NGND
 
+#ifdef CONFIG_SHIELD_TWIST
 	void setNgndOn();
 	void setNgndOff();
+#endif
 
 	/////
 	// LED
@@ -224,6 +226,16 @@ public:
 	uint32_t getHrtimFrequency();
 
 	/**
+	 * @brief Gets the period of the HRTIMER in µs
+	 */
+	uint32_t getHrtimPeriod();
+
+	/**
+	 * @brief Gets the repetition couunter HRTIMER master timer
+	 */
+	uint32_t getHrtimMasterRepetitionCounter();
+
+	/**
 	 * @brief Updates the minimum duty cycle of both legs
 	 */
 	void setHrtimMinDutyCycle(float32_t duty_cycle);
@@ -292,8 +304,7 @@ public:
 
 	/**
 	 * @brief Set the discontinuous count for an ADC.
-	 *        By default, ADC 1/2 ard in discontinuous mode, while
-	 *        ADC 3/4 aren't.
+	 *        By default, ADCs are not in discontinuous mode.
 	 *
 	 *        Applied configuration will only be set when ADC is started.
 	 *        If ADC is already started, it must be stopped then started again.
@@ -320,8 +331,8 @@ public:
 	/**
 	 * @brief Add a channel to the list of channels to be acquired
 	 *        for an ADC.
-	 *        The order in which channels are added determine
-	 *        the order in which they will be acquired.
+	 *        The order in which channels are acquired is determined
+	 *        by the order in which they are enabled.
 	 *
 	 *        Applied configuration will only be set when ADC is started.
 	 *        If ADC is already started, it must be stopped then started again.
@@ -329,14 +340,14 @@ public:
 	 * @param adc_number Number of the ADC to configure.
 	 * @param channel Number of the channel to to be acquired.
 	 */
-	void adcAddChannel(uint8_t adc_number, uint8_t channel);
+	void adcEnableChannel(uint8_t adc_number, uint8_t channel);
 
 	/**
-	 * @brief Removes a channel from the list of channels
-	 *        that are acquired by an ADC.
-	 *        If a channel has been added multiple times,
-	 *        then only the first occurence in the list
-	 *        will be removed.
+	 * @brief Removes a channel from the list of channels that are
+	 *        acquired by an ADC.
+	 *
+	 * @note  If a channel has been enabled multiple times, then only
+	 *        the first occurence in the list will be removed.
 	 *
 	 *        Applied configuration will only be set when ADC is started.
 	 *        If ADC is already started, it must be stopped then started again.
@@ -344,7 +355,28 @@ public:
 	 * @param adc_number Number of the ADC to configure.
 	 * @param channel Number of the channel to to no longer be acquired.
 	 */
-	void adcRemoveChannel(uint8_t adc_number, uint8_t channel);
+	void adcDisableChannel(uint8_t adc_number, uint8_t channel);
+
+	/**
+	 * @brief  Returns the number of enabled channels for an ADC.
+	 *
+	 * @param  adc_number Number of the ADC to fetch.
+	 * @return Number of enabled channels on the given ADC.
+	 */
+	uint32_t adcGetEnabledChannelsCount(uint8_t adc_number);
+
+	/**
+	 * @brief  Triggers a conversion on an ADC which is
+	 *         configured as software triggered.
+	 *
+	 * @note   Software trigger is default for all ADCs
+	 *         unless configured differently by the user or
+	 *         another module.
+	 *
+	 * @param  adc_number Number of the ADC to fetch.
+	 * @param  number_of_acquisitions Number of channels to acquire.
+	 */
+	void adcTriggerSoftwareConversion(uint8_t adc_number, uint8_t number_of_acquisitions);
 
 	/**
 	 * @brief Start all configured ADCs.

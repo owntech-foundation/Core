@@ -37,7 +37,7 @@
 /////
 // Constants
 
-#define NUMBER_OF_ADCS 4
+#define NUMBER_OF_ADCS 5
 
 
 /////
@@ -55,6 +55,8 @@ ADC_TypeDef* _get_adc_by_number(uint8_t adc_number)
 		adc = ADC3;
 	else if (adc_number == 4)
 		adc = ADC4;
+	else if (adc_number == 5)
+		adc = ADC5;
 
 	return adc;
 }

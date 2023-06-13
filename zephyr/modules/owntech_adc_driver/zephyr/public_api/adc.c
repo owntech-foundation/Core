@@ -37,17 +37,17 @@
 /////
 // Constants
 
-#define NUMBER_OF_ADCS 4
+#define NUMBER_OF_ADCS 5
 #define NUMBER_OF_CHANNELS_PER_ADC 16
 
 
 /////
 // Local variables
 
-static adc_ev_src_t adc_trigger_sources[NUMBER_OF_ADCS]    = {software};
+static adc_ev_src_t adc_trigger_sources[NUMBER_OF_ADCS]    = {0};
 static uint32_t     adc_discontinuous_mode[NUMBER_OF_ADCS] = {0};
 static uint32_t     enabled_channels_count[NUMBER_OF_ADCS] = {0};
-static bool         enable_dma[NUMBER_OF_ADCS]             = {false};
+static bool         enable_dma[NUMBER_OF_ADCS]             = {0};
 
 static uint32_t     enabled_channels[NUMBER_OF_ADCS][NUMBER_OF_CHANNELS_PER_ADC] = {0};
 
@@ -110,6 +110,16 @@ void adc_remove_channel(uint8_t adc_number, uint8_t channel)
 	}
 }
 
+uint32_t adc_get_enabled_channels_count(uint8_t adc_number)
+{
+	if ( (adc_number == 0) || (adc_number > NUMBER_OF_ADCS) )
+		return 0;
+
+	uint8_t adc_index = adc_number-1;
+
+	return enabled_channels_count[adc_index];
+}
+
 void adc_configure_use_dma(uint8_t adc_number, bool use_dma)
 {
 	if ( (adc_number == 0) || (adc_number > NUMBER_OF_ADCS) )
@@ -137,9 +147,9 @@ void adc_start()
 	/////
 	// Enable ADCs
 
-	for (int i = 1 ; i <= NUMBER_OF_ADCS ; i++)
+	for (int adc_num = 1 ; adc_num <= NUMBER_OF_ADCS ; adc_num++)
 	{
-		adc_core_enable(i);
+		adc_core_enable(adc_num);
 	}
 
 	/////
@@ -215,7 +225,7 @@ void adc_start()
 	for (uint8_t adc_num = 1 ; adc_num <= NUMBER_OF_ADCS ; adc_num++)
 	{
 		uint8_t adc_index = adc_num-1;
-		if (enabled_channels_count[adc_index] > 0)
+		if ( (enabled_channels_count[adc_index] > 0) && (adc_trigger_sources[adc_index] != software) )
 		{
 			adc_core_start(adc_num, enabled_channels_count[adc_index]);
 		}
@@ -227,14 +237,14 @@ void adc_stop()
 	for (uint8_t adc_num = 1 ; adc_num <= NUMBER_OF_ADCS ; adc_num++)
 	{
 		uint8_t adc_index = adc_num-1;
-		if (enabled_channels_count[adc_index] > 0)
+		if ( (enabled_channels_count[adc_index] > 0) && (adc_trigger_sources[adc_index] != software) )
 		{
 			adc_core_stop(adc_num);
 		}
 	}
 }
 
-void adc_trigger_software_conversion(uint8_t adc_number)
+void adc_trigger_software_conversion(uint8_t adc_number, uint8_t number_of_acquisitions)
 {
-	adc_core_start(adc_number, 1);
+	adc_core_start(adc_number, number_of_acquisitions);
 }

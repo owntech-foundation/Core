@@ -589,6 +589,16 @@ uint32_t HardwareConfiguration::getHrtimFrequency()
 	return leg_get_freq();
 }
 
+uint32_t HardwareConfiguration::getHrtimPeriod()
+{
+	return leg_get_period_us();
+}
+
+uint32_t HardwareConfiguration::getHrtimMasterRepetitionCounter()
+{
+	return hrtim_PeriodicEvent_GetRep(MSTR);
+}
+
 /**
  * This updates the minimum duty cycle of both legs
  */

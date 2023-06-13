@@ -7,7 +7,7 @@
 
 &gpioa {
 	ngpios = <16>;
-};	
+};
 
 &gpiob {
 	ngpios = <16>;
@@ -15,11 +15,11 @@
 
 &gpioc {
 	ngpios = <15>;
-};	
+};
 
 &gpiod {
 	ngpios = <3>;
-};	
+};
 
 &gpioe {
 	ngpios = <0>;
