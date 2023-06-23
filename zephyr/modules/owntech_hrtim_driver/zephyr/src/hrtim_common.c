@@ -62,16 +62,16 @@ void _hrtim_init_events_center_aligned(hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 		LL_HRTIM_TIM_SetADCRollOverMode(HRTIM1, LL_HRTIM_TIMER_B, LL_HRTIM_ROLLOVER_MODE_PER);
 
 		// setting adc trigger
-		hrtim_adc_trigger_en(1, 1, LL_HRTIM_ADCTRIG_SRC13_TIMAPER);
-		hrtim_adc_trigger_en(3, 2, LL_HRTIM_ADCTRIG_SRC13_TIMBPER);
+		hrtim_adc_trigger_en(1, 1, LL_HRTIM_ADCTRIG_SRC13_TIMACMP4);
+		hrtim_adc_trigger_en(3, 2, LL_HRTIM_ADCTRIG_SRC13_TIMBCMP4);
 	}else if(leg1_tu == TIMA && leg2_tu == TIMC){
 		// setting the adc roll-over mode on period event
 		LL_HRTIM_TIM_SetADCRollOverMode(HRTIM1, LL_HRTIM_TIMER_A, LL_HRTIM_ROLLOVER_MODE_PER);
 		LL_HRTIM_TIM_SetADCRollOverMode(HRTIM1, LL_HRTIM_TIMER_C, LL_HRTIM_ROLLOVER_MODE_PER);
 
 		// setting adc trigger
-		hrtim_adc_trigger_en(3, 1, LL_HRTIM_ADCTRIG_SRC13_TIMAPER);
-		hrtim_adc_trigger_en(1, 3, LL_HRTIM_ADCTRIG_SRC13_TIMCPER);
+		hrtim_adc_trigger_en(3, 1, LL_HRTIM_ADCTRIG_SRC13_TIMACMP4);
+		hrtim_adc_trigger_en(1, 3, LL_HRTIM_ADCTRIG_SRC13_TIMCCMP4);
 	}
 }
 
@@ -87,11 +87,11 @@ void _hrtim_callback()
 void hrtim_update_adc_trig_interleaved(uint16_t new_trig, hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 {
 	if(leg1_tu == TIMA && leg2_tu == TIMB){
-		hrtim_cmp_set(0, TIMA, CMP3xR, new_trig);
-		hrtim_cmp_set(0, TIMB, CMP3xR, new_trig);
+		hrtim_cmp_set(0, TIMA, CMP4xR, new_trig);
+		hrtim_cmp_set(0, TIMB, CMP4xR, new_trig);
 	}else if(leg1_tu == TIMA && leg2_tu == TIMC){
-		hrtim_cmp_set(0, TIMA, CMP3xR, new_trig);
-		hrtim_cmp_set(0, TIMC, CMP3xR, new_trig);
+		hrtim_cmp_set(0, TIMA, CMP4xR, new_trig);
+		hrtim_cmp_set(0, TIMC, CMP4xR, new_trig);
 	}
 }
 

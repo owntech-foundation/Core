@@ -196,7 +196,10 @@ uint16_t leg_period(void)
 
 uint32_t leg_get_period_us()
 {
-    return period*184e-6;
+    if(LL_HRTIM_TIM_GetCountingMode(HRTIM1, LL_HRTIM_TIMER_A) == LL_HRTIM_COUNTING_MODE_UP_DOWN)
+        return period*2*184e-6;
+    else 
+        return period*184e-6;
 }
 
 uint8_t leg_numof(void)
