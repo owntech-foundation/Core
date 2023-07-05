@@ -28,6 +28,7 @@
  */
 
 #include <stm32_ll_hrtim.h>
+#include <stm32_ll_gpio.h>
 
 #include "voltage_mode/hrtim_voltage_mode.h"
 #include "current_mode/hrtim_current_mode.h"
@@ -51,7 +52,7 @@ void _hrtim_init_events(hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 		hrtim_adc_trigger_en(1, 3, LL_HRTIM_ADCTRIG_SRC13_TIMCCMP3);
 	}
 
-	hrtim_update_adc_trig_interleaved(1, leg1_tu, leg2_tu);
+	hrtim_update_adc_trig_interleaved(100, leg1_tu, leg2_tu);
 }
 
 void _hrtim_init_events_center_aligned(hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
@@ -77,7 +78,24 @@ void _hrtim_init_events_center_aligned(hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu)
 
 void _hrtim_callback()
 {
-	LL_HRTIM_ClearFlag_REP(HRTIM1,LL_HRTIM_TIMER_MASTER);
+	if(LL_HRTIM_GetSyncInSrc(HRTIM1) == LL_HRTIM_SYNCIN_SRC_NONE)
+		LL_HRTIM_ClearFlag_REP(HRTIM1,LL_HRTIM_TIMER_MASTER);
+
+	if(LL_HRTIM_GetSyncInSrc(HRTIM1) == LL_HRTIM_SYNCIN_SRC_EXTERNAL_EVENT)
+		LL_HRTIM_ClearFlag_SYNC(HRTIM1);
+
+	if(LL_HRTIM_GetSyncOutConfig(HRTIM1) == LL_HRTIM_SYNCOUT_POSITIVE_PULSE)
+	{
+		/* In case of master communication mode, the master will send a synchronization
+		Pulse every control period allowing the slave to synchronize its control task execution
+		to master control task execution */
+		LL_GPIO_SetPinMode(GPIOB, LL_GPIO_PIN_1, LL_GPIO_MODE_ALTERNATE);
+
+		k_busy_wait(1);
+
+		LL_GPIO_SetPinMode(GPIOB, LL_GPIO_PIN_1, LL_GPIO_MODE_OUTPUT);
+	}
+
 	if (user_callback != NULL)
 	{
 		user_callback();
@@ -108,7 +126,11 @@ void hrtim_PeriodicEvent_configure(hrtim_tu_t tu_src, uint32_t repetition, hrtim
 
 void hrtim_PeriodicEvent_en(hrtim_tu_t tu_src)
 {
-	LL_HRTIM_EnableIT_REP(HRTIM1, tu_src);         /* Enabling the interrupt on repetition counter event*/
+	if(LL_HRTIM_GetSyncInSrc(HRTIM1) == LL_HRTIM_SYNCIN_SRC_NONE)
+		LL_HRTIM_EnableIT_REP(HRTIM1, tu_src);         /* Enabling the interrupt on repetition counter event*/
+
+	if(LL_HRTIM_GetSyncInSrc(HRTIM1) == LL_HRTIM_SYNCIN_SRC_EXTERNAL_EVENT)
+		LL_HRTIM_EnableIT_SYNC(HRTIM1); /* Enabling interruption on synch pulse in case of slave communication mode*/
 
 	IRQ_CONNECT(HRTIM_IRQ_NUMBER, HRTIM_IRQ_PRIO, _hrtim_callback, NULL, HRTIM_IRQ_FLAGS);
 	irq_enable(HRTIM_IRQ_NUMBER);

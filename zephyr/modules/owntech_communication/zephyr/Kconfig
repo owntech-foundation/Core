@@ -1,7 +1,23 @@
 config OWNTECH_COMMUNICATION
-	bool "Enable OwnTech communication (Thingset over CAN)"
-	default n
-	select CAN
-	select ISOTP
-	select THINGSET
-	select OWNTECH_DATA_ACQUISITION
+	bool "Enable OwnTech communication module"
+	default y
+
+if OWNTECH_COMMUNICATION
+
+	config OWNTECH_COMMUNICATION_ENABLE_CAN
+		bool "Enable CAN bus communication API (Thingset over CAN)"
+		default n
+		select CAN
+		select ISOTP
+		select THINGSET
+		select OWNTECH_DATA_ACQUISITION
+
+	config OWNTECH_COMMUNICATION_ENABLE_RS485
+		bool "Enable RS485 bus communication API"
+		default y
+
+	config OWNTECH_COMMUNICATION_ENABLE_SYNC
+		bool "Enable synchronization API"
+		default y
+
+endif
