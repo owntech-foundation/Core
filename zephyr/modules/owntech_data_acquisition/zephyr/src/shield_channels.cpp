@@ -135,32 +135,6 @@ static bool initialized = false;
 /////
 // ADC channels private functions
 
-static uint8_t _get_adc_number_by_address(uint32_t adc_address)
-{
-	if (adc_address == 0x50000000)
-	{
-		return 1;
-	}
-	else if (adc_address == 0x50000100)
-	{
-		return 2;
-	}
-	else if (adc_address == 0x50000400)
-	{
-		return 3;
-	}
-	else if (adc_address == 0x50000500)
-	{
-		return 4;
-	}
-	else if (adc_address == 0x50000600)
-	{
-		return 5;
-	}
-
-	return 0;
-}
-
 /**
  * Builds list of device-tree defined channels for each ADC.
  */

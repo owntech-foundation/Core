@@ -96,7 +96,7 @@ public:
 	 *        function requires the presence of an "adc-channels" node in the
 	 *        shield device-tree.
 	 *
-	 *        This function must be called *before* ADC is started.
+	 * @note  This function must be called *before* ADC is started.
 	 *
 	 * @param adc_number Number of the ADC on which channel is to be enabled.
 	 * @param channel_name Name of the channel using enumeration channel_t.
@@ -119,7 +119,7 @@ public:
 	 *        All other ADCs remain software triggered, thus will only be
 	 *        acquired when triggerAcquisition() is called.
 	 *
-	 *        This function must be called *before* ADC is started.
+	 * @note  This function must be called *before* ADC is started.
 	 */
 	void enableTwistDefaultChannels();
 
@@ -132,18 +132,22 @@ public:
 	 *        of the function. The variable will be updated with the
 	 *        number of values that are available in the buffer.
 	 *
-	 * @note When calling this function, it invalidates the buffer
-	 *       returned by a previous call to the same function.
-	 *       However, different channels buffers are independent
-	 *       from each other.
+	 * @note  This function can't be called before the channel is enabled
+	 *        and the DataAcquisition module is started, either explicitly
+	 *        or by starting the Uninterruptible task.
 	 *
-	 * @note When using this functions, the user is responsible for data
-	 *       conversion. Use matching dataAcquisition.convert*() function
-	 *       for this purpose.
+	 * @note  When calling this function, it invalidates the buffer
+	 *        returned by a previous call to the same function.
+	 *        However, different channels buffers are independent
+	 *        from each other.
 	 *
-	 * @note When using this function, DO NOT use the function to get the
-	 *       latest converted value for the same channel as this function
-	 *       will clear the buffer and disregard all values but the latest.
+	 * @note  When using this functions, the user is responsible for data
+	 *        conversion. Use matching dataAcquisition.convert*() function
+	 *        for this purpose.
+	 *
+	 * @note  When using this function, DO NOT use the function to get the
+	 *        latest converted value for the same channel as this function
+	 *        will clear the buffer and disregard all values but the latest.
 	 *
 	 * @param channel Name of the shield channel from which to obtain values.
 	 * @param number_of_values_acquired Pass an uint32_t variable.
@@ -163,6 +167,10 @@ public:
 	 *        buffer, and thus can be called safely at any time after the
 	 *        module has been started.
 	 *
+	 * @note  This function can't be called before the channel is enabled
+	 *        and the DataAcquisition module is started, either explicitly
+	 *        or by starting the Uninterruptible task.
+	 *
 	 * @param channel Name of the shield channel from which to obtain value.
 	 *
 	 * @return Latest available value available from the given channel.
@@ -176,10 +184,14 @@ public:
 	 *        in the relevant unit for the channel: Volts, Amperes, or
 	 *        Degree Celcius.
 	 *
-	 * @note When using this functions, you loose the ability to access raw
-	 *       values using dataAcquisition.get*RawValues() function for the
-	 *       matching channel, as dataAcquisition.get*() function clears the
-	 *       buffer on each call.
+	 * @note  This function can't be called before the channel is enabled
+	 *        and the DataAcquisition module is started, either explicitly
+	 *        or by starting the Uninterruptible task.
+	 *
+	 * @note  When using this functions, you loose the ability to access raw
+	 *        values using dataAcquisition.get*RawValues() function for the
+	 *        matching channel, as dataAcquisition.get*() function clears the
+	 *        buffer on each call.
 	 *
 	 * @param channel Name of the shield channel from which to obtain value.
 	 * @param dataValid Pointer to an uint8_t variable. This parameter is
@@ -202,6 +214,8 @@ public:
 	 *        dataAcquisition.get*RawValues() function to relevant
 	 *        unit for the data: Volts, Amperes, or Degree Celcius.
 	 *
+	 * @note  This function can't be called before the channel is enabled.
+	 *
 	 * @param channel Name of the shield channel from which the value originates
 	 * @param raw_value Raw value obtained from which the value originates
 	 *
@@ -213,6 +227,10 @@ public:
 	 * @brief Use this function to tweak the conversion values for the
 	 *        channel if default values are not accurate enough.
 	 *
+	 * @note  This function can't be called before the channel is enabled.
+	 *        The DataAcquisition must not have been started, neither explicitly
+	 *        nor by starting the Uninterruptible task.
+	 *
 	 * @param channel Name of the shield channel to set conversion values.
 	 * @param gain Gain to be applied (multiplied) to the channel raw value.
 	 * @param offset Offset to be applied (added) to the channel value
@@ -223,9 +241,10 @@ public:
 	/**
 	 * @brief Retrieve stored parameters from Flash memory and configure ADC parameters
 	 *
-	 *        This function can only be called *after* all Twist channels have
-	 *        been added (you can use enableTwistDefaultChannels() for that
-	 *        purpose) and *before* ADC are started.
+	 * @note  This function can't be called before the *all* Twist channels have
+	 *        been enabled (you can use enableTwistDefaultChannels() for that
+	 *        purpose). The DataAcquisition must not have been started, neither
+	 *        explicitly nor by starting the Uninterruptible task.
 	 */
 	void setTwistChannelsUserCalibrationFactors();
 
@@ -311,6 +330,10 @@ public:
 	 *        on this ADC will be acquired one after the other until all
 	 *        configured channels have been acquired.
 	 *
+	 * @note  This function can't be called before the at least one channel
+	 *        is enabled on the ADC and the DataAcquisition module is started,
+	 *        either explicitly or by starting the Uninterruptible task.
+	 *
 	 * @param adc_num Number of the ADC on which to acquire channels.
 	 */
 	void triggerAcquisition(uint8_t adc_num);
@@ -328,10 +351,14 @@ public:
 	 *        of the function. The variable will be updated with the
 	 *        number of values that are available in the buffer.
 	 *
-	 * @note When calling this function, it invalidates the buffer
-	 *       returned by a previous call to the same function.
-	 *       However, different channels buffers are independent
-	 *       from each other.
+	 * @note  This function can't be called before the pin is enabled.
+	 *        The DataAcquisition module must have been started, either
+	 *        explicitly or by starting the Uninterruptible task.
+	 *
+	 * @note  When calling this function, it invalidates the buffer
+	 *        returned by a previous call to the same function.
+	 *        However, different channels buffers are independent
+	 *        from each other.
 	 *
 	 * @note When using this functions, the user is responsible for data
 	 *       conversion. Use matching dataAcquisition.convert*() function
@@ -360,6 +387,10 @@ public:
 	 *        buffer, and thus can be called safely at any time after the
 	 *        module has been started.
 	 *
+	 * @note  This function can't be called before the pin is enabled.
+	 *        The DataAcquisition module must have been started, either
+	 *        explicitly or by starting the Uninterruptible task.
+	 *
 	 * @param adc_num Number of the ADC from which to obtain value.
 	 * @param pin_num Number of the pin from which to obtain values.
 	 * @return Latest available value available from the given channel.
@@ -373,10 +404,14 @@ public:
 	 *        in the relevant unit for the channel: Volts, Amperes, or
 	 *        Degree Celcius.
 	 *
-	 * @note When using this functions, you loose the ability to access raw
-	 *       values using dataAcquisition.get*RawValues() function for the
-	 *       matching channel, as dataAcquisition.get*() function clears the
-	 *       buffer on each call.
+	 * @note  This function can't be called before the pin is enabled.
+	 *        The DataAcquisition module must have been started, either
+	 *        explicitly or by starting the Uninterruptible task.
+	 *
+	 * @note  When using this functions, you loose the ability to access raw
+	 *        values using dataAcquisition.get*RawValues() function for the
+	 *        matching channel, as dataAcquisition.get*() function clears the
+	 *        buffer on each call.
 	 *
 	 * @param adc_num Number of the ADC from which to obtain value.
 	 * @param pin_num Number of the pin from which to obtain values.
@@ -400,6 +435,8 @@ public:
 	 *        dataAcquisition.get*RawValues() function to relevant
 	 *        unit for the data: Volts, Amperes, or Degree Celcius.
 	 *
+	 * @note  This function can't be called before the pin is enabled.
+	 *
 	 * @param adc_num Number of the ADC from which the value originates.
 	 * @param pin_num Number of the pin from which to obtain values.
 	 * @param raw_value Raw value obtained from the channel buffer.
@@ -411,6 +448,10 @@ public:
 	/**
 	 * @brief Use this function to tweak the conversion values for the
 	 *        channel if default values are not accurate enough.
+	 *
+	 * @note  This function can't be called before the pin is enabled.
+	 *        The DataAcquisition module must not have been started, neither
+	 *        explicitly nor by starting the Uninterruptible task.
 	 *
 	 * @param adc_num Number of the ADC to set conversion values.
 	 * @param pin_num Number of the pin from which to obtain values.
