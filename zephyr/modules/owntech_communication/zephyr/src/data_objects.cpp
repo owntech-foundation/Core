@@ -53,12 +53,12 @@ void dataObjectsUpdateMeasures()
 {
     if (dataAcquisition.started() == true)
     {
-        v1_low_value = dataAcquisition.peekV1Low();
-        v2_low_value = dataAcquisition.peekV2Low();
-        v_high_value = dataAcquisition.peekVHigh();
-        i1_low_value = dataAcquisition.peekI1Low();
-        i2_low_value = dataAcquisition.peekI2Low();
-        i_high_value = dataAcquisition.peekIHigh();
+        v1_low_value = dataAcquisition.peek(V1_LOW);
+        v2_low_value = dataAcquisition.peek(V2_LOW);
+        v_high_value = dataAcquisition.peek(V_HIGH);
+        i1_low_value = dataAcquisition.peek(I1_LOW);
+        i2_low_value = dataAcquisition.peek(I2_LOW);
+        i_high_value = dataAcquisition.peek(I_HIGH);
         // Do not update this value for now, as the measure is not enabled
         //temp_value = peekTemperature();
     }
