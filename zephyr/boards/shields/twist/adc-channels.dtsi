@@ -12,8 +12,8 @@
 		v1low: v1-low {
 			compatible = "adc-channels";
 			channel-name = "V1_LOW";
-			default-gain = <0x3d3d3c36>;
-			default-offset = <0xc2bc147b>;
+			default-gain = <0x3d3851ec>;
+			default-offset = <0xc2b867f0>;
 			spin-pin = <29>;
 			v1-low-adc1 {
 				io-channels = <&adc1 1>;
@@ -26,8 +26,8 @@
 		v2low: v2-low {
 			compatible = "adc-channels";
 			channel-name = "V2_LOW";
-			default-gain = <0x3d3d3c36>;
-			default-offset = <0xc2bc147b>;
+			default-gain = <0x3d3851ec>;
+			default-offset = <0xc2b867f0>;
 			spin-pin = <24>;
 			v2-low-adc1 {
 				io-channels = <&adc1 6>;
@@ -40,8 +40,8 @@
 		vhigh: v-high {
 			compatible = "adc-channels";
 			channel-name = "V_HIGH";
-			default-gain = <0x3d83126f>;
-			default-offset = <0x408d0e56>;
+			default-gain = <0x3cf57710>;
+			default-offset = <0x00000000>;
 			spin-pin = <27>;
 			v-high-adc1 {
 				io-channels = <&adc1 9>;
@@ -56,8 +56,8 @@
 		i1low: i1-low {
 			compatible = "adc-channels";
 			channel-name = "I1_LOW";
-			default-gain = <0x3c4ccccd>;
-			default-offset = <0x41cf3333>;
+			default-gain = <0x3ba3d70a>;
+			default-offset = <0xc1200000>;
 			spin-pin = <30>;
 			i1-low-adc1 {
 				io-channels = <&adc1 2>;
@@ -70,8 +70,8 @@
 		i2low: i2-low {
 			compatible = "adc-channels";
 			channel-name = "I2_LOW";
-			default-gain = <0x3c6a4a8c>;
-			default-offset = <0x41ea3d71>;
+			default-gain = <0x3ba3d70a>;
+			default-offset = <0xc1200000>;
 			spin-pin = <25>;
 			i2-low-adc1 {
 				io-channels = <&adc1 7>;
@@ -84,8 +84,8 @@
 		ihigh: i-high {
 			compatible = "adc-channels";
 			channel-name = "I_HIGH";
-			default-gain = <0x3c4ccccd>;
-			default-offset = <0x00000000>;
+			default-gain = <0x3ba3d70a>;
+			default-offset = <0xc1200000>;
 			spin-pin = <26>;
 			i-high-adc1 {
 				io-channels = <&adc1 8>;
