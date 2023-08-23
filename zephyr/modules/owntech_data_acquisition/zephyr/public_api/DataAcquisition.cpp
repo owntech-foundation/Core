@@ -34,7 +34,6 @@
 
 // OwnTech Power API
 #include "HardwareConfiguration.h"
-#include "scheduling_internal.h"
 
 // Current module private functions
 #include "../src/data_dispatch.h"
@@ -131,48 +130,27 @@ int8_t DataAcquisition::enableAcquisition(uint8_t adc_num, uint8_t pin_num)
 	return this->enableChannel(adc_num, channel_num);
 }
 
-int8_t DataAcquisition::start(dispatch_method_t dispatch_method)
+int8_t DataAcquisition::start()
 {
 	if (this->is_started == true)
 		return -1;
-
-	if (dispatch_method == dispatch_method_t::at_uninterruptible_task_start)
-	{
-		if (scheduling_get_uninterruptible_synchronous_task_interrupt_source() == scheduling_interrupt_source_t::source_uninitialized)
-		{
-			return -1;
-		}
-
-		scheduling_set_data_dispatch_at_task_start(true);
-	}
 
 	// Initialize conversion
 	data_conversion_init();
 
 	// Initialize data dispatch
-	if (dispatch_method == on_dma_interrupt)
+	switch (this->dispatch_method)
 	{
-		data_dispatch_init(interrupt, 0);
-	}
-	else
-	{
-		uint32_t repetition;
-		if (scheduling_get_uninterruptible_synchronous_task_interrupt_source() == source_hrtim)
-		{
-			repetition = hwConfig.getHrtimMasterRepetitionCounter();
-		}
-		else
-		{
-			uint32_t hrtim_period_us = hwConfig.getHrtimPeriod();
-			if (hrtim_period_us == 0)
-			{
+		case DispatchMethod_t::on_dma_interrupt:
+			// Dispatch is handled automatically by Data Dispatch on interrupt
+			data_dispatch_init(interrupt, 0);
+			break;
+		case DispatchMethod_t::externally_triggered:
+			// Dispatch is triggered by an external call
+			if (this->repetition_count_between_dispatches == 0)
 				return -1;
-			}
-			uint32_t task_period_us = scheduling_get_uninterruptible_synchronous_task_period_us();
-			repetition = task_period_us / hrtim_period_us;
-		}
 
-		data_dispatch_init(task, repetition);
+			data_dispatch_init(task, this->repetition_count_between_dispatches);
 	}
 
 	// Launch ADC conversion
@@ -186,6 +164,21 @@ int8_t DataAcquisition::start(dispatch_method_t dispatch_method)
 bool DataAcquisition::started()
 {
 	return this->is_started;
+}
+
+void DataAcquisition::setDispatchMethod(DispatchMethod_t dispatch_method)
+{
+	this->dispatch_method = dispatch_method;
+}
+
+DispatchMethod_t DataAcquisition::getDispatchMethod()
+{
+	return this->dispatch_method;
+}
+
+void DataAcquisition::setRepetitionsBetweenDispatches(uint32_t repetition)
+{
+	this->repetition_count_between_dispatches = repetition;
 }
 
 void DataAcquisition::triggerAcquisition(uint8_t adc_num)

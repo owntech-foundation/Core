@@ -49,14 +49,14 @@ class Scheduling
 public:
 	/**
 	 * @brief Uninterruptible synchronous task uses a timer to
-	 * execute a periodic, non-interruptible user task.
-	 * Use this function to define such a task.
-	 * Only one task of this kind can be defined.
-	 * This function can be used to redefine (replace) a
-	 * previously defined uninterruptible synchronous task,
-	 * but the previously defined task must have been suspended
-	 * (or never started). An error will be returned if the
-	 * previously defined task is still running.
+	 *        execute a periodic, non-interruptible user task.
+	 *        Use this function to define such a task.
+	 *        Only one task of this kind can be defined.
+	 *        This function can be used to redefine (replace) a
+	 *        previously defined uninterruptible synchronous task,
+	 *        but the previously defined task must have been suspended
+	 *        (or never started). An error will be returned if the
+	 *        previously defined task is still running.
 	 *
 	 * @param periodic_task Pointer to the void(void) function
 	 *        to be executed periodically.
@@ -79,19 +79,24 @@ public:
 
 	/**
 	 * @brief Use this function to start the previously defined
-	 * uninterruptible synchronous task.
-	 * If Data Acquisition was not started previously,
-	 * starting the uninterruptible task will start it.
-	 * Thus, make sure all ADC configuration has been carried
-	 * out before starting the uninterruptible task.
+	 *        uninterruptible synchronous task. If no value is provided
+	 *        for the parameter and Data Acquisition has not been started
+	 *        yet, Scheduling will automatically start Data Acquisition.
+	 *        Thus, make sure all ADC configuration has been carried
+	 *        out before starting the uninterruptible task.
+	 *
+	 * @param manage_data_acquisition Set to false if you want
+	 *        the Scheduling module to not be in charge of Data
+	 *        Acquisition scheduling. If set to false, Data Acquisition
+	 *        has to be manually started if you want to use it.
 	 */
-	void startUninterruptibleSynchronousTask();
+	void startUninterruptibleSynchronousTask(bool manage_data_acquisition = true);
 
 	/**
 	 * @brief Stop the previously started uninterruptible
-	 * synchronous task.
-	 * The task can be then resumed by calling
-	 * startAsynchronousTask() again.
+	 *        synchronous task.
+	 *        The task can be then resumed by calling
+	 *        startAsynchronousTask() again.
 	 */
 	void stopUninterruptibleSynchronousTask();
 
@@ -100,8 +105,8 @@ public:
 
 	/**
 	 * @brief Define an asynchronous task.
-	 * Asynchronous tasks are run in background when there
-	 * is no synchronous task running.
+	 *        Asynchronous tasks are run in background when there
+	 *        is no synchronous task running.
 	 *
 	 * @param routine Pointer to the void(void) function
 	 *        that will act as the task main function.
@@ -115,7 +120,7 @@ public:
 
 	/**
 	 * @brief Use this function to start a previously defined
-	 * asynchronous task using its task number.
+	 *        asynchronous task using its task number.
 	 *
 	 * @param task_number Number of the task to start, obtained
 	 *        using the defineAsynchronousTask() function.
@@ -124,9 +129,9 @@ public:
 
 	/**
 	 * @brief Use this function to stop a previously started
-	 * asynchronous task using its task number.
-	 * The task can be then resumed by calling
-	 * startAsynchronousTask() again.
+	 *        asynchronous task using its task number.
+	 *        The task can be then resumed by calling
+	 *        startAsynchronousTask() again.
 	 *
 	 * @param task_number Number of the task to start, obtained
 	 *        using the defineAsynchronousTask() function.
@@ -135,23 +140,23 @@ public:
 
 	/**
 	 * @brief This function allows to suspend an asynchronous
-	 * task for a specified duration expressed in milliseconds.
-	 * For example, you can call this function at the end of an
-	 * asynchronous task main function, when there is no need
-	 * for the task to run permanently.
+	 *        task for a specified duration expressed in milliseconds.
+	 *        For example, you can call this function at the end of an
+	 *        asynchronous task main function, when there is no need
+	 *        for the task to run permanently.
 	 *
-	 * DO NOT use this function in a synchronous task!
+	 *        DO NOT use this function in a synchronous task!
 	 */
 	void suspendCurrentTaskMs(uint32_t duration_ms);
 
 	/**
 	 * @brief This function allows to suspend an asynchronous
-	 * task for a specified duration expressed in microseconds.
-	 * For example, you can call this function at the end of an
-	 * asynchronous task main function, when there is no need
-	 * for the task to run permanently.
+	 *        task for a specified duration expressed in microseconds.
+	 *        For example, you can call this function at the end of an
+	 *        asynchronous task main function, when there is no need
+	 *        for the task to run permanently.
 	 *
-	 * DO NOT use this function in a synchronous task!
+	 *        DO NOT use this function in a synchronous task!
 	 */
 	void suspendCurrentTaskUs(uint32_t duration_us);
 

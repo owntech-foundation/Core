@@ -4,5 +4,3 @@ config OWNTECH_DATA_ACQUISITION
 	select DMA
 	depends on CONSOLE_GETCHAR
 	depends on OWNTECH_HARDWARE_CONFIGURATION
-	# Force-select the following to avoid dependency loop
-	select OWNTECH_SCHEDULING

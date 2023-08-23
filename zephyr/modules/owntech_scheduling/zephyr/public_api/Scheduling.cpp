@@ -55,9 +55,9 @@ int8_t Scheduling::defineUninterruptibleSynchronousTask(task_function_t periodic
 	return scheduling_define_uninterruptible_synchronous_task(periodic_task, task_period_us);
 }
 
-void Scheduling::startUninterruptibleSynchronousTask()
+void Scheduling::startUninterruptibleSynchronousTask(bool manage_data_acquisition)
 {
-	scheduling_start_uninterruptible_synchronous_task();
+	scheduling_start_uninterruptible_synchronous_task(manage_data_acquisition);
 }
 
 void Scheduling::stopUninterruptibleSynchronousTask()

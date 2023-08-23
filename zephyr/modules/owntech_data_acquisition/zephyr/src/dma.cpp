@@ -84,8 +84,9 @@ static void _dma_callback(const struct device* dev, void* user_data, uint32_t dm
 	UNUSED(user_data);
 	UNUSED(status);
 
-	// DMA channel matches ADC number
-	data_dispatch_do_dispatch(dma_channel);
+	// DMA channel value comes raw from LL (starts at 0): convert to number
+	uint8_t channel_number = dma_channel + 1;
+	data_dispatch_do_dispatch(channel_number);
 }
 
 

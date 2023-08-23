@@ -34,12 +34,9 @@
 
 
 void scheduling_set_uninterruptible_synchronous_task_interrupt_source(scheduling_interrupt_source_t int_source);
-scheduling_interrupt_source_t scheduling_get_uninterruptible_synchronous_task_interrupt_source();
 int8_t scheduling_define_uninterruptible_synchronous_task(task_function_t periodic_task, uint32_t task_period_us);
-void scheduling_start_uninterruptible_synchronous_task();
+void scheduling_start_uninterruptible_synchronous_task(bool manage_data_acquisition);
 void scheduling_stop_uninterruptible_synchronous_task();
-void scheduling_set_data_dispatch_at_task_start(bool enable);
-uint32_t scheduling_get_uninterruptible_synchronous_task_period_us();
 
 
 #endif // UNINTERRUPTIBLESYNCHRONOUSTASK_HPP_

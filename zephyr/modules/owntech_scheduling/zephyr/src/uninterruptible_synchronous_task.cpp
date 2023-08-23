@@ -78,11 +78,6 @@ void scheduling_set_uninterruptible_synchronous_task_interrupt_source(scheduling
 	interrupt_source = int_source;
 }
 
-scheduling_interrupt_source_t scheduling_get_uninterruptible_synchronous_task_interrupt_source()
-{
-	return interrupt_source;
-}
-
 int8_t scheduling_define_uninterruptible_synchronous_task(task_function_t periodic_task, uint32_t task_period_us)
 {
 	if ( (uninterruptibleTaskStatus != task_status_t::inexistent) && (uninterruptibleTaskStatus != task_status_t::suspended))
@@ -138,14 +133,42 @@ int8_t scheduling_define_uninterruptible_synchronous_task(task_function_t period
 	return -1;
 }
 
-void scheduling_start_uninterruptible_synchronous_task()
+void scheduling_start_uninterruptible_synchronous_task(bool manage_data_acquisition)
 {
 	if ( (uninterruptibleTaskStatus != task_status_t::defined) && (uninterruptibleTaskStatus != task_status_t::suspended) )
 		return;
 
-	if (dataAcquisition.started() == false)
+	if (interrupt_source == scheduling_interrupt_source_t::source_uninitialized)
+		return;
+
+	if ( (manage_data_acquisition == true) && (dataAcquisition.started() == false) )
 	{
-		dataAcquisition.start(at_uninterruptible_task_start);
+		// If Data Acquisition has not been started yet,
+		// then Scheduling will be in charge of data dispatch
+		do_data_dispatch = true;
+
+		// Configure Data Acquisition module
+		dataAcquisition.setDispatchMethod(DispatchMethod_t::externally_triggered);
+
+		uint32_t repetition;
+		if (interrupt_source == scheduling_interrupt_source_t::source_hrtim)
+		{
+			repetition = hrtim_PeriodicEvent_GetRep(MSTR);
+		}
+		else // (interrupt_source == scheduling_interrupt_source_t::source_tim6)
+		{
+			uint32_t hrtim_period_us = leg_get_period_us();
+			if (hrtim_period_us == 0)
+			{
+				return;
+			}
+
+			repetition = task_period / hrtim_period_us;
+		}
+		dataAcquisition.setRepetitionsBetweenDispatches(repetition);
+
+		// Then start it
+		dataAcquisition.start();
 	}
 
 	if (interrupt_source == source_tim6)
@@ -188,14 +211,4 @@ void scheduling_stop_uninterruptible_synchronous_task()
 
 		uninterruptibleTaskStatus = task_status_t::suspended;
 	}
-}
-
-void scheduling_set_data_dispatch_at_task_start(bool enable)
-{
-	do_data_dispatch = enable;
-}
-
-uint32_t scheduling_get_uninterruptible_synchronous_task_period_us()
-{
-	return task_period;
 }

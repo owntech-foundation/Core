@@ -62,11 +62,12 @@ typedef enum
 } channel_t;
 #endif
 
-typedef enum
+enum class DispatchMethod_t
 {
 	on_dma_interrupt,
-	at_uninterruptible_task_start
-} dispatch_method_t;
+	externally_triggered
+};
+
 
 //////
 // Constants definitions
@@ -268,62 +269,93 @@ public:
 	int8_t enableAcquisition(uint8_t adc_num, uint8_t pin_num);
 
 	/**
-	 * @brief This functions starts the acquisition chain.
+	 * @brief This functions manually starts the acquisition chain.
 	 *
-	 * @note If your code uses an uninterruptible task, you do not need to
-	 *       start Data Acquisition manually, it will automatically be started
-	 *       at the same time as the task as their internal behavior are
-	 *       intrinsically linked.
-	 *
-	 * @note Data Acquisition must be started only after ADC module configuration
-	 *       has been fully carried out. No ADC configuration change is allowed
-	 *       after module has been started. If you're using the Twist shield and
-	 *       are not sure how to initialize ADCs, you can use
-	 *       dataAcquisition.enableTwistDefaultChannels() for that purpose.
-	 *
-	 * @note Data Acquisition must be started before accessing any dataAcquisition.get*()
-	 *       or dataAcquisition.peek*() function. Other Data Acquisition functions
-	 *       are safe to use before starting the module.
-	 *
-	 * @param dispatch_method Indicates when the dispatch should be done.
-	 *        Dispatch makes data from ADCs available to dataAcquisition.get*()
-	 *        functions, thus available to the user.
-	 *        You should not worry too much about this parameter, as if you
-	 *        call this function manually, the default value is what you want,
-	 *        so just call the function without any parameter.
-	 *        By default, Data Acquisition is started automatically when
-	 *        the uninterruptible task is started, with dispatch method
-	 *        set to at_uninterruptible_task_start. However, if you do not
-	 *        use an uninterrptible task in your application, default parameter
-	 *        on_dma_interrupt is the correct value.
+	 * @note  If your code uses an uninterruptible task, you do not need to
+	 *        start Data Acquisition manually, it will automatically be started
+	 *        at the same time as the task as their internal behavior are
+	 *        intrinsically linked.
 	 *        If for some reason you have an uninterruptible task in your code,
-	 *        but still want the dispatch to be done on DMA interrupt,
-	 *        you need to call this function prior to starting the task.
-	 *        Note that using DMA interrupts will consume a non-negligible
-	 *        amount of processor time and it is not advised.
+	 *        but do not want the Scheduling module to be in charge of Data
+	 *        Acquisition, you need to indicate it when starting the uninterruptible task.
+	 *        In that case, Data Acquisition must be manually started using this
+	 *        function. Note that in taht case, dispatch will use DMA interrupts
+	 *        which consumes a non-negligible amount of processor time and it is not advised.
+	 *
+	 * @note  Data Acquisition must be started only after ADC module configuration
+	 *        has been fully carried out. No ADC configuration change is allowed
+	 *        after module has been started. If you're using the Twist shield and
+	 *        are not sure how to initialize ADCs, you can use
+	 *        dataAcquisition.enableTwistDefaultChannels() for that purpose.
+	 *
+	 * @note  Data Acquisition must be started before accessing any dataAcquisition.get*()
+	 *        or dataAcquisition.peek*() function. Other Data Acquisition functions
+	 *        are safe to use before starting the module.
 	 *
 	 * @return 0 if everything went well, -1 if there was an error.
 	 *         Error is triggered when dispatch method is set to
-	 *         uninterruptible task start, but the task has not been
-	 *         defined yet. Another source of error is trying to start
+	 *         be external, but the repetition value has not provided.
+	 *         Another source of error is trying to start
 	 *         Data Acquisition after it has already been started.
 	 */
-	int8_t start(dispatch_method_t dispatch_method = on_dma_interrupt);
+	int8_t start();
 
 	/**
 	 * @brief Checks if the module is already started.
 	 *
-	 * For auto-spawning threads, this allows to make sure the module
-	 * has already been started before trying to access measures.
+	 *        For auto-spawning threads, this allows to make sure the module
+	 *        has already been started before trying to access measures.
 	 *
-	 * If you don't use (or don't know what are) auto-spawning threads,
-	 * just make sure calls to any dataAcquisition.get*() or dataAcquisition.peek*()
-	 * function occur after the uninterruptible task is started, or
-	 * Data Acquisition is manually started, and ignore this function.
+	 *        If you don't use (or don't know what are) auto-spawning threads,
+	 *        just make sure calls to any dataAcquisition.get*() or dataAcquisition.peek*()
+	 *        function occur after the uninterruptible task is started, or
+	 *        Data Acquisition is manually started, and ignore this function.
 	 *
 	 * @return true is the module has been started, false otherwise.
 	 */
 	bool started();
+
+	/**
+	 * @brief Sets the dispatch method of the module.
+	 *
+	 *        Dispatch makes data from ADCs available to dataAcquisition.get*()
+	 *        functions, thus available to the user.
+	 *        By default, dispatch is done on interrupt when DMA buffer is
+	 *        filled. However, if using the uninterruptible task from the
+	 *        scheduling module, Scheduling will take care of dispatch itself
+	 *        for better performances. This function is by this module to
+	 *        indicate that dispatch is triggered externally.
+	 *
+	 * @note  End-user should not worry about this function, which
+	 *        is used internally by the Scheduling module.
+	 *
+	 * @param dispatch_method Indicates when the dispatch should be done
+	 *        (default value: DispatchMethod_t::on_dma_interrupt)
+	 */
+	void setDispatchMethod(DispatchMethod_t dispatch_method);
+
+	/**
+	 * @brief  Gets the dispatch method of the module.
+	 *
+	 * @note   End-user should not worry about this function, which
+	 *         is used internally by the Scheduling module.
+	 *
+	 * @return Dispatch method indicatinng when the dispatch is done.
+	 */
+	DispatchMethod_t getDispatchMethod();
+
+	/**
+	 * @brief Indicates the repetition count between two external dispatches
+	 *        when it is handled externally by the Scheduling module. This value
+	 *        is used to calibrate buffers sizes.
+	 *
+	 * @note  End-user should not worry about this function, which
+	 *        is used internally by the Scheduling module.
+	 *
+	 * @param repetition Number of repetitions between two calls of
+	 *        dispatch. Used to calibrate buffers sizes.
+	 */
+	void setRepetitionsBetweenDispatches(uint32_t repetition);
 
 	/**
 	 * @brief Triggers an acquisition on a given ADC. Each channel configured
@@ -474,6 +506,8 @@ private:
 	bool is_started = false;
 	uint8_t channels_ranks[ADC_COUNT][CHANNELS_PER_ADC] = {0};
 	uint8_t current_rank[ADC_COUNT] = {0};
+	DispatchMethod_t dispatch_method = DispatchMethod_t::on_dma_interrupt;
+	uint32_t repetition_count_between_dispatches = 0;
 
 };
 
