@@ -22,6 +22,6 @@ if OWNTECH_SCHEDULING
 
 	config OWNTECH_SCHEDULING_ASYNCHRONOUS_TASKS_STACK_SIZE
 		int "Stack size for asynchronous threads"
-		default 512
+		default 1024
 
 endif
