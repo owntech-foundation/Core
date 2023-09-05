@@ -6,7 +6,7 @@ description: |
 
     The OwnTech Spin board provides 6 headers:
     * 3 around the external egde of the board,
-    * 4 within the board.
+    * 3 within the board.
 
     Proceeding counter-clockwise:
     * A 20-pin header on the external left of the board, numbered from 1 to 20 top to bottom.
@@ -21,7 +21,7 @@ description: |
     * A 1-pin header on the internal bottom right of the board, numbered 59.
 
 
-    This binding provides a nexus mapping for 46 pins.
+    This binding provides a nexus mapping for 49 pins.
     Pins not described in this map are displayed between curly brackets.
 
     ----------------------------------

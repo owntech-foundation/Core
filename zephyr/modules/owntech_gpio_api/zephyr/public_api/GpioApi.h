@@ -42,34 +42,36 @@ extern const gpio_flags_t INPUT;
 extern const gpio_flags_t INPUT_PULLUP;
 extern const gpio_flags_t OUTPUT;
 
-static const uint8_t PA = 0x00;
-static const uint8_t PB = 0x10;
-static const uint8_t PC = 0x20;
-static const uint8_t PD = 0x30;
+// 0x80 is used to indicate nucleo-style pin
+static const uint8_t PA = 0x80 | 0x00;
+static const uint8_t PB = 0x80 | 0x10;
+static const uint8_t PC = 0x80 | 0x20;
+static const uint8_t PD = 0x80 | 0x30;
 
-static const uint8_t P1  = 0x0;
-static const uint8_t P2  = 0x1;
-static const uint8_t P3  = 0x2;
-static const uint8_t P4  = 0x3;
-static const uint8_t P5  = 0x4;
-static const uint8_t P6  = 0x5;
-static const uint8_t P7  = 0x6;
-static const uint8_t P8  = 0x7;
-static const uint8_t P9  = 0x8;
-static const uint8_t P10 = 0x9;
-static const uint8_t P11 = 0xA;
-static const uint8_t P12 = 0xB;
-static const uint8_t P13 = 0xC;
-static const uint8_t P14 = 0xD;
-static const uint8_t P15 = 0xE;
-static const uint8_t P16 = 0xF;
+static const uint8_t P0  = 0x0;
+static const uint8_t P1  = 0x1;
+static const uint8_t P2  = 0x2;
+static const uint8_t P3  = 0x3;
+static const uint8_t P4  = 0x4;
+static const uint8_t P5  = 0x5;
+static const uint8_t P6  = 0x6;
+static const uint8_t P7  = 0x7;
+static const uint8_t P8  = 0x8;
+static const uint8_t P9  = 0x9;
+static const uint8_t P10 = 0xA;
+static const uint8_t P11 = 0xB;
+static const uint8_t P12 = 0xC;
+static const uint8_t P13 = 0xD;
+static const uint8_t P14 = 0xE;
+static const uint8_t P15 = 0xF;
 
 
 /////
 // Public types
 
-typedef enum
+typedef enum : uint8_t
 {
+	PA0  = PA | P0,
 	PA1  = PA | P1,
 	PA2  = PA | P2,
 	PA3  = PA | P3,
@@ -85,7 +87,7 @@ typedef enum
 	PA13 = PA | P13,
 	PA14 = PA | P14,
 	PA15 = PA | P15,
-	PA16 = PA | P16,
+	PB0  = PB | P0,
 	PB1  = PB | P1,
 	PB2  = PB | P2,
 	PB3  = PB | P3,
@@ -101,7 +103,7 @@ typedef enum
 	PB13 = PB | P13,
 	PB14 = PB | P14,
 	PB15 = PB | P15,
-	PB16 = PB | P16,
+	PC0  = PC | P0,
 	PC1  = PC | P1,
 	PC2  = PC | P2,
 	PC3  = PC | P3,
@@ -117,7 +119,7 @@ typedef enum
 	PC13 = PC | P13,
 	PC14 = PC | P14,
 	PC15 = PC | P15,
-	PC16 = PC | P16,
+	PD0  = PD | P0,
 	PD1  = PD | P1,
 	PD2  = PD | P2,
 	PD3  = PD | P3
@@ -136,61 +138,76 @@ public:
 	 *        prior to accessing any other function
 	 *        from this API on the pin.
 	 *
-	 * @param pin STM32-style name of the pin,
-	 *        e.g. PA1, PB10, etc. See pin_t type for
-	 *        the full list of existing pins on
-	 *        Spin board.
+	 * @param pin Number of the Spin pin OR STM32-style
+	 *        name of the pin, e.g. PA1, PB10, etc.
+	 *        See pin_t type for the full list of available
+	 *        STM32-style pins on Spin board.
 	 * @param flags Pin configuration flags.
 	 *        Authorized values:
 	 *        - INPUT
 	 *        - INPUT_PULLUP
 	 *        - OUTPUT
 	 */
-	void configurePin(pin_t pin, gpio_flags_t flags);
+	void configurePin(uint8_t pin, gpio_flags_t flags);
 
 	/**
 	 * @brief Set the value of a pin configured as output to 1.
 	 *
-	 * @param pin STM32-style name of the pin.
+	 * @param pin Number of the Spin pin OR STM32-style
+	 *        name of the pin, e.g. PA1, PB10, etc.
+	 *        See pin_t type for the full list of available
+	 *        STM32-style pins on Spin board.
 	 */
-	void setPin(pin_t pin);
+	void setPin(uint8_t pin);
 
 	/**
 	 * @brief Reset the value of a pin configured as output to 0.
 	 *
-	 * @param pin STM32-style name of the pin.
+	 * @param pin Number of the Spin pin OR STM32-style
+	 *        name of the pin, e.g. PA1, PB10, etc.
+	 *        See pin_t type for the full list of available
+	 *        STM32-style pins on Spin board.
 	 */
-	void resetPin(pin_t pin);
+	void resetPin(uint8_t pin);
 
 	/**
 	 * @brief Toggle the value of a pin configured as output:
 	 *        - if pin value is 1, it will be set to 0
 	 *        - if pin value is 0, it will be set to 1.
 	 *
-	 * @param pin STM32-style name of the pin.
+	 * @param pin Number of the Spin pin OR STM32-style
+	 *        name of the pin, e.g. PA1, PB10, etc.
+	 *        See pin_t type for the full list of available
+	 *        STM32-style pins on Spin board.
 	 */
-	void togglePin(pin_t pin);
+	void togglePin(uint8_t pin);
 
 	/**
 	 * @brief Set the value of a pin configured as output
 	 *        to a given value.
 	 *
-	 * @param pin STM32-style name of the pin.
+	 * @param pin Number of the Spin pin OR STM32-style
+	 *        name of the pin, e.g. PA1, PB10, etc.
+	 *        See pin_t type for the full list of available
+	 *        STM32-style pins on Spin board.
 	 * @param value Value (0 or 1) to assign to the pin.
 	 */
-	void writePin(pin_t pin, uint8_t value);
+	void writePin(uint8_t pin, uint8_t value);
 
 	/**
 	 * @brief Get the current value of a pin configured as input.
 	 *
-	 * @param pin STM32-style name of the pin.
+	 * @param pin Number of the Spin pin OR STM32-style
+	 *        name of the pin, e.g. PA1, PB10, etc.
+	 *        See pin_t type for the full list of available
+	 *        STM32-style pins on Spin board.
 	 * @return Current value (0 or 1) of the pin.
 	 */
-	uint8_t readPin(pin_t pin);
+	uint8_t readPin(uint8_t pin);
 
 private:
-	gpio_pin_t getPinNumber(pin_t pin);
-	const struct device* getGpioDevice(pin_t pin);
+	gpio_pin_t getPinNumber(uint8_t pin);
+	const struct device* getGpioDevice(uint8_t pin);
 
 };
 
