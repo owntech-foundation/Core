@@ -21,6 +21,7 @@
  * @date   2023
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
 
@@ -42,14 +43,11 @@ void HardwareConfiguration::setBoardVersion(hardware_version_t hardware_version)
 	if (hardware_version == O2_v_1_1_2 || hardware_version == O2_v_0_9)
 	{
 		uart1SwapRxTx();
-		hrtimLegTu(TIMA, TIMB);
 	}else if(hardware_version == SPIN_v_0_1){
 		uart1SwapRxTx();
-		hrtimLegTu(TIMA, TIMC);
 	}else if(hardware_version == SPIN_v_0_9 || hardware_version == TWIST_v_1_1_2){
-		hrtimLegTu(TIMA, TIMC);
+	}else if(hardware_version == SPIN_v_1_0){
 	}else if(hardware_version == nucleo_G474RE){
-		hrtimLegTu(TIMA, TIMB);
 	}
 
 }

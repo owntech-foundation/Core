@@ -19,6 +19,7 @@
 
 /**
  * @author  Clément Foucher <clement.foucher@laas.fr>
+ * @author  Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
 #ifndef COMPARATOR_H_
@@ -28,7 +29,9 @@
 extern "C" {
 #endif
 
-void comparator_init();
+void comparator1_init();
+void comparator3_init();
+
 
 #ifdef __cplusplus
 }

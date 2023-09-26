@@ -11,10 +11,9 @@ if(CONFIG_OWNTECH_HARDWARE_CONFIGURATION)
     src/dac_configuration.cpp
     src/led_configuration.cpp
     src/timer_configuration.cpp
-    src/hrtim_configuration.cpp
+    src/pwm_configuration.cpp
     src/uart_configuration.cpp
     src/adc_configuration.cpp
-    src/power_driver_configuration.cpp
     src/comparator_configuration.cpp
     src/common_configuration.cpp
   )

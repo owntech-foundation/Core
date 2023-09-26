@@ -188,7 +188,7 @@ void HardwareConfiguration::dacConfigDac3CurrentmodeInit(hrtim_tu_t tu_src)
 	dac_start(dac3, 1);
 }
 
-void HardwareConfiguration::slopeCompensationLeg1(float32_t set_voltage, float32_t reset_voltage)
+void HardwareConfiguration::slopeCompensationDac3(float32_t set_voltage, float32_t reset_voltage)
 {
 	float32_t Dv = set_voltage - reset_voltage;
 
@@ -214,7 +214,7 @@ void HardwareConfiguration::slopeCompensationLeg1(float32_t set_voltage, float32
 	dac_function_update_step(dac3, 1, reset_data);
 }
 
-void HardwareConfiguration::slopeCompensationLeg2(float32_t set_voltage, float32_t reset_voltage)
+void HardwareConfiguration::slopeCompensationDac1(float32_t set_voltage, float32_t reset_voltage)
 {
 	float32_t Dv = set_voltage - reset_voltage;
 

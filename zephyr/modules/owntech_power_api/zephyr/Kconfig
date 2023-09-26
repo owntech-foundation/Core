@@ -1,0 +1,3 @@
+config OWNTECH_POWER_API
+	bool "Enable OwnTech power API for STM32"
+	default y

@@ -1,0 +1,125 @@
+description : This parent node is for setting general parameters such as the hardware version
+              (i.e. the board you are using) and the switching frequency.
+
+compatible : "power-leg"
+
+properties :
+
+  frequency :
+    type : int
+    required : true
+    description : Switching frequency in Hz (this frequency must be same for all the timer !)
+
+child-binding:
+
+  description : In power electronics, a "leg" typically refers to a section of a power converter circuit responsible
+                for controlling the flow of electrical power. A leg comprises two semiconductor devices like transistors
+                (e.g., IGBTs or MOSFETs) and diodes. Control of a power leg involves precisely switching the semiconductor
+                devices on and off to regulate voltage or current. In this child node, you can choose the timing unit of the HRTIM
+                to generate the PWM which will control your IGBT/MOSFET.
+
+  properties :
+
+    leg-name :
+      type : string
+      required : true
+      description : name of the leg, choose freely but the name must be different between each legs.
+
+    pwm-pin-num :
+      type : int
+      required : true
+      description : pin number where you want to start a pwm. Choose a pin number and its complementary will
+                    also be set. E.G. in the case of stm32G4 mcu unit, if you want to start a PWM in GPIO PA8
+                    choose pwm-pin-num = 12 and its complementary at PA9 (pin number 14) will also start.
+
+      # +----------+-----------------+--+-------------------+------------------+
+      # | PIN      |                 |  | COMPLEMANTARY PIN |                  |
+      # +----------+-----------------+--+-------------------+------------------+
+      # | GPIO PIN | SPIN PIN NUMBER |  | GPIO PIN          | SPIN PIN NUMBER  |
+      # | PA8      | 12              |  | PA9               | 14               |
+      # | PA10     | 15              |  | PA11              |                  |
+      # | PB12     | 2               |  | PB13              | 4                |
+      # | PB14     | 5               |  | PB15              | 6                |
+      # | PC8      | 10              |  | PC9               | 11               |
+      # | PC6      | 7               |  | PC7               | 9                |
+      # +----------+-----------------+--+-------------------+------------------+
+
+    current-pin-num :
+      type : int
+      required : true
+      description : Current mode is used to control the output current. We use a comparator and DAC generation
+                    for slope compensation. The availability of the current mode depends on the pin connected
+                    to the current measure.
+
+      # +----------+-----------------+
+      # | GPIO PIN | SPIN PIN NUMBER |
+      # +----------+-----------------+
+      # | PA1      | 25              |
+      # | PC1      | 30              |
+      # +----------+-----------------+
+
+
+    adc-trigger :
+      type : string
+      required : true
+      description : Which adc trigger is used for data acquisition (only two leg can support it), if this
+                    leg isn't suposed to trigger the adc choose ADCTRIG_NONE.
+      enum :
+      - "ADCTRIG_NONE"
+      - "ADCTRIG_1"
+      - "ADCTRIG_2"
+      - "ADCTRIG_3"
+      - "ADCTRIG_4"
+
+    edge-trigger :
+      type : string
+      required : true
+      description : Only relevant in Center aligned. Choose when ADC is triggered, either when the counter is
+                    counting up, counting down or both. Keep EdgeTrigger_up as a default
+      enum :
+      - "EdgeTrigger_up"
+      - "EdgeTrigger_down"
+      - "EdgeTrigger_Both"
+
+    default-adc-decim :
+      type : int
+      required : true
+      description : The timer unit will trigger the ADC at the switching frequency, but you can divide this frequency
+                    with the number set by adc-decim (between 1 and 32). adc-decim = 2 means that the frequency of
+                    the trigger is divided by 2. Keep adc-decim = 1 as default.
+
+    default-dead-time :
+      type : array
+      required : true
+      description : The dead time value in ns, rising dead time first and falling dead time second.
+                    Choose 100 both as default.
+
+    modulation :
+      type : string
+      required : true
+      description : Type of modulation used (left or center aligned). Choose UpDwn as default.
+      enum :
+      - "Lft_aligned"
+      - "UpDwn"
+
+    default-phase-shift :
+      type : int
+      required : true
+      description : Value of the phase shift in ° a value between 0 and 360. Choose 0 as default.
+
+    output1-inactive :
+      type : boolean
+      description : Use it to disable the output 1 of the HRTIM timer. It will only stop generating the PWM
+                    in the GPIO corresponding to output 1, the GPIO will still be configured in alternate mode.
+      required : false
+
+    output2-inactive :
+      type : boolean
+      description : Use it to disable the output 2 of the HRTIM timer. It will only stop generating the PWM
+                    in the GPIO corresponding to output 2, the GPIO will still be configured in alternate mode.
+      required : false
+
+
+
+
+

@@ -20,15 +20,20 @@
 /**
  * @date   2022
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
 // Current module private functions
 #include "../src/comparator_driver.h"
 
 
-void comparator_init()
+void comparator1_init()
 {
-	comparator_gpio_init();
 	comparator_comp1_init();
+}
+
+void comparator3_init()
+{
 	comparator_comp3_init();
 }
+

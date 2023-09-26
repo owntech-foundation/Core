@@ -20,6 +20,7 @@
 /**
  * @date   2022
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
 #ifndef COMPARATOR_DRIVER_H_
@@ -31,7 +32,6 @@ extern "C" {
 
 void comparator_comp1_init();
 void comparator_comp3_init();
-void comparator_gpio_init();
 
 #ifdef __cplusplus
 }

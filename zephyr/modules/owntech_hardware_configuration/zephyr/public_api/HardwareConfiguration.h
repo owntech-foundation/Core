@@ -37,7 +37,7 @@
 
 // OwnTech API
 #include "adc.h"
-#include "hrtim.h"
+#include "hrtim_enum.h"
 
 
 /** Hardware version. See
@@ -51,6 +51,7 @@ typedef enum
 	O2_v_1_1_2,
 	SPIN_v_0_1,
 	SPIN_v_0_9,
+	SPIN_v_1_0,
 	TWIST_v_1_1_2
 } hardware_version_t;
 
@@ -94,8 +95,8 @@ public:
 
 	void initDacConstValue(uint8_t dac_number);
 	void setDacConstValue(uint8_t dac_number, uint8_t channel, uint32_t const_value);
-	void slopeCompensationLeg1(float32_t peak_voltage, float32_t low_voltage);
-	void slopeCompensationLeg2(float32_t peak_voltage, float32_t low_voltage);
+	void slopeCompensationDac3(float32_t peak_voltage, float32_t low_voltage);
+	void slopeCompensationDac1(float32_t peak_voltage, float32_t low_voltage);
 
 	/////
 	// NGND
@@ -126,141 +127,44 @@ public:
 	 */
 	uint32_t getIncrementalEncoderValue();
 
-	/////
-	// Power converter
+	//HRTIM configuration
 
-	void initInterleavedBuckMode();
-	void initInterleavedBuckModeCenterAligned();
-	void initInterleavedBoostMode();
-	void initInterleavedBoostModeCenterAligned();
-	void initFullBridgeBuckMode();
-	void initFullBridgeBuckModeCenterAligned(inverter_modulation_t inverter_modulation_type);
-	void initFullBridgeBoostMode();
-	void initFullBridgeBoostModeCenterAligned();
-	void initIndependentMode(leg_operation_t leg1_operation_type, leg_operation_t leg2_operation_type);
-	void initIndependentModeCenterAligned(leg_operation_t leg1_operation_type, leg_operation_t leg2_operation_type);
-	void initBuckCurrentMode();
+	void pwmInit(hrtim_tu_number_t pwmX);
+	void pwmStart(hrtim_tu_number_t pwmX);
+	void pwmStop(hrtim_tu_number_t pwmX);
+	void pwmStartSubUnit(hrtim_tu_number_t tu, hrtim_output_number_t output);
+	void pwmStopSubUnit(hrtim_tu_number_t tu, hrtim_output_number_t output);
+	void pwmSetModulation(hrtim_tu_number_t pwmX, hrtim_cnt_t modulation);
+	void pwmSetSwitchConvention(hrtim_tu_number_t pwmX, hrtim_switch_convention_t convention);
+	void pwmSetFrequency(uint32_t value);
+	void pwmSetDeadTime(hrtim_tu_number_t pwmX, uint16_t rise_ns, uint16_t fall_ns);
+	void pwmSetDutyCycle(hrtim_tu_number_t pwmX, float32_t duty_cycle);
+	void pwmSetPhaseShift(hrtim_tu_number_t pwmX, int16_t shift);
 
-	/**
-	 * @brief     This function transfer the calculated PWM value to the
-	 * HRTIM peripheral and make sure it is between saturation
-	 * bounds with a phase shift compatible with the interleaved application.
-	 *
-	 * @param[in] duty_cycle    floating point duty cycle comprised between 0 and 1.
-	 */
-	void setInterleavedDutyCycle(float32_t duty_cycle);
+	void pwmSetMode(hrtim_tu_number_t pwmX, hrtim_pwm_mode_t mode);
+	hrtim_pwm_mode_t pwmGetMode(hrtim_tu_number_t pwmX);
+	void pwmSetEev(hrtim_tu_number_t pwmX, hrtim_external_trigger_t eev);
+	hrtim_external_trigger_t pwmGetEev(hrtim_tu_number_t pwmX);
 
-	/**
-	 * @brief     This function transfer the calculated PWM value to the
-	 * HRTIM peripheral and make sure it is between saturation
-	 * bounds with a complementary approach to the duty cycles compatible with the HBridge application.
-	 *
-	 * @param[in] duty_cycle    floating point duty cycle comprised between 0 and 1.
-	 */
-	void setFullBridgeBuckDutyCycle(float32_t duty_cycle);
+	hrtim_cnt_t pwmGetModulation(hrtim_tu_number_t pwmX);
+	hrtim_switch_convention_t pwmGetSwitchConvention(hrtim_tu_number_t pwmX);
+	uint16_t pwmGetPeriod(hrtim_tu_number_t pwmX);
+	void pwmSetAdcTriggerPostScaler(hrtim_tu_number_t pwmX, uint32_t ps_ratio);
+	void pwmSetAdcEdgeTrigger(hrtim_tu_number_t pwmX, hrtim_adc_edgetrigger_t adc_edge_trigger);
+	hrtim_adc_edgetrigger_t pwmGetAdcEdgeTrigger(hrtim_tu_number_t pwmX);
+	void pwmSetAdcTrig(hrtim_tu_number_t pwmX, hrtim_adc_trigger_t adc_trig);
+	hrtim_adc_trigger_t pwmGetAdcTrig(hrtim_tu_number_t pwmX, hrtim_adc_trigger_t adc_trig);
+	void pwmAdcTriggerEnable(hrtim_tu_number_t tu_number);
+	void pwmAdcTriggerDisable(hrtim_tu_number_t tu_number);
+	void pwmSetAdcTriggerInstant(hrtim_tu_number_t pwmX, float32_t trig_val);
+	void pwmSetAdcDecimation(hrtim_tu_number_t pwmX,  uint32_t decimation);
 
-	/**
-	 * @brief     This function transfer the calculated PWM value of leg_1 to the
-	 * HRTIM peripheral and make sure it is between saturation
-	 * bounds.
-	 *
-	 * @param[in] duty_cycle    floating point duty cycle of leg_1 comprised between 0 and 1.
-	 */
-	void setLeg1DutyCycle(float32_t duty_cycle);
-
-	/**
-	 * @brief     This function transfer the calculated PWM value of leg_2 to the
-	 * HRTIM peripheral and make sure it is between saturation
-	 * bounds.
-	 *
-	 * @param[in] duty_cycle    floating point duty cycle of leg_2 comprised between 0 and 1.
-	 */
-	void setLeg2DutyCycle(float32_t duty_cycle);
-
-	/**
-	 * @brief     This function updates the phase shift between the leg 1 and the master hrtim
-	 *
-	 * @param[in] phase_shift    floating point phase shift of leg_1 in degrees
-	 */
-	void setLeg1PhaseShift(float32_t phase_shift);
-
-	/**
-	 * @brief     This function updates the phase shift between the leg 1 and the master hrtim
-	 *
-	 * @param[in] phase_shift    floating point phase shift of leg_2 in degrees
-	 */
-	void setLeg2PhaseShift(float32_t phase_shift);
-
-	/**
-	 * @brief     This function updates the phase shift between the leg 1 and the master hrtim for the center aligned
-	 *
-	 * @param[in] phase_shift    floating point phase shift of leg_1 in degrees
-	 */
-	void setLeg1PhaseShiftCenterAligned(float32_t phase_shift);
-
-	/**
-	 * @brief     This function updates the phase shift between the leg 1 and the master hrtim for the center aligned
-	 *
-	 * @param[in] phase_shift    floating point phase shift of leg_2 in degrees
-	 */
-	void setLeg2PhaseShiftCenterAligned(float32_t phase_shift);
-
-	/**
-	 * @brief This function sets the dead time of the leg 1
-	 */
-	void setLeg1DeadTime(uint16_t rise_ns, uint16_t fall_ns);
-
-	/**
-	 * @brief This function sets the dead time of the leg 2
-	 */
-	void setLeg2DeadTime(uint16_t rise_ns, uint16_t fall_ns);
-
-	/**
-	 * @brief Sets the frequency of the HRTIMER
-	 */
-	void setHrtimFrequency(uint32_t frequency_Hz);
-
-	/**
-	 * @brief Gets the frequency of the HRTIMER
-	 */
-	uint32_t getHrtimFrequency();
-
-	/**
-	 * @brief Gets the period of the HRTIMER in µs
-	 */
-	uint32_t getHrtimPeriod();
-
-	/**
-	 * @brief Gets the repetition couunter HRTIMER master timer
-	 */
-	uint32_t getHrtimMasterRepetitionCounter();
-
-	/**
-	 * @brief Updates the minimum duty cycle of both legs
-	 */
-	void setHrtimMinDutyCycle(float32_t duty_cycle);
-
-	/**
-	 * @brief This updates the minimum duty cycle of both legs
-	 */
-	void setHrtimMaxDutyCycle(float32_t duty_cycle);
-
-	void setInterleavedOn();
-	void setFullBridgeBuckOn();
-	void setLeg1On();
-	void setLeg2On();
-
-	void setInterleavedOff();
-	void setFullBridgeBuckOff();
-	void setLeg1Off();
-	void setLeg2Off();
-
-	/**
-	 * @brief     Updates the adc trigger moment
-	 *
-	 * @param[in] new_trig    defines the triggering moment
-	 */
-	void setHrtimAdcTrigInterleaved(float32_t new_trig);
+	void pwmPeriodEvntDisable(hrtim_tu_t PWM_tu);
+	void pwmSetPeriodEvntRep(hrtim_tu_t PWM_tu, uint32_t repetition);
+	uint32_t pwmGetPeriodEvntRep(hrtim_tu_t PWM_tu);
+	void pwmPeriodEvntConf(hrtim_tu_t PWM_tu, uint32_t repetition, hrtim_callback_t callback);
+	void pwmPeriodEvntEnable(hrtim_tu_t PWM_tu);
+	uint32_t pwmGetPeriodUs(hrtim_tu_number_t pwmX);
 
 	/////
 	// UART
@@ -388,6 +292,14 @@ public:
 	 */
 	void adcStop();
 
+	// DAC
+	void dacConfigDac1CurrentmodeInit(hrtim_tu_t tu_src);
+	void dacConfigDac3CurrentmodeInit(hrtim_tu_t tu_src);
+
+	// Comparator
+	void comparator1Initialize();
+	void comparator3Initialize();
+
 private:
 	// LED
 	void ledInitialize();
@@ -398,44 +310,8 @@ private:
 	// UART
 	void uart1SwapRxTx();
 
-	// Power driver
-	void powerDriverInitialize();
-	void powerDriverLeg1On();
-	void powerDriverLeg2On();
-	void powerDriverLeg1Off();
-	void powerDriverLeg2Off();
-	void powerDriverInterleavedOn();
-	void powerDriverInterleavedOff();
-
-	// HRTIM
-	void hrtimLegTu(hrtim_tu_t tu1, hrtim_tu_t tu2);
-	void hrtimInitInterleavedBuckMode();
-	void hrtimInitInterleavedBuckModeCenterAligned();
-	void hrtimInitInterleavedBoostMode();
-	void hrtimInitInterleavedBoostModeCenterAligned();
-	void hrtimInitIndependentMode(bool leg1_buck_mode, bool leg2_buck_mode);
-	void hrtimInitIndependentModeCenterAligned(bool leg1_buck_mode, bool leg2_buck_mode);
-	void hrtimInitFullBridgeBuckMode(bool SPIN_board_V_1_1_2);
-	void hrtimInitFullBridgeBuckModeCenterAligned(bool bipolar_mode,bool SPIN_board_V_1_1_2);
-	void hrtimInitCurrentMode(bool leg1_buck, bool leg2_buck, hrtim_tu_t leg1_tu, hrtim_tu_t leg2_tu);
-	void hrtimStopInterleaved();
-	void hrtimStopFullBridgeBuck();
-	void hrtimStopLeg1();
-	void hrtimStopLeg2();
-	void hrtimStartInterleaved();
-	void hrtimStartFullBridgeBuck();
-	void hrtimStartLeg1();
-	void hrtimStartLeg2();
-
 	// ADC
 	void adcInitialize();
-
-	// DAC
-	void dacConfigDac1CurrentmodeInit(hrtim_tu_t tu_src);
-	void dacConfigDac3CurrentmodeInit(hrtim_tu_t tu_src);
-
-	// Comparator
-	void comparatorInitialize();
 
 private:
 	// Common
@@ -447,19 +323,6 @@ private:
 	// Timer
 	static bool timer4init;
 	static bool timer4started;
-
-	// Power driver
-	static bool powerDriverInitialized;
-
-	// HRTIM
-	static uint16_t hrtimPwmPeriod;
-	static uint16_t hrtimPwmPhaseShift;
-	static uint16_t hrtimPwmPhaseShiftLeg1;
-	static uint16_t hrtimPwmPhaseShiftLeg2;
-	static bool     hrtimFullBridgeBipolarMode;
-
-	static hrtim_tu_t hrtimLeg1Tu;
-	static hrtim_tu_t hrtimLeg2Tu;
 
 	// ADC
 	static bool adcInitialized;

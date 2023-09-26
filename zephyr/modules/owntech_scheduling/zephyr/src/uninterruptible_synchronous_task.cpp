@@ -28,7 +28,6 @@
 
 // OwnTech Power API
 #include "timer.h"
-#include "leg.h"
 #include "hrtim.h"
 #include "DataAcquisition.h"
 #include "data_acquisition_internal.h"
@@ -108,7 +107,7 @@ int8_t scheduling_define_uninterruptible_synchronous_task(task_function_t period
 	}
 	else if (interrupt_source == source_hrtim)
 	{
-		uint32_t hrtim_period_us = leg_get_period_us();
+		uint32_t hrtim_period_us = hrtim_period_Master_get_us();
 
 		if (hrtim_period_us == 0)
 			return -1;
@@ -157,7 +156,7 @@ void scheduling_start_uninterruptible_synchronous_task(bool manage_data_acquisit
 		}
 		else // (interrupt_source == scheduling_interrupt_source_t::source_tim6)
 		{
-			uint32_t hrtim_period_us = leg_get_period_us();
+			uint32_t hrtim_period_us = hrtim_period_Master_get_us();
 			if (hrtim_period_us == 0)
 			{
 				return;

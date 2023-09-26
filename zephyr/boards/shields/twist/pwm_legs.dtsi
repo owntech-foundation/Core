@@ -1,0 +1,41 @@
+/*
+ * Copyright (c) 2023 OwnTech.
+ *
+ * SPDX-License-Identifier: LGLPV2.1
+ */
+
+/ {
+
+    power_shield: power-shield{
+
+        compatible = "power-leg";
+
+        frequency = <200000>;
+
+        leg1: leg1{
+            leg-name = "LEG1";
+            pwm-pin-num = <12>;
+            current-pin-num = <25>;
+            adc-trigger = "ADCTRIG_1";
+            default-adc-decim = <1>;
+            edge-trigger = "EdgeTrigger_up";
+            default-dead-time = <100 100>;
+            modulation = "UpDwn";
+            default-phase-shift = <0>;
+        };
+
+        leg2: leg2{
+            leg-name = "LEG2";
+            pwm-pin-num = <2>;
+            current-pin-num = <30>;
+            adc-trigger = "ADCTRIG_3";
+            default-adc-decim = <1>;
+            edge-trigger = "EdgeTrigger_up";
+            default-dead-time = <100 100>;
+            modulation = "UpDwn";
+            default-phase-shift = <0>;
+        };
+
+    };
+
+};

@@ -31,6 +31,10 @@
 #include "HardwareConfiguration.h"
 
 
-void HardwareConfiguration::comparatorInitialize(){
-	comparator_init();
+void HardwareConfiguration::comparator1Initialize(){
+	comparator1_init();
+}
+
+void HardwareConfiguration::comparator3Initialize(){
+	comparator3_init();
 }

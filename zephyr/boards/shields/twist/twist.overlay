@@ -7,6 +7,7 @@
 #include "can-standby-switch.dtsi"
 #include "adc-channels.dtsi"
 #include "ngnd.dtsi"
+#include "pwm_legs.dtsi"
 
 &ngnd {
 	status = "okay";
@@ -35,3 +36,13 @@
 &ihigh {
 	status = "okay";
 };
+
+
+&leg1 {
+	status = "okay";
+};
+
+&leg2 {
+	status = "okay";
+};
+
