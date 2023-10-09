@@ -10,6 +10,7 @@ if(CONFIG_OWNTECH_DATA_ACQUISITION)
     ./src/dma.cpp
     ./src/data_dispatch.cpp
     ./src/data_conversion.cpp
+    ./src/nvs_storage.cpp
     ./public_api/DataAcquisition.cpp
   )
 

@@ -107,7 +107,7 @@ float32_t DataAcquisition::convert(channel_t channel, uint16_t raw_value)
 void DataAcquisition::setParameters(channel_t channel, float32_t gain, float32_t offset)
 {
 	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
-	data_conversion_set_conversion_parameters(channel_info.adc_num, channel_info.channel_num, gain, offset);
+	data_conversion_set_conversion_parameters_linear(channel_info.adc_num, channel_info.channel_num, gain, offset);
 }
 
 void DataAcquisition::setTwistChannelsUserCalibrationFactors()
@@ -244,7 +244,7 @@ void DataAcquisition::setParameters(uint8_t adc_num, uint8_t pin_num, float32_t 
 		return;
 	}
 
-	data_conversion_set_conversion_parameters(adc_num, channel_num, gain, offset);
+	data_conversion_set_conversion_parameters_linear(adc_num, channel_num, gain, offset);
 }
 
 

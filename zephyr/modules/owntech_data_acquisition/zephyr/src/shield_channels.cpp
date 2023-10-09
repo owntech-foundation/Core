@@ -140,7 +140,7 @@ static bool initialized = false;
  */
 static void _adc_channels_build_available_channels_lists()
 {
-	// Initialize some required fields
+	// Retreive calibration coefficients for each channel listed in device tree
 	for (uint8_t dt_channel_index = 0 ; dt_channel_index < DT_CHANNELS_COUNT ; dt_channel_index++)
 	{
 		// Determine ADC number based on its address
@@ -167,12 +167,36 @@ static void _adc_channels_build_available_channels_lists()
 				break;
 		}
 
-		// Register conversion parameters
-		data_conversion_set_conversion_parameters(dt_channels_props[dt_channel_index].adc_number,
-		                                          dt_channels_props[dt_channel_index].channel_number,
-												  dt_channels_props[dt_channel_index].default_gain.float_value,
-												  dt_channels_props[dt_channel_index].default_offset.float_value
-												 );
+		// Get parameters from NVS if they exist
+		int8_t res = data_conversion_retrieve_channel_parameters_from_nvs(dt_channels_props[dt_channel_index].adc_number,
+	                                                                      dt_channels_props[dt_channel_index].channel_number
+	                                                                     );
+
+		if (res == 0)
+		{
+			printk("Parameters for ADC %u channel %u have been retrieved from flash\n", dt_channels_props[dt_channel_index].adc_number, dt_channels_props[dt_channel_index].channel_number);
+			conversion_type_t conv_type = data_conversion_get_conversion_type(dt_channels_props[dt_channel_index].adc_number, dt_channels_props[dt_channel_index].channel_number);
+			switch (conv_type)
+			{
+				case conversion_linear:
+				{
+					float32_t gain   = data_conversion_get_parameter(dt_channels_props[dt_channel_index].adc_number, dt_channels_props[dt_channel_index].channel_number, 1);
+					float32_t offset = data_conversion_get_parameter(dt_channels_props[dt_channel_index].adc_number, dt_channels_props[dt_channel_index].channel_number, 2);
+					printk("    Conversion type is linear, with gain=%f and offset=%f\n", gain, offset);
+				}
+				break;
+			}
+		}
+
+		if (res != 0)
+		{
+			// In case parameters were not found in NVS, get default vaules from device tree
+			data_conversion_set_conversion_parameters_linear(dt_channels_props[dt_channel_index].adc_number,
+		                                                     dt_channels_props[dt_channel_index].channel_number,
+		                                                     dt_channels_props[dt_channel_index].default_gain.float_value,
+		                                                     dt_channels_props[dt_channel_index].default_offset.float_value
+		                                                    );
+		}
 
 		// Count channel for ADC
 		uint8_t adc_index = dt_channels_props[dt_channel_index].adc_number - 1;
@@ -259,60 +283,65 @@ channel_info_t shield_channels_get_enabled_channel_info(channel_t channel_name)
 /////
 // Calibration for Twist shield
 
-static float32_t _shield_channels_get_calibration_coefficients(const char* physicalParameter,const char* gainOrOffset)
+static void _get_line_from_console(char* buffer, uint8_t buffer_size)
 {
-	//Maximum number of number for gain and offset value
+	//Initializing variables for eventual loop
+	uint8_t carcount = 0;
+	char received_char;
+
+	do
+	{
+		received_char = console_getchar();
+		buffer[carcount] = received_char;
+
+		if (received_char == 0x08) // Backspace character
+		{
+			if (carcount>0) // To avoid carcount being negative
+			{
+				carcount--;
+			}
+		}
+		else
+		{
+			carcount++;
+		}
+
+		printk("%c", received_char); // Echo received char
+
+		if (carcount >= (buffer_size-1))
+		{
+			printk("Maximum caracter allowed reached \n");
+			break;
+		}
+
+	} while ((received_char!='\n')); // EOL char : CRLF
+	buffer[carcount-2] = '\0'; // adding end of tab character to prepare for atof function
+}
+
+
+static float32_t _shield_channels_get_calibration_coefficients(const char* physicalParameter, const char* gainOrOffset)
+{
+	// Maximum number of number for gain and offset value
 	const uint8_t MaxCharInOneLine = 20;
 
-	uint8_t carcount;
 	char received_char;
-	char line[MaxCharInOneLine];//number of character in one line
+	char line[MaxCharInOneLine]; // Number of character in one line
 	float32_t parameterCoefficient;
 
 	do
 	{
-		//Initializing variables for eventual loop
-		carcount = 0;
-
 		printk("Type %s %s and press enter \n", physicalParameter, gainOrOffset);
+		_get_line_from_console(line, MaxCharInOneLine);
 
-		do
-		{
-			received_char = console_getchar();
-			line[carcount] = received_char;
-
-			if(received_char == 0x08)//backspace character
-			{
-				if(carcount>0)//To avoid carcount being negative
-					carcount--;
-			}
-			else
-			{
-				carcount++;
-			}
-
-			printk("%c", received_char);//echoing value
-
-			if(carcount>=(MaxCharInOneLine-1))
-			{
-				printk("Maximum caracter allowed reached \n");
-				break;
-			}
-
-		} while ((received_char!='\n')); // EOL char : CRLF
-		line[carcount-2] = '\0'; // adding end of tab character to prepare for atof function
-
-		//Converting string to float
+		// Convert string to float
 		parameterCoefficient = atof(line);
 
-		//Getting confirmation
+		// Get confirmation
 		printk("%s %s applied will be : %f\n", physicalParameter, gainOrOffset, parameterCoefficient);
-
-		//Getting validation
 		printk("Press y to validate, any other character to retype the %s \n", gainOrOffset);
 		received_char = console_getchar();
 
-	}while(received_char != 'y');
+	} while(received_char != 'y');
 
 	return parameterCoefficient;
 }
@@ -322,37 +351,77 @@ void shield_channels_set_user_acquisition_parameters()
 	float32_t gains[6];   // VH, V1, V2, IH, I1, I2
 	float32_t offsets[6]; // VH, V1, V2, IH, I1, I2
 
-	gains[0] = _shield_channels_get_calibration_coefficients("VHigh", "gain");
-	gains[1] = _shield_channels_get_calibration_coefficients("V1Low", "gain");
-	gains[2] = _shield_channels_get_calibration_coefficients("V2Low", "gain");
-	gains[3] = _shield_channels_get_calibration_coefficients("I2Low", "gain");
-	gains[4] = _shield_channels_get_calibration_coefficients("IHigh", "gain");
-	gains[5] = _shield_channels_get_calibration_coefficients("I1Low", "gain");
-
+	gains[0]   = _shield_channels_get_calibration_coefficients("VHigh", "gain");
 	offsets[0] = _shield_channels_get_calibration_coefficients("VHigh", "offset");
+	gains[1]   = _shield_channels_get_calibration_coefficients("V1Low", "gain");
 	offsets[1] = _shield_channels_get_calibration_coefficients("V1Low", "offset");
+	gains[2]   = _shield_channels_get_calibration_coefficients("V2Low", "gain");
 	offsets[2] = _shield_channels_get_calibration_coefficients("V2Low", "offset");
-	offsets[3] = _shield_channels_get_calibration_coefficients("I2Low", "offset");
-	offsets[4] = _shield_channels_get_calibration_coefficients("IHigh", "offset");
-	offsets[5] = _shield_channels_get_calibration_coefficients("I1Low", "offset");
+	gains[3]   = _shield_channels_get_calibration_coefficients("IHigh", "gain");
+	offsets[3] = _shield_channels_get_calibration_coefficients("IHigh", "offset");
+	gains[4]   = _shield_channels_get_calibration_coefficients("I1Low", "gain");
+	offsets[4] = _shield_channels_get_calibration_coefficients("I1Low", "offset");
+	gains[5]   = _shield_channels_get_calibration_coefficients("I2Low", "gain");
+	offsets[5] = _shield_channels_get_calibration_coefficients("I2Low", "offset");
 
 	channel_info_t channel_info = shield_channels_get_enabled_channel_info(V_HIGH);
-	data_conversion_set_conversion_parameters(channel_info.adc_num, channel_info.channel_num, gains[0], offsets[0]);
+	data_conversion_set_conversion_parameters_linear(channel_info.adc_num, channel_info.channel_num, gains[0], offsets[0]);
 
 	channel_info = shield_channels_get_enabled_channel_info(V1_LOW);
-	data_conversion_set_conversion_parameters(channel_info.adc_num, channel_info.channel_num, gains[1], offsets[1]);
+	data_conversion_set_conversion_parameters_linear(channel_info.adc_num, channel_info.channel_num, gains[1], offsets[1]);
 
 	channel_info = shield_channels_get_enabled_channel_info(V2_LOW);
-	data_conversion_set_conversion_parameters(channel_info.adc_num, channel_info.channel_num, gains[2], offsets[2]);
+	data_conversion_set_conversion_parameters_linear(channel_info.adc_num, channel_info.channel_num, gains[2], offsets[2]);
 
 	channel_info = shield_channels_get_enabled_channel_info(I_HIGH);
-	data_conversion_set_conversion_parameters(channel_info.adc_num, channel_info.channel_num, gains[3], offsets[3]);
+	data_conversion_set_conversion_parameters_linear(channel_info.adc_num, channel_info.channel_num, gains[3], offsets[3]);
 
 	channel_info = shield_channels_get_enabled_channel_info(I1_LOW);
-	data_conversion_set_conversion_parameters(channel_info.adc_num, channel_info.channel_num, gains[4], offsets[4]);
+	data_conversion_set_conversion_parameters_linear(channel_info.adc_num, channel_info.channel_num, gains[4], offsets[4]);
 
 	channel_info = shield_channels_get_enabled_channel_info(I2_LOW);
-	data_conversion_set_conversion_parameters(channel_info.adc_num, channel_info.channel_num, gains[5], offsets[5]);
+	data_conversion_set_conversion_parameters_linear(channel_info.adc_num, channel_info.channel_num, gains[5], offsets[5]);
 
-	printk("Calibration coefficients updated !\n");
+	printk("Calibration coefficients successfully updated!\n");
+
+	// Ask for save in NVS
+	printk("Do you want to store these parameters in permanent storage?\n");
+	printk("Parameters stored in permanent storage are automatically retreived at board boot.\n");
+	printk("Not storing them in permanent storage will result in parameters being lost on board power cycle.\n");
+	printk("Press y to store parameters in permanent storage, any other key to don't store them.\n");
+
+	char received_char = console_getchar();
+	if (received_char == 'y')
+	{
+		channel_info = shield_channels_get_enabled_channel_info(V_HIGH);
+		int8_t err = data_conversion_store_channel_parameters_in_nvs(channel_info.adc_num, channel_info.channel_num);
+
+		channel_info = shield_channels_get_enabled_channel_info(V1_LOW);
+		err |= data_conversion_store_channel_parameters_in_nvs(channel_info.adc_num, channel_info.channel_num);
+
+		channel_info = shield_channels_get_enabled_channel_info(V2_LOW);
+		err |= data_conversion_store_channel_parameters_in_nvs(channel_info.adc_num, channel_info.channel_num);
+
+		channel_info = shield_channels_get_enabled_channel_info(I_HIGH);
+		err |= data_conversion_store_channel_parameters_in_nvs(channel_info.adc_num, channel_info.channel_num);
+
+		channel_info = shield_channels_get_enabled_channel_info(I1_LOW);
+		err |= data_conversion_store_channel_parameters_in_nvs(channel_info.adc_num, channel_info.channel_num);
+
+		channel_info = shield_channels_get_enabled_channel_info(I2_LOW);
+		err |= data_conversion_store_channel_parameters_in_nvs(channel_info.adc_num, channel_info.channel_num);
+
+		if (err == 0)
+		{
+			printk("Parameters were successfully written in permanent storage.\n");
+		}
+		else
+		{
+			printk("Error writing parameters in permanent storage!\n");
+		}
+	}
+	else
+	{
+		printk("Exiting without permanent storage. Parameters won't be retained after power cycling.\n");
+	}
 }

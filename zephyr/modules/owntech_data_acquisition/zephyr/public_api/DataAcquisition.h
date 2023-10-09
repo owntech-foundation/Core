@@ -242,6 +242,9 @@ public:
 	/**
 	 * @brief Retrieve stored parameters from Flash memory and configure ADC parameters
 	 *
+	 * @note  This function requires Console to interact with the user.
+	 *        You must first call console_init() before calling this function.
+	 *
 	 * @note  This function can't be called before the *all* Twist channels have
 	 *        been enabled (you can use enableTwistDefaultChannels() for that
 	 *        purpose). The DataAcquisition must not have been started, neither
