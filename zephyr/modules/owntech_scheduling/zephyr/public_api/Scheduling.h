@@ -30,7 +30,7 @@
 #include <stdint.h>
 
 // Zephyr
-#include <zephyr.h>
+#include <zephyr/kernel.h>
 
 
 /////

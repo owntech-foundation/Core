@@ -37,8 +37,8 @@
 #include <stdlib.h>
 
 // Zephyr
-#include <zephyr.h>
-#include <console/console.h>
+#include <zephyr/kernel.h>
+#include <zephyr/console/console.h>
 
 // OwnTech API
 #include "DataAcquisition.h"
@@ -140,6 +140,8 @@ static bool initialized = false;
  */
 static void _adc_channels_build_available_channels_lists()
 {
+	bool checkNvs = true;
+
 	// Retreive calibration coefficients for each channel listed in device tree
 	for (uint8_t dt_channel_index = 0 ; dt_channel_index < DT_CHANNELS_COUNT ; dt_channel_index++)
 	{
@@ -168,27 +170,56 @@ static void _adc_channels_build_available_channels_lists()
 		}
 
 		// Get parameters from NVS if they exist
-		int8_t res = data_conversion_retrieve_channel_parameters_from_nvs(dt_channels_props[dt_channel_index].adc_number,
-	                                                                      dt_channels_props[dt_channel_index].channel_number
-	                                                                     );
-
-		if (res == 0)
+		bool nvsRetrieved = false;
+		if (checkNvs == true)
 		{
-			printk("Parameters for ADC %u channel %u have been retrieved from flash\n", dt_channels_props[dt_channel_index].adc_number, dt_channels_props[dt_channel_index].channel_number);
-			conversion_type_t conv_type = data_conversion_get_conversion_type(dt_channels_props[dt_channel_index].adc_number, dt_channels_props[dt_channel_index].channel_number);
-			switch (conv_type)
+			int8_t res = data_conversion_retrieve_channel_parameters_from_nvs(dt_channels_props[dt_channel_index].adc_number,
+			                                                                    dt_channels_props[dt_channel_index].channel_number
+			                                                                   );
+
+			if (res == 0)
 			{
-				case conversion_linear:
+				printk("Parameters for ADC %u channel %u have been retrieved from flash\n", dt_channels_props[dt_channel_index].adc_number, dt_channels_props[dt_channel_index].channel_number);
+				conversion_type_t conv_type = data_conversion_get_conversion_type(dt_channels_props[dt_channel_index].adc_number, dt_channels_props[dt_channel_index].channel_number);
+				switch (conv_type)
 				{
-					float32_t gain   = data_conversion_get_parameter(dt_channels_props[dt_channel_index].adc_number, dt_channels_props[dt_channel_index].channel_number, 1);
-					float32_t offset = data_conversion_get_parameter(dt_channels_props[dt_channel_index].adc_number, dt_channels_props[dt_channel_index].channel_number, 2);
-					printk("    Conversion type is linear, with gain=%f and offset=%f\n", gain, offset);
+					case conversion_linear:
+					{
+						float32_t gain   = data_conversion_get_parameter(dt_channels_props[dt_channel_index].adc_number, dt_channels_props[dt_channel_index].channel_number, 1);
+						float32_t offset = data_conversion_get_parameter(dt_channels_props[dt_channel_index].adc_number, dt_channels_props[dt_channel_index].channel_number, 2);
+						printk("    Conversion type is linear, with gain=%f and offset=%f\n", gain, offset);
+					}
+					break;
 				}
-				break;
+				nvsRetrieved = true;
+			}
+			else if (res == -1)
+			{
+				printk("No calibration value found in persistent storage. Default values will be used for data conversion.\n");
+				checkNvs = false;
+			}
+			else if (res == -2)
+			{
+				printk("Calibration values in persistent storage were stored with a previous version of the API and can't be recovered. Default values will be used for data conversion.\n");
+				checkNvs = false;
+			}
+			else if (res == -3)
+			{
+				printk("Calibration values for ADC %u channel %u were found in persistent storage, but their format is incorrect. Possible data corruption.\n",
+				       dt_channels_props[dt_channel_index].adc_number,
+				       dt_channels_props[dt_channel_index].channel_number
+				      );
+			}
+			else if (res == -4)
+			{
+				printk("Unable to find calibration values for ADC %u channel %u in persistent storage. Default values will be used.\n",
+				       dt_channels_props[dt_channel_index].adc_number,
+				       dt_channels_props[dt_channel_index].channel_number
+				      );
 			}
 		}
 
-		if (res != 0)
+		if (nvsRetrieved == false)
 		{
 			// In case parameters were not found in NVS, get default vaules from device tree
 			data_conversion_set_conversion_parameters_linear(dt_channels_props[dt_channel_index].adc_number,

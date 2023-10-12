@@ -10,10 +10,12 @@
 			compatible = "st,stm32-timers";
 			reg = <0x40016800 0x400>;
 			clocks = <&rcc STM32_CLOCK_BUS_APB2 0x04000000>;
+			resets = <&rctl STM32_RESET(APB2, 26U)>;
 			interrupts = <67 0>, <68 0>, <69 0>, <70 0>,
 				     <71 0>, <72 0>, <73 0>, <74 0>;
 			interrupt-names = "master", "tima", "timb", "timc",
 					  "timd", "time", "flt", "timf";
+			st,prescaler = <0>;
 			status = "okay";
 			label = "HRTIM_1";
 			outputs {

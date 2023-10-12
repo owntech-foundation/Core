@@ -13,6 +13,10 @@
 			adc4_in5_pb15: adc4_in5_pb15 {
 				pinmux = <STM32_PINMUX('B', 15, ANALOG)>;
 			};
+			dac3_dummy: dac3_dummy {
+				/* This is a dummy pin that does not exist with LQFP64 packaging */
+				pinmux = <STM32_PINMUX('D', 15, ANALOG)>;
+			};
 		};
 	};
 };

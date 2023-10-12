@@ -29,11 +29,11 @@
 // Include
 
 // Zephyr
-#include <zephyr.h>
-#include <device.h>
-#include <fs/nvs.h>
-#include <drivers/flash.h>
-#include <storage/flash_map.h>
+#include <zephyr/kernel.h>
+#include <zephyr/device.h>
+#include <zephyr/fs/nvs.h>
+#include <zephyr/drivers/flash.h>
+#include <zephyr/storage/flash_map.h>
 
 // CMSIS
 #include <arm_math.h>
@@ -48,28 +48,56 @@ static uint16_t storage_version_in_nvs = 0;
 static bool initialized = false;
 
 // Device-tree related macros
-#define STORAGE_NODE DT_NODE_BY_FIXED_PARTITION_LABEL(storage)
-#define FLASH_NODE   DT_MTD_FROM_FIXED_PARTITION(STORAGE_NODE)
+#define NVS_PARTITION storage_partition
+#define STORAGE_NODE  DT_NODE_BY_FIXED_PARTITION_LABEL(NVS_PARTITION)
 
 // Flash memory file system
-static const struct device* flash_dev = DEVICE_DT_GET(FLASH_NODE);
 static struct nvs_fs fs =
 {
-	.offset = FLASH_AREA_OFFSET(storage)
+	.offset       = FIXED_PARTITION_OFFSET(NVS_PARTITION),
+	.flash_device = FIXED_PARTITION_DEVICE(NVS_PARTITION)
 };
 
 
 /////
-// Public Functions
+// Private functions
 
-int8_t nvs_storage_init()
+static int8_t _nvs_storage_store_version()
+{
+	if (storage_version_in_nvs == current_storage_version)
+	{
+		// Ok, nothing to do
+		return 0;
+	}
+	else if (storage_version_in_nvs == 0)
+	{
+		// No version in NVS: this is the first use of NVS, store current version number.
+		int rc = nvs_write(&fs, VERSION, &current_storage_version, 2);
+
+		if (rc == 2)
+		{
+			storage_version_in_nvs = current_storage_version;
+			return 0;
+		}
+
+		return -1;
+	}
+	else
+	{
+		// There is already a version number in NVS, but it differs from current API version.
+		// This is currently treated as an error and requires to explicitely clear NVS.
+		return -1;
+	}
+}
+
+static int8_t _nvs_storage_init()
 {
 	if (initialized == true)
 		return 0;
 
-	if (!device_is_ready(flash_dev))
+	if (!device_is_ready(fs.flash_device))
 	{
-		printk("Flash device %s is not ready\n", flash_dev->name);
+		printk("Flash device %s is not ready\n", fs.flash_device->name);
 		return -1;
 	}
 
@@ -81,7 +109,7 @@ int8_t nvs_storage_init()
 	 */
 
 	struct flash_pages_info info;
-	int rc = flash_get_page_info_by_offs(flash_dev, fs.offset, &info);
+	int rc = flash_get_page_info_by_offs(fs.flash_device, fs.offset, &info);
 	if (rc != 0)
 	{
 		printk("Unable to get page info\n");
@@ -90,7 +118,7 @@ int8_t nvs_storage_init()
 	fs.sector_size = info.size;
 	fs.sector_count = 2U;
 
-	rc = nvs_init(&fs, flash_dev->name);
+	rc = nvs_mount(&fs);
 	if (rc != 0)
 	{
 		printk("Flash Init failed\n");
@@ -105,13 +133,10 @@ int8_t nvs_storage_init()
 
 	if (rc < 0)
 	{
-		// No version in NVS: this is the first use of NVS, store current version number.
-		rc = nvs_storage_store_data(VERSION, &current_storage_version, 2);
-		storage_version_in_nvs = current_storage_version;
-		return -1;
+		// No version in NVS: this is the first use of NVS.
+		storage_version_in_nvs = 0;
 	}
-
-	if (storage_version_in_nvs != current_storage_version)
+	else if (storage_version_in_nvs != current_storage_version)
 	{
 		printk("WARNING: stored version in NVS is different from current module version! Stored data may not have the expected format.\n");
 		// -2 indicates that the current version stored in NVS is different from current code version.
@@ -121,15 +146,25 @@ int8_t nvs_storage_init()
 	return 0;
 }
 
+
+/////
+// Public Functions
+
 int8_t nvs_storage_store_data(uint16_t data_id, const void* data, uint8_t data_size)
 {
 	if (initialized == false)
 	{
-		int8_t error = nvs_storage_init();
+		int8_t error = _nvs_storage_init();
 		if (error != 0) return error;
 	}
 
-	int rc = nvs_write(&fs, data_id, data, data_size);
+	int rc = _nvs_storage_store_version();
+	if (rc != 0)
+	{
+		return rc;
+	}
+
+	rc = nvs_write(&fs, data_id, data, data_size);
 
 	return rc;
 }
@@ -138,7 +173,7 @@ int8_t nvs_storage_retrieve_data(uint16_t data_id, void* data_buffer, uint8_t da
 {
 	if (initialized == false)
 	{
-		int8_t error = nvs_storage_init();
+		int8_t error = _nvs_storage_init();
 		if (error != 0) return error;
 	}
 
@@ -158,11 +193,22 @@ int8_t nvs_storage_retrieve_data(uint16_t data_id, void* data_buffer, uint8_t da
 	return rc;
 }
 
+int8_t nvs_storage_clear_all_stored_data()
+{
+	if (initialized == false)
+	{
+		int8_t error = _nvs_storage_init();
+		if (error != 0) return 0;
+	}
+
+	return nvs_clear(&fs);
+}
+
 uint16_t nvs_storage_get_current_version()
 {
 	if (initialized == false)
 	{
-		int8_t error = nvs_storage_init();
+		int8_t error = _nvs_storage_init();
 		if (error != 0) return 0;
 	}
 
@@ -173,7 +219,7 @@ uint16_t nvs_storage_get_version_in_nvs()
 {
 	if (initialized == false)
 	{
-		int8_t error = nvs_storage_init();
+		int8_t error = _nvs_storage_init();
 		if (error != 0) return 0;
 	}
 

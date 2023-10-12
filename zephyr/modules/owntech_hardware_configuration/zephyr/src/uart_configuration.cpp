@@ -28,7 +28,8 @@
 #include <stm32_ll_lpuart.h>
 
 // Zephyr
-#include <drivers/uart.h>
+#include <zephyr/drivers/uart.h>
+#include <zephyr/console/console.h>
 
 // Current file header
 #include "HardwareConfiguration.h"

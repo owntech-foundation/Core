@@ -28,7 +28,7 @@
 #include <stdint.h>
 
 // Zephyr
-#include <zephyr.h>
+#include <zephyr/kernel.h>
 
 // STM32 LL
 #include <stm32_ll_bus.h>

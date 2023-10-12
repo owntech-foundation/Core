@@ -29,8 +29,8 @@
 #include <stm32_ll_bus.h>
 
 /* Zephyr drivers */
-#include <drivers/uart.h>
-#include <drivers/dma.h>
+#include <zephyr/drivers/uart.h>
+#include <zephyr/drivers/dma.h>
 
 /* Header */
 #include "Rs485.h"

@@ -31,8 +31,8 @@
 
 
 // Zephyr
-#include <zephyr.h>
-#include <device.h>
+#include <zephyr/kernel.h>
+#include <zephyr/device.h>
 
 // STM32 LL
 #include <stm32_ll_bus.h>
@@ -46,7 +46,7 @@ static const struct device* dac2 = DEVICE_DT_GET(DAC2_DEVICE);
 /////
 // Functions to be run
 
-static int _vrefbuf_init(const struct device* dev)
+static int _vrefbuf_init()
 {
 	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SYSCFG);
 	LL_VREFBUF_SetVoltageScaling(LL_VREFBUF_VOLTAGE_SCALE0);
@@ -56,7 +56,7 @@ static int _vrefbuf_init(const struct device* dev)
 	return 0;
 }
 
-static int _dac2_init(const struct device* dev)
+static int _dac2_init()
 {
 	if (device_is_ready(dac2) == true)
 	{

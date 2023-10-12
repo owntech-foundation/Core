@@ -30,7 +30,7 @@
 
 #include <stdint.h>
 #include "arm_math.h"
-#include <zephyr.h>
+#include <zephyr/kernel.h>
 #include "hrtim_enum.h"
 
 #define TU_DEFAULT_DT (100U)       /* dead-time in ns */

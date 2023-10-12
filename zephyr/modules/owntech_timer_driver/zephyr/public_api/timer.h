@@ -39,8 +39,8 @@
 
 
 // Zephyr
-#include <zephyr.h>
-#include <device.h>
+#include <zephyr/kernel.h>
+#include <zephyr/device.h>
 
 
 #ifdef __cplusplus

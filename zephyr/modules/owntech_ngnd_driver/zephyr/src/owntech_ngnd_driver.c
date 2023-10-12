@@ -26,7 +26,7 @@
 
 
 // Zephyr
-#include <drivers/gpio.h>
+#include <zephyr/drivers/gpio.h>
 
 // Current file header
 #include "owntech_ngnd_driver.h"

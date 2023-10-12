@@ -29,7 +29,7 @@
 #include <stdint.h>
 
 //Zephyr
-#include <zephyr.h>
+#include <zephyr/kernel.h>
 
 // OwnTech API
 #include "HardwareConfiguration.h"

@@ -107,7 +107,11 @@ int8_t data_conversion_store_channel_parameters_in_nvs(uint8_t adc_num, uint8_t 
  * @param[in] adc_num       ADC number
  * @param[in] channel_num   Channel number
  *
- * @return 0 if parameters were correcly retreived, -1 if there was an error.
+ * @return 0 if parameters were correcly retreived, negative value if there was an error:
+ *         -1: NVS is empty
+ *         -2: NVS contains data, but their version doesn't match current version
+ *         -3: NVS data is corrupted
+ *         -4: NVS contains data, but not for the requested channel
  */
 int8_t data_conversion_retrieve_channel_parameters_from_nvs(uint8_t adc_num, uint8_t channel_num);
 

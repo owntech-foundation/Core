@@ -28,7 +28,7 @@
 #ifndef POWER_INIT_H_
 #define POWER_INIT_H_
 
-#include "zephyr.h"
+#include <zephyr/kernel.h>
 #include "hrtim.h"
 
 /* Define a macro LEG_PWM_PIN that retrieves the PWM gpio pin

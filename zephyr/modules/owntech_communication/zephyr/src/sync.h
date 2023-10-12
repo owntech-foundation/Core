@@ -26,7 +26,7 @@
 #ifndef SYNC_H_
 #define SYNC_H_
 
-#include <zephyr.h>
+#include <zephyr/kernel.h>
 
 
 /**

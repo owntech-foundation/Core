@@ -28,7 +28,7 @@
 #ifndef POWER_H_
 #define POWER_H_
 
-#include "zephyr.h"
+#include <zephyr/kernel.h>
 #include "arm_math.h"
 #include "hrtim_enum.h"
 

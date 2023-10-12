@@ -24,8 +24,8 @@
 
 
 // Zephyr
-#include "zephyr.h"
-#include "drivers/gpio.h"
+#include <zephyr/kernel.h>
+#include <zephyr/drivers/gpio.h>
 
 // Current file header
 #include "HardwareConfiguration.h"

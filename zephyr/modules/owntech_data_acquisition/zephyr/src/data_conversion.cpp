@@ -211,16 +211,14 @@ int8_t data_conversion_retrieve_channel_parameters_from_nvs(uint8_t adc_num, uin
 	uint8_t channel_index = channel_num - 1;
 
 	// Check that parameters currently stored in NVS are from the same version
-	uint16_t current_storage_version = nvs_storage_get_current_version();
-	if (current_storage_version == 0)
+	uint16_t current_stored_version = nvs_storage_get_version_in_nvs();
+	if (current_stored_version == 0)
 	{
-		printk("Calibration values are not set, please calibrate\n");
 		return -1;
 	}
-	else if (current_storage_version != nvs_storage_get_version_in_nvs())
+	else if (current_stored_version != nvs_storage_get_current_version())
 	{
-		printk("Calibration values are obsolete, please update them\n");
-        return -1;
+		return -2;
 	}
 
 	uint16_t channel_ID = ADC_CALIBRATION | (adc_num&0x0F) << 4 | (channel_num&0x0F);
@@ -238,13 +236,11 @@ int8_t data_conversion_retrieve_channel_parameters_from_nvs(uint8_t adc_num, uin
 		// Check that all required values match
 		if (adc_num != buffer[string_len + 1])
 		{
-			printk("Error! ADC number does not match NVS ID\n");
-			ret = -1;
+			ret = -3;
 		}
 		else if (channel_num != buffer[string_len + 2])
 		{
-			printk("Error! ADC channel does not match NVS ID\n");
-			ret = -1;
+			ret = -3;
 		}
 		else
 		{
@@ -264,10 +260,9 @@ int8_t data_conversion_retrieve_channel_parameters_from_nvs(uint8_t adc_num, uin
 			}
 		}
 	}
-	else if (read_size == 0)
+	else
 	{
-		printk("Unable to find calibration values for ADC %u channel %u.\n", adc_num, channel_num);
-		ret = -1;
+		ret = -4;
 	}
 
 	k_free(buffer);

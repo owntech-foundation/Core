@@ -28,8 +28,8 @@
 #include <stdint.h>
 
 // Zephyr
-#include <zephyr.h>
-#include <drivers/dma.h>
+#include <zephyr/kernel.h>
+#include <zephyr/drivers/dma.h>
 
 // STM32
 #include <stm32_ll_dma.h>

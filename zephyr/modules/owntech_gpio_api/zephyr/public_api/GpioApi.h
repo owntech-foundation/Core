@@ -27,7 +27,7 @@
 #ifndef GPIOAPI_H_
 #define GPIOAPI_H_
 
-#include <drivers/gpio.h>
+#include <zephyr/drivers/gpio.h>
 
 
 /////

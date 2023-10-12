@@ -25,7 +25,7 @@
 #ifndef RS485_H_
 #define RS485_H_
 
-#include <zephyr.h>
+#include <zephyr/kernel.h>
 
 #include <stm32_ll_usart.h>
 

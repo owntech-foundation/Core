@@ -28,8 +28,8 @@
 #define DAC_H_
 
 // Zephyr
-#include <zephyr.h>
-#include <device.h>
+#include <zephyr/kernel.h>
+#include <zephyr/device.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -67,7 +67,7 @@ typedef enum
 	hrtim_trig3,
 	hrtim_trig4,
 	hrtim_trig5,
-	hrtim_trig6 
+	hrtim_trig6
 } dac_trigger_t;
 
 typedef struct

@@ -29,7 +29,7 @@
 
 
 // Zephyr
-#include <device.h>
+#include <zephyr/device.h>
 
 
 #ifdef __cplusplus

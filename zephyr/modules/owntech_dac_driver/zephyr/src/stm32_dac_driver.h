@@ -27,7 +27,7 @@
 #define STM32_DAC_DRIVER_H_
 
 // Zephyr
-#include <device.h>
+#include <zephyr/device.h>
 
 // Public API
 #include "dac.h"

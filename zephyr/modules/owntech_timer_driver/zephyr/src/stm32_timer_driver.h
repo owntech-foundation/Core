@@ -26,7 +26,7 @@
 
 
 // Zephyr
-#include <device.h>
+#include <zephyr/device.h>
 
 // Common driver header
 #include "timer.h"

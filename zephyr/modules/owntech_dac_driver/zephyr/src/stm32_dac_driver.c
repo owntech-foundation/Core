@@ -26,7 +26,7 @@
 
 
 // Zephyr
-#include <zephyr.h>
+#include <zephyr/kernel.h>
 
 // STM32 LL
 #include <stm32_ll_dac.h>
@@ -200,7 +200,7 @@ static void dac_stm32_function_update_step(const struct device* dev, uint8_t cha
 	{
 		data->dac_config->function_config.step_data = step_data;
 
-		LL_DAC_SetWaveSawtoothStepData(dac_dev, dac_channel, step_data);	
+		LL_DAC_SetWaveSawtoothStepData(dac_dev, dac_channel, step_data);
 	}
 }
 

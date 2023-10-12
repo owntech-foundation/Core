@@ -26,7 +26,7 @@
  */
 
 // Zephyr
-#include <zephyr.h>
+#include <zephyr/kernel.h>
 
 // Owntech drivers
 #include "dac.h"
@@ -96,13 +96,14 @@ void HardwareConfiguration::dacConfigDac1CurrentmodeInit(hrtim_tu_t tu_src)
 {
 	// DAC 1
 	dac_function_config_t function_config =
-		{
-			.dac_function = dac_function_sawtooth,
-			.reset_trigger_source = hrtim_trig1,
-			.step_trigger_source = hrtim_trig1,
-			.polarity = dac_polarity_decrement,
-			.reset_data = 4000,
-			.step_data = 200};
+	{
+		.dac_function = dac_function_sawtooth,
+		.reset_trigger_source = hrtim_trig1,
+		.step_trigger_source = hrtim_trig1,
+		.polarity = dac_polarity_decrement,
+		.reset_data = 4000,
+		.step_data = 200
+	};
 
 	switch (tu_src)
 	{
@@ -144,13 +145,14 @@ void HardwareConfiguration::dacConfigDac3CurrentmodeInit(hrtim_tu_t tu_src)
 {
 	// DAC 3
 	dac_function_config_t function_config =
-		{
-			.dac_function = dac_function_sawtooth,
-			.reset_trigger_source = hrtim_trig1,
-			.step_trigger_source = hrtim_trig1,
-			.polarity = dac_polarity_decrement,
-			.reset_data = 4000,
-			.step_data = 200};
+	{
+		.dac_function = dac_function_sawtooth,
+		.reset_trigger_source = hrtim_trig1,
+		.step_trigger_source = hrtim_trig1,
+		.polarity = dac_polarity_decrement,
+		.reset_data = 4000,
+		.step_data = 200
+	};
 
 	switch (tu_src)
 	{

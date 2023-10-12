@@ -33,7 +33,7 @@
 #include <stdint.h>
 
 // Zephyr
-#include <zephyr.h>
+#include <zephyr/kernel.h>
 
 // ARM CMSIS library
 #include <arm_math.h>
