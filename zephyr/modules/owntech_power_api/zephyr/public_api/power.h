@@ -41,20 +41,21 @@ typedef enum
 } leg_t;
 
 /* Enum to define the hardware version */
-typedef enum{
-    shield_TWIST = 0,
-    shield_ownverter,
-    shield_other,
-}shield_version_t;
+typedef enum
+{
+	shield_TWIST_V1_2 = 0,
+	shield_TWIST_V1_3,
+	shield_ownverter,
+	shield_other,
+} shield_version_t;
+
 class PowerDriver
 {
-private :
+private:
 	shield_version_t shield_version = shield_other; // shield version
-	bool shield_init = false; // check if shield version has been initalized or not
+	bool shield_init = false;						// check if shield version has been initalized or not
 
 	hrtim_tu_number_t spinNumberToTu(uint16_t spin_number); // return timing unit from spin pin number
-
-
 
 public:
 	void setShieldVersion(shield_version_t shield);
@@ -78,12 +79,11 @@ public:
 	void setLegAdcDecim(leg_t leg, uint16_t adc_decim);
 	void setAllAdcDecim(uint16_t adc_decim);
 
-	void initLegBuck(leg_t leg,  hrtim_pwm_mode_t leg_mode = VOLTAGE_MODE);
+	void initLegBuck(leg_t leg, hrtim_pwm_mode_t leg_mode = VOLTAGE_MODE);
 	void initAllBuck(hrtim_pwm_mode_t leg_mode = VOLTAGE_MODE);
 	void initLegBoost(leg_t leg);
 	void initAllBoost();
 };
-
 
 /////
 // Public object to interact with the class

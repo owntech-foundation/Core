@@ -66,7 +66,7 @@ hrtim_tu_number_t PowerDriver::spinNumberToTu(uint16_t spin_number)
 /**
  * @brief Set the hardware version of the board.
  *
- * @param shield shield version - shield_TWIST, shield_ownverter or shield_other
+ * @param shield shield version - shield_TWIST_V1_2, shield_TWIST_V1_3, shield_ownverter or shield_other
  *
  * @warning You need to call this function BEFORE initializing a leg, after that it is not possible
  *          to change the shield version
@@ -169,9 +169,9 @@ void PowerDriver::initLegMode(leg_t leg, hrtim_switch_convention_t leg_conventio
     /**
      * Only relevant for twist and ownverter hardware, to enable optocouplers for mosfet driver
      */
-    if ((shield_version == shield_TWIST || shield_version == shield_ownverter) && spinNumberToTu(dt_pwm_pin[leg]) == PWMA)
+    if ((shield_version == shield_TWIST_V1_2 || shield_version == shield_ownverter || shield_version == shield_TWIST_V1_3) && spinNumberToTu(dt_pwm_pin[leg]) == PWMA)
         gpio.configurePin(PC12, OUTPUT);
-    else if ((shield_version == shield_TWIST || shield_version == shield_ownverter) && spinNumberToTu(dt_pwm_pin[leg]) == PWMC)
+    else if ((shield_version == shield_TWIST_V1_2 || shield_version == shield_ownverter || shield_version == shield_TWIST_V1_3) && spinNumberToTu(dt_pwm_pin[leg]) == PWMC)
         gpio.configurePin(PC13, OUTPUT);
     else if (shield_version == shield_ownverter && spinNumberToTu(dt_pwm_pin[leg]) == PWME)
         gpio.configurePin(PB7, OUTPUT);
@@ -252,9 +252,9 @@ void PowerDriver::startLeg(leg_t leg)
     /**
      * Only relevant for twist hardware, to enable optocouplers for mosfet driver
      */
-    if ((shield_version == shield_TWIST || shield_version == shield_ownverter) && spinNumberToTu(dt_pwm_pin[leg]) == PWMA)
+    if ((shield_version == shield_TWIST_V1_2 || shield_version == shield_ownverter || shield_version == shield_TWIST_V1_3) && spinNumberToTu(dt_pwm_pin[leg]) == PWMA)
         gpio.setPin(PC12);
-    else if ((shield_version == shield_TWIST || shield_version == shield_ownverter) && spinNumberToTu(dt_pwm_pin[leg]) == PWMC)
+    else if ((shield_version == shield_TWIST_V1_2 || shield_version == shield_ownverter || shield_version == shield_TWIST_V1_3) && spinNumberToTu(dt_pwm_pin[leg]) == PWMC)
         gpio.setPin(PC13);
     else if (shield_version == shield_ownverter && spinNumberToTu(dt_pwm_pin[leg]) == PWME)
         gpio.setPin(PB7);
@@ -290,9 +290,9 @@ void PowerDriver::stopLeg(leg_t leg)
     /**
      * Only relevant for twist hardware, to disable optocouplers for mosfet driver
      */
-    if ((shield_version == shield_TWIST || shield_version == shield_ownverter) && spinNumberToTu(dt_pwm_pin[leg]) == PWMA)
+    if ((shield_version == shield_TWIST_V1_2 || shield_version == shield_ownverter || shield_version == shield_TWIST_V1_3) && spinNumberToTu(dt_pwm_pin[leg]) == PWMA)
         gpio.resetPin(PC12);
-    else if ((shield_version == shield_TWIST || shield_version == shield_ownverter) && spinNumberToTu(dt_pwm_pin[leg]) == PWMC)
+    else if ((shield_version == shield_TWIST_V1_2 || shield_version == shield_ownverter || shield_version == shield_TWIST_V1_3) && spinNumberToTu(dt_pwm_pin[leg]) == PWMC)
         gpio.resetPin(PC13);
     else if (shield_version == shield_ownverter && spinNumberToTu(dt_pwm_pin[leg]) == PWME)
         gpio.resetPin(PB7);
@@ -480,7 +480,7 @@ void PowerDriver::setAllAdcDecim(uint16_t adc_decim)
  */
 void PowerDriver::initLegBuck(leg_t leg, hrtim_pwm_mode_t leg_mode)
 {
-    if (spinNumberToTu(dt_pwm_pin[leg]) == PWMA && shield_version == shield_TWIST)
+    if (spinNumberToTu(dt_pwm_pin[leg]) == PWMA && shield_version == shield_TWIST_V1_2)
         initLegMode(leg, PWMx2, leg_mode);
     else
         initLegMode(leg, PWMx1, leg_mode);
@@ -506,7 +506,7 @@ void PowerDriver::initAllBuck(hrtim_pwm_mode_t leg_mode)
  */
 void PowerDriver::initLegBoost(leg_t leg)
 {
-    if (spinNumberToTu(dt_pwm_pin[leg]) == PWMA && shield_version == shield_TWIST)
+    if (spinNumberToTu(dt_pwm_pin[leg]) == PWMA && shield_version == shield_TWIST_V1_2)
         initLegMode(leg, PWMx1, VOLTAGE_MODE);
     else
         initLegMode(leg, PWMx2, VOLTAGE_MODE);

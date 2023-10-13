@@ -543,7 +543,7 @@ void hrtim_frequency_set(uint32_t value)
 
 inline uint16_t hrtim_period_Master_get()
 {
-    return timerMaster.pwm_conf.frequency;
+    return timerMaster.pwm_conf.period;
 }
 
 inline uint16_t hrtim_period_get(hrtim_tu_number_t tu_number)
@@ -553,7 +553,7 @@ inline uint16_t hrtim_period_get(hrtim_tu_number_t tu_number)
 
 uint32_t hrtim_period_Master_get_us()
 {
-    return timerMaster.pwm_conf.frequency * HRTIM_CLK_RESOLUTION;
+    return timerMaster.pwm_conf.period * HRTIM_CLK_RESOLUTION;
 }
 
 uint32_t hrtim_period_get_us(hrtim_tu_number_t tu_number)
