@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 LAAS-CNRS
+ * Copyright (c) 2022-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,8 +18,9 @@
  */
 
 /**
- * @date   2022
+ * @date   2023
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Jean	Alinei <jean.alinei@laas.fr>
  *
  * @brief  This file automatically performs some hardware configuration
  *         using Zephyr macros.
@@ -68,6 +69,20 @@ static int _dac2_init()
 	return 0;
 }
 
+#ifdef CONFIG_BOOTLOADER_MCUBOOT
+#include <zephyr/kernel.h>
+#include <zephyr/dfu/mcuboot.h>
+static int _img_validation()
+{
+	int rc;
+	rc = boot_write_img_confirmed();
+		if (rc) {
+			printk("Failed to confirm image");
+		}
+
+	return 0;
+}
+#endif //CONFIG_BOOTLOADER_MCUBOOT
 
 /////
 // Zephyr macros to automatically run above functions
@@ -81,3 +96,10 @@ SYS_INIT(_dac2_init,
          PRE_KERNEL_2, // To be run in the second init phase (depends on DAC driver initialization)
          CONFIG_KERNEL_INIT_PRIORITY_DEVICE
         );
+
+#ifdef CONFIG_BOOTLOADER_MCUBOOT
+SYS_INIT(_img_validation,
+         APPLICATION, // To be run in the second init phase (depends on DAC driver initialization)
+         CONFIG_KERNEL_INIT_PRIORITY_DEVICE
+        );
+#endif //CONFIG_BOOTLOADER_MCUBOOT
