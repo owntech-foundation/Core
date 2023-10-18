@@ -74,11 +74,14 @@ static int _dac2_init()
 #include <zephyr/dfu/mcuboot.h>
 static int _img_validation()
 {
-	int rc;
-	rc = boot_write_img_confirmed();
-		if (rc) {
+	if (boot_is_img_confirmed() == false)
+	{
+		int rc = boot_write_img_confirmed();
+		if (rc != 0)
+		{
 			printk("Failed to confirm image");
 		}
+	}
 
 	return 0;
 }
@@ -99,7 +102,7 @@ SYS_INIT(_dac2_init,
 
 #ifdef CONFIG_BOOTLOADER_MCUBOOT
 SYS_INIT(_img_validation,
-         APPLICATION, // To be run in the second init phase (depends on DAC driver initialization)
-         CONFIG_KERNEL_INIT_PRIORITY_DEVICE
+         APPLICATION,
+         CONFIG_APPLICATION_INIT_PRIORITY
         );
 #endif //CONFIG_BOOTLOADER_MCUBOOT
