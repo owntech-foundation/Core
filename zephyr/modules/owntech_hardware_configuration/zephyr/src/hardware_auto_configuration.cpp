@@ -34,6 +34,7 @@
 // Zephyr
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
+#include <zephyr/console/console.h>
 
 // STM32 LL
 #include <stm32_ll_bus.h>
@@ -69,6 +70,13 @@ static int _dac2_init()
 	return 0;
 }
 
+static int _console_init()
+{
+	console_init();
+
+	return 0;
+}
+
 #ifdef CONFIG_BOOTLOADER_MCUBOOT
 #include <zephyr/kernel.h>
 #include <zephyr/dfu/mcuboot.h>
@@ -85,7 +93,7 @@ static int _img_validation()
 
 	return 0;
 }
-#endif //CONFIG_BOOTLOADER_MCUBOOT
+#endif // CONFIG_BOOTLOADER_MCUBOOT
 
 /////
 // Zephyr macros to automatically run above functions
@@ -100,9 +108,14 @@ SYS_INIT(_dac2_init,
          CONFIG_KERNEL_INIT_PRIORITY_DEVICE
         );
 
+SYS_INIT(_console_init,
+         APPLICATION,
+         89
+        );
+
 #ifdef CONFIG_BOOTLOADER_MCUBOOT
 SYS_INIT(_img_validation,
          APPLICATION,
          CONFIG_APPLICATION_INIT_PRIORITY
         );
-#endif //CONFIG_BOOTLOADER_MCUBOOT
+#endif // CONFIG_BOOTLOADER_MCUBOOT
