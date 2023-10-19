@@ -28,7 +28,7 @@
   "name": "Spin",
   "upload": {
     "maximum_ram_size": 131072,
-    "maximum_size": 524288,
+    "maximum_size": 227328,
     "protocol": "stlink",
     "protocols": [
         "stlink",
