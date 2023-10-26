@@ -1,10 +1,7 @@
 Import("env")
 
-def upload_custom_file(source, target, env):
-	# Dirty trick to replace firmware name in upload command...
-	upload_command = env.get("UPLOADERFLAGS")
-	for i in range(len(upload_command)):
-		if "{$SOURCE}" in upload_command[i]:
-			upload_command[i] = upload_command[i].replace("{$SOURCE}", "${BUILD_DIR}/${PROGNAME}.mcuboot.bin")
-
-env.AddPreAction("upload", upload_custom_file)
+# Make sure mcuboot-image is in the target list when uploading,
+# because pio scripts will behave incorrectly if it isn't
+# (wrong file gets uploaded)
+if "mcuboot-image" not in COMMAND_LINE_TARGETS:
+	COMMAND_LINE_TARGETS.insert(0, "mcuboot-image")
