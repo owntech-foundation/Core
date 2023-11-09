@@ -4,10 +4,36 @@ import subprocess
 import shlex
 import serial.tools.list_ports
 import os
+import platform
+import stat
 
-mcumgr_executable = "./mcumgr" if os.name == 'posix' else ".\\mcumgr.exe"
+################### Make sure Mcumgr exists locally ###################
 
-############################################################
+# Make sure "third_party" dir exists
+third_party_dir = os.path.join(".", "owntech", "third_party")
+if not os.path.isdir(third_party_dir):
+	os.mkdir(third_party_dir)
+
+# Determine executable name
+mcumgr_executable = "mcumgr"     if platform.system() == 'Linux'   else \
+					"mcumgr.exe" if platform.system() == 'Windows' else \
+					None
+
+mcumgr_path = os.path.join(third_party_dir, mcumgr_executable)
+
+# Download mcumgr if not available
+if not os.path.isfile(mcumgr_path):
+	print("Mcumgr executable not available: downloading.")
+	import urllib.request
+	# Download file
+	mcumgr_url = "https://github.com/owntech-foundation/mcumgr/releases/download/v0.4/" + mcumgr_executable
+	urllib.request.urlretrieve(mcumgr_url, mcumgr_path)
+	# Make file executable
+	st = os.stat(mcumgr_path)
+	os.chmod(mcumgr_path, st.st_mode | stat.S_IEXEC)
+	print("Download complete.")
+
+################### Pre function ###################
 
 def upload_pre(source, target, env):
 	# List available ports
@@ -25,7 +51,7 @@ def upload_pre(source, target, env):
 	# Initialize serial port
 	init_command = f'conn add serial type="serial" connstring="dev={owntech_port},baud=115200,mtu=128"'
 	parsed = shlex.split(init_command)
-	parsed.insert(0, mcumgr_executable)
+	parsed.insert(0, mcumgr_path)
 
 	try:
 		# Execute the command
@@ -35,16 +61,21 @@ def upload_pre(source, target, env):
 	except FileNotFoundError:
 		print("mcumgr executable not found. Make sure it's in your PATH.")
 
+	# Place executable path in upload command
+	env["UPLOADCMD"] = env["UPLOADCMD"].replace("MCUMGRPATH", mcumgr_path)
+
+
+################### Post function ###################
 
 def upload_post(source, target, env):
-	hash = [mcumgr_executable, "-c", "serial", "image", "list"]
+	hash = [mcumgr_path, "-c", "serial", "image", "list"]
 	try:
 		subprocess.run(hash, stderr=subprocess.STDOUT, universal_newlines=True)
 	except subprocess.CalledProcessError as e:
 		print("Unable to list board partitions")
 		print(f"Error executing list command: {e}")
 
-	reset = [mcumgr_executable, "-c", "serial", "reset"]
+	reset = [mcumgr_path, "-c", "serial", "reset"]
 	print("Resetting board...")
 	try:
 		subprocess.run(reset, check=True)
@@ -53,7 +84,7 @@ def upload_post(source, target, env):
 		print(f"Error executing reset command: {e}")
 		print("Please reset board manually")
 
-############################################################
+################### Register pre and post functions ###################
 
 env.AddPreAction("upload", upload_pre)
 env.AddPostAction("upload", upload_post)
