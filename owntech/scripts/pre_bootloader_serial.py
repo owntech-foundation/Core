@@ -1,11 +1,10 @@
 Import("env")
 
 import subprocess
-import shlex
 import serial.tools.list_ports
 import os
 import platform
-import stat
+from stat import *
 
 ################### Make sure Mcumgr exists locally ###################
 
@@ -16,8 +15,8 @@ if not os.path.isdir(third_party_dir):
 
 # Determine executable name
 mcumgr_executable = "mcumgr"     if platform.system() == 'Linux'   else \
-					"mcumgr.exe" if platform.system() == 'Windows' else \
-					None
+                    "mcumgr.exe" if platform.system() == 'Windows' else \
+                    None
 
 mcumgr_path = os.path.join(third_party_dir, mcumgr_executable)
 
@@ -28,9 +27,10 @@ if not os.path.isfile(mcumgr_path):
 	# Download file
 	mcumgr_url = "https://github.com/owntech-foundation/mcumgr/releases/download/v0.4/" + mcumgr_executable
 	urllib.request.urlretrieve(mcumgr_url, mcumgr_path)
-	# Make file executable
-	st = os.stat(mcumgr_path)
-	os.chmod(mcumgr_path, st.st_mode | stat.S_IEXEC)
+	if platform.system() == 'Linux':
+		# Make file executable
+		st = os.stat(mcumgr_path)
+		os.chmod(mcumgr_path, st.st_mode | S_IEXEC)
 	print("Download complete.")
 
 ################### Pre function ###################
@@ -49,13 +49,17 @@ def upload_pre(source, target, env):
 	print(f"Found OwnTech board on port: {owntech_port}")
 
 	# Initialize serial port
-	init_command = f'conn add serial type="serial" connstring="dev={owntech_port},baud=115200,mtu=128"'
-	parsed = shlex.split(init_command)
-	parsed.insert(0, mcumgr_path)
+	init_command = [mcumgr_path, \
+	               'conn', \
+	               'add', \
+	               'serial', \
+	               'type=serial', \
+	               f'connstring=dev={owntech_port},baud=115200,mtu=128' \
+	               ]
 
 	try:
 		# Execute the command
-		subprocess.run(parsed, check=True)
+		subprocess.run(init_command, check=True)
 	except subprocess.CalledProcessError as e:
 		print(f"Error executing mcumgr command: {e}")
 	except FileNotFoundError:
