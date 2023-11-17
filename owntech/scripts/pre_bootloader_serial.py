@@ -38,15 +38,39 @@ if not os.path.isfile(mcumgr_path):
 def upload_pre(source, target, env):
 	# List available ports
 	available_ports = list(serial.tools.list_ports.grep("2FE3"))
+	selected_board = env.GetProjectOption("board_id")
 
 	owntech_port = None
 	if len(available_ports) > 0:
-		owntech_port = available_ports[0].device
+		port_number = 0
+		for port in available_ports:
+			unique_id = port.serial_number
+			comport = port.device
+			print(f"Found OwnTech board number {port_number} on port: {comport} with unique ID {unique_id}")
+			port_number +=1 
+			if unique_id == selected_board:
+				owntech_port = comport
+		
+		if owntech_port is None:
+			if len(available_ports) > 1: 
+				print(f"Board with unique ID {selected_board} not found, select board number manually")
+				selected_port = None
+				while selected_port is None or selected_port < 0 or selected_port >= port_number:
+					try:
+						selected_port = int(input(f"Enter Board number (between 0 and {port_number - 1}): "))
+						if selected_port < 0 or selected_port >= port_number:
+							print("Please enter a valid board number.")
+					except ValueError:
+						print("Invalid input. Please enter a valid number.")
+				owntech_port = available_ports[selected_port].device
+			else:
+				print(f"Board with unique ID {selected_board} not found")
+				print(f"WARNING: Board ID does not match platformio.ini file. Uploading to board ID {available_ports[0].serial_number}")
+				owntech_port = available_ports[0].device
+
 	else:
 		print("Error! No valid USB port found")
 		exit(-1)
-
-	print(f"Found OwnTech board on port: {owntech_port}")
 
 	# Initialize serial port
 	init_command = [mcumgr_path, \
