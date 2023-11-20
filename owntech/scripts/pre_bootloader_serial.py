@@ -24,14 +24,20 @@ mcumgr_path = os.path.join(third_party_dir, mcumgr_executable)
 if not os.path.isfile(mcumgr_path):
 	print("Mcumgr executable not available: downloading.")
 	import urllib.request
-	# Download file
+	from urllib.error import URLError
 	mcumgr_url = "https://github.com/owntech-foundation/mcumgr/releases/download/v0.4/" + mcumgr_executable
-	urllib.request.urlretrieve(mcumgr_url, mcumgr_path)
-	if platform.system() == 'Linux':
-		# Make file executable
-		st = os.stat(mcumgr_path)
-		os.chmod(mcumgr_path, st.st_mode | S_IEXEC)
-	print("Download complete.")
+	try:
+		# Download file
+		urllib.request.urlretrieve(mcumgr_url, mcumgr_path)
+		if platform.system() == 'Linux':
+			# Make file executable
+			st = os.stat(mcumgr_path)
+			os.chmod(mcumgr_path, st.st_mode | S_IEXEC)
+		print("Download complete.")
+	except URLError:
+		import warnings
+		warnings.warn("Unable to download Mcumgr! Make sure you are connected to the Internet.", Warning)
+		warnings.warn("Without this tool, you may not be able to upload the firmware to the board without a ST Link.", Warning)
 
 ################### Pre function ###################
 
@@ -47,12 +53,12 @@ def upload_pre(source, target, env):
 			unique_id = port.serial_number
 			comport = port.device
 			print(f"Found OwnTech board number {port_number} on port: {comport} with unique ID {unique_id}")
-			port_number +=1 
+			port_number +=1
 			if unique_id == selected_board:
 				owntech_port = comport
-		
+
 		if owntech_port is None:
-			if len(available_ports) > 1: 
+			if len(available_ports) > 1:
 				print(f"Board with unique ID {selected_board} not found, select board number manually")
 				selected_port = None
 				while selected_port is None or selected_port < 0 or selected_port >= port_number:
@@ -87,7 +93,9 @@ def upload_pre(source, target, env):
 	except subprocess.CalledProcessError as e:
 		print(f"Error executing mcumgr command: {e}")
 	except FileNotFoundError:
-		print("mcumgr executable not found. Make sure it's in your PATH.")
+		print("Error! Mcumgr is not available.")
+		print("You must be connected to the Internet the first time you upload a firmware to the board so that Mcumgr can be retrieved.")
+		exit(-1)
 
 	# Place executable path in upload command
 	env["UPLOADCMD"] = env["UPLOADCMD"].replace("MCUMGRPATH", mcumgr_path)
