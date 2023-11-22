@@ -27,31 +27,19 @@ owntech_power_api
 └─ owntech
 |  └─ boards
 |  └─ scripts
-|  └─ [...]
 └─ src
 |  └─ main.cpp
-|  └─ owntech.ini
 └─ zephyr
 |  └─ boards
 |  └─ dts
 |  └─ modules
-|  └─ [...]
 └─ LICENSE
+└─ platformio.ini
 └─ README.md
-└─ [...]
 ```
 
-You will want to work in the `src` folder, other folders and files are used to configure the underlying Zephyr OS and PlatformIO.
+You will want to work in the `src` folder. Other folders and files are used to configure the underlying Zephyr OS and PlatformIO, and are hidden by default.
 In the `src` folder, the file `main.cpp` is the entry point of the application.
-The file `owntech.ini` is used to configure the Power API Libraries you want to use.
+Moreover, some configuration can be done in the `platformio.ini` file.
 
 The API itself is located in `zephyr/modules`. If you need to tailor it to your needs, please checkout the [Zephyr documentation](https://docs.zephyrproject.org/latest/).
-
-
-## Working with OwnTech Power API Libraries
-
-Some aditional libraries are available for download.
-To enable a Power API Library, edit the `src/owntech.ini` file.
-In this file, you'll find commented libraries references.
-Simply uncomment a line to enable the corresponding library.
-You can also add any PlatformIO library in this file.
