@@ -25,7 +25,9 @@ The hierarchy of the project is as follows:
 ```
 owntech_power_api
 └─ owntech
-└─ [...]
+|  └─ boards
+|  └─ scripts
+|  └─ [...]
 └─ src
 |  └─ main.cpp
 |  └─ owntech.ini
