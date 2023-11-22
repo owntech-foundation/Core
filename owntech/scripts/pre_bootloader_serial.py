@@ -4,40 +4,25 @@ import subprocess
 import serial.tools.list_ports
 import os
 import platform
-from stat import *
+import helper_functions
 
 ################### Make sure Mcumgr exists locally ###################
 
-# Make sure "third_party" dir exists
-third_party_dir = os.path.join(".", "owntech", "third_party")
-if not os.path.isdir(third_party_dir):
-	os.mkdir(third_party_dir)
-
 # Determine executable name
+third_party_dir = os.path.join(".", "owntech", "third_party")
 mcumgr_executable = "mcumgr"     if platform.system() == 'Linux'   else \
                     "mcumgr.exe" if platform.system() == 'Windows' else \
                     None
+mcumgr_url = "https://github.com/owntech-foundation/mcumgr/releases/download/v0.4/" + mcumgr_executable
+
+res = helper_functions.check_file_and_download("Mcumgr", third_party_dir, mcumgr_executable, mcumgr_url, True)
+
+if res != 0:
+	import warnings
+	warnings.warn("Unable to download Mcumgr! Make sure you are connected to the Internet.", Warning)
+	warnings.warn("Without this tool, you may not be able to upload the firmware to the board without a ST Link.", Warning)
 
 mcumgr_path = os.path.join(third_party_dir, mcumgr_executable)
-
-# Download mcumgr if not available
-if not os.path.isfile(mcumgr_path):
-	print("Mcumgr executable not available: downloading.")
-	import urllib.request
-	from urllib.error import URLError
-	mcumgr_url = "https://github.com/owntech-foundation/mcumgr/releases/download/v0.4/" + mcumgr_executable
-	try:
-		# Download file
-		urllib.request.urlretrieve(mcumgr_url, mcumgr_path)
-		if platform.system() == 'Linux':
-			# Make file executable
-			st = os.stat(mcumgr_path)
-			os.chmod(mcumgr_path, st.st_mode | S_IEXEC)
-		print("Download complete.")
-	except URLError:
-		import warnings
-		warnings.warn("Unable to download Mcumgr! Make sure you are connected to the Internet.", Warning)
-		warnings.warn("Without this tool, you may not be able to upload the firmware to the board without a ST Link.", Warning)
 
 ################### Pre function ###################
 
@@ -75,7 +60,8 @@ def upload_pre(source, target, env):
 				owntech_port = available_ports[0].device
 
 	else:
-		print("Error! No valid USB port found")
+		print("Error! No valid USB port found.")
+		print("Make sure board is connected to the host computer.")
 		exit(-1)
 
 	# Initialize serial port

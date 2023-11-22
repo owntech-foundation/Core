@@ -23,7 +23,7 @@
 	compatible = "owntech,spin", "st,stm32g474re-nucleo";
 
 	soc {
-		usb: usb@40005c00 { 
+		usb: usb@40005c00 {
 			status = "okay";
 		};
 	};
@@ -143,7 +143,7 @@
 /* USB */
 /*********/
 
-&usb { 
+&usb {
 	disconnect-gpios = <&gpioa 12 GPIO_ACTIVE_HIGH>;
 	status = "okay";
 };
@@ -154,7 +154,6 @@ zephyr_udc0: &usb {
 	status = "okay";
 	cdc_acm_uart0: cdc_acm_uart0 {
 		compatible = "zephyr,cdc-acm-uart";
-		label = "CDC_ACM_0";
 	};
 };
 
