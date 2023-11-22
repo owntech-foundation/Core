@@ -5,6 +5,7 @@ import serial.tools.list_ports
 import os
 import platform
 import helper_functions
+import platformio
 
 ################### Make sure Mcumgr exists locally ###################
 
@@ -29,22 +30,33 @@ mcumgr_path = os.path.join(third_party_dir, mcumgr_executable)
 def upload_pre(source, target, env):
 	# List available ports
 	available_ports = list(serial.tools.list_ports.grep("2FE3"))
-	selected_board = env.GetProjectOption("board_id")
 
-	owntech_port = None
+	try:
+		config = env.GetProjectConfig()
+		preferred_board = config.get("env", "board_id")
+		print("Preferred board for upload: " + preferred_board)
+	except platformio.project.exception.InvalidProjectConfError:
+		preferred_board = None
+
 	if len(available_ports) > 0:
+		owntech_port = None
 		port_number = 0
 		for port in available_ports:
 			unique_id = port.serial_number
 			comport = port.device
 			print(f"Found OwnTech board number {port_number} on port: {comport} with unique ID {unique_id}")
 			port_number +=1
-			if unique_id == selected_board:
+			if unique_id == preferred_board:
 				owntech_port = comport
 
-		if owntech_port is None:
+		if owntech_port != None:
+			print(f"Board with unique ID {preferred_board} was found and selected for upload")
+		else:
 			if len(available_ports) > 1:
-				print(f"Board with unique ID {selected_board} not found, select board number manually")
+				if preferred_board != None:
+					print(f"Board with unique ID {preferred_board} wasn't found, please select board number manually")
+				else:
+					print(f"Multiple boards were found, please select board number manually")
 				selected_port = None
 				while selected_port is None or selected_port < 0 or selected_port >= port_number:
 					try:
@@ -53,12 +65,12 @@ def upload_pre(source, target, env):
 							print("Please enter a valid board number.")
 					except ValueError:
 						print("Invalid input. Please enter a valid number.")
+				print(f"Board with ID {available_ports[selected_port].serial_number} was selected")
 				owntech_port = available_ports[selected_port].device
 			else:
-				print(f"Board with unique ID {selected_board} not found")
-				print(f"WARNING: Board ID does not match platformio.ini file. Uploading to board ID {available_ports[0].serial_number}")
+				print(f"Board with unique ID {preferred_board} not found")
+				print(f"WARNING: Board ID does not match preferred ID set in platformio.ini file. Uploading to board ID {available_ports[0].serial_number}")
 				owntech_port = available_ports[0].device
-
 	else:
 		print("Error! No valid USB port found.")
 		print("Make sure board is connected to the host computer.")
