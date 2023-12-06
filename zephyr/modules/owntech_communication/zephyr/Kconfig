@@ -1,6 +1,7 @@
 config OWNTECH_COMMUNICATION
-	bool "Enable OwnTech communication module"
-	default y
+	bool "Enable OwnTech communication module [EXPERIMENTAL]"
+	# OwnTech Communication API in still experimental: disable by default
+	default n
 
 if OWNTECH_COMMUNICATION
 
