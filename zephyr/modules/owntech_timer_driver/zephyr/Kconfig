@@ -3,3 +3,6 @@ config OWNTECH_TIMER_DRIVER
 	default y
 	select DYNAMIC_INTERRUPTS
 	select USE_STM32_LL_TIM # Required to add LL timer source file to compile path
+	help
+		This module provides an ad-hoc Timer driver for Zephyr that
+		contains features required by OwnTech Power API.

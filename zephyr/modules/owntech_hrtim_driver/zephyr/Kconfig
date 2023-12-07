@@ -2,3 +2,6 @@ config OWNTECH_HRTIM_DRIVER
 	bool "Enable OwnTech High-resolution timer driver for STM32"
 	default y
 	select USE_STM32_LL_GPIO
+	help
+		This module provides an ad-hoc High-Resolution Timer driver for
+		Zephyr that contains features required by OwnTech Power API.

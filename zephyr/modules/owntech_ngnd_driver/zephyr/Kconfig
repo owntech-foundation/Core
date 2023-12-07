@@ -2,3 +2,7 @@ config OWNTECH_NGND_DRIVER
 	bool "Enable OwnTech ngnd driver"
 	default y
 	depends on SHIELD_TWIST
+	help
+		This module provides a Zephyr driver that allows
+		to drive the Neutral-Ground switch present on older
+		versions of the OwnTech Twist shield and O2 board.

@@ -1,3 +1,6 @@
 config OWNTECH_COMPARATOR_DRIVER
 	bool "Enable OwnTech comparator driver for STM32"
 	default y
+	help
+		This module provides an ad-hoc Comparator driver for Zephyr that
+		contains features required by OwnTech Power API.

@@ -1,3 +1,7 @@
 config OWNTECH_GPIO_API
 	bool "Enable OwnTech GPIO API"
 	default y
+	help
+		GPIO API provides ways to interact with Spin
+		GPIO by referencing them by their name, either
+		by using Spin nexus or STM32-style names.
