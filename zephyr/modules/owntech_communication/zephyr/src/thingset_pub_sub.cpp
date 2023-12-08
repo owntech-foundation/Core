@@ -17,10 +17,10 @@
 
 #if CONFIG_THINGSET_CAN
 
-#include <zephyr.h>
-#include <device.h>
-#include <drivers/gpio.h>
-#include <drivers/can.h>
+#include <zephyr/kernel.h>
+#include <zephyr/device.h>
+#include <zephyr/drivers/gpio.h>
+#include <zephyr/drivers/can.h>
 
 #include "data_objects.h"
 #include "thingset.h"
@@ -37,9 +37,9 @@ static const struct device* can_dev = DEVICE_DT_GET(DT_NODELABEL(can1));
 #define TS_CAN_SOURCE_GET(id)           (((uint32_t)id & TS_CAN_SOURCE_MASK) >> TS_CAN_SOURCE_POS)
 #define TS_CAN_DATA_ID_GET(id)          (((uint32_t)id & TS_CAN_DATA_ID_MASK) >> TS_CAN_DATA_ID_POS)
 
-CAN_DEFINE_MSGQ(sub_msgq, 10);
+CAN_MSGQ_DEFINE(sub_msgq, 10);
 
-const struct zcan_filter ctrl_filter = {
+const struct can_filter ctrl_filter = {
     .id = TS_CAN_BASE_CONTROL,
     .rtr = CAN_DATAFRAME,
     .id_type = CAN_EXTENDED_IDENTIFIER,
@@ -59,7 +59,7 @@ void can_pub_send(uint32_t can_id, uint8_t can_data[8], uint8_t data_len)
         return;
     }
 
-    struct zcan_frame frame = {0};
+    struct can_frame frame = {0};
     frame.id_type = CAN_EXTENDED_IDENTIFIER;
     frame.rtr     = CAN_DATAFRAME;
     frame.id      = can_id;
@@ -91,7 +91,7 @@ void send_ts_can_pub_message(uint16_t tag)
 	} while (data_len >= 0);
 }
 
-void update_ts_data_nodes(struct zcan_frame rx_frame)
+void update_ts_data_nodes(struct can_frame rx_frame)
 {
 	// process message
 	uint16_t data_id = TS_CAN_DATA_ID_GET(rx_frame.id);
@@ -125,7 +125,7 @@ void can_pubsub_thread()
         return;
     }
 
-    int filter_id = can_attach_msgq(can_dev, &sub_msgq, &ctrl_filter);
+    int filter_id = can_add_rx_filter_msgq(can_dev, &sub_msgq, &ctrl_filter);
     if (filter_id < 0) {
         return;
     }
@@ -148,7 +148,7 @@ void can_pubsub_thread()
             send_ts_can_pub_message(SUBSET_CTRL);
         }
 
-		struct zcan_frame rx_frame;
+		struct can_frame rx_frame;
 
         // wait for incoming messages until the next pub message has to be sent out
         while (k_msgq_get(&sub_msgq, &rx_frame, K_TIMEOUT_ABS_MS(next_pub)) != -EAGAIN)

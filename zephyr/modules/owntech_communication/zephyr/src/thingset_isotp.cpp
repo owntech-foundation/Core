@@ -12,7 +12,7 @@
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
-#include <canbus/isotp.h>
+#include <zephyr/canbus/isotp.h>
 #include "thingset.h"
 #include "can.h"
 

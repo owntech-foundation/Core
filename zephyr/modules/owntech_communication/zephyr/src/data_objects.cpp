@@ -12,7 +12,7 @@
 
 #include "data_objects.h"
 
-#include <zephyr.h>
+#include <zephyr/kernel.h>
 #include <soc.h>
 
 #include <stdio.h>

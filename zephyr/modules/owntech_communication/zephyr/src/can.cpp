@@ -2,7 +2,7 @@
 
 #include "can.h"
 
-#include <drivers/gpio.h>
+#include <zephyr/drivers/gpio.h>
 
 void enable_can()
 {
