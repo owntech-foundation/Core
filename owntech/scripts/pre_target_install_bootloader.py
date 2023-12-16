@@ -9,7 +9,7 @@ def installBootloader(target, source, env):
 	# Make sure file is available locally
 	third_party_dir = os.path.join(".", "owntech", "bootloader")
 	bootloader_binary = "zephyr.bin"
-	booloader_url = "https://github.com/owntech-foundation/bootloader/releases/download/v1.0.0/zephyr.bin"
+	booloader_url = "https://github.com/owntech-foundation/bootloader/releases/download/v1.1.0-rc1/zephyr.bin"
 
 	res = helper_functions.check_file_and_download("Bootloader firmware", third_party_dir, bootloader_binary, booloader_url)
 

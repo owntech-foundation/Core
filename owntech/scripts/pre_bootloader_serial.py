@@ -118,6 +118,8 @@ def upload_post(source, target, env):
 		print(f"Error executing reset command: {e}")
 		print("Please reset board manually")
 
+	print("Please note that first boot will take a few seconds due to partition swapping.")
+
 ################### Register pre and post functions ###################
 
 env.AddPreAction("upload", upload_pre)
