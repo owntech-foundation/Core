@@ -26,85 +26,94 @@
  *          Wiki: https://gitlab.laas.fr/owntech/power-api/core/-/wikis/home
  *
  * @author  Clément Foucher <clement.foucher@laas.fr>
+ * 			Luiz Villa <luiz.villa@laas.fr>
  */
-//-------------OWNTECH DRIVERS-------------------
+//-------------OWNTECH API INCLUDES-------------------
 #include "HardwareConfiguration.h"
 #include "DataAcquisition.h"
 #include "Scheduling.h"
 #include "power.h"
 
-//------------ZEPHYR DRIVERS----------------------
 
 //--------------SETUP FUNCTIONS DECLARATION-------------------
 void setup_hardware(); //setups the hardware peripherals of the system
 void setup_software(); //setups the scheduling of the software and the control method
 
 //-------------LOOP FUNCTIONS DECLARATION----------------------
-void loop_communication_task(); //code to be executed in the slow communication task
 void loop_application_task();   //code to be executed in the fast application task
 void loop_control_task();       //code to be executed in real-time at 20kHz
 
-int8_t communication_task_number; //holds the number of the communication task
-int8_t application_task_number; //holds the number of the application task
-
-
-enum serial_interface_menu_mode //LIST OF POSSIBLE MODES FOR THE OWNTECH CONVERTER
-{
-    IDLEMODE =0,
-};
-
-uint8_t received_serial_char;
-uint8_t mode = IDLEMODE;
-
 //--------------USER VARIABLES DECLARATIONS----------------------
 
-
+// Add the variables you will use in your code here
 
 //---------------------------------------------------------------
 
 
 //---------------SETUP FUNCTIONS----------------------------------
 
+/**
+ * This is the setup hardware function
+ * It is used to setup your hardware architecture. 
+ * The base architecture of this example is composed of a SPIN board.
+ */
+
 void setup_hardware()
 {
     hwConfig.setBoardVersion(TWIST_v_1_1_2);
-    //setup your hardware here
+    // Setup your hardware here
 }
+
+/**
+ * This is the setup software function
+ * It is used to setup your software architecture. 
+ * The base architecture of this example is composed of a slow application task and a fast control task.
+ * The slow task is asynchronous, meaning it is called by the embeeded RTOS. 
+ * The fast control task is synchronous and driven by an interruption. 
+ */
 
 void setup_software()
 {
-    application_task_number = scheduling.defineAsynchronousTask(loop_application_task);
+    uint8_t control_task_period_us = 1000; // Sets the control task period in micro-seconds
+ 
+    int8_t application_task_number = scheduling.defineAsynchronousTask(loop_application_task);
+    scheduling.defineUninterruptibleSynchronousTask(loop_control_task, control_task_period_us);
+ 
     scheduling.startAsynchronousTask(application_task_number);
-    //setup your software scheduling here
+    scheduling.startUninterruptibleSynchronousTask();
 }
 
 //---------------LOOP FUNCTIONS----------------------------------
 
-void loop_communication_task()
-{
-        //communication task code goes here
-}
-
-
+/**
+ * This is the application task
+ * It is executed second as defined by it suspend task in its last line.
+ * You can use it to execute slow code such as state-machines.
+ */
 void loop_application_task()
 {
-        printk("Hello World! \n");
-        hwConfig.setLedToggle();
+	printk("Application on! \n");
+	hwConfig.setLedToggle();
 
-        scheduling.suspendCurrentTaskMs(100);
+	scheduling.suspendCurrentTaskMs(1000);
 }
 
-
+/**
+ * This is the control task
+ * It is executed every 1000 micro-seconds defined in the setup_software function.
+ * You can use it to execute ultra-fast code and control your power flow. 
+ */
 void loop_control_task()
 {
-    //loop control task code goes here
+	printk("Control on! \n");
 }
+
+
 
 /**
  * This is the main function of this example
  * This function is generic and does not need editing.
  */
-
 int main(void)
 {
     setup_hardware();
