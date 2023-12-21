@@ -31,11 +31,10 @@
 	chosen {
 		zephyr,code-partition = &slot0_partition;
 		zephyr,console = &cdc_acm_uart0;
-		zephyr,uart-mcumgr = &cdc_acm_uart0;
-		zephyr,shell-uart = &cdc_acm_uart0;
 		zephyr,sram = &sram0;
 		zephyr,flash = &flash0;
 		zephyr,can-primary = &can1;
+		zephyr,boot-mode = &retention0;
 	};
 
 	leds {
@@ -56,6 +55,31 @@
 	aliases {
 		led0 = &led;
 		sw0 = &btn;
+	};
+
+	sram@2001FFFF {
+		/*
+		 * For more information, see:
+		 * https://docs.zephyrproject.org/latest/services/retention/index.html
+		 */
+		compatible = "zephyr,memory-region", "mmio-sram";
+		reg = <0x2001FFFF 0x1>;
+		zephyr,memory-region = "RetainedMem";
+		status = "okay";
+
+		retainedmem {
+			compatible = "zephyr,retained-ram";
+			status = "okay";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			/* Create a single-byte partition */
+			retention0: retention@0 {
+				compatible = "zephyr,retention";
+				status = "okay";
+				reg = <0x0 0x1>;
+			};
+		};
 	};
 };
 
@@ -133,6 +157,11 @@
 			reg = <0x7F000 0x1000>;
 		};
 	};
+};
+
+/* Reduce SRAM0 usage by 1 byte to account for retained memory */
+&sram0 {
+	reg = <0x20000000 0x1FFFF>;
 };
 
 /*****************/

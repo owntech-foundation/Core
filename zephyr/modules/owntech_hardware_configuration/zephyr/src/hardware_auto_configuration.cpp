@@ -95,6 +95,28 @@ static int _img_validation()
 }
 #endif // CONFIG_BOOTLOADER_MCUBOOT
 
+
+#include <zephyr/drivers/uart/cdc_acm.h>
+#define CDC_ACM_DEVICE DT_NODELABEL(cdc_acm_uart0)
+static const struct device* cdc_acm_console = DEVICE_DT_GET(CDC_ACM_DEVICE);
+
+
+volatile bool cdc_rate_changed = false;
+void _cdc_rate_callback(const struct device* dev, uint32_t rate)
+{
+	if (rate == 1200)
+    {
+		cdc_rate_changed = true;
+    }
+}
+
+static int _register_cdc_rate_callback()
+{
+	cdc_acm_dte_rate_callback_set(cdc_acm_console, _cdc_rate_callback);
+
+	return 0;
+}
+
 /////
 // Zephyr macros to automatically run above functions
 
@@ -119,3 +141,8 @@ SYS_INIT(_img_validation,
          CONFIG_APPLICATION_INIT_PRIORITY
         );
 #endif // CONFIG_BOOTLOADER_MCUBOOT
+
+SYS_INIT(_register_cdc_rate_callback,
+         APPLICATION,
+         CONFIG_APPLICATION_INIT_PRIORITY
+        );

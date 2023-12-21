@@ -38,7 +38,7 @@ static struct gpio_dt_spec led_pin_spec = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios
 
 void HardwareConfiguration::ledInitialize()
 {
-	gpio_pin_configure_dt(&led_pin_spec, GPIO_OUTPUT_ACTIVE);
+	gpio_pin_configure_dt(&led_pin_spec, GPIO_OUTPUT_INACTIVE);
 	ledInitialized = true;
 }
 

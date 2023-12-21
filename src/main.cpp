@@ -18,46 +18,43 @@
  */
 
 /**
- * @brief   This file it the main entry point of the
- *          OwnTech Power API. Please check the README.md
- *          file at the root of this project for basic
- *          information on how to use the Power API,
- *          or refer the the wiki for detailed information.
- *          Wiki: https://gitlab.laas.fr/owntech/power-api/core/-/wikis/home
+ * @brief  This file it the main entry point of the
+ *         OwnTech Power API. Please check the OwnTech
+ *         documentation for detailed information on
+ *         how to use Power API: https://docs.owntech.org/
  *
- * @author  Clément Foucher <clement.foucher@laas.fr>
- * 			Luiz Villa <luiz.villa@laas.fr>
+ * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Luiz Villa <luiz.villa@laas.fr>
  */
-//-------------OWNTECH API INCLUDES-------------------
+
+//--------------OWNTECH API INCLUDES--------------------------
 #include "HardwareConfiguration.h"
 #include "DataAcquisition.h"
 #include "Scheduling.h"
 #include "power.h"
-
+// Temporary includes: these should go away in final release
+#include <zephyr/retention/bootmode.h>
+#include <zephyr/sys/reboot.h>
 
 //--------------SETUP FUNCTIONS DECLARATION-------------------
-void setup_hardware(); //setups the hardware peripherals of the system
-void setup_software(); //setups the scheduling of the software and the control method
+void setup_hardware(); // Setups the hardware peripherals of the system
+void setup_software(); // Setups the scheduling of the software and the control method
 
-//-------------LOOP FUNCTIONS DECLARATION----------------------
-void loop_application_task();   //code to be executed in the fast application task
-void loop_control_task();       //code to be executed in real-time at 20kHz
+//--------------LOOP FUNCTIONS DECLARATION--------------------
+void loop_application_task(); // Code to be executed in the fast application task
+void loop_control_task();     // Code to be executed in real-time at 20kHz
 
-//--------------USER VARIABLES DECLARATIONS----------------------
-
-// Add the variables you will use in your code here
-
-//---------------------------------------------------------------
+//--------------USER VARIABLES DECLARATIONS-------------------
 
 
-//---------------SETUP FUNCTIONS----------------------------------
+
+//--------------SETUP FUNCTIONS-------------------------------
 
 /**
  * This is the setup hardware function
- * It is used to setup your hardware architecture. 
+ * It is used to setup your hardware architecture.
  * The base architecture of this example is composed of a SPIN board.
  */
-
 void setup_hardware()
 {
     hwConfig.setBoardVersion(TWIST_v_1_1_2);
@@ -66,24 +63,23 @@ void setup_hardware()
 
 /**
  * This is the setup software function
- * It is used to setup your software architecture. 
+ * It is used to setup your software architecture.
  * The base architecture of this example is composed of a slow application task and a fast control task.
- * The slow task is asynchronous, meaning it is called by the embeeded RTOS. 
- * The fast control task is synchronous and driven by an interruption. 
+ * The slow task is asynchronous, meaning it is called by the embeeded RTOS.
+ * The fast control task is synchronous and driven by an interruption.
  */
-
 void setup_software()
 {
-    uint8_t control_task_period_us = 1000; // Sets the control task period in micro-seconds
- 
+    uint32_t control_task_period_us = 1000; // Sets the control task period in micro-seconds
+
     int8_t application_task_number = scheduling.defineAsynchronousTask(loop_application_task);
     scheduling.defineUninterruptibleSynchronousTask(loop_control_task, control_task_period_us);
- 
+
     scheduling.startAsynchronousTask(application_task_number);
     scheduling.startUninterruptibleSynchronousTask();
 }
 
-//---------------LOOP FUNCTIONS----------------------------------
+//--------------LOOP FUNCTIONS--------------------------------
 
 /**
  * This is the application task
@@ -92,23 +88,21 @@ void setup_software()
  */
 void loop_application_task()
 {
-	printk("Application on! \n");
-	hwConfig.setLedToggle();
+    printk("Application on!\n");
+    hwConfig.setLedToggle();
 
-	scheduling.suspendCurrentTaskMs(1000);
+    scheduling.suspendCurrentTaskMs(1000);
 }
 
 /**
  * This is the control task
  * It is executed every 1000 micro-seconds defined in the setup_software function.
- * You can use it to execute ultra-fast code and control your power flow. 
+ * You can use it to execute ultra-fast code and control your power flow.
  */
 void loop_control_task()
 {
-	printk("Control on! \n");
+
 }
-
-
 
 /**
  * This is the main function of this example
@@ -118,5 +112,18 @@ int main(void)
 {
     setup_hardware();
     setup_software();
-	return 0;
+
+    // Temporary code: this should go away in final release
+    extern volatile bool cdc_rate_changed;
+    while (true)
+    {
+        if (cdc_rate_changed == true)
+        {
+            bootmode_set(BOOT_MODE_TYPE_BOOTLOADER);
+            sys_reboot(SYS_REBOOT_WARM);
+        }
+        k_sleep(K_MSEC(1000));
+    }
+
+    return 0;
 }
