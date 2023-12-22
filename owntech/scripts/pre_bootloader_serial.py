@@ -103,12 +103,13 @@ def get_port_from_id(id_to_find):
 
 def upload_pre(source, target, env):
 	# Get spin port
-	(spin_port, spin_id) = find_spin_port(env)
-	if spin_port == None:
+	spin_port_ret = find_spin_port(env)
+	if spin_port_ret == None:
 		print("Error! No valid USB port found.")
 		print("Make sure board is connected to the host computer.")
 		exit(-1)
 
+	(spin_port, spin_id) = spin_port_ret
 	# Reboot board
 	upload_options = {}
 	if "BOARD" in env:
