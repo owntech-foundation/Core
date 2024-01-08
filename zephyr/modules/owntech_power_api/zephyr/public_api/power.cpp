@@ -156,14 +156,14 @@ void PowerDriver::initLegMode(leg_t leg, hrtim_switch_convention_t leg_conventio
 
         if (dt_current_pin[leg] == CM_DAC1)
         {
-            hwConfig.dacConfigDac1CurrentmodeInit(tu_channel[spinNumberToTu(dt_pwm_pin[leg])]->pwm_conf.pwm_tu);
-            hwConfig.comparator3Initialize();
+            hwConfig.dac.currentModeInit( 1, tu_channel[spinNumberToTu(dt_pwm_pin[leg])]->pwm_conf.pwm_tu);
+            hwConfig.comp.initialize(3);
         }
 
         else if (dt_current_pin[leg] == CM_DAC3)
         {
-            hwConfig.dacConfigDac3CurrentmodeInit(tu_channel[spinNumberToTu(dt_pwm_pin[leg])]->pwm_conf.pwm_tu);
-            hwConfig.comparator1Initialize();
+            hwConfig.dac.currentModeInit( 3, tu_channel[spinNumberToTu(dt_pwm_pin[leg])]->pwm_conf.pwm_tu);
+            hwConfig.comp.initialize(1);
         }
     }
     /**
@@ -323,10 +323,10 @@ void PowerDriver::setLegSlopeCompensation(leg_t leg, float32_t set_voltage, floa
     switch (dt_current_pin[leg])
     {
     case CM_DAC1:
-        hwConfig.slopeCompensationDac1(set_voltage, reset_voltage);
+        hwConfig.dac.slopeCompensation(1, set_voltage, reset_voltage);
         break;
     case CM_DAC3:
-        hwConfig.slopeCompensationDac3(set_voltage, reset_voltage);
+        hwConfig.dac.slopeCompensation(3, set_voltage, reset_voltage);
         break;
     default:
         break;

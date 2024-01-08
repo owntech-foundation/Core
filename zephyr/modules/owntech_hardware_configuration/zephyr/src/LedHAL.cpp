@@ -20,6 +20,7 @@
 /**
  * @date   2023
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Luiz Villa <luiz.villa@laas.fr>
  */
 
 
@@ -28,45 +29,45 @@
 #include <zephyr/drivers/gpio.h>
 
 // Current file header
-#include "HardwareConfiguration.h"
+#include "LedHAL.h"
 
 
-bool HardwareConfiguration::ledInitialized = false;
+bool LedHAL::ledInitialized = false;
 
 static struct gpio_dt_spec led_pin_spec = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
 
 
-void HardwareConfiguration::ledInitialize()
+void LedHAL::initialize()
 {
 	gpio_pin_configure_dt(&led_pin_spec, GPIO_OUTPUT_INACTIVE);
 	ledInitialized = true;
 }
 
-void HardwareConfiguration::setLedOn()
+void LedHAL::turnOn()
 {
 	if (ledInitialized == false)
 	{
-		ledInitialize();
+		initialize();
 	}
 
 	gpio_pin_set_dt(&led_pin_spec, 1);
 }
 
-void HardwareConfiguration::setLedOff()
+void LedHAL::turnOff()
 {
 	if (ledInitialized == false)
 	{
-		ledInitialize();
+		initialize();
 	}
 
 	gpio_pin_set_dt(&led_pin_spec, 0);
 }
 
-void HardwareConfiguration::setLedToggle()
+void LedHAL::toggle()
 {
 	if (ledInitialized == false)
 	{
-		ledInitialize();
+		initialize();
 	}
 
 	gpio_pin_toggle_dt(&led_pin_spec);

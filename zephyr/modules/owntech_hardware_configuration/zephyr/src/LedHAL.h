@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 LAAS-CNRS
+ * Copyright (c) 2022-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -19,22 +19,31 @@
 
 /**
  * @date   2023
- *
- * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Luiz Villa <luiz.villa@laas.fr>
  */
 
-// OwnTech API
-#include "comparator.h"
-
-// Current file header
-#include "HardwareConfiguration.h"
 
 
-void HardwareConfiguration::comparator1Initialize(){
-	comparator1_init();
-}
+#ifndef LEDHAL_H_
+#define LEDHAL_H_
 
-void HardwareConfiguration::comparator3Initialize(){
-	comparator3_init();
-}
+class LedHAL
+{
+public:
+	void turnOn();
+	void turnOff();
+	void toggle();
+
+private:
+    // Private functions
+	void initialize();
+
+    // Private variables
+	static bool ledInitialized;
+
+};
+
+
+
+#endif // LED_H_

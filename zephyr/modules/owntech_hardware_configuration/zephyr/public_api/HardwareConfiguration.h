@@ -39,6 +39,12 @@
 #include "adc.h"
 #include "hrtim_enum.h"
 
+// Private sources include
+#include "../src/LedHAL.h"
+#include "../src/DacHAL.h"
+#include "../src/CompHAL.h"
+#include "../src/PwmHAL.h"
+
 
 /** Hardware version. See
  *  https://gitlab.laas.fr/owntech/1leg/-/wikis/Releases
@@ -55,27 +61,10 @@ typedef enum
 	TWIST_v_1_1_2
 } hardware_version_t;
 
-/** Switch leg operation type.
- */
-typedef enum
-{
-	buck,
-	boost
-} leg_operation_t;
-
-/** Inverter leg operation type.
- */
-typedef enum
-{
-	unipolar,
-	bipolar
-} inverter_modulation_t;
-
-
 /////
 // Static class definition
 
-class HardwareConfiguration
+class HardwareConfiguration //SpinHAL
 {
 public:
 
@@ -91,14 +80,6 @@ public:
 	void setBoardVersion(hardware_version_t hardware_version);
 
 	/////
-	// DAC
-
-	void initDacConstValue(uint8_t dac_number);
-	void setDacConstValue(uint8_t dac_number, uint8_t channel, uint32_t const_value);
-	void slopeCompensationDac3(float32_t peak_voltage, float32_t low_voltage);
-	void slopeCompensationDac1(float32_t peak_voltage, float32_t low_voltage);
-
-	/////
 	// NGND
 
 #ifdef CONFIG_SHIELD_TWIST
@@ -106,12 +87,6 @@ public:
 	void setNgndOff();
 #endif
 
-	/////
-	// LED
-
-	void setLedOn();
-	void setLedOff();
-	void setLedToggle();
 
 	/////
 	// Timer
@@ -127,44 +102,44 @@ public:
 	 */
 	uint32_t getIncrementalEncoderValue();
 
-	//HRTIM configuration
+	// //HRTIM configuration
 
-	void pwmInit(hrtim_tu_number_t pwmX);
-	void pwmStart(hrtim_tu_number_t pwmX);
-	void pwmStop(hrtim_tu_number_t pwmX);
-	void pwmStartSubUnit(hrtim_tu_number_t tu, hrtim_output_number_t output);
-	void pwmStopSubUnit(hrtim_tu_number_t tu, hrtim_output_number_t output);
-	void pwmSetModulation(hrtim_tu_number_t pwmX, hrtim_cnt_t modulation);
-	void pwmSetSwitchConvention(hrtim_tu_number_t pwmX, hrtim_switch_convention_t convention);
-	void pwmSetFrequency(uint32_t value);
-	void pwmSetDeadTime(hrtim_tu_number_t pwmX, uint16_t rise_ns, uint16_t fall_ns);
-	void pwmSetDutyCycle(hrtim_tu_number_t pwmX, float32_t duty_cycle);
-	void pwmSetPhaseShift(hrtim_tu_number_t pwmX, int16_t shift);
+	// void pwmInit(hrtim_tu_number_t pwmX);
+	// void pwmStart(hrtim_tu_number_t pwmX);
+	// void pwmStop(hrtim_tu_number_t pwmX);
+	// void pwmStartSubUnit(hrtim_tu_number_t tu, hrtim_output_number_t output);
+	// void pwmStopSubUnit(hrtim_tu_number_t tu, hrtim_output_number_t output);
+	// void pwmSetModulation(hrtim_tu_number_t pwmX, hrtim_cnt_t modulation);
+	// void pwmSetSwitchConvention(hrtim_tu_number_t pwmX, hrtim_switch_convention_t convention);
+	// void pwmSetFrequency(uint32_t value);
+	// void pwmSetDeadTime(hrtim_tu_number_t pwmX, uint16_t rise_ns, uint16_t fall_ns);
+	// void pwmSetDutyCycle(hrtim_tu_number_t pwmX, float32_t duty_cycle);
+	// void pwmSetPhaseShift(hrtim_tu_number_t pwmX, int16_t shift);
 
-	void pwmSetMode(hrtim_tu_number_t pwmX, hrtim_pwm_mode_t mode);
-	hrtim_pwm_mode_t pwmGetMode(hrtim_tu_number_t pwmX);
-	void pwmSetEev(hrtim_tu_number_t pwmX, hrtim_external_trigger_t eev);
-	hrtim_external_trigger_t pwmGetEev(hrtim_tu_number_t pwmX);
+	// void pwmSetMode(hrtim_tu_number_t pwmX, hrtim_pwm_mode_t mode);
+	// hrtim_pwm_mode_t pwmGetMode(hrtim_tu_number_t pwmX);
+	// void pwmSetEev(hrtim_tu_number_t pwmX, hrtim_external_trigger_t eev);
+	// hrtim_external_trigger_t pwmGetEev(hrtim_tu_number_t pwmX);
 
-	hrtim_cnt_t pwmGetModulation(hrtim_tu_number_t pwmX);
-	hrtim_switch_convention_t pwmGetSwitchConvention(hrtim_tu_number_t pwmX);
-	uint16_t pwmGetPeriod(hrtim_tu_number_t pwmX);
-	void pwmSetAdcTriggerPostScaler(hrtim_tu_number_t pwmX, uint32_t ps_ratio);
-	void pwmSetAdcEdgeTrigger(hrtim_tu_number_t pwmX, hrtim_adc_edgetrigger_t adc_edge_trigger);
-	hrtim_adc_edgetrigger_t pwmGetAdcEdgeTrigger(hrtim_tu_number_t pwmX);
-	void pwmSetAdcTrig(hrtim_tu_number_t pwmX, hrtim_adc_trigger_t adc_trig);
-	hrtim_adc_trigger_t pwmGetAdcTrig(hrtim_tu_number_t pwmX, hrtim_adc_trigger_t adc_trig);
-	void pwmAdcTriggerEnable(hrtim_tu_number_t tu_number);
-	void pwmAdcTriggerDisable(hrtim_tu_number_t tu_number);
-	void pwmSetAdcTriggerInstant(hrtim_tu_number_t pwmX, float32_t trig_val);
-	void pwmSetAdcDecimation(hrtim_tu_number_t pwmX,  uint32_t decimation);
+	// hrtim_cnt_t pwmGetModulation(hrtim_tu_number_t pwmX);
+	// hrtim_switch_convention_t pwmGetSwitchConvention(hrtim_tu_number_t pwmX);
+	// uint16_t pwmGetPeriod(hrtim_tu_number_t pwmX);
+	// void pwmSetAdcTriggerPostScaler(hrtim_tu_number_t pwmX, uint32_t ps_ratio);
+	// void pwmSetAdcEdgeTrigger(hrtim_tu_number_t pwmX, hrtim_adc_edgetrigger_t adc_edge_trigger);
+	// hrtim_adc_edgetrigger_t pwmGetAdcEdgeTrigger(hrtim_tu_number_t pwmX);
+	// void pwmSetAdcTrig(hrtim_tu_number_t pwmX, hrtim_adc_trigger_t adc_trig);
+	// hrtim_adc_trigger_t pwmGetAdcTrig(hrtim_tu_number_t pwmX, hrtim_adc_trigger_t adc_trig);
+	// void pwmAdcTriggerEnable(hrtim_tu_number_t tu_number);
+	// void pwmAdcTriggerDisable(hrtim_tu_number_t tu_number);
+	// void pwmSetAdcTriggerInstant(hrtim_tu_number_t pwmX, float32_t trig_val);
+	// void pwmSetAdcDecimation(hrtim_tu_number_t pwmX,  uint32_t decimation);
 
-	void pwmPeriodEvntDisable(hrtim_tu_t PWM_tu);
-	void pwmSetPeriodEvntRep(hrtim_tu_t PWM_tu, uint32_t repetition);
-	uint32_t pwmGetPeriodEvntRep(hrtim_tu_t PWM_tu);
-	void pwmPeriodEvntConf(hrtim_tu_t PWM_tu, uint32_t repetition, hrtim_callback_t callback);
-	void pwmPeriodEvntEnable(hrtim_tu_t PWM_tu);
-	uint32_t pwmGetPeriodUs(hrtim_tu_number_t pwmX);
+	// void pwmPeriodEvntDisable(hrtim_tu_t PWM_tu);
+	// void pwmSetPeriodEvntRep(hrtim_tu_t PWM_tu, uint32_t repetition);
+	// uint32_t pwmGetPeriodEvntRep(hrtim_tu_t PWM_tu);
+	// void pwmPeriodEvntConf(hrtim_tu_t PWM_tu, uint32_t repetition, hrtim_callback_t callback);
+	// void pwmPeriodEvntEnable(hrtim_tu_t PWM_tu);
+	// uint32_t pwmGetPeriodUs(hrtim_tu_number_t pwmX);
 
 	/////
 	// UART
@@ -292,17 +267,13 @@ public:
 	 */
 	void adcStop();
 
-	// DAC
-	void dacConfigDac1CurrentmodeInit(hrtim_tu_t tu_src);
-	void dacConfigDac3CurrentmodeInit(hrtim_tu_t tu_src);
-
 	// Comparator
-	void comparator1Initialize();
-	void comparator3Initialize();
+	// void comparator1Initialize();
+	// void comparator3Initialize();
 
 private:
 	// LED
-	void ledInitialize();
+	// void ledInitialize();
 
 	// Timer
 	void timerInitialize();
@@ -313,12 +284,21 @@ private:
 	// ADC
 	void adcInitialize();
 
+public:
+	/**
+	 * @brief Contains all the function of the embedded LED.
+	 */
+	LedHAL led;
+	DacHAL dac;
+	CompHAL comp;
+	PwmHAL pwm;
+
 private:
 	// Common
 	static hardware_version_t hardware_version;
 
 	// LED
-	static bool ledInitialized;
+	// static bool ledInitialized;
 
 	// Timer
 	static bool timer4init;
