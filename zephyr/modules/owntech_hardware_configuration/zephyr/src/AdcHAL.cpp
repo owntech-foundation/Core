@@ -29,13 +29,13 @@
 #include "adc.h"
 
 // Current file header
-#include "HardwareConfiguration.h"
+#include "AdcHAL.h"
 
 
-bool HardwareConfiguration::adcInitialized = false;
+bool AdcHAL::adcInitialized = false;
 
 
-void HardwareConfiguration::adcInitialize()
+void AdcHAL::initializeAllAdcs()
 {
 	if (adcInitialized == false)
 	{
@@ -50,14 +50,14 @@ void HardwareConfiguration::adcInitialize()
 	}
 }
 
-void HardwareConfiguration::adcConfigureTriggerSource(uint8_t adc_number, adc_ev_src_t trigger_source)
+void AdcHAL::configureTriggerSource(uint8_t adc_number, adc_ev_src_t trigger_source)
 {
 	/////
 	// Make sure module is initialized
 
 	if (adcInitialized == false)
 	{
-		adcInitialize();
+		initializeAllAdcs();
 	}
 
 	/////
@@ -66,14 +66,14 @@ void HardwareConfiguration::adcConfigureTriggerSource(uint8_t adc_number, adc_ev
 	adc_configure_trigger_source(adc_number, trigger_source);
 }
 
-void HardwareConfiguration::adcConfigureDiscontinuousMode(uint8_t adc_number, uint32_t discontinuous_count)
+void AdcHAL::configureDiscontinuousMode(uint8_t adc_number, uint32_t discontinuous_count)
 {
 	/////
 	// Make sure module is initialized
 
 	if (adcInitialized == false)
 	{
-		adcInitialize();
+		initializeAllAdcs();
 	}
 
 	/////
@@ -82,14 +82,14 @@ void HardwareConfiguration::adcConfigureDiscontinuousMode(uint8_t adc_number, ui
 	adc_configure_discontinuous_mode(adc_number, discontinuous_count);
 }
 
-void HardwareConfiguration::adcEnableChannel(uint8_t adc_num, uint8_t channel)
+void AdcHAL::enableChannel(uint8_t adc_num, uint8_t channel)
 {
 	/////
 	// Make sure module is initialized
 
 	if (adcInitialized == false)
 	{
-		adcInitialize();
+		initializeAllAdcs();
 	}
 
 	/////
@@ -98,14 +98,14 @@ void HardwareConfiguration::adcEnableChannel(uint8_t adc_num, uint8_t channel)
 	adc_add_channel(adc_num, channel);
 }
 
-void HardwareConfiguration::adcDisableChannel(uint8_t adc_num, uint8_t channel)
+void AdcHAL::disableChannel(uint8_t adc_num, uint8_t channel)
 {
 	/////
 	// Make sure module is initialized
 
 	if (adcInitialized == false)
 	{
-		adcInitialize();
+		initializeAllAdcs();
 	}
 
 	/////
@@ -114,14 +114,14 @@ void HardwareConfiguration::adcDisableChannel(uint8_t adc_num, uint8_t channel)
 	adc_remove_channel(adc_num, channel);
 }
 
-uint32_t HardwareConfiguration::adcGetEnabledChannelsCount(uint8_t adc_number)
+uint32_t AdcHAL::getEnabledChannelsCount(uint8_t adc_number)
 {
 	/////
 	// Make sure module is initialized
 
 	if (adcInitialized == false)
 	{
-		adcInitialize();
+		initializeAllAdcs();
 	}
 
 	/////
@@ -130,14 +130,14 @@ uint32_t HardwareConfiguration::adcGetEnabledChannelsCount(uint8_t adc_number)
 	return adc_get_enabled_channels_count(adc_number);
 }
 
-void HardwareConfiguration::adcConfigureDma(uint8_t adc_num, bool use_dma)
+void AdcHAL::enableDma(uint8_t adc_num, bool use_dma)
 {
 	/////
 	// Make sure module is initialized
 
 	if (adcInitialized == false)
 	{
-		adcInitialize();
+		initializeAllAdcs();
 	}
 
 	/////
@@ -146,14 +146,14 @@ void HardwareConfiguration::adcConfigureDma(uint8_t adc_num, bool use_dma)
 	adc_configure_use_dma(adc_num, use_dma);
 }
 
-void HardwareConfiguration::adcStart()
+void AdcHAL::startAllAdcs()
 {
 	/////
 	// Make sure module is initialized
 
 	if (adcInitialized == false)
 	{
-		adcInitialize();
+		initializeAllAdcs();
 	}
 
 	/////
@@ -162,14 +162,14 @@ void HardwareConfiguration::adcStart()
 	adc_start();
 }
 
-void HardwareConfiguration::adcStop()
+void AdcHAL::stopAllAdcs()
 {
 	/////
 	// Make sure module is initialized
 
 	if (adcInitialized == false)
 	{
-		adcInitialize();
+		initializeAllAdcs();
 	}
 
 	/////
@@ -178,14 +178,14 @@ void HardwareConfiguration::adcStop()
 	adc_stop();
 }
 
-void HardwareConfiguration::adcTriggerSoftwareConversion(uint8_t adc_number, uint8_t number_of_acquisitions)
+void AdcHAL::triggerSoftwareConversion(uint8_t adc_number, uint8_t number_of_acquisitions)
 {
 	/////
 	// Make sure module is initialized
 
 	if (adcInitialized == false)
 	{
-		adcInitialize();
+		initializeAllAdcs();
 	}
 
 	/////

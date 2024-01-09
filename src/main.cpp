@@ -26,9 +26,8 @@
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
  */
-
-//--------------OWNTECH API INCLUDES--------------------------
-#include "HardwareConfiguration.h"
+//-------------OWNTECH DRIVERS-------------------
+#include "SpinAPI.h"
 #include "DataAcquisition.h"
 #include "Scheduling.h"
 #include "power.h"
@@ -57,8 +56,8 @@ void loop_control_task();     // Code to be executed in real-time at 20kHz
  */
 void setup_hardware()
 {
-    hwConfig.setBoardVersion(TWIST_v_1_1_2);
-    // Setup your hardware here
+    spin.version.setBoardVersion(TWIST_v_1_1_2);
+    //setup your hardware here
 }
 
 /**
@@ -88,8 +87,9 @@ void setup_software()
  */
 void loop_application_task()
 {
-    printk("Application on!\n");
-    hwConfig.setLedToggle();
+	printk("Hello World! \n");
+    spin.led.toggle();
+
 
     scheduling.suspendCurrentTaskMs(1000);
 }

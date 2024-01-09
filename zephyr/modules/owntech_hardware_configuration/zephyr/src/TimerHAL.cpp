@@ -23,20 +23,18 @@
  */
 
 
-// OwnTech Power API
-#include "timer.h"
 
 // Current file header
-#include "HardwareConfiguration.h"
+#include "TimerHAL.h"
 
 
 static const struct device* timer4 = DEVICE_DT_GET(TIMER4_DEVICE);
 
-bool HardwareConfiguration::timer4init    = false;
-bool HardwareConfiguration::timer4started = false;
+bool TimerHAL::timer4init    = false;
+bool TimerHAL::timer4started = false;
 
 
-void HardwareConfiguration::timerInitialize()
+void TimerHAL::timer4Initialize()
 {
 	if (device_is_ready(timer4) == true)
 	{
@@ -53,11 +51,11 @@ void HardwareConfiguration::timerInitialize()
 	}
 }
 
-void HardwareConfiguration::startLoggingIncrementalEncoder()
+void TimerHAL::startLogTimer4IncrementalEncoder()
 {
 	if (timer4init == false)
 	{
-		timerInitialize();
+		timer4Initialize();
 	}
 
 	if (timer4started == false)
@@ -70,7 +68,7 @@ void HardwareConfiguration::startLoggingIncrementalEncoder()
 	}
 }
 
-uint32_t HardwareConfiguration::getIncrementalEncoderValue()
+uint32_t TimerHAL::getTimer4IncrementalEncoderValue()
 {
 	if (timer4started == true)
 	{

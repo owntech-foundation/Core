@@ -33,7 +33,7 @@
 #include "DataAcquisition.h"
 
 // OwnTech Power API
-#include "HardwareConfiguration.h"
+#include "SpinAPI.h"
 
 // Current module private functions
 #include "../src/data_dispatch.h"
@@ -62,14 +62,14 @@ int8_t DataAcquisition::enableShieldChannel(uint8_t adc_num, channel_t channel_n
 
 void DataAcquisition::enableTwistDefaultChannels()
 {
-	hwConfig.adcConfigureTriggerSource(1, hrtim_ev1);
-	hwConfig.adcConfigureTriggerSource(2, hrtim_ev3);
-	hwConfig.adcConfigureTriggerSource(3, software);
-	hwConfig.adcConfigureTriggerSource(4, software);
-	hwConfig.adcConfigureTriggerSource(5, software);
+	spin.adc.configureTriggerSource(1, hrtim_ev1);
+	spin.adc.configureTriggerSource(2, hrtim_ev3);
+	spin.adc.configureTriggerSource(3, software);
+	spin.adc.configureTriggerSource(4, software);
+	spin.adc.configureTriggerSource(5, software);
 
-	hwConfig.adcConfigureDiscontinuousMode(1, 1);
-	hwConfig.adcConfigureDiscontinuousMode(2, 1);
+	spin.adc.configureDiscontinuousMode(1,1);
+	spin.adc.configureDiscontinuousMode(2, 1);
 
 	this->enableShieldChannel(1, I1_LOW);
 	this->enableShieldChannel(1, V1_LOW);
@@ -154,7 +154,7 @@ int8_t DataAcquisition::start()
 	}
 
 	// Launch ADC conversion
-	hwConfig.adcStart();
+	spin.adc.startAllAdcs();
 
 	this->is_started = true;
 
@@ -183,8 +183,9 @@ void DataAcquisition::setRepetitionsBetweenDispatches(uint32_t repetition)
 
 void DataAcquisition::triggerAcquisition(uint8_t adc_num)
 {
-	uint8_t enabled_channels = hwConfig.adcGetEnabledChannelsCount(adc_num);
-	hwConfig.adcTriggerSoftwareConversion(adc_num, enabled_channels);
+	uint8_t enabled_channels = spin.adc.getEnabledChannelsCount(adc_num);
+	spin.adc.triggerSoftwareConversion(adc_num, enabled_channels);
+
 }
 
 uint16_t* DataAcquisition::getRawValues(uint8_t adc_num, uint8_t pin_num, uint32_t& number_of_values_acquired)
@@ -263,8 +264,10 @@ int8_t DataAcquisition::enableChannel(uint8_t adc_num, uint8_t channel_num)
 		return -1;
 
 	// Enable channel
-	hwConfig.adcConfigureDma(adc_num, true);
-	hwConfig.adcEnableChannel(adc_num, channel_num);
+	spin.adc.enableDma(adc_num, true);
+	spin.adc.enableChannel(adc_num, channel_num);
+
+
 
 	// Remember rank
 	uint8_t adc_index = adc_num-1;

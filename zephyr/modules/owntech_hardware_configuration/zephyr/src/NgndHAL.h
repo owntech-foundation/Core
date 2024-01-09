@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 LAAS-CNRS
+ * Copyright (c) 2022-2023 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -19,35 +19,37 @@
 
 /**
  * @date   2023
- *
  * @author Clément Foucher <clement.foucher@laas.fr>
- * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
+ * @author Luiz Villa <luiz.villa@laas.fr>
  */
 
 
-// Current file header
-#include "HardwareConfiguration.h"
+
+#ifndef NGNDHAL_H_
+#define NGNDHAL_H_
 
 
-// Public object to interact with the class
-HardwareConfiguration hwConfig;
-
-// Static class member
-hardware_version_t HardwareConfiguration::hardware_version = nucleo_G474RE;
-
-
-void HardwareConfiguration::setBoardVersion(hardware_version_t hardware_version)
+class NgndHAL
 {
-	HardwareConfiguration::hardware_version = hardware_version;
+public:
 
-	if (hardware_version == O2_v_1_1_2 || hardware_version == O2_v_0_9)
-	{
-		uart1SwapRxTx();
-	}else if(hardware_version == SPIN_v_0_1){
-		uart1SwapRxTx();
-	}else if(hardware_version == SPIN_v_0_9 || hardware_version == TWIST_v_1_1_2){
-	}else if(hardware_version == SPIN_v_1_0){
-	}else if(hardware_version == nucleo_G474RE){
-	}
+	/**
+	 * @brief Turns the NGND switch ON.
+	 *        It is used with versions of the TWIST board prior to 1.4.
+	 */
+	void turnOn();
 
-}
+	/**
+	 * @brief Turns the NGND switch OFF.
+	 *        It is used with versions of the TWIST board prior to 1.4.
+	 */
+	void turnOff();
+
+private:
+
+
+};
+
+
+
+#endif // LED_H_

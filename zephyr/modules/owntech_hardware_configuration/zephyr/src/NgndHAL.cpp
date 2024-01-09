@@ -27,13 +27,13 @@
 #include "ngnd.h"
 
 // Current file header
-#include "HardwareConfiguration.h"
+#include "NgndHAL.h"
 
 
 static const struct device* ngnd_switch = DEVICE_DT_GET(NGND_DEVICE);
 
 
-void HardwareConfiguration::setNgndOn()
+void NgndHAL::turnOn()
 {
 	if (device_is_ready(ngnd_switch) == true)
 	{
@@ -41,7 +41,7 @@ void HardwareConfiguration::setNgndOn()
 	}
 }
 
-void HardwareConfiguration::setNgndOff()
+void NgndHAL::turnOff()
 {
 	if (device_is_ready(ngnd_switch) == true)
 	{

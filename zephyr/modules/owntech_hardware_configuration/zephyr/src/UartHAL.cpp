@@ -32,7 +32,7 @@
 #include <zephyr/console/console.h>
 
 // Current file header
-#include "HardwareConfiguration.h"
+#include "UartHAL.h"
 
 
 /////
@@ -70,7 +70,7 @@ static void _uart_usart1_process_input(const struct device *dev, void* user_data
 /////
 // USART 1 public functions
 
-void HardwareConfiguration::extraUartInit()
+void UartHAL::usart1Init()
 {
 	const struct uart_config usart1_config =
 	{
@@ -89,7 +89,7 @@ void HardwareConfiguration::extraUartInit()
 	}
 }
 
-char HardwareConfiguration::extraUartReadChar()
+char UartHAL::usart1ReadChar()
 {
 	if (command_flag){
 		command_flag = false;
@@ -99,7 +99,7 @@ char HardwareConfiguration::extraUartReadChar()
 	}
 }
 
-void HardwareConfiguration::extraUartWriteChar(char data)
+void UartHAL::usart1WriteChar(char data)
 {
 	if (device_is_ready(uart_dev) == true)
 	{
@@ -107,7 +107,7 @@ void HardwareConfiguration::extraUartWriteChar(char data)
 	}
 }
 
-void HardwareConfiguration::uart1SwapRxTx()
+void UartHAL::usart1SwapRxTx()
 {
 	LL_LPUART_Disable(LPUART1);
 	LL_LPUART_SetTXRXSwap(LPUART1, LL_LPUART_TXRX_SWAPPED);

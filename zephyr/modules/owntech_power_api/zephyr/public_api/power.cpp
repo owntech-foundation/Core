@@ -26,7 +26,7 @@
 #include "power.h"
 #include "../src/power_init.h"
 
-#include "HardwareConfiguration.h"
+#include "SpinAPI.h"
 #include "GpioApi.h"
 
 PowerDriver power;
@@ -92,11 +92,12 @@ void PowerDriver::setShieldVersion(shield_version_t shield)
  */
 void PowerDriver::initLegMode(leg_t leg, hrtim_switch_convention_t leg_convention, hrtim_pwm_mode_t leg_mode)
 {
-    hwConfig.pwmSetFrequency(timer_frequency); // Configure PWM frequency
+    spin.pwm.setFrequency(timer_frequency); // Configure PWM frequency
 
-    hwConfig.pwmSetModulation(spinNumberToTu(dt_pwm_pin[leg]), dt_modulation[leg]); // Set modulation
+    spin.pwm.setModulation(spinNumberToTu(dt_pwm_pin[leg]), dt_modulation[leg]); // Set modulation
 
-    hwConfig.pwmSetAdcEdgeTrigger(spinNumberToTu(dt_pwm_pin[leg]), dt_edge_trigger[leg]); // Configure ADC rollover in center aligned mode
+    spin.pwm.setAdcEdgeTrigger(spinNumberToTu(dt_pwm_pin[leg]), dt_edge_trigger[leg]); // Configure ADC rollover in center aligned mode
+
 
     /**
      * Configure which External Event will reset the timer for current mode.
@@ -119,21 +120,22 @@ void PowerDriver::initLegMode(leg_t leg, hrtim_switch_convention_t leg_conventio
     if (leg_mode == CURRENT_MODE)
     {
         if (dt_current_pin[leg] == CM_DAC3)
-            hwConfig.pwmSetEev(spinNumberToTu(dt_pwm_pin[leg]), EEV4);
+            spin.pwm.setEev(spinNumberToTu(dt_pwm_pin[leg]), EEV4);
         else if (dt_current_pin[leg] == CM_DAC1)
-            hwConfig.pwmSetEev(spinNumberToTu(dt_pwm_pin[leg]), EEV5);
+            spin.pwm.setEev(spinNumberToTu(dt_pwm_pin[leg]), EEV5);
 
         /* Configure current mode */
-        hwConfig.pwmSetMode(spinNumberToTu(dt_pwm_pin[leg]), CURRENT_MODE);
+        spin.pwm.setMode(spinNumberToTu(dt_pwm_pin[leg]), CURRENT_MODE);
+
     }
 
-    hwConfig.pwmSetSwitchConvention(spinNumberToTu(dt_pwm_pin[leg]), leg_convention); // choose which output of the timer unit to control whith duty cycle
+    spin.pwm.setSwitchConvention(spinNumberToTu(dt_pwm_pin[leg]), leg_convention); // choose which output of the timer unit to control whith duty cycle
 
-    hwConfig.pwmInit(spinNumberToTu(dt_pwm_pin[leg])); // Initialize leg
+    spin.pwm.initUnit(spinNumberToTu(dt_pwm_pin[leg])); // Initialize leg unit
 
-    hwConfig.pwmSetPhaseShift(spinNumberToTu(dt_pwm_pin[leg]), dt_phase_shift[leg]); // Configure PWM initial phase shift
+    spin.pwm.setPhaseShift(spinNumberToTu(dt_pwm_pin[leg]), dt_phase_shift[leg]); // Configure PWM initial phase shift
 
-    hwConfig.pwmSetDeadTime(spinNumberToTu(dt_pwm_pin[leg]), dt_rising_deadtime[leg], dt_falling_deadtime[leg]); // Configure PWM dead time
+    spin.pwm.setDeadTime(spinNumberToTu(dt_pwm_pin[leg]), dt_rising_deadtime[leg], dt_falling_deadtime[leg]); // Configure PWM dead time
 
     /**
      * Configure PWM adc trigger.
@@ -141,11 +143,11 @@ void PowerDriver::initLegMode(leg_t leg, hrtim_switch_convention_t leg_conventio
      */
     if (dt_adc[leg] != ADCTRIG_NONE)
     {
-        hwConfig.pwmSetAdcDecimation(spinNumberToTu(dt_pwm_pin[leg]), dt_adc_decim[leg]);
+        spin.pwm.setAdcDecimation(spinNumberToTu(dt_pwm_pin[leg]), dt_adc_decim[leg]);
 
-        hwConfig.pwmSetAdcTrig(spinNumberToTu(dt_pwm_pin[leg]), dt_adc[leg]);
+        spin.pwm.setAdcTrigger(spinNumberToTu(dt_pwm_pin[leg]), dt_adc[leg]);
 
-        hwConfig.pwmAdcTriggerEnable(spinNumberToTu(dt_pwm_pin[leg]));
+        spin.pwm.enableAdcTrigger(spinNumberToTu(dt_pwm_pin[leg]));
     }
 
     /**
@@ -156,14 +158,14 @@ void PowerDriver::initLegMode(leg_t leg, hrtim_switch_convention_t leg_conventio
 
         if (dt_current_pin[leg] == CM_DAC1)
         {
-            hwConfig.dac.currentModeInit( 1, tu_channel[spinNumberToTu(dt_pwm_pin[leg])]->pwm_conf.pwm_tu);
-            hwConfig.comp.initialize(3);
+            spin.dac.currentModeInit( 1, tu_channel[spinNumberToTu(dt_pwm_pin[leg])]->pwm_conf.pwm_tu);
+            spin.comp.initialize(3);
         }
 
         else if (dt_current_pin[leg] == CM_DAC3)
         {
-            hwConfig.dac.currentModeInit( 3, tu_channel[spinNumberToTu(dt_pwm_pin[leg])]->pwm_conf.pwm_tu);
-            hwConfig.comp.initialize(1);
+            spin.dac.currentModeInit( 3, tu_channel[spinNumberToTu(dt_pwm_pin[leg])]->pwm_conf.pwm_tu);
+            spin.comp.initialize(1);
         }
     }
     /**
@@ -261,9 +263,9 @@ void PowerDriver::startLeg(leg_t leg)
 
     /* start PWM*/
     if (!dt_output1_inactive[leg])
-        hwConfig.pwmStartSubUnit(spinNumberToTu(dt_pwm_pin[leg]), TIMING_OUTPUT1);
+        spin.pwm.startSingleOutput(spinNumberToTu(dt_pwm_pin[leg]), TIMING_OUTPUT1);
     if (!dt_output2_inactive[leg])
-        hwConfig.pwmStartSubUnit(spinNumberToTu(dt_pwm_pin[leg]), TIMING_OUTPUT2);
+        spin.pwm.startSingleOutput(spinNumberToTu(dt_pwm_pin[leg]), TIMING_OUTPUT2);
 }
 
 /**
@@ -285,7 +287,8 @@ void PowerDriver::startAll()
 void PowerDriver::stopLeg(leg_t leg)
 {
     /* Stop PWM */
-    hwConfig.pwmStop(spinNumberToTu(dt_pwm_pin[leg]));
+    spin.pwm.stopDualOutput(spinNumberToTu(dt_pwm_pin[leg]));
+
 
     /**
      * Only relevant for twist hardware, to disable optocouplers for mosfet driver
@@ -323,10 +326,10 @@ void PowerDriver::setLegSlopeCompensation(leg_t leg, float32_t set_voltage, floa
     switch (dt_current_pin[leg])
     {
     case CM_DAC1:
-        hwConfig.dac.slopeCompensation(1, set_voltage, reset_voltage);
+        spin.dac.slopeCompensation(1, set_voltage, reset_voltage);
         break;
     case CM_DAC3:
-        hwConfig.dac.slopeCompensation(3, set_voltage, reset_voltage);
+        spin.dac.slopeCompensation(3, set_voltage, reset_voltage);
         break;
     default:
         break;
@@ -363,7 +366,8 @@ void PowerDriver::setLegTriggerValue(leg_t leg, float32_t trigger_value)
         trigger_value = 0.95;
     else if (trigger_value < 0.05)
         trigger_value = 0.05;
-    hwConfig.pwmSetAdcTriggerInstant(spinNumberToTu(dt_pwm_pin[leg]), trigger_value);
+    spin.pwm.setAdcTriggerInstant(spinNumberToTu(dt_pwm_pin[leg]), trigger_value);
+
 }
 
 /**
@@ -394,7 +398,8 @@ void PowerDriver::setAllTriggerValue(float32_t trigger_value)
  */
 void PowerDriver::setLegPhaseShift(leg_t leg, int16_t phase_shift)
 {
-    hwConfig.pwmSetPhaseShift(spinNumberToTu(dt_pwm_pin[leg]), phase_shift);
+    spin.pwm.setPhaseShift(spinNumberToTu(dt_pwm_pin[leg]), phase_shift);
+
 }
 
 /**
@@ -419,7 +424,7 @@ void PowerDriver::setAllPhaseShift(int16_t phase_shift)
 */
 void PowerDriver::setLegDeadTime(leg_t leg, uint16_t ns_rising_dt, uint16_t ns_falling_dt)
 {
-    hwConfig.pwmSetDeadTime(spinNumberToTu(dt_pwm_pin[leg]), ns_rising_dt, ns_falling_dt);
+    spin.pwm.setDeadTime(spinNumberToTu(dt_pwm_pin[leg]), ns_rising_dt, ns_falling_dt);
 }
 
 /**
@@ -449,7 +454,7 @@ void PowerDriver::setAllDeadTime(uint16_t ns_rising_dt, uint16_t ns_falling_dt)
 */
 void PowerDriver::setLegAdcDecim(leg_t leg, uint16_t adc_decim)
 {
-    hwConfig.pwmSetAdcDecimation(spinNumberToTu(dt_pwm_pin[leg]), adc_decim);
+    spin.pwm.setAdcDecimation(spinNumberToTu(dt_pwm_pin[leg]), adc_decim);
 }
 
 
