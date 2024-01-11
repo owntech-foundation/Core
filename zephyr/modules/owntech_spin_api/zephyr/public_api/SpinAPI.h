@@ -44,6 +44,8 @@
 #include "../src/UartHAL.h"
 #include "../src/TimerHAL.h"
 #include "../src/VersionHAL.h"
+#include "../src/GpioHAL.h"
+
 
 #ifdef CONFIG_SHIELD_TWIST
 	#include "../src/NgndHAL.h"
@@ -58,6 +60,12 @@ class SpinAPI
 {
 
 public:
+
+	/**
+	 * @brief Contains all the functions for the spin gpio.
+	 */
+	GpioHAL gpio;
+
 	/**
 	 * @brief Contains all the function of the embedded LED.
 	 */

@@ -1,4 +1,4 @@
-if(CONFIG_OWNTECH_HARDWARE_CONFIGURATION)
+if(CONFIG_OWNTECH_SPIN_API)
   # Select directory to add to the include path
   zephyr_include_directories(./public_api)
 
@@ -16,6 +16,7 @@ if(CONFIG_OWNTECH_HARDWARE_CONFIGURATION)
     src/AdcHAL.cpp
     src/CompHAL.cpp
     src/VersionHAL.cpp
+    src/GpioHAL.cpp
   )
 
   # Conditional source files

@@ -1,11 +1,10 @@
-config OWNTECH_HARDWARE_CONFIGURATION
-	bool "Enable OwnTech hardware configuration module"
+config OWNTECH_SPIN_API
+	bool "Enable OwnTech Hardware Configuration module"
 	default y
 	depends on OWNTECH_ADC_DRIVER
 	depends on OWNTECH_DAC_DRIVER
 	depends on OWNTECH_HRTIM_DRIVER
 	depends on OWNTECH_TIMER_DRIVER
-	depends on OWNTECH_GPIO_API
 	depends on OWNTECH_COMPARATOR_DRIVER
 	depends on OWNTECH_NGND_DRIVER || !SHIELD_TWIST
 	help
