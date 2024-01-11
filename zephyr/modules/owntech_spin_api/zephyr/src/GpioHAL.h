@@ -24,8 +24,8 @@
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
-#ifndef GPIOAPI_H_
-#define GPIOAPI_H_
+#ifndef GPIOHAL_H_
+#define GPIOHAL_H_
 
 #include <zephyr/drivers/gpio.h>
 
@@ -129,7 +129,7 @@ typedef enum : uint8_t
 /////
 // Class definition
 
-class GpioApi
+class GpioHAL
 {
 public:
 
@@ -211,6 +211,4 @@ private:
 
 };
 
-extern GpioApi gpio;
-
-#endif // GPIOAPI_H_
+#endif // GPIOHAL_H_

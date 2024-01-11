@@ -25,9 +25,7 @@
  */
 
 
-#include "GpioApi.h"
-
-GpioApi gpio;
+#include "GpioHAL.h"
 
 const struct device* const GPIO_A = DEVICE_DT_GET(DT_NODELABEL(gpioa));
 const struct device* const GPIO_B = DEVICE_DT_GET(DT_NODELABEL(gpiob));
@@ -39,7 +37,7 @@ const gpio_flags_t INPUT_PULLUP = GPIO_INPUT | GPIO_PULL_UP;
 const gpio_flags_t OUTPUT       = GPIO_OUTPUT;
 
 
-void GpioApi::configurePin(uint8_t pin, gpio_flags_t flags)
+void GpioHAL::configurePin(uint8_t pin, gpio_flags_t flags)
 {
 	gpio_pin_t pin_number = this->getPinNumber(pin);
 	const struct device* port = this->getGpioDevice(pin);
@@ -49,7 +47,7 @@ void GpioApi::configurePin(uint8_t pin, gpio_flags_t flags)
 	}
 }
 
-void GpioApi::setPin(uint8_t pin)
+void GpioHAL::setPin(uint8_t pin)
 {
 	gpio_pin_t pin_number = this->getPinNumber(pin);
 	const struct device* port = this->getGpioDevice(pin);
@@ -59,7 +57,7 @@ void GpioApi::setPin(uint8_t pin)
 	}
 }
 
-void GpioApi::resetPin(uint8_t pin)
+void GpioHAL::resetPin(uint8_t pin)
 {
 	gpio_pin_t pin_number = this->getPinNumber(pin);
 	const struct device* port = this->getGpioDevice(pin);
@@ -69,7 +67,7 @@ void GpioApi::resetPin(uint8_t pin)
 	}
 }
 
-void GpioApi::togglePin(uint8_t pin)
+void GpioHAL::togglePin(uint8_t pin)
 {
 	gpio_pin_t pin_number = this->getPinNumber(pin);
 	const struct device* port = this->getGpioDevice(pin);
@@ -79,7 +77,7 @@ void GpioApi::togglePin(uint8_t pin)
 	}
 }
 
-void GpioApi::writePin(uint8_t pin, uint8_t value)
+void GpioHAL::writePin(uint8_t pin, uint8_t value)
 {
 	gpio_pin_t pin_number = this->getPinNumber(pin);
 	const struct device* port = this->getGpioDevice(pin);
@@ -89,7 +87,7 @@ void GpioApi::writePin(uint8_t pin, uint8_t value)
 	}
 }
 
-uint8_t GpioApi::readPin(uint8_t pin)
+uint8_t GpioHAL::readPin(uint8_t pin)
 {
 	gpio_pin_t pin_number = this->getPinNumber(pin);
 	const struct device* port = this->getGpioDevice(pin);
@@ -101,7 +99,7 @@ uint8_t GpioApi::readPin(uint8_t pin)
 	return 0;
 }
 
-gpio_pin_t GpioApi::getPinNumber(uint8_t pin)
+gpio_pin_t GpioHAL::getPinNumber(uint8_t pin)
 {
 	if ( (pin & 0x80) != 0) // Nucleo format
 	{
@@ -158,7 +156,7 @@ gpio_pin_t GpioApi::getPinNumber(uint8_t pin)
 	return 0xFF;
 }
 
-const struct device* GpioApi::getGpioDevice(uint8_t pin)
+const struct device* GpioHAL::getGpioDevice(uint8_t pin)
 {
 	if ( (pin & 0x80) != 0) // Nucleo format
 	{
