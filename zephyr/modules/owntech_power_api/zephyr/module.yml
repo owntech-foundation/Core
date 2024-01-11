@@ -1,4 +1,4 @@
-name: owntech_power_driver
+name: owntech_power_api
 build:
   cmake: zephyr
   kconfig: zephyr/Kconfig

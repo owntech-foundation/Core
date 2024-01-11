@@ -7,7 +7,7 @@ if(CONFIG_OWNTECH_POWER_API)
 
   # Select source files to be compiled
   zephyr_library_sources(
-    ./public_api/power.cpp
+    ./public_api/TwistAPI.cpp
     ./src/power_init.cpp
     )
 endif()
