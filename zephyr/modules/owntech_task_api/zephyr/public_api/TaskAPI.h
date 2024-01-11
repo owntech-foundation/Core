@@ -22,8 +22,8 @@
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
-#ifndef SCHEDULING_H_
-#define SCHEDULING_H_
+#ifndef TASKAPI_H_
+#define TASKAPI_H_
 
 
 // Stdlib
@@ -44,11 +44,12 @@ typedef enum { source_uninitialized, source_hrtim, source_tim6 } scheduling_inte
 /////
 // Static class definition
 
-class Scheduling
+class TaskAPI
 {
 public:
 	/**
-	 * @brief Uninterruptible synchronous task uses a timer to
+	 * @brief Creates a time critial task.
+	 * 		  A critical task is an Uninterruptible Synchronous Task that uses a precise timer to
 	 *        execute a periodic, non-interruptible user task.
 	 *        Use this function to define such a task.
 	 *        Only one task of this kind can be defined.
@@ -75,11 +76,16 @@ public:
 	 *         An error can occur notably when an uninterruptible
 	 *         task has already been defined previously.
 	 */
-	int8_t defineUninterruptibleSynchronousTask(task_function_t periodic_task, uint32_t task_period_us, scheduling_interrupt_source_t int_source = source_hrtim);
+	int8_t createCritical(task_function_t periodic_task, uint32_t task_period_us, scheduling_interrupt_source_t int_source = source_hrtim);
 
 	/**
-	 * @brief Use this function to start the previously defined
-	 *        uninterruptible synchronous task. If no value is provided
+	 * @brief Use this function to start a previously defined
+	 *        a critical task.
+	 *
+	 *        A critical task is an Uninterruptible Synchronous Task that uses a precise timer to
+	 *        execute a periodic, non-interruptible user task.
+	 *
+	 *        If no value is provided
 	 *        for the parameter and Data Acquisition has not been started
 	 *        yet, Scheduling will automatically start Data Acquisition.
 	 *        Thus, make sure all ADC configuration has been carried
@@ -90,23 +96,24 @@ public:
 	 *        Acquisition scheduling. If set to false, Data Acquisition
 	 *        has to be manually started if you want to use it.
 	 */
-	void startUninterruptibleSynchronousTask(bool manage_data_acquisition = true);
+	void startCritical(bool manage_data_acquisition = true);
 
 	/**
-	 * @brief Stop the previously started uninterruptible
-	 *        synchronous task.
+	 * @brief Stop the previously started critical task.
+	 *        A critical task is an Uninterruptible Synchronous Task that uses a precise timer to
+	 *        execute a periodic, non-interruptible user task.
 	 *        The task can be then resumed by calling
-	 *        startAsynchronousTask() again.
+	 *        startCritical() again.
 	 */
-	void stopUninterruptibleSynchronousTask();
+	void stopCritical();
 
 
 #ifdef CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
 
 	/**
-	 * @brief Define an asynchronous task.
-	 *        Asynchronous tasks are run in background when there
-	 *        is no synchronous task running.
+	 * @brief Creates a background task.
+	 *        Background tasks are asynchronous tasks that run in the background when there
+	 *        is no critical task running.
 	 *
 	 * @param routine Pointer to the void(void) function
 	 *        that will act as the task main function.
@@ -116,49 +123,55 @@ public:
 	 *         Increase maximum number of asynchronous tasks
 	 *         in prj.conf if required.
 	 */
-	int8_t defineAsynchronousTask(task_function_t routine);
+	int8_t createBackground(task_function_t routine);
 
 	/**
 	 * @brief Use this function to start a previously defined
-	 *        asynchronous task using its task number.
+	 *        background task using its task number.
+	 *
+	 *        Background tasks are asynchronous tasks that run in the background when there
+	 *        is no critical task running.
 	 *
 	 * @param task_number Number of the task to start, obtained
 	 *        using the defineAsynchronousTask() function.
 	 */
-	void startAsynchronousTask(uint8_t task_number);
+	void startBackground(uint8_t task_number);
 
 	/**
 	 * @brief Use this function to stop a previously started
-	 *        asynchronous task using its task number.
+	 *        background task using its task number.
+	 *
+	 *        Background tasks are asynchronous tasks that run in the background when there
+	 *        is no critical task running.
 	 *        The task can be then resumed by calling
 	 *        startAsynchronousTask() again.
 	 *
 	 * @param task_number Number of the task to start, obtained
 	 *        using the defineAsynchronousTask() function.
 	 */
-	void stopAsynchronousTask(uint8_t task_number);
+	void stopBackground(uint8_t task_number);
 
 	/**
-	 * @brief This function allows to suspend an asynchronous
-	 *        task for a specified duration expressed in milliseconds.
-	 *        For example, you can call this function at the end of an
-	 *        asynchronous task main function, when there is no need
+	 * @brief This function allows to suspend a background task
+	 *        for a specified duration expressed in milliseconds.
+	 *        For example, you can call this function at the end of a
+	 *        background task function, when there is no need
 	 *        for the task to run permanently.
 	 *
-	 *        DO NOT use this function in a synchronous task!
+	 *        DO NOT use this function in a critical task!
 	 */
-	void suspendCurrentTaskMs(uint32_t duration_ms);
+	void suspendBackgroundMs(uint32_t duration_ms);
 
 	/**
-	 * @brief This function allows to suspend an asynchronous
+	 * @brief This function allows to suspend a background
 	 *        task for a specified duration expressed in microseconds.
-	 *        For example, you can call this function at the end of an
-	 *        asynchronous task main function, when there is no need
+	 *        For example, you can call this function at the end of a
+	 *        background task function, when there is no need
 	 *        for the task to run permanently.
 	 *
-	 *        DO NOT use this function in a synchronous task!
+	 *        DO NOT use this function in a critical task!
 	 */
-	void suspendCurrentTaskUs(uint32_t duration_us);
+	void suspendBackgroundUs(uint32_t duration_us);
 
 #endif // CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
 
@@ -171,7 +184,7 @@ private:
 /////
 // Public object to interact with the class
 
-extern Scheduling scheduling;
+extern TaskAPI task;
 
 
-#endif // SCHEDULING_H_
+#endif // TASKAPI_H_

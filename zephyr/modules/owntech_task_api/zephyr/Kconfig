@@ -1,16 +1,11 @@
-config OWNTECH_SCHEDULING
+config OWNTECH_TASK_API
 	bool "Enable OwnTech scheduling"
 	default y
 	depends on OWNTECH_TIMER_DRIVER
 	depends on OWNTECH_HRTIM_DRIVER
-	depends on OWNTECH_DATA_ACQUISITION
-	help
-		The Scheduling API provides ways of defining the main
-		control task, that run on a synchronous basis, as well
-		as various, slower, asynchronous tasks for controling
-		the power converter.
+	depends on OWNTECH_DATA_API
 
-if OWNTECH_SCHEDULING
+if OWNTECH_TASK_API
 
 	config OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
 		bool "Enable support for asychronous tasks"

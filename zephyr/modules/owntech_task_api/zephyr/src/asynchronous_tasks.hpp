@@ -31,7 +31,7 @@
 #include <stdint.h>
 
 // OwnTech Power API
-#include "Scheduling.h"
+#include "TaskAPI.h"
 
 
 #ifdef CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS

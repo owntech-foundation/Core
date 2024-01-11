@@ -1,4 +1,4 @@
-name: owntech_scheduling
+name: owntech_task_api
 build:
   cmake: zephyr
   kconfig: zephyr/Kconfig
