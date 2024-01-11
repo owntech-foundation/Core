@@ -25,8 +25,8 @@
  */
 
 
-#ifndef DATAACQUISITION_H_
-#define DATAACQUISITION_H_
+#ifndef DATAAPI_H_
+#define DATAAPI_H_
 
 
 // Stdlib
@@ -85,7 +85,7 @@ const uint8_t DATA_IS_MISSING = 2;
 /////
 // Static class definition
 
-class DataAcquisition
+class DataAPI
 {
 public:
 
@@ -134,7 +134,7 @@ public:
 	 *        number of values that are available in the buffer.
 	 *
 	 * @note  This function can't be called before the channel is enabled
-	 *        and the DataAcquisition module is started, either explicitly
+	 *        and the DataAPI module is started, either explicitly
 	 *        or by starting the Uninterruptible task.
 	 *
 	 * @note  When calling this function, it invalidates the buffer
@@ -143,7 +143,7 @@ public:
 	 *        from each other.
 	 *
 	 * @note  When using this functions, the user is responsible for data
-	 *        conversion. Use matching dataAcquisition.convert*() function
+	 *        conversion. Use matching data.convert*() function
 	 *        for this purpose.
 	 *
 	 * @note  When using this function, DO NOT use the function to get the
@@ -169,7 +169,7 @@ public:
 	 *        module has been started.
 	 *
 	 * @note  This function can't be called before the channel is enabled
-	 *        and the DataAcquisition module is started, either explicitly
+	 *        and the DataAPI module is started, either explicitly
 	 *        or by starting the Uninterruptible task.
 	 *
 	 * @param channel Name of the shield channel from which to obtain value.
@@ -186,12 +186,12 @@ public:
 	 *        Degree Celcius.
 	 *
 	 * @note  This function can't be called before the channel is enabled
-	 *        and the DataAcquisition module is started, either explicitly
+	 *        and the DataAPI module is started, either explicitly
 	 *        or by starting the Uninterruptible task.
 	 *
 	 * @note  When using this functions, you loose the ability to access raw
-	 *        values using dataAcquisition.get*RawValues() function for the
-	 *        matching channel, as dataAcquisition.get*() function clears the
+	 *        values using data.get*RawValues() function for the
+	 *        matching channel, as data.get*() function clears the
 	 *        buffer on each call.
 	 *
 	 * @param channel Name of the shield channel from which to obtain value.
@@ -212,7 +212,7 @@ public:
 
 	/**
 	 * @brief Use this function to convert values obtained using matching
-	 *        dataAcquisition.get*RawValues() function to relevant
+	 *        data.get*RawValues() function to relevant
 	 *        unit for the data: Volts, Amperes, or Degree Celcius.
 	 *
 	 * @note  This function can't be called before the channel is enabled.
@@ -229,7 +229,7 @@ public:
 	 *        channel if default values are not accurate enough.
 	 *
 	 * @note  This function can't be called before the channel is enabled.
-	 *        The DataAcquisition must not have been started, neither explicitly
+	 *        The DataAPI must not have been started, neither explicitly
 	 *        nor by starting the Uninterruptible task.
 	 *
 	 * @param channel Name of the shield channel to set conversion values.
@@ -247,7 +247,7 @@ public:
 	 *
 	 * @note  This function can't be called before the *all* Twist channels have
 	 *        been enabled (you can use enableTwistDefaultChannels() for that
-	 *        purpose). The DataAcquisition must not have been started, neither
+	 *        purpose). The DataAPI must not have been started, neither
 	 *        explicitly nor by starting the Uninterruptible task.
 	 */
 	void setTwistChannelsUserCalibrationFactors();
@@ -289,10 +289,10 @@ public:
 	 *        has been fully carried out. No ADC configuration change is allowed
 	 *        after module has been started. If you're using the Twist shield and
 	 *        are not sure how to initialize ADCs, you can use
-	 *        dataAcquisition.enableTwistDefaultChannels() for that purpose.
+	 *        data.enableTwistDefaultChannels() for that purpose.
 	 *
-	 * @note  Data Acquisition must be started before accessing any dataAcquisition.get*()
-	 *        or dataAcquisition.peek*() function. Other Data Acquisition functions
+	 * @note  Data Acquisition must be started before accessing any data.get*()
+	 *        or data.peek*() function. Other Data Acquisition functions
 	 *        are safe to use before starting the module.
 	 *
 	 * @return 0 if everything went well, -1 if there was an error.
@@ -310,7 +310,7 @@ public:
 	 *        has already been started before trying to access measures.
 	 *
 	 *        If you don't use (or don't know what are) auto-spawning threads,
-	 *        just make sure calls to any dataAcquisition.get*() or dataAcquisition.peek*()
+	 *        just make sure calls to any data.get*() or data.peek*()
 	 *        function occur after the uninterruptible task is started, or
 	 *        Data Acquisition is manually started, and ignore this function.
 	 *
@@ -321,7 +321,7 @@ public:
 	/**
 	 * @brief Sets the dispatch method of the module.
 	 *
-	 *        Dispatch makes data from ADCs available to dataAcquisition.get*()
+	 *        Dispatch makes data from ADCs available to data.get*()
 	 *        functions, thus available to the user.
 	 *        By default, dispatch is done on interrupt when DMA buffer is
 	 *        filled. However, if using the uninterruptible task from the
@@ -366,7 +366,7 @@ public:
 	 *        configured channels have been acquired.
 	 *
 	 * @note  This function can't be called before the at least one channel
-	 *        is enabled on the ADC and the DataAcquisition module is started,
+	 *        is enabled on the ADC and the DataAPI module is started,
 	 *        either explicitly or by starting the Uninterruptible task.
 	 *
 	 * @param adc_num Number of the ADC on which to acquire channels.
@@ -387,7 +387,7 @@ public:
 	 *        number of values that are available in the buffer.
 	 *
 	 * @note  This function can't be called before the pin is enabled.
-	 *        The DataAcquisition module must have been started, either
+	 *        The DataAPI module must have been started, either
 	 *        explicitly or by starting the Uninterruptible task.
 	 *
 	 * @note  When calling this function, it invalidates the buffer
@@ -396,7 +396,7 @@ public:
 	 *        from each other.
 	 *
 	 * @note When using this functions, the user is responsible for data
-	 *       conversion. Use matching dataAcquisition.convert*() function
+	 *       conversion. Use matching data.convert*() function
 	 *       for this purpose.
 	 *
 	 * @note When using this function, DO NOT use the function to get the
@@ -423,7 +423,7 @@ public:
 	 *        module has been started.
 	 *
 	 * @note  This function can't be called before the pin is enabled.
-	 *        The DataAcquisition module must have been started, either
+	 *        The DataAPI module must have been started, either
 	 *        explicitly or by starting the Uninterruptible task.
 	 *
 	 * @param adc_num Number of the ADC from which to obtain value.
@@ -440,12 +440,12 @@ public:
 	 *        Degree Celcius.
 	 *
 	 * @note  This function can't be called before the pin is enabled.
-	 *        The DataAcquisition module must have been started, either
+	 *        The DataAPI module must have been started, either
 	 *        explicitly or by starting the Uninterruptible task.
 	 *
 	 * @note  When using this functions, you loose the ability to access raw
-	 *        values using dataAcquisition.get*RawValues() function for the
-	 *        matching channel, as dataAcquisition.get*() function clears the
+	 *        values using data.get*RawValues() function for the
+	 *        matching channel, as data.get*() function clears the
 	 *        buffer on each call.
 	 *
 	 * @param adc_num Number of the ADC from which to obtain value.
@@ -467,7 +467,7 @@ public:
 
 	/**
 	 * @brief Use this function to convert values obtained using matching
-	 *        dataAcquisition.get*RawValues() function to relevant
+	 *        data.get*RawValues() function to relevant
 	 *        unit for the data: Volts, Amperes, or Degree Celcius.
 	 *
 	 * @note  This function can't be called before the pin is enabled.
@@ -485,7 +485,7 @@ public:
 	 *        channel if default values are not accurate enough.
 	 *
 	 * @note  This function can't be called before the pin is enabled.
-	 *        The DataAcquisition module must not have been started, neither
+	 *        The DataAPI module must not have been started, neither
 	 *        explicitly nor by starting the Uninterruptible task.
 	 *
 	 * @param adc_num Number of the ADC to set conversion values.
@@ -518,7 +518,7 @@ private:
 /////
 // Public object to interact with the class
 
-extern DataAcquisition dataAcquisition;
+extern DataAPI data;
 
 
-#endif // DATAACQUISITION_H_
+#endif // DATAAPI_H_

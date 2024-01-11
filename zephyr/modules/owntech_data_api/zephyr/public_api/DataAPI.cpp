@@ -30,7 +30,7 @@
 #include <string.h>
 
 // Current class header
-#include "DataAcquisition.h"
+#include "DataAPI.h"
 
 // OwnTech Power API
 #include "SpinAPI.h"
@@ -45,7 +45,7 @@
 /////
 // Public object to interact with the class
 
-DataAcquisition dataAcquisition;
+DataAPI data;
 
 
 /////
@@ -53,14 +53,14 @@ DataAcquisition dataAcquisition;
 
 #ifdef CONFIG_SHIELD_TWIST
 
-int8_t DataAcquisition::enableShieldChannel(uint8_t adc_num, channel_t channel_name)
+int8_t DataAPI::enableShieldChannel(uint8_t adc_num, channel_t channel_name)
 {
 	shield_channels_enable_adc_channel(adc_num, channel_name);
 	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel_name);
 	return this->enableChannel(channel_info.adc_num, channel_info.channel_num);
 }
 
-void DataAcquisition::enableTwistDefaultChannels()
+void DataAPI::enableTwistDefaultChannels()
 {
 	spin.adc.configureTriggerSource(1, hrtim_ev1);
 	spin.adc.configureTriggerSource(2, hrtim_ev3);
@@ -80,37 +80,37 @@ void DataAcquisition::enableTwistDefaultChannels()
 	this->enableShieldChannel(2, I_HIGH);
 }
 
-uint16_t* DataAcquisition::getRawValues(channel_t channel, uint32_t& number_of_values_acquired)
+uint16_t* DataAPI::getRawValues(channel_t channel, uint32_t& number_of_values_acquired)
 {
 	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
 	return this->getChannelRawValues(channel_info.adc_num, channel_info.channel_num, number_of_values_acquired);
 }
 
-float32_t DataAcquisition::peek(channel_t channel)
+float32_t DataAPI::peek(channel_t channel)
 {
 	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
 	return this->peekChannel(channel_info.adc_num, channel_info.channel_num);
 }
 
-float32_t DataAcquisition::getLatest(channel_t channel, uint8_t* dataValid)
+float32_t DataAPI::getLatest(channel_t channel, uint8_t* dataValid)
 {
 	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
 	return this->getChannelLatest(channel_info.adc_num, channel_info.channel_num, dataValid);
 }
 
-float32_t DataAcquisition::convert(channel_t channel, uint16_t raw_value)
+float32_t DataAPI::convert(channel_t channel, uint16_t raw_value)
 {
 	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
 	return data_conversion_convert_raw_value(channel_info.adc_num, channel_info.channel_num, raw_value);
 }
 
-void DataAcquisition::setParameters(channel_t channel, float32_t gain, float32_t offset)
+void DataAPI::setParameters(channel_t channel, float32_t gain, float32_t offset)
 {
 	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
 	data_conversion_set_conversion_parameters_linear(channel_info.adc_num, channel_info.channel_num, gain, offset);
 }
 
-void DataAcquisition::setTwistChannelsUserCalibrationFactors()
+void DataAPI::setTwistChannelsUserCalibrationFactors()
 {
 	shield_channels_set_user_acquisition_parameters();
 }
@@ -121,7 +121,7 @@ void DataAcquisition::setTwistChannelsUserCalibrationFactors()
 /////
 // Public functions
 
-int8_t DataAcquisition::enableAcquisition(uint8_t adc_num, uint8_t pin_num)
+int8_t DataAPI::enableAcquisition(uint8_t adc_num, uint8_t pin_num)
 {
 	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
 	if (channel_num == 0)
@@ -130,7 +130,7 @@ int8_t DataAcquisition::enableAcquisition(uint8_t adc_num, uint8_t pin_num)
 	return this->enableChannel(adc_num, channel_num);
 }
 
-int8_t DataAcquisition::start()
+int8_t DataAPI::start()
 {
 	if (this->is_started == true)
 		return -1;
@@ -161,34 +161,34 @@ int8_t DataAcquisition::start()
 	return 0;
 }
 
-bool DataAcquisition::started()
+bool DataAPI::started()
 {
 	return this->is_started;
 }
 
-void DataAcquisition::setDispatchMethod(DispatchMethod_t dispatch_method)
+void DataAPI::setDispatchMethod(DispatchMethod_t dispatch_method)
 {
 	this->dispatch_method = dispatch_method;
 }
 
-DispatchMethod_t DataAcquisition::getDispatchMethod()
+DispatchMethod_t DataAPI::getDispatchMethod()
 {
 	return this->dispatch_method;
 }
 
-void DataAcquisition::setRepetitionsBetweenDispatches(uint32_t repetition)
+void DataAPI::setRepetitionsBetweenDispatches(uint32_t repetition)
 {
 	this->repetition_count_between_dispatches = repetition;
 }
 
-void DataAcquisition::triggerAcquisition(uint8_t adc_num)
+void DataAPI::triggerAcquisition(uint8_t adc_num)
 {
 	uint8_t enabled_channels = spin.adc.getEnabledChannelsCount(adc_num);
 	spin.adc.triggerSoftwareConversion(adc_num, enabled_channels);
 
 }
 
-uint16_t* DataAcquisition::getRawValues(uint8_t adc_num, uint8_t pin_num, uint32_t& number_of_values_acquired)
+uint16_t* DataAPI::getRawValues(uint8_t adc_num, uint8_t pin_num, uint32_t& number_of_values_acquired)
 {
 	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
 	if (channel_num == 0)
@@ -200,7 +200,7 @@ uint16_t* DataAcquisition::getRawValues(uint8_t adc_num, uint8_t pin_num, uint32
 	return this->getChannelRawValues(adc_num, channel_num, number_of_values_acquired);
 }
 
-float32_t DataAcquisition::peek(uint8_t adc_num, uint8_t pin_num)
+float32_t DataAPI::peek(uint8_t adc_num, uint8_t pin_num)
 {
 	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
 	if (channel_num == 0)
@@ -211,7 +211,7 @@ float32_t DataAcquisition::peek(uint8_t adc_num, uint8_t pin_num)
 	return this->peekChannel(adc_num, channel_num);
 }
 
-float32_t DataAcquisition::getLatest(uint8_t adc_num, uint8_t pin_num, uint8_t* dataValid)
+float32_t DataAPI::getLatest(uint8_t adc_num, uint8_t pin_num, uint8_t* dataValid)
 {
 	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
 	if (channel_num == 0)
@@ -226,7 +226,7 @@ float32_t DataAcquisition::getLatest(uint8_t adc_num, uint8_t pin_num, uint8_t* 
 	return this->getChannelLatest(adc_num, channel_num, dataValid);
 }
 
-float32_t DataAcquisition::convert(uint8_t adc_num, uint8_t pin_num, uint16_t raw_value)
+float32_t DataAPI::convert(uint8_t adc_num, uint8_t pin_num, uint16_t raw_value)
 {
 	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
 	if (channel_num == 0)
@@ -237,7 +237,7 @@ float32_t DataAcquisition::convert(uint8_t adc_num, uint8_t pin_num, uint16_t ra
 	return data_conversion_convert_raw_value(adc_num, channel_num, raw_value);
 }
 
-void DataAcquisition::setParameters(uint8_t adc_num, uint8_t pin_num, float32_t gain, float32_t offset)
+void DataAPI::setParameters(uint8_t adc_num, uint8_t pin_num, float32_t gain, float32_t offset)
 {
 	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
 	if (channel_num == 0)
@@ -252,7 +252,7 @@ void DataAcquisition::setParameters(uint8_t adc_num, uint8_t pin_num, float32_t 
 /////
 // Private functions
 
-int8_t DataAcquisition::enableChannel(uint8_t adc_num, uint8_t channel_num)
+int8_t DataAPI::enableChannel(uint8_t adc_num, uint8_t channel_num)
 {
 	if (this->is_started == true)
 		return -1;
@@ -278,7 +278,7 @@ int8_t DataAcquisition::enableChannel(uint8_t adc_num, uint8_t channel_num)
 	return 0;
 }
 
-uint16_t* DataAcquisition::getChannelRawValues(uint8_t adc_num, uint8_t channel_num, uint32_t& number_of_values_acquired)
+uint16_t* DataAPI::getChannelRawValues(uint8_t adc_num, uint8_t channel_num, uint32_t& number_of_values_acquired)
 {
 	if (this->is_started == false)
 	{
@@ -296,7 +296,7 @@ uint16_t* DataAcquisition::getChannelRawValues(uint8_t adc_num, uint8_t channel_
 	return data_dispatch_get_acquired_values(adc_num, channel_rank, number_of_values_acquired);
 }
 
-float32_t DataAcquisition::peekChannel(uint8_t adc_num, uint8_t channel_num)
+float32_t DataAPI::peekChannel(uint8_t adc_num, uint8_t channel_num)
 {
 	if (this->is_started == false)
 	{
@@ -318,7 +318,7 @@ float32_t DataAcquisition::peekChannel(uint8_t adc_num, uint8_t channel_num)
 	return data_conversion_convert_raw_value(adc_num, channel_num, raw_value);
 }
 
-float32_t DataAcquisition::getChannelLatest(uint8_t adc_num, uint8_t channel_num, uint8_t* dataValid)
+float32_t DataAPI::getChannelLatest(uint8_t adc_num, uint8_t channel_num, uint8_t* dataValid)
 {
 	if (this->is_started == false)
 	{
@@ -380,7 +380,7 @@ float32_t DataAcquisition::getChannelLatest(uint8_t adc_num, uint8_t channel_num
 	}
 }
 
-uint8_t DataAcquisition::getChannelRank(uint8_t adc_num, uint8_t channel_num)
+uint8_t DataAPI::getChannelRank(uint8_t adc_num, uint8_t channel_num)
 {
 	if ( (adc_num > ADC_COUNT) || (channel_num > CHANNELS_PER_ADC) )
 		return 0;
@@ -391,7 +391,7 @@ uint8_t DataAcquisition::getChannelRank(uint8_t adc_num, uint8_t channel_num)
 	return this->channels_ranks[adc_index][channel_index];
 }
 
-uint8_t DataAcquisition::getChannelNumber(uint8_t adc_num, uint8_t twist_pin)
+uint8_t DataAPI::getChannelNumber(uint8_t adc_num, uint8_t twist_pin)
 {
 	switch (adc_num)
 	{

@@ -1,0 +1,6 @@
+config OWNTECH_DATA_API
+	bool "Enable OwnTech data acquisition using ADCs"
+	default y
+	select DMA
+	depends on CONSOLE_GETCHAR
+	depends on OWNTECH_SPIN_API

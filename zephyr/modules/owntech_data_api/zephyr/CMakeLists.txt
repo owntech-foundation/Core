@@ -1,4 +1,4 @@
-if(CONFIG_OWNTECH_DATA_ACQUISITION)
+if(CONFIG_OWNTECH_DATA_API)
   # Select directory to add to the include path
   zephyr_include_directories(./public_api)
 
@@ -11,7 +11,7 @@ if(CONFIG_OWNTECH_DATA_ACQUISITION)
     ./src/data_dispatch.cpp
     ./src/data_conversion.cpp
     ./src/nvs_storage.cpp
-    ./public_api/DataAcquisition.cpp
+    ./public_api/DataAPI.cpp
   )
 
   # Conditional source files

@@ -35,7 +35,7 @@
 #include "SpinAPI.h"
 
 // Current module header
-#include "DataAcquisition.h"
+#include "DataAPI.h"
 #include "dma.h"
 
 // Current file header

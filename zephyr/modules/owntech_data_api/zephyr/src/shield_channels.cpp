@@ -41,7 +41,7 @@
 #include <zephyr/console/console.h>
 
 // OwnTech API
-#include "DataAcquisition.h"
+#include "DataAPI.h"
 
 // Current file header
 #include "shield_channels.h"

@@ -28,8 +28,8 @@
  * Do not include this header in user code.
  */
 
-#ifndef DATA_ACQUISITION_INTERNAL_H_
-#define DATA_ACQUISITION_INTERNAL_H_
+#ifndef DATA_API_INTERNAL_H_
+#define DATA_API_INTERNAL_H_
 
 
 /**
@@ -40,4 +40,4 @@
 void data_dispatch_do_full_dispatch();
 
 
-#endif // DATA_ACQUISITION_INTERNAL_H_
+#endif // DATA_API_INTERNAL_H_

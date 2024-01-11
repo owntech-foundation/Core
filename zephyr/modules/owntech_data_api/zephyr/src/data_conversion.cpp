@@ -29,7 +29,7 @@
 // Include
 
 // OwnTech API
-#include "DataAcquisition.h"
+#include "DataAPI.h"
 
 // Current file header
 #include "data_conversion.h"
