@@ -27,13 +27,17 @@
  * @author Luiz Villa <luiz.villa@laas.fr>
  */
 //-------------OWNTECH DRIVERS-------------------
+
+#include "DataAPI.h"
+#include "TaskAPI.h"
+#include "TwistAPI.h"
 #include "SpinAPI.h"
-#include "DataAcquisition.h"
-#include "Scheduling.h"
-#include "power.h"
 // Temporary includes: these should go away in final release
 #include <zephyr/retention/bootmode.h>
 #include <zephyr/sys/reboot.h>
+
+//------------ZEPHYR DRIVERS----------------------
+#include "zephyr/console/console.h"
 
 //--------------SETUP FUNCTIONS DECLARATION-------------------
 void setup_hardware(); // Setups the hardware peripherals of the system
@@ -69,13 +73,8 @@ void setup_hardware()
  */
 void setup_software()
 {
-    uint32_t control_task_period_us = 1000; // Sets the control task period in micro-seconds
-
-    int8_t application_task_number = scheduling.defineAsynchronousTask(loop_application_task);
-    scheduling.defineUninterruptibleSynchronousTask(loop_control_task, control_task_period_us);
-
-    scheduling.startAsynchronousTask(application_task_number);
-    scheduling.startUninterruptibleSynchronousTask();
+    uint32_t application_task_number = task.createBackground(loop_application_task);
+    task.startBackground(application_task_number);
 }
 
 //--------------LOOP FUNCTIONS--------------------------------
@@ -89,9 +88,7 @@ void loop_application_task()
 {
 	printk("Hello World! \n");
     spin.led.toggle();
-
-
-    scheduling.suspendCurrentTaskMs(1000);
+	task.suspendBackgroundMs(1000);
 }
 
 /**
