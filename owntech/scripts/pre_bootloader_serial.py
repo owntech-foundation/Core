@@ -13,7 +13,8 @@ from time import sleep
 
 # Determine executable name
 third_party_dir = os.path.join(".", "owntech", "third_party")
-mcumgr_executable = "mcumgr"     if platform.system() == 'Linux'   else \
+mcumgr_executable = "mcumgr"     if platform.system() == 'Linux' and platform.machine() == 'x86_64' else \
+                    "mcumgr-rpi" if platform.system() == 'Linux' and platform.machine() == 'armv7l' else \
                     "mcumgr-mac" if platform.system() == 'Darwin'  else \
                     "mcumgr.exe" if platform.system() == 'Windows' else \
                     None
