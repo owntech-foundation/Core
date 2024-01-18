@@ -16,7 +16,6 @@ if(CONFIG_OWNTECH_SPIN_API)
     src/AdcHAL.cpp
     src/CompHAL.cpp
     src/VersionHAL.cpp
-    src/GpioHAL.cpp
   )
 
   # Conditional source files
@@ -25,5 +24,13 @@ if(CONFIG_OWNTECH_SPIN_API)
       src/NgndHAL.cpp
     )
   endif()
+
+  # Conditional source files
+  if (CONFIG_OWNTECH_GPIO_API)
+    zephyr_library_sources(
+      src/GpioHAL.cpp
+    )
+  endif()
+
 
 endif()

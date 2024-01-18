@@ -3,4 +3,4 @@ config OWNTECH_POWER_API
 	default y
 	help
 		The Power API module provides functionalities that
-		allow to drive the various modes of the power converter.
+		allow to drive the various modes of a power converter.

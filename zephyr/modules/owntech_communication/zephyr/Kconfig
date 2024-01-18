@@ -15,7 +15,7 @@ if OWNTECH_COMMUNICATION
 		select CAN
 		select ISOTP
 		select THINGSET
-		select OWNTECH_DATA_ACQUISITION
+		select OWNTECH_DATA_API
 
 	config OWNTECH_COMMUNICATION_ENABLE_RS485
 		bool "Enable RS485 bus communication API"
