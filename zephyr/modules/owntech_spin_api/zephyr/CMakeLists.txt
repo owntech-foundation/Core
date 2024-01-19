@@ -1,4 +1,4 @@
-if(CONFIG_OWNTECH_SPIN_API)
+if(CONFIG_OWNTECH_SPIN_API OR CONFIG_OWNTECH_GPIO_API)
   # Select directory to add to the include path
   zephyr_include_directories(./public_api)
 
@@ -6,31 +6,34 @@ if(CONFIG_OWNTECH_SPIN_API)
   zephyr_library()
 
   # Select source files to be compiled
-  zephyr_library_sources(
-    src/hardware_auto_configuration.cpp
-    src/DacHAL.cpp
-    src/LedHAL.cpp
-    src/TimerHAL.cpp
-    src/PwmHAL.cpp
-    src/UartHAL.cpp
-    src/AdcHAL.cpp
-    src/CompHAL.cpp
-    src/VersionHAL.cpp
-  )
 
-  # Conditional source files
-  if (CONFIG_SHIELD_TWIST)
+  # Main API
+  if (CONFIG_OWNTECH_GPIO_API)
     zephyr_library_sources(
-      src/NgndHAL.cpp
+      src/hardware_auto_configuration.cpp
+      src/DacHAL.cpp
+      src/LedHAL.cpp
+      src/TimerHAL.cpp
+      src/PwmHAL.cpp
+      src/UartHAL.cpp
+      src/AdcHAL.cpp
+      src/CompHAL.cpp
+      src/VersionHAL.cpp
     )
+
+    # Conditional source files
+    if (CONFIG_SHIELD_TWIST)
+      zephyr_library_sources(
+        src/NgndHAL.cpp
+    )
+    endif()
   endif()
 
-  # Conditional source files
+  # GPIO API
   if (CONFIG_OWNTECH_GPIO_API)
     zephyr_library_sources(
       src/GpioHAL.cpp
     )
   endif()
-
 
 endif()
