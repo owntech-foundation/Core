@@ -1,10 +1,14 @@
-# Macro to list all subdirectories in a specified directory
+# Macro to list all subdirectories containing a Zephyr module in a specified directory
 MACRO(SUBDIRLIST result curdir)
   FILE(GLOB children RELATIVE ${curdir} ${curdir}/*)
   SET(dirlist "")
   FOREACH(child ${children})
     IF(IS_DIRECTORY ${curdir}/${child})
-      LIST(APPEND dirlist ${curdir}/${child})
+      IF(IS_DIRECTORY ${curdir}/${child}/zephyr)
+        IF(EXISTS ${curdir}/${child}/zephyr/CMakeLists.txt)
+          LIST(APPEND dirlist ${curdir}/${child})
+        ENDIF()
+      ENDIF()
     ENDIF()
   ENDFOREACH()
   # Make sure modules are always in the same order for incremental compilation
