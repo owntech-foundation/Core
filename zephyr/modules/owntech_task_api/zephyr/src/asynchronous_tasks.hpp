@@ -34,7 +34,7 @@
 #include "TaskAPI.h"
 
 
-#ifdef CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
+#ifdef CONFIG_OWNTECH_TASK_ENABLE_ASYNCHRONOUS_TASKS
 
 
 int8_t scheduling_define_asynchronous_task(task_function_t routine);
@@ -42,6 +42,6 @@ void scheduling_start_asynchronous_task(uint8_t task_number);
 void scheduling_stop_asynchronous_task(uint8_t task_number);
 
 
-#endif // CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
+#endif // CONFIG_OWNTECH_TASK_ENABLE_ASYNCHRONOUS_TASKS
 
 #endif // ASYNCHRONOUSTASKS_HPP_

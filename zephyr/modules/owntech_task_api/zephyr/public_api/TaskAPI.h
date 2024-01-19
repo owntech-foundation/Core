@@ -108,7 +108,7 @@ public:
 	void stopCritical();
 
 
-#ifdef CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
+#ifdef CONFIG_OWNTECH_TASK_ENABLE_ASYNCHRONOUS_TASKS
 
 	/**
 	 * @brief Creates a background task.
@@ -173,7 +173,7 @@ public:
 	 */
 	void suspendBackgroundUs(uint32_t duration_us);
 
-#endif // CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
+#endif // CONFIG_OWNTECH_TASK_ENABLE_ASYNCHRONOUS_TASKS
 
 private:
 	static const int DEFAULT_PRIORITY;

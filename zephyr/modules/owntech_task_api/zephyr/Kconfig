@@ -7,20 +7,20 @@ config OWNTECH_TASK_API
 
 if OWNTECH_TASK_API
 
-	config OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
+	config OWNTECH_TASK_ENABLE_ASYNCHRONOUS_TASKS
 		bool "Enable support for asychronous tasks"
 		help
 			Asynchronous tasks are run in background when no synchronous task is running.
 		default y
 
-	config OWNTECH_SCHEDULING_MAX_ASYNCHRONOUS_TASKS
+	config OWNTECH_TASK_MAX_ASYNCHRONOUS_TASKS
 		int "Maximum number of asychronous tasks"
 		help
 			The higher this value, the more RAM will be reserved for tasks and unavailable to the main program.
 		default 3
 		range 1 5
 
-	config OWNTECH_SCHEDULING_ASYNCHRONOUS_TASKS_STACK_SIZE
+	config OWNTECH_TASK_ASYNCHRONOUS_TASKS_STACK_SIZE
 		int "Stack size for asynchronous threads"
 		default 1024
 

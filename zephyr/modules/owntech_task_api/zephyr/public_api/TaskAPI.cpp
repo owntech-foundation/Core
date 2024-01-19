@@ -68,7 +68,7 @@ void TaskAPI::stopCritical()
 
 // Asynchronous tasks
 
-#ifdef CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
+#ifdef CONFIG_OWNTECH_TASK_ENABLE_ASYNCHRONOUS_TASKS
 
 int8_t TaskAPI::createBackground(task_function_t routine)
 {
@@ -97,4 +97,4 @@ void TaskAPI::suspendBackgroundUs(uint32_t duration_us)
 	k_sleep(K_USEC(duration_us));
 }
 
-#endif // CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
+#endif // CONFIG_OWNTECH_TASK_ENABLE_ASYNCHRONOUS_TASKS

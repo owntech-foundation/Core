@@ -22,16 +22,16 @@
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
-#ifdef CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
+#ifdef CONFIG_OWNTECH_TASK_ENABLE_ASYNCHRONOUS_TASKS
 
 #include "asynchronous_tasks.hpp"
 #include "scheduling_common.hpp"
 
 
-static K_THREAD_STACK_ARRAY_DEFINE(asynchronous_thread_stack, CONFIG_OWNTECH_SCHEDULING_MAX_ASYNCHRONOUS_TASKS, CONFIG_OWNTECH_SCHEDULING_ASYNCHRONOUS_TASKS_STACK_SIZE);
+static K_THREAD_STACK_ARRAY_DEFINE(asynchronous_thread_stack, CONFIG_OWNTECH_TASK_MAX_ASYNCHRONOUS_TASKS, CONFIG_OWNTECH_TASK_ASYNCHRONOUS_TASKS_STACK_SIZE);
 
 
-static task_information_t tasks_information[CONFIG_OWNTECH_SCHEDULING_MAX_ASYNCHRONOUS_TASKS];
+static task_information_t tasks_information[CONFIG_OWNTECH_TASK_MAX_ASYNCHRONOUS_TASKS];
 static uint8_t task_count = 0;
 
 static const int ASYNCHRONOUS_THREADS_PRIORITY = 14;
@@ -48,7 +48,7 @@ void _scheduling_user_asynchronous_task_entry_point(void* thread_function_p, voi
 
 int8_t scheduling_define_asynchronous_task(task_function_t routine)
 {
-	if (task_count < CONFIG_OWNTECH_SCHEDULING_MAX_ASYNCHRONOUS_TASKS)
+	if (task_count < CONFIG_OWNTECH_TASK_MAX_ASYNCHRONOUS_TASKS)
 	{
 		uint8_t task_number = task_count;
 		task_count++;
@@ -98,4 +98,4 @@ void scheduling_stop_asynchronous_task(uint8_t task_number)
 }
 
 
-#endif // CONFIG_OWNTECH_SCHEDULING_ENABLE_ASYNCHRONOUS_TASKS
+#endif // CONFIG_OWNTECH_TASK_ENABLE_ASYNCHRONOUS_TASKS
