@@ -26,26 +26,24 @@
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
  */
-//-------------OWNTECH DRIVERS-------------------
 
+//-------------OWNTECH APIs-------------------
 #include "DataAPI.h"
 #include "TaskAPI.h"
 #include "TwistAPI.h"
 #include "SpinAPI.h"
+
 // Temporary includes: these should go away in final release
 #include <zephyr/retention/bootmode.h>
 #include <zephyr/sys/reboot.h>
 
-//------------ZEPHYR DRIVERS----------------------
-#include "zephyr/console/console.h"
 
 //--------------SETUP FUNCTIONS DECLARATION-------------------
-void setup_hardware(); // Setups the hardware peripherals of the system
-void setup_software(); // Setups the scheduling of the software and the control method
+void setup_routine(); // Setups the hardware and software of the system
 
 //--------------LOOP FUNCTIONS DECLARATION--------------------
-void loop_application_task(); // Code to be executed in the fast application task
-void loop_control_task();     // Code to be executed in real-time at 20kHz
+void loop_background_task();   // Code to be executed in the background task
+void loop_critical_task();     // Code to be executed in real time in the critical task
 
 //--------------USER VARIABLES DECLARATIONS-------------------
 
@@ -54,37 +52,27 @@ void loop_control_task();     // Code to be executed in real-time at 20kHz
 //--------------SETUP FUNCTIONS-------------------------------
 
 /**
- * This is the setup hardware function
- * It is used to setup your hardware architecture.
- * The base architecture of this example is composed of a SPIN board.
+ * This is the setup routine.
+ * It is used to call functions that will initialize your spin, twist, data and/or tasks.
+ * In this example, we setup the version of the spin board and a background task.
+ * The critical task is defined but not started.
  */
-void setup_hardware()
+void setup_routine()
 {
     spin.version.setBoardVersion(TWIST_v_1_1_2);
-    //setup your hardware here
-}
-
-/**
- * This is the setup software function
- * It is used to setup your software architecture.
- * The base architecture of this example is composed of a slow application task and a fast control task.
- * The slow task is asynchronous, meaning it is called by the embeeded RTOS.
- * The fast control task is synchronous and driven by an interruption.
- */
-void setup_software()
-{
-    uint32_t application_task_number = task.createBackground(loop_application_task);
-    task.startBackground(application_task_number);
+    uint32_t background_task_number = task.createBackground(loop_background_task);
+    uint32_t critical_task_number = task.createCritical(loop_critical_task, 500);
+    task.startBackground(background_task_number);
 }
 
 //--------------LOOP FUNCTIONS--------------------------------
 
 /**
- * This is the application task
+ * This is the code loop of the background task
  * It is executed second as defined by it suspend task in its last line.
  * You can use it to execute slow code such as state-machines.
  */
-void loop_application_task()
+void loop_background_task()
 {
 	printk("Hello World! \n");
     spin.led.toggle();
@@ -92,11 +80,12 @@ void loop_application_task()
 }
 
 /**
- * This is the control task
- * It is executed every 1000 micro-seconds defined in the setup_software function.
- * You can use it to execute ultra-fast code and control your power flow.
+ * This is the code loop of the critical task
+ * It is executed every 500 micro-seconds defined in the setup_software function.
+ * You can use it to execute an ultra-fast code with the highest priority which cannot be interruped.
+ * It is from it that you will control your power flow.
  */
-void loop_control_task()
+void loop_critical_task()
 {
 
 }
@@ -107,8 +96,7 @@ void loop_control_task()
  */
 int main(void)
 {
-    setup_hardware();
-    setup_software();
+    setup_routine();
 
     // Temporary code: this should go away in final release
     extern volatile bool cdc_rate_changed;
