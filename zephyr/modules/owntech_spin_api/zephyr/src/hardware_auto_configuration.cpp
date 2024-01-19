@@ -96,20 +96,26 @@ static int _img_validation()
 #endif // CONFIG_BOOTLOADER_MCUBOOT
 
 
-#include <zephyr/drivers/uart/cdc_acm.h>
-#define CDC_ACM_DEVICE DT_NODELABEL(cdc_acm_uart0)
-static const struct device* cdc_acm_console = DEVICE_DT_GET(CDC_ACM_DEVICE);
+#include <zephyr/retention/bootmode.h>
+#include <zephyr/sys/reboot.h>
+void reboot_bootloader_task(struct k_work* work)
+{
+	bootmode_set(BOOT_MODE_TYPE_BOOTLOADER);
+	sys_reboot(SYS_REBOOT_WARM);
+}
 
-
-volatile bool cdc_rate_changed = false;
+K_WORK_DEFINE(reboot_bootloader_work, reboot_bootloader_task);
 void _cdc_rate_callback(const struct device* dev, uint32_t rate)
 {
 	if (rate == 1200)
-    {
-		cdc_rate_changed = true;
-    }
+	{
+		k_work_submit(&reboot_bootloader_work);
+	}
 }
 
+#include <zephyr/drivers/uart/cdc_acm.h>
+#define CDC_ACM_DEVICE DT_NODELABEL(cdc_acm_uart0)
+static const struct device* cdc_acm_console = DEVICE_DT_GET(CDC_ACM_DEVICE);
 static int _register_cdc_rate_callback()
 {
 	cdc_acm_dte_rate_callback_set(cdc_acm_console, _cdc_rate_callback);

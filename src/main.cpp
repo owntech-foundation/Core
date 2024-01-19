@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 LAAS-CNRS
+ * Copyright (c) 2021-2024 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -27,16 +27,11 @@
  * @author Luiz Villa <luiz.villa@laas.fr>
  */
 
-//-------------OWNTECH APIs-------------------
+//--------------OWNTECH APIs----------------------------------
 #include "DataAPI.h"
 #include "TaskAPI.h"
 #include "TwistAPI.h"
 #include "SpinAPI.h"
-
-// Temporary includes: these should go away in final release
-#include <zephyr/retention/bootmode.h>
-#include <zephyr/sys/reboot.h>
-
 
 //--------------SETUP FUNCTIONS DECLARATION-------------------
 void setup_routine(); // Setups the hardware and software of the system
@@ -59,10 +54,16 @@ void loop_critical_task();     // Code to be executed in real time in the critic
  */
 void setup_routine()
 {
+    // Setup the hardware first
     spin.version.setBoardVersion(TWIST_v_1_1_2);
+
+    // Then declare tasks
     uint32_t background_task_number = task.createBackground(loop_background_task);
-    uint32_t critical_task_number = task.createCritical(loop_critical_task, 500);
+    //task.createCritical(loop_critical_task, 500); // Uncomment if you use the critical task
+
+    // Finally, start tasks
     task.startBackground(background_task_number);
+    //task.startCritical(); // Uncomment if you use the critical task
 }
 
 //--------------LOOP FUNCTIONS--------------------------------
@@ -74,9 +75,12 @@ void setup_routine()
  */
 void loop_background_task()
 {
-	printk("Hello World! \n");
+    // Task content
+    printk("Hello World! \n");
     spin.led.toggle();
-	task.suspendBackgroundMs(1000);
+
+    // Pause between two runs of the task
+    task.suspendBackgroundMs(1000);
 }
 
 /**
@@ -97,18 +101,6 @@ void loop_critical_task()
 int main(void)
 {
     setup_routine();
-
-    // Temporary code: this should go away in final release
-    extern volatile bool cdc_rate_changed;
-    while (true)
-    {
-        if (cdc_rate_changed == true)
-        {
-            bootmode_set(BOOT_MODE_TYPE_BOOTLOADER);
-            sys_reboot(SYS_REBOOT_WARM);
-        }
-        k_sleep(K_MSEC(1000));
-    }
 
     return 0;
 }
