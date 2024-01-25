@@ -15,7 +15,7 @@
         leg1: leg1{
             leg-name = "LEG1";
             pwm-pin-num = <12>;
-            current-pin-num = <25>;
+            current-pin-num = <30>;
             adc-trigger = "ADCTRIG_1";
             default-adc-decim = <1>;
             edge-trigger = "EdgeTrigger_up";
@@ -27,7 +27,7 @@
         leg2: leg2{
             leg-name = "LEG2";
             pwm-pin-num = <2>;
-            current-pin-num = <30>;
+            current-pin-num = <25>;
             adc-trigger = "ADCTRIG_3";
             default-adc-decim = <1>;
             edge-trigger = "EdgeTrigger_up";
