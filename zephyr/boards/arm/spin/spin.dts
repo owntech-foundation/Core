@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 OwnTech.
+ * Copyright (c) 2022-2024 OwnTech.
  *
  * SPDX-License-Identifier: LGLPV2.1
  */
@@ -21,12 +21,6 @@
 / {
 	model = "OwnTech Spin";
 	compatible = "owntech,spin", "st,stm32g474re-nucleo";
-
-	soc {
-		usb: usb@40005c00 {
-			status = "okay";
-		};
-	};
 
 	chosen {
 		zephyr,code-partition = &slot0_partition;

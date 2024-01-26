@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 LAAS-CNRS
+ * Copyright (c) 2022-2024 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2023
+ * @date   2024
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Jean	Alinei <jean.alinei@laas.fr>
  *
@@ -96,6 +96,7 @@ static int _img_validation()
 #endif // CONFIG_BOOTLOADER_MCUBOOT
 
 
+#if defined(CONFIG_RETENTION_BOOT_MODE) && defined(CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT) && defined(CONFIG_USB_CDC_ACM)
 #include <zephyr/retention/bootmode.h>
 #include <zephyr/sys/reboot.h>
 void reboot_bootloader_task(struct k_work* work)
@@ -122,6 +123,7 @@ static int _register_cdc_rate_callback()
 
 	return 0;
 }
+#endif // CONFIG_RETENTION_BOOT_MODE && CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT && CONFIG_USB_CDC_ACM
 
 /////
 // Zephyr macros to automatically run above functions
@@ -148,7 +150,9 @@ SYS_INIT(_img_validation,
         );
 #endif // CONFIG_BOOTLOADER_MCUBOOT
 
+#if defined(CONFIG_RETENTION_BOOT_MODE) && defined(CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT) && defined(CONFIG_USB_CDC_ACM)
 SYS_INIT(_register_cdc_rate_callback,
          APPLICATION,
          CONFIG_APPLICATION_INIT_PRIORITY
         );
+#endif // CONFIG_RETENTION_BOOT_MODE && CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT && CONFIG_USB_CDC_ACM
