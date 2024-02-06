@@ -30,9 +30,8 @@ def check_file_and_download(what, folder_path, file_name, file_url, make_exec = 
 			return -1
 
 	if make_exec:
-		if platform.system() == 'Linux':
+		if platform.system() in ['Linux', 'Darwin']:			
 			# Make file executable
 			st = os.stat(file_path)
 			os.chmod(file_path, st.st_mode | S_IXUSR | S_IXGRP | S_IXOTH)
-
 	return 0
