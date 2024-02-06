@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 LAAS-CNRS
+ * Copyright (c) 2022-2024 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,8 +18,9 @@
  */
 
 /**
- * @date   2023
+ * @date   2024
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
 
@@ -31,7 +32,17 @@
 #include "hrtim.h"
 #include "DataAPI.h"
 #include "data_api_internal.h"
+#include "safety_internal.h"
+#include "SafetyAPI.h"
 
+/* size of stack area used by error thread */
+#define STACKSIZE 512
+#define PRIORITY 0
+
+void thread_error(void *, void *, void *);
+
+K_THREAD_DEFINE(thread_error_id, STACKSIZE, thread_error, NULL, NULL, NULL,
+				PRIORITY, 0, 0);
 
 /////
 // Local variables and constants
@@ -52,12 +63,46 @@ static task_function_t user_periodic_task = NULL;
 static bool do_data_dispatch = false;
 static uint32_t task_period = 0;
 
+// Safety
+static bool safety_alert = false;
 
 /////
 // Private API
 
+void thread_error(void *, void *, void *)
+{
+	while (1)
+	{
+		if (safety_alert)
+		{
+			printk("SAFETY ERROR : reset the MCU \n"
+					"problem with I1 : %s \n"
+					"problem with V1 : %s \n"
+					"problem with I2 : %s \n"
+					"problem with V2 : %s \n"
+					"problem with Ihigh : %s \n"
+					"problem with Vhigh : %s \n"
+					, Safety.getChannelError(I1_LOW) ? "true" : "false"
+					, Safety.getChannelError(V1_LOW) ? "true" : "false"
+					, Safety.getChannelError(I2_LOW) ? "true" : "false"
+					, Safety.getChannelError(I2_LOW) ? "true" : "false"
+					, Safety.getChannelError(I_HIGH) ? "true" : "false"
+					, Safety.getChannelError(V_HIGH) ? "true" : "false");
+
+		}
+
+		k_msleep(200);
+	}
+}
+
 void user_task_proxy()
 {
+#ifdef CONFIG_OWNTECH_SAFETY_API
+
+	if (safety_task() != 0) safety_alert = true;
+
+#endif
+
 	if (user_periodic_task == NULL) return;
 
 	if (do_data_dispatch == true)

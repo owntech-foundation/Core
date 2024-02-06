@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 LAAS-CNRS
+ * Copyright (c) 2023-2024 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,10 +18,11 @@
  */
 
 /**
- * @date   2023
+ * @date   2024
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Jean Alinei <jean.alinei@laas.fr>
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
 #ifndef NVS_STORAGE_H_
@@ -30,17 +31,21 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /////
 // Type definitions
 
 // NVS categories must be on the upper half
 // of the 2-bytes value, hence end with 00
-enum nvs_category_t : uint16_t
+typedef enum
 {
-	VERSION         = 0x0100,
-	ADC_CALIBRATION = 0x0200
-};
+	VERSION          = 0x0100,
+	ADC_CALIBRATION  = 0x0200,
+	MEASURE_THRESHOLD = 0x0300,
+}nvs_category_t;
 
 /////
 // API
@@ -52,5 +57,9 @@ int8_t nvs_storage_clear_all_stored_data();
 uint16_t nvs_storage_get_current_version();
 uint16_t nvs_storage_get_version_in_nvs();
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // NVS_STORAGE_H_

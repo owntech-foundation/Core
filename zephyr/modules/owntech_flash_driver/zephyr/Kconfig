@@ -1,0 +1,3 @@
+config OWNTECH_FLASH
+	bool "Enable OwnTech flash"
+	default y

@@ -1,0 +1,4 @@
+name: owntech_flash
+build:
+  cmake: zephyr
+  kconfig: zephyr/Kconfig

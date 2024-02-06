@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 LAAS-CNRS
+ * Copyright (c) 2023-2024 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date 2023
+ * @date 2024
  *
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  *
@@ -32,8 +32,10 @@
 #include "hrtim.h"
 
 /* Define a macro LEG_PWM_PIN that retrieves the PWM gpio pin
- property from the Device Tree node with the given 'node_id'. */
-#define LEG_PWM_PIN(node_id)	DT_PROP(node_id, pwm_pin_num),
+property from the Device Tree node with the given 'node_id'.
+Only the first high-side pin is taken in account the low-side pin will
+be configured automatically. */
+#define LEG_PWM_PIN(node_id)	DT_PROP_BY_IDX(node_id, pwm_pin_num, 0),
 
 /* Define a macro LEG_CURRENT_PIN that retrieves the pin on which we have current measure
 property from the Device Tree node with the given 'node_id'. */

@@ -26,11 +26,10 @@ child-binding:
       description : name of the leg, choose freely but the name must be different between each legs.
 
     pwm-pin-num :
-      type : int
+      type : array
       required : true
-      description : pin number where you want to start a pwm. Choose a pin number and its complementary will
-                    also be set. E.G. in the case of stm32G4 mcu unit, if you want to start a PWM in GPIO PA8
-                    choose pwm-pin-num = 12 and its complementary at PA9 (pin number 14) will also start.
+      description : First cell is the pin number driving the High-side converter, and the second cell is for the Low-side.
+                    The pin numbers are described below.
 
       # +----------+-----------------+--+-------------------+------------------+
       # | PIN      |                 |  | COMPLEMANTARY PIN |                  |

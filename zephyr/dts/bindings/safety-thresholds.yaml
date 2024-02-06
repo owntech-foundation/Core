@@ -1,0 +1,25 @@
+description: List of thresholds for the measurement of the channels connected to ADCs and acquired by OwnTech Data Acquisition module
+
+compatible: "safety-thresholds"
+
+properties:
+  channel-name:
+    type: string
+    required: true
+    description: Name under which the channel will be referred to in the data Acquisition module
+
+  threshold-name:
+    type: string
+    required: true
+    description: Name under which the threshold will be referred to in the user code
+
+  threshold-high:
+    type: int
+    required: true
+    description: The value of the high threshold above which the program will return an error code
+
+  threshold-low:
+    type: int
+    required: true
+    description: The value of the low threshold below which the program will return an error code
+
