@@ -1,5 +1,10 @@
 import os
 import json
+import click 
+
+#Retrieves list target names from pio command line in CLI.
+from SCons.Script import COMMAND_LINE_TARGETS  # pylint: disable=import-error
+
 
 Import("env")
 
@@ -34,13 +39,20 @@ def toggle_booleans_in_file(file_path):
 
     print("Boolean values toggled and saved successfully.")
 
+#Dummy function to print a user friendly message using env.VerboseAction() 
+#After successfully loading an example.
+def PrintSuccess(target, source, env):
+    return
 
 env.AddTarget(
     name="expert",
     dependencies=None,
-    actions=env.VerboseAction(toggle_booleans_in_file(settings_json_path),"Toggle expert mode"),
+    actions=env.VerboseAction(PrintSuccess,"Toggling Expert Mode !"),
     title="Toggle Expert Mode",
     description="Expert mode allows to see Zephyr RTOS environment",
     group="OwnTech",
     always_build=False,
 )
+
+if "expert" in COMMAND_LINE_TARGETS:
+    toggle_booleans_in_file(settings_json_path)
