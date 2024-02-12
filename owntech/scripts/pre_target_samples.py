@@ -1,70 +1,48 @@
 import helper_functions
 import os
+import json
 import click
 import shutil
 import subprocess
-import functools
 
+#Retrieves list target names from pio command line in CLI.
 from SCons.Script import COMMAND_LINE_TARGETS  # pylint: disable=import-error
 
 Import("env")
 
-sample_dir = os.path.join(".", "owntech", "samples")
+#Build path to library.json using the right environement.
+lib_path = os.path.join(".", "owntech", "lib", env.Dump("PIOENV").strip("''"), "owntech_examples")
+json_dir = os.path.join(lib_path, "library.json")
+
+#Extract examples paths from library.json
+with open(json_dir, 'r') as json_file:
+    data = json.load(json_file)
+
+#Define a list of targets based on Examples in library.json.
+    targets = []
+# Extract the "base" property and create a path using os.path.join
+for example in data["examples"]:
+    target_info = {
+        "name": example["name"],
+        "title": example["title"],
+        "group": example["group"],
+        "description": example["description"],
+        "base": example["base"]
+    }
+    targets.append(target_info)
+
+
 src_dir = os.path.join(".", "src")
 old_dir = os.path.join(".", "old")
 build_dir = os.path.join(".", ".pio", "build")
 
-targets = [
-    {
-        "name": "spin-blinky",
-        "title": "OwnTech blinky",
-        "description": "Blinky is the simplest example, it is a good starting point.",
-        "group": "Samples SPIN",
-        "file": "RC1.zip",
-        "sample_url": "https://github.com/foobar/RC1.zip",
-    },
-    {
-        "name": "example_buck_voltage_mode-RC1",
-        "title": "Voltage Mode Buck",
-        "description": "Voltage mode buck converter using PID controller for TWIST",
-        "group": "Samples TWIST",
-        "file": "RC1.zip",
-        "sample_url": "https://github.com/owntech-foundation/Buck_Voltage_Mode/archive/refs/tags/RC1.zip",
-    },
-    {
-        "name": "example_twist_boost_voltage_mode-RC1",
-        "title": "Voltage Mode Boost",
-        "description": "Voltage mode boost converter using PID controller for TWIST",
-        "group": "Samples TWIST",
-        "file": "RC1.zip",
-        "sample_url": "https://github.com/owntech-foundation/example_twist_boost_voltage_mode/archive/refs/tags/RC1.zip",
-    },
-    {
-        "name": "example_twist_interleaved-RC1",
-        "title": "Interleaved Mode Buck",
-        "description": "Interleaved mode buck converter using PID controller for TWIST",
-        "group": "Samples TWIST",
-        "file": "RC1.zip",
-        "sample_url": "https://github.com/owntech-foundation/example_twist_interleaved/archive/refs/tags/RC1.zip",
-    },
-    # Add more targets as needed
-]
 
-def pullSampleGeneric(extra_arg):
-    target_info = extra_arg    
-    if target_info is None:
+def pullSampleGeneric(example_base):
+
+    if example_base is None:
         print("No target_info found for target")
-    file = target_info["file"]
-    sample_url = target_info["sample_url"]
-    res = helper_functions.check_file_and_download(target_info["name"], sample_dir, file, sample_url)
-    if res != 0:
-        exit(-1)
-    file_path = os.path.join(sample_dir, file)
-    helper_functions.unzip_file(file_path, sample_dir)
-    print("Archive unzipped..")
 
-    
-    # Check and create "old" folders incrementally
+    # Check and create "old" folders incrementally to save current src/ folder
     old_folder_count = 0
     while os.path.exists(os.path.join(old_dir, f"old{old_folder_count}")):
         old_folder_count += 1
@@ -76,27 +54,17 @@ def pullSampleGeneric(extra_arg):
         shutil.move(src_dir, current_old_dir)
     print(f"Previous main saved in {current_old_dir}")
 
-    sample_src_path = os.path.join(sample_dir, target_info["name"], "src")
-    shutil.move(sample_src_path, src_dir)
-    
-    sample_folder_path = os.path.join(sample_dir, target_info["name"])
-    os.remove(file_path)
-    shutil.rmtree(sample_folder_path)
-    print("Cleaning temporary files..")
+    example_path = os.path.join(lib_path, example_base)
+    print(example_path)
+    shutil.copytree(example_path, src_dir)
 
-def create_pull_sample_function(arg_value):
-    return functools.partial(pullSampleGeneric, extra_arg=arg_value)
-
-def get_pull_sample_function(target_name):
-    for target_info in targets:
-        if target_info["name"] == target_name:
-            return create_pull_sample_function(target_info)
-
+#Dummy function to print a user friendly message using env.VerboseAction() 
+#After successfully loading an example.
 def PrintSuccess(target, source, env):
     return
 
-# Add the build middleware callback
 
+#Defines the targets for each example referenced in library.json and create a nice GUI.
 for target_info in targets:
     env.AddTarget(
         name=target_info["name"],
@@ -108,7 +76,7 @@ for target_info in targets:
         always_build=True,
     )
 
-for targets_info in targets: 
-    if targets_info["name"] in COMMAND_LINE_TARGETS:
-        pullSampleGeneric(target_info)
-        shutil.rmtree(build_dir)
+for tgt_info in targets: #Go through all example targets
+    if tgt_info["name"] in COMMAND_LINE_TARGETS: #If an example target is launched via GUI or CLI
+        pullSampleGeneric(tgt_info["base"]) #Executes the function that retrieves example and place it in src folder
+        shutil.rmtree(build_dir) #Removes build folder in order to trigger a clean compilation
