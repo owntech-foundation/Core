@@ -6,7 +6,6 @@ import subprocess
 Import("env")
 platform = env.PioPlatform()
 
-
 #Dummy function to print a user friendly message using env.VerboseAction() 
 #After successfully loading an example.
 def PrintSuccess(target, source, env):
@@ -26,27 +25,42 @@ def installBootloader(target, source, env):
 
     if res != 0:
         exit(-1)
-    # build_path = os.path.join(env.Dump("PROJECT_BUILD_DIR").replace("\'", ""))
-    # core_path = os.path.dirname(os.path.dirname(build_path))
-	# # Sign the bootloader binary using dfu-suffix
-    # subprocess.run(
-    #                 " ".join([
-    #                     '%s' % os.path.join(platform.get_package_dir("tool-dfuutil") or "",
-    #                          "bin", "dfu-suffix"),
-    #                     "-v 0x0483",
-    #                     "-p 0xDF11",
-    #                     "-d 0xffff", "-a", os.path.join(core_path,"owntech", "bootloader", bootloader_binary)
-    #                 ]), check=True)
-    # subprocess.run(
-    #                 " ".join([
-    #                     '"%s"' % os.path.join(platform.get_package_dir("tool-dfuutil") or "",
-    #                          "bin", "dfu-util"),
-    #                     "-d [0x0483,0xDF11]",
-    #                     "-a 0",
-    #                     "-s 0x08000000"
-    #                     "-D", os.path.join(core_path,"owntech", "bootloader", bootloader_binary)
-    #                 ]), check=True)
 
+    dfusuffix_path = [platform.get_package_dir("tool-dfuutil") + "/bin/dfu-suffix"]
+    dfuutil_path = [platform.get_package_dir("tool-dfuutil") + "/bin/dfu-util"]
+    
+    suffix_flags = ["-v 0x0483", \
+                    "-p 0xDF11", \
+                    "-d 0xffff", \
+                    "-a", \
+                    bootloader_path \
+                    ]
+    upload_flags = [ "-a 0", \
+                    "-s 0x08000000", \
+                    "-D", 
+                    bootloader_path \
+                    ]
+    # Sign the bootloader binary using dfu-suffix
+    suffix_command =  dfusuffix_path + suffix_flags
+    upload_command =  dfuutil_path + upload_flags
+
+    try:
+        # Execute the command
+        subprocess.run(suffix_command, check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Error executing mcumgr command: {e}")
+        os.remove(bootloader_path)
+        exit(-1)
+    
+    try:
+        # Execute the command
+        subprocess.run(upload_command)
+    except subprocess.CalledProcessError as e:
+        print(f"Error executing mcumgr command: {e}")
+        os.remove(bootloader_path)
+        exit(-1)
+    
+    os.remove(bootloader_path)
 
 #Defines the targets for each example referenced in library.json and create a nice GUI.
 env.AddTarget(
