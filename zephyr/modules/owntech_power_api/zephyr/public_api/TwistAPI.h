@@ -32,6 +32,12 @@
 #include "arm_math.h"
 #include "hrtim_enum.h"
 
+#define LEG1_CAPA_DGND PC6
+#define LEG2_CAPA_DGND PB7
+#define LEG1_DRIVER_SWITCH PC12
+#define LEG2_DRIVER_SWITCH PC13
+
+
 #define LEG_TOKEN(node_id) DT_STRING_TOKEN(node_id, leg_name),
 
 /* All the leg with okay status in the device tree */
