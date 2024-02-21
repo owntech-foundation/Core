@@ -1,10 +1,11 @@
 import helper_functions
 import os
 import shutil
+import platform
 import subprocess
 
 Import("env")
-platform = env.PioPlatform()
+platformpio = env.PioPlatform()
 
 #Dummy function to print a user friendly message using env.VerboseAction() 
 #After successfully loading an example.
@@ -26,8 +27,19 @@ def installBootloader(target, source, env):
     if res != 0:
         exit(-1)
 
-    dfusuffix_path = [platform.get_package_dir("tool-dfuutil") + "/bin/dfu-suffix"]
-    dfuutil_path = [platform.get_package_dir("tool-dfuutil") + "/bin/dfu-util"]
+    dfu_suffix = "dfu-suffix"     if platform.system() == 'Linux' and platform.machine() == 'x86_64' else \
+                        "dfu-suffix" if platform.system() == 'Linux' and platform.machine() == 'armv7l' else \
+                        "dfu-suffix" if platform.system() == 'Darwin'  else \
+                        "dfu-suffix.exe" if platform.system() == 'Windows' else \
+                        None
+    dfu_util = "dfu-util"     if platform.system() == 'Linux' and platform.machine() == 'x86_64' else \
+                        "dfu-util" if platform.system() == 'Linux' and platform.machine() == 'armv7l' else \
+                        "dfu-util" if platform.system() == 'Darwin'  else \
+                        "dfu-util.exe" if platform.system() == 'Windows' else \
+                        None
+    
+    dfusuffix_path = [platformpio.get_package_dir("tool-dfuutil") + "/bin/" + dfu_suffix]
+    dfuutil_path = [platformpio.get_package_dir("tool-dfuutil") + "/bin/" + dfu_util]
     
     suffix_flags = ["-v 0x0483", \
                     "-p 0xDF11", \
