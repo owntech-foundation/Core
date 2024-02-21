@@ -110,6 +110,12 @@ void DataAPI::setParameters(channel_t channel, float32_t gain, float32_t offset)
 	data_conversion_set_conversion_parameters_linear(channel_info.adc_num, channel_info.channel_num, gain, offset);
 }
 
+int8_t DataAPI::saveParametersInNVS(channel_t channel)
+{
+	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
+	return data_conversion_store_channel_parameters_in_nvs(channel_info.adc_num, channel_info.channel_num);
+}
+
 void DataAPI::setTwistChannelsUserCalibrationFactors()
 {
 	shield_channels_set_user_acquisition_parameters();
