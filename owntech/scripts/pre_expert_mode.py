@@ -48,7 +48,7 @@ env.AddTarget(
     name="expert",
     dependencies=None,
     actions=env.VerboseAction(PrintSuccess,"Toggling Expert Mode !"),
-    title="Toggle Expert Mode",
+    title="[Advanced] Toggle Expert Mode",
     description="Expert mode allows to see Zephyr RTOS environment",
     group="OwnTech",
     always_build=False,

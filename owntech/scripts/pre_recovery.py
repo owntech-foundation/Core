@@ -79,9 +79,9 @@ env.AddTarget(
 	name="recovery-bootloader",
 	dependencies=None,
 	actions=env.VerboseAction(installBootloader,"Installing bootloader..."),
-	title="[Advanced] Bootloader recovery",
+	title="[Advanced] Bootloader recovery using USB",
 	description="Reinstall the OwnTech bootloader. NOTE: PB8-BOOT0 must be jumped at 3.3V using a wire and board must be reset with USB cable connected to computer.",
 	group="OwnTech",
-	always_build=True,
+	always_build=False,
 )
 
