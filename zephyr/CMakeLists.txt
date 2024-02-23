@@ -16,11 +16,34 @@ MACRO(SUBDIRLIST result curdir)
   SET(${result} ${dirlist})
 ENDMACRO()
 
+# This macro check for app.extension in curdir folder, where curdir and extension
+# are given as inputs. If found it returns the absolute path of app.extension.
+MACRO(FILELIST result curdir extension)
+  FILE(GLOB children RELATIVE ${curdir} ${curdir}/app.${extension})
+  # Check that the macro found a matching file. If not return void result
+  IF(DEFINED children AND NOT "${children}" STREQUAL "")
+    # If found returns app.extension path as a result.
+    SET(${result} ${curdir}/${children})
+  ENDIF()
+ENDMACRO()
+
 # Define SUBDIRS as the list of all subdirectories of the modules directory
 SUBDIRLIST(SUBDIRS ${CMAKE_CURRENT_SOURCE_DIR}/modules)
 
 # Append found modules to zephyr extra modules variable
 list(APPEND ZEPHYR_EXTRA_MODULES ${SUBDIRS})
+
+# Add extra config and overlay files
+get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
+# Looking for app.conf file
+FILELIST(EXTRA_APP_CONF_FILE ${PARENT_DIR}/src conf)
+# Add app.conf path to zephyr variables
+set(EXTRA_CONF_FILE ${EXTRA_APP_CONF_FILE})
+
+# Looking for app.overlay file
+FILELIST(EXTRA_OVERLAY_APP_FILE ${PARENT_DIR}/src overlay)
+# Add app.overlay path to zephyr variables
+set(EXTRA_DTC_OVERLAY_FILE ${EXTRA_OVERLAY_APP_FILE})
 
 # Check for third party modules
 if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/third_party_modules)
