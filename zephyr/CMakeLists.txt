@@ -59,7 +59,6 @@ set(EXTRA_CONF_FILE ${EXTRA_APP_CONF_FILE})
 CONFLIB(EXTRA_LIB_CONF_FILE ${PARENT_DIR}/owntech/lib/${BUILD_ENV_NAME} conf)
 # Add app.conf path to zephyr variables
 list(APPEND EXTRA_CONF_FILE ${EXTRA_LIB_CONF_FILE})
-message(FATAL_ERROR "${EXTRA_CONF_FILE}")
 
 # Looking for app.overlay file
 FILELIST(EXTRA_OVERLAY_APP_FILE ${PARENT_DIR}/src overlay)
