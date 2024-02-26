@@ -27,6 +27,19 @@ MACRO(FILELIST result curdir extension)
   ENDIF()
 ENDMACRO()
 
+# This macro check for app.extension in curdir folder, where curdir and extension
+# are given as inputs. If found it returns the absolute path of app.extension.
+MACRO(CONFLIB result curdir extension)
+  FILE(GLOB_RECURSE children RELATIVE ${curdir} ${curdir}/lib.${extension})
+  # Check that the macro found a matching file. If not return void result
+  IF(DEFINED children AND NOT "${children}" STREQUAL "")
+    # If found returns app.extension path as a result.
+    FOREACH(child ${children})
+      LIST(APPEND ${result} ${curdir}/${child})
+    ENDFOREACH()
+  ENDIF()
+ENDMACRO()
+
 # Define SUBDIRS as the list of all subdirectories of the modules directory
 SUBDIRLIST(SUBDIRS ${CMAKE_CURRENT_SOURCE_DIR}/modules)
 
@@ -35,10 +48,18 @@ list(APPEND ZEPHYR_EXTRA_MODULES ${SUBDIRS})
 
 # Add extra config and overlay files
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
+
 # Looking for app.conf file
 FILELIST(EXTRA_APP_CONF_FILE ${PARENT_DIR}/src conf)
 # Add app.conf path to zephyr variables
 set(EXTRA_CONF_FILE ${EXTRA_APP_CONF_FILE})
+
+# Looking for lib.conf file
+# BUILD_ENV_NAME is passed from pio_extra.ini using board_build.cmake_extra_args.
+CONFLIB(EXTRA_LIB_CONF_FILE ${PARENT_DIR}/owntech/lib/${BUILD_ENV_NAME} conf)
+# Add app.conf path to zephyr variables
+list(APPEND EXTRA_CONF_FILE ${EXTRA_LIB_CONF_FILE})
+message(FATAL_ERROR "${EXTRA_CONF_FILE}")
 
 # Looking for app.overlay file
 FILELIST(EXTRA_OVERLAY_APP_FILE ${PARENT_DIR}/src overlay)
