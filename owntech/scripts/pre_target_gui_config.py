@@ -41,9 +41,12 @@ def RunGuiconfig(target, source, env):
         sys.stderr.write("Error: Couldn't execute 'Guiconfig' target.\n")
         env.Exit(1)
 
-env.AddPlatformTarget(
-    "guiconfig",
-    None,
-    [env.VerboseAction(RunGuiconfig, "Running guiconfig")],
-    "Run GUIconfig",
+env.AddTarget(
+    name="guiconfig",
+    dependencies=None,
+    actions=[env.VerboseAction(RunGuiconfig, "Running guiconfig")],
+    title="[Advanced] Run GUIconfig",
+    description="Launch GUIconfig to access Zephyr RTOS configuration",
+    group="OwnTech",
+	always_build=False
 )
