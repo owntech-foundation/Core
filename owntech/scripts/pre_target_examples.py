@@ -75,7 +75,7 @@ if os.path.exists(json_dir):
             title=target_info["title"],
             description=target_info["description"],
             group=target_info["group"],
-            always_build=True,
+            always_build=False,
         )
 
     for tgt_info in targets: #Go through all example targets
