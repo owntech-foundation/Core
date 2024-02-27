@@ -29,57 +29,42 @@ def installBootloader(target, source, env):
                         "dfu-util" if platform.system() == 'Darwin'  else \
                         "dfu-util.exe" if platform.system() == 'Windows' else \
                         None
+
+    dfusuffix_path = [platformpio.get_package_dir("tool-dfuutil") + "/bin/" + dfu_suffix]
+    dfuutil_path = [platformpio.get_package_dir("tool-dfuutil") + "/bin/" + dfu_util]
     
-    if platformpio.get_package_dir("tool-dfuutil") is None:
-        pkg_install = [
-                        "pio",
-                        "pkg",
-                        "install",
-                        "--global",
-                        "--tool",
-                        "platformio/tool-dfuutil"
-        ]
-        subprocess.run(pkg_install)
+    suffix_flags = ["-v 0x0483", \
+                    "-p 0xDF11", \
+                    "-d 0xffff", \
+                    "-a", \
+                    bootloader_path \
+                    ]
+    upload_flags = [ "-a 0", \
+                    "-s 0x08000000", \
+                    "-D", 
+                    bootloader_path \
+                    ]
+    # Sign the bootloader binary using dfu-suffix
+    suffix_command =  dfusuffix_path + suffix_flags
+    upload_command =  dfuutil_path + upload_flags
 
-    if platformpio.get_package_dir("tool-dfuutil") is not None:
-
-        dfusuffix_path = [platformpio.get_package_dir("tool-dfuutil") + "/bin/" + dfu_suffix]
-        dfuutil_path = [platformpio.get_package_dir("tool-dfuutil") + "/bin/" + dfu_util]
-        
-        suffix_flags = ["-v 0x0483", \
-                        "-p 0xDF11", \
-                        "-d 0xffff", \
-                        "-a", \
-                        bootloader_path \
-                        ]
-        upload_flags = [ "-a 0", \
-                        "-s 0x08000000", \
-                        "-D", 
-                        bootloader_path \
-                        ]
-        # Sign the bootloader binary using dfu-suffix
-        suffix_command =  dfusuffix_path + suffix_flags
-        upload_command =  dfuutil_path + upload_flags
-
-        try:
-            # Execute the command
-            subprocess.run(suffix_command, check=True)
-        except subprocess.CalledProcessError as e:
-            print(f"Error executing mcumgr command: {e}")
-            os.remove(bootloader_path)
-            exit(-1)
-        
-        try:
-            # Execute the command
-            subprocess.run(upload_command)
-        except subprocess.CalledProcessError as e:
-            print(f"Error executing mcumgr command: {e}")
-            os.remove(bootloader_path)
-            exit(-1)
-        
+    try:
+        # Execute the command
+        subprocess.run(suffix_command, check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Error executing mcumgr command: {e}")
         os.remove(bootloader_path)
-    else : 
-        print("Dependencies have been freshly installed, please launch action again")
+        exit(-1)
+    
+    try:
+        # Execute the command
+        subprocess.run(upload_command)
+    except subprocess.CalledProcessError as e:
+        print(f"Error executing mcumgr command: {e}")
+        os.remove(bootloader_path)
+        exit(-1)
+    
+    os.remove(bootloader_path)
 
 #Defines the targets for each example referenced in library.json and create a nice GUI.
 env.AddTarget(
@@ -87,7 +72,7 @@ env.AddTarget(
 	dependencies=None,
 	actions=env.VerboseAction(installBootloader,"Installing bootloader..."),
 	title="[Advanced] Bootloader recovery using USB",
-	description="Reinstall the OwnTech bootloader. NOTE: PB8-BOOT0 must be jumped at 3.3V using a wire and board must be reset with USB cable connected to computer.",
+	description="Reinstall the OwnTech bootloader. NOTE: PB8-BOOT0 must be tied to 3.3V using a wire and board must be reset with USB cable connected to computer.",
 	group="OwnTech",
 	always_build=False,
 )
