@@ -82,3 +82,4 @@ if os.path.exists(json_dir):
         if tgt_info["name"] in COMMAND_LINE_TARGETS: #If an example target is launched via GUI or CLI
             pullSampleGeneric(tgt_info["base"]) #Executes the function that retrieves example and place it in src folder
             shutil.rmtree(build_dir) #Removes build folder in order to trigger a clean compilation
+            exit(0)

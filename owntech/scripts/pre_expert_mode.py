@@ -56,3 +56,4 @@ env.AddTarget(
 
 if "expert" in COMMAND_LINE_TARGETS:
     toggle_booleans_in_file(settings_json_path)
+    exit(0)
