@@ -1,6 +1,11 @@
 import os
 import platform
+import zipfile
 from stat import *
+
+def unzip_file(zip_file_path, extract_to_path):
+    with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+        zip_ref.extractall(extract_to_path)
 
 def check_file_and_download(what, folder_path, file_name, file_url, make_exec = False):
 	# Make sure folder exists

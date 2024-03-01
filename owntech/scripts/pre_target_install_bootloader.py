@@ -43,10 +43,12 @@ def installBootloader(target, source, env):
 	print(command_line)
 	subprocess.run(command_line)
 
-env.AddPlatformTarget(
+env.AddTarget(
     name="owntech-install-bootloader",
     dependencies=None,
     actions=[env.VerboseAction(installBootloader, "Installing bootloader...")],
-    title="[STLink required] Install OwnTech bootloader",
-    description="Install the OwnTech bootloader to the Spin board. NOTE: The board must be connected to an external STLink for this to work."
+    title="[Advanced] Install OwnTech bootloader using STLink",
+    description="Install the OwnTech bootloader to the Spin board. NOTE: The board must be connected to an external STLink for this to work.",
+	group="OwnTech",
+	always_build=False
 )
