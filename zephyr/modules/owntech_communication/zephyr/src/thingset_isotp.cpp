@@ -5,16 +5,17 @@
  */
 
 /**
- * @date   2022
+ * @date   2024
  * @author Martin Jäger <martin@libre.solar>
  * @author Jean Alinei <jean.alinei@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
 #include <zephyr/canbus/isotp.h>
 #include "thingset.h"
-#include "can.h"
+#include "CommunicationAPI.h"
 
 extern ThingSet ts;
 extern uint16_t can_node_addr;
@@ -56,7 +57,7 @@ void can_isotp_thread()
     static uint8_t rx_buffer[600];      // large enough to receive a 512k flash page for DFU
     static uint8_t tx_buffer[1000];
 
-	enable_can();
+	communication.can.enableCan();
 
     if (!device_is_ready(can_dev)) {
         return;

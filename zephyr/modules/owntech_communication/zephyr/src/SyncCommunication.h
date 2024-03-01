@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 LAAS-CNRS
+ * Copyright (c) 2023-2024 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,36 +18,43 @@
  */
 
 /**
- * @date   2023
+ * @date   2024
  *
+ * @author Luiz Villa <luiz.villa@laas.fr>
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
-#ifndef RS485COMMUNICATION_H_
-#define RS485COMMUNICATION_H_
+#ifndef SYNCCOMMUNICATION_H_
+#define SYNCCOMMUNICATION_H_
+
+#ifdef CONFIG_OWNTECH_COMMUNICATION_ENABLE_SYNC
 
 #include <stdint.h>
 
-#ifdef CONFIG_OWNTECH_COMMUNICATION_ENABLE_RS485
+// OWNTECH API
+#include "SpinAPI.h"
+
 
 /////
 // Static class definition
 
-class Rs485Communication
+class SyncCommunication
 {
-    public :
-    void configureDefault(uint8_t *transmission_bufer, uint8_t *reception_buffer, uint16_t data_size, void (*user_function)());
-    void configure(uint8_t *transmission_bufer, uint8_t *reception_buffer, uint16_t data_size, void (*user_function)(void), uint32_t baudrate, bool oversampling_8);
-    void startTransmission();
-    void communicationStart();
-    void communicationStop();
+
+public:
+
+	/**
+	 * @brief initialization synchronization as MASTER, the master send the synchronization pulsle.
+	*/
+	static void initMaster();
+
+	/**
+	 * @brief initialization synchronization as SLAVE, the slave receive the synchronization pulsle.
+	*/
+	static void initSlave(board_version_t board_version);
 };
 
-/////
-// Public object to interact with the class
+#endif // CONFIG_OWNTECH_COMMUNICATION_ENABLE_SYNC
 
-extern Rs485Communication rs485Communication;
+#endif // SYNCCOMMUNICATION_H_
 
-#endif // CONFIG_OWNTECH_COMMUNICATION_ENABLE_RS485
-
-#endif // RS485COMMUNICATION_H_

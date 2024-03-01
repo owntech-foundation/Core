@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 LAAS-CNRS
+ * Copyright (c) 2024 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,30 +18,11 @@
  */
 
 /**
- * @date   2023
+ * @date   2024
  *
- * @author Luiz Villa <luiz.villa@laas.fr>
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
+#include "CommunicationAPI.h"
 
-#include "../src/sync.h"
-
-#include "SyncCommunication.h"
-
-/////
-// Public object to interact with the class
-
-SyncCommunication syncCommunication;
-
-
-void SyncCommunication::initMaster()
-{
-    sync_master_init();
-}
-
-void SyncCommunication::initSlave()
-{
-    sync_slave_init();
-}
-
+CommunicationAPI communication;

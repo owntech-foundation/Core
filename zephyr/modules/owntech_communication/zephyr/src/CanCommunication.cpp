@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 LAAS-CNRS
+ * Copyright (c) 2022-2024 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,21 +18,19 @@
  */
 
 /**
- * @date   2022
+ * @date   2024
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
 
+/* Header */
 #include "CanCommunication.h"
-#include "../src/data_objects.h"
+#include "data_objects.h"
 
-
-/////
-// Public object to interact with the class
-
-CanCommunication canCommunication;
-
+/* Zephyr driver*/
+#include <zephyr/drivers/gpio.h>
 
 /////
 // Extern variable defined in this module
@@ -90,4 +88,10 @@ void CanCommunication::setBroadcastPeriod(uint16_t time_100_ms)
 void CanCommunication::setControlPeriod(uint16_t time_100_ms)
 {
     control_time = time_100_ms;
+}
+
+void CanCommunication::enableCan()
+{
+	const struct gpio_dt_spec can_standby_spec = GPIO_DT_SPEC_GET(CAN_STANDBY_DEVICE, gpios);
+	gpio_pin_configure_dt(&can_standby_spec, GPIO_OUTPUT_INACTIVE);
 }

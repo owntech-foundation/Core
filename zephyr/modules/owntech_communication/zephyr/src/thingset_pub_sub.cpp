@@ -5,11 +5,12 @@
  */
 
 /**
- * @date   2022
+ * @date   2024
  * @author Martin Jäger <martin@libre.solar>
  * @author Jean Alinei <jean.alinei@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
 
@@ -24,7 +25,7 @@
 
 #include "data_objects.h"
 #include "thingset.h"
-#include "can.h"
+#include "CommunicationAPI.h"
 
 
 extern ThingSet ts;
@@ -118,7 +119,7 @@ void update_ts_data_nodes(struct can_frame rx_frame)
 
 void can_pubsub_thread()
 {
-	enable_can();
+	communication.can.enableCan();
 
     if (!device_is_ready(can_dev))
 	{

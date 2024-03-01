@@ -87,7 +87,7 @@ static void _dma_callback_tx(const struct device *dev, void *user_data, uint32_t
 /**
  * DMA callback RX clear reception flag, then call user functions
 */
-static void _dma_callback_rx(const struct device *dev, void *user_data, uint32_t channel, int status)
+static void _dma_callback_rx()
 {
     LL_DMA_ClearFlag_TC7(DMA_USART); // clear transmission complete flag
 
@@ -256,11 +256,7 @@ void dma_channel_init_tx()
 void dma_channel_init_rx()
 {
     /* Configure DMA */
-    struct dma_config dma_config_s = {0};
     LL_DMA_InitTypeDef DMA_InitStruct = {0};
-
-    dma_config_s.dma_callback = _dma_callback_rx;          // Callback
-    dma_config_s.linked_channel = STM32_DMA_HAL_OVERRIDE;  // Hal override
 
     /* Initialization of DMA */
     DMA_InitStruct.Direction = LL_DMA_DIRECTION_PERIPH_TO_MEMORY;
@@ -274,7 +270,8 @@ void dma_channel_init_rx()
     DMA_InitStruct.PeriphRequest = LL_DMAMUX_REQ_USART3_RX;
     DMA_InitStruct.NbData = dma_buffer_size;
 
-    dma_config(dma1, ZEPHYR_DMA_CHANNEL_RX, &dma_config_s); // Indicates Callback function to zephyr driver
+    IRQ_DIRECT_CONNECT(17, 0, _dma_callback_rx, IRQ_ZERO_LATENCY);
+    irq_enable(17);
 
     LL_DMA_DisableChannel(DMA_USART, LL_DMA_CHANNEL_RX); // Disabling channel for initial set-up
 

@@ -41,7 +41,9 @@ typedef enum
 	SPIN_v_0_1,
 	SPIN_v_0_9,
 	SPIN_v_1_0,
-	TWIST_v_1_1_2
+	TWIST_v_1_1_2,
+	TWIST_v_1_1_3,
+	TWIST_v_1_1_4
 } board_version_t;
 
 
@@ -60,6 +62,7 @@ public:
 	 * 	      It can take the following values:
 	 * 	      	nucleo_G474RE, 	O2_v_0_9, O2_v_1_1_2,
 	 * 			SPIN_v_0_1, SPIN_v_0_9, SPIN_v_1_0, TWIST_v_1_1_2
+	 *          TWIST_v_1_1_3, TWIST_v_1_1_4 
 	 *
 	 *        Stand alone versions such as SPIN_v_X comprise only the spin board itself.
 	 * 		  Legacy versions such as nucleo or O2_X comprise the nucleo board or the old O2 boards.
@@ -67,6 +70,17 @@ public:
 	 * @param board_version Enum representing the microcontroller version.
 	 */
 	void setBoardVersion(board_version_t board_version);
+	
+
+	/**
+	 * @brief return board version
+	 * 
+	 * @return Return one of these values : 
+	 * 	      	nucleo_G474RE, 	O2_v_0_9, O2_v_1_1_2,
+	 * 			SPIN_v_0_1, SPIN_v_0_9, SPIN_v_1_0, TWIST_v_1_1_2
+	 *          TWIST_v_1_1_3, TWIST_v_1_1_4 
+	*/
+	board_version_t getBoardVersion();
 
 
 private:

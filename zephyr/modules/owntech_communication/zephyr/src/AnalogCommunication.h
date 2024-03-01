@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 LAAS-CNRS
+ * Copyright (c) 2024 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,26 +18,47 @@
  */
 
 /**
- * @date   2023
+ * @date   2024
  *
- * @author Luiz Villa <luiz.villa@laas.fr>
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
-#ifndef SYNC_H_
-#define SYNC_H_
 
-#include <zephyr/kernel.h>
+#ifndef ANALOGCOMMUNICATION_H_
+#define ANALOGCOMMUNICATION_H_
 
+#ifdef CONFIG_OWNTECH_COMMUNICATION_ENABLE_ANALOG
 
-/**
- * @brief    Initilializes the hrtim sync in master mode
- */
-void sync_master_init();
-
-/**
- * @brief    Initilializes the hrtim sync in slave mode
- */
-void sync_slave_init();
+#include <stdint.h>
+#include <arm_math.h>
 
 
-#endif // SYNC_H_
+/////
+// Static class definition
+
+class AnalogCommunication
+{
+
+public:
+	/**
+	 * @brief Initializing analog communication (ADC and DAC)
+	*/
+	static void init();
+
+	/**
+	 * @brief Get the analog value
+	 *
+	 * @return Analog value (A value between 0 and 4096)
+	 */
+	static float32_t getAnalogCommValue();
+
+	/**
+	 * @brief Set the analog value, the DAC output
+	 *
+	 * @param analog_bus_value  A value between 0 and 4096
+	 */
+	static void setAnalogCommValue(uint32_t analog_bus_value);
+};
+
+#endif // CONFIG_OWNTECH_COMMUNICATION_ENABLE_ANALOG
+
+#endif // ANALOGCOMMUNICATION_H_

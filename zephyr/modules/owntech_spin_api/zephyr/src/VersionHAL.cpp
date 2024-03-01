@@ -50,3 +50,8 @@ void VersionHAL::setBoardVersion(board_version_t hardware_version)
 	}
 
 }
+
+board_version_t VersionHAL::getBoardVersion()
+{
+	return board_version;
+}
