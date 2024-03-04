@@ -19,7 +19,7 @@
 #include <string.h>
 
 #include "thingset.h"
-#include "DataAcquisition.h"
+#include "DataAPI.h"
 
 
 // can be used to configure custom data objects in separate file instead
@@ -51,14 +51,14 @@ uint16_t can_node_addr = 0x60;
 
 void dataObjectsUpdateMeasures()
 {
-    if (dataAcquisition.started() == true)
+    if (data.started() == true)
     {
-        v1_low_value = dataAcquisition.peek(V1_LOW);
-        v2_low_value = dataAcquisition.peek(V2_LOW);
-        v_high_value = dataAcquisition.peek(V_HIGH);
-        i1_low_value = dataAcquisition.peek(I1_LOW);
-        i2_low_value = dataAcquisition.peek(I2_LOW);
-        i_high_value = dataAcquisition.peek(I_HIGH);
+        v1_low_value = data.peek(V1_LOW);
+        v2_low_value = data.peek(V2_LOW);
+        v_high_value = data.peek(V_HIGH);
+        i1_low_value = data.peek(I1_LOW);
+        i2_low_value = data.peek(I2_LOW);
+        i_high_value = data.peek(I_HIGH);
         // Do not update this value for now, as the measure is not enabled
         //temp_value = peekTemperature();
     }
@@ -196,5 +196,3 @@ static ThingSetDataObject data_objects[] = {
 /* clang-format on */
 
 ThingSet ts(data_objects, sizeof(data_objects) / sizeof(ThingSetDataObject));
-
-
