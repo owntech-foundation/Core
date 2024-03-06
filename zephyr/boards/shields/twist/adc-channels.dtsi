@@ -102,9 +102,9 @@
 			channel-name = "TEMP_SENSOR";
 			default-gain = <0x3f800000>;
 			default-offset = <0x00000000>;
-			spin-pin = <37>;
+			spin-pin = <31>;
 			temp-sensor-adc3 {
-				io-channels = <&adc3 1>;
+				io-channels = <&adc3 12>;
 			};
 		};
 
