@@ -41,7 +41,10 @@
 // Current module private functions
 #include "../src/data_conversion.h"
 
-
+#define ADC_1 1
+#define ADC_2 2
+#define ADC_3 3
+#define ADC_4 4
 
 /////
 // Device-tree related macro
