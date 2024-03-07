@@ -32,12 +32,6 @@
 #include "arm_math.h"
 #include "hrtim_enum.h"
 
-#define LEG1_CAPA_DGND PC6
-#define LEG2_CAPA_DGND PB7
-#define LEG1_DRIVER_SWITCH PC12
-#define LEG2_DRIVER_SWITCH PC13
-
-
 #define LEG_TOKEN(node_id) DT_STRING_TOKEN(node_id, leg_name),
 
 /* All the leg with okay status in the device tree */
@@ -97,7 +91,6 @@ public:
 	 */
 	void initAllMode(hrtim_switch_convention_t leg_convention, hrtim_pwm_mode_t leg_mode);
 
-
 	/**
 	 * @brief Set the duty cycle for a specific leg's power control.
 	 *
@@ -131,11 +124,22 @@ public:
 	 */
 	void startLeg(leg_t leg);
 
+	/**
+	 * @brief Connect the electrolytic capacitor.
+	 * 
+	 * @param leg The selected leg for which to connect the capacitor.
+	*/
+	void connectLegCapacitor(leg_t leg);
 
 	/**
 	 * @brief Start power output for all legs.
 	 */
 	void startAll();
+
+	/**
+	 * @brief Connect the electrolyt capacitor to all the legs.
+	*/
+	void connectAllCapacitor();
 
 	/**
 	 * @brief Stop power output for a specific leg.
@@ -145,9 +149,21 @@ public:
 	void stopLeg(leg_t leg);
 
 	/**
+	 * @brief Disonnect the electrolytic capacitor.
+	 * 
+	 * @param leg The selected leg for which to disonnect the capacitor.
+	*/
+	void disconnectLegCapacitor(leg_t leg);
+
+	/**
 	 * @brief Stop power output for all legs.
 	 */
 	void stopAll();
+
+	/**
+	 * @brief disconnect the electrolyt capacitor to all the legs.
+	*/
+	void disconnectAllCapacitor();
 
 	/**
 	 * @brief Set the trigger value for a specific leg's ADC trigger.
@@ -215,7 +231,6 @@ public:
 	*/
 	void setLegDeadTime(leg_t leg, uint16_t ns_rising_dt, uint16_t ns_falling_dt);
 
-
 	/**
 	 * @brief set the dead time value for all legs
 	 *
@@ -236,7 +251,6 @@ public:
 	 *
 	*/
 	void setLegAdcDecim(leg_t leg, uint16_t adc_decim);
-
 
 	/**
 	 * @brief set ADC decimator for all legs

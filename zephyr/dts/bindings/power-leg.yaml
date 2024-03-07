@@ -56,7 +56,16 @@ child-binding:
       # | PA1      | 25              |
       # | PC1      | 30              |
       # +----------+-----------------+
+    
+    capa-pin-num :
+      type : int
+      required : false
+      description : It is the pin driving the electrolytic capacitor since twist V1.4.0.
 
+    driver-pin-num :
+      type : int
+      required : false
+      description : It is the pin driving the optocoupler for the mosfet driver since twist V1.3.
 
     adc-trigger :
       type : string
