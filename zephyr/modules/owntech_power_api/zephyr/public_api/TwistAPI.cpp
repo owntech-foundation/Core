@@ -79,7 +79,6 @@ void TwistAPI::initLegMode(leg_t leg, hrtim_switch_convention_t leg_convention, 
 
     spin.pwm.setAdcEdgeTrigger(spinNumberToTu(dt_pwm_pin[leg]), dt_edge_trigger[leg]); // Configure ADC rollover in center aligned mode
 
-
     /**
      * Configure which External Event will reset the timer for current mode.
      *
@@ -156,8 +155,8 @@ void TwistAPI::initLegMode(leg_t leg, hrtim_switch_convention_t leg_convention, 
      */
     for(uint8_t i = 0; i < dt_leg_count; i++)
     {
-        if(dt_has_pin_driver[i]) spin.gpio.configurePin(dt_pin_driver[i], OUTPUT);
-        if(dt_has_pin_capacitor[i]) spin.gpio.configurePin(dt_pin_capacitor[i], OUTPUT);
+        if(dt_pin_driver[i] != 0) spin.gpio.configurePin(dt_pin_driver[i], OUTPUT);
+        if(dt_pin_capacitor[i] != 0) spin.gpio.configurePin(dt_pin_capacitor[i], OUTPUT);
     }
 
     if (twist_init == false) twist_init = true; // When a leg has been initialized, shield version should not be modified
@@ -199,7 +198,7 @@ void TwistAPI::startLeg(leg_t leg)
     /**
      * Only relevant for twist hardware, to enable optocouplers for mosfet driver
      */
-    if(dt_has_pin_driver[leg]) spin.gpio.setPin(dt_pin_driver[leg]);
+    if(dt_pin_driver[leg] != 0) spin.gpio.setPin(dt_pin_driver[leg]);
 
     /* start PWM*/
     if (!dt_output1_inactive[leg])
@@ -210,7 +209,7 @@ void TwistAPI::startLeg(leg_t leg)
 
 void TwistAPI::connectLegCapacitor(leg_t leg)
 {
-    if(dt_has_pin_capacitor[leg]) spin.gpio.setPin(dt_pin_capacitor[leg]);
+    if(dt_pin_capacitor[leg] != 0) spin.gpio.setPin(dt_pin_capacitor[leg]);
 }
 
 void TwistAPI::startAll()
@@ -237,12 +236,12 @@ void TwistAPI::stopLeg(leg_t leg)
     /**
      * Only relevant for twist hardware, to disable optocouplers for mosfet driver
      */
-    if(dt_has_pin_driver[leg]) spin.gpio.resetPin(dt_pin_driver[leg]);
+    if(dt_pin_driver[leg] != 0) spin.gpio.resetPin(dt_pin_driver[leg]);
 }
 
 void TwistAPI::disconnectLegCapacitor(leg_t leg)
 {
-    if(dt_has_pin_capacitor[leg]) spin.gpio.resetPin(dt_pin_capacitor[leg]);
+    if(dt_pin_capacitor[leg] != 0) spin.gpio.resetPin(dt_pin_capacitor[leg]);
 }
 
 void TwistAPI::stopAll()

@@ -169,19 +169,9 @@ extern uint8_t dt_output2_inactive[];
 extern uint16_t dt_current_pin[];
 
 /**
- * Define an array 'dt_has_pin_driver' of type 'uint8' and initialize it with an array of boolean
- * to see if children nodes have the propriety driver_pin_num.  */
-extern uint8_t dt_has_pin_driver[];
-
-/**
  * Define an array 'dt_pin_driver' of type 'uint16' and initialize it with an array of 
  * 'driver_pin_num' values from the children of the Device Tree node with ID 'POWER_SHIELD_ID' */
 extern uint16_t dt_pin_driver[];
-
-/**
- * Define an array 'dt_has_pin_capacitor' of type 'uint8' and initialize it with an array of boolean
- * to see if children nodes have the propriety capa_pin_num.  */
-extern uint8_t dt_has_pin_capacitor[];
 
 /**
  * Define an array 'dt_pin_driver' of type 'uint16' and initialize it with an array of 
