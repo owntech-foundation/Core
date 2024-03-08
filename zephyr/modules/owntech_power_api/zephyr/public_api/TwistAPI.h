@@ -45,6 +45,7 @@ typedef enum
 {
 	shield_TWIST_V1_2 = 0,
 	shield_TWIST_V1_3,
+	shield_TWIST_V1_4,
 	shield_ownverter,
 	shield_other,
 } twist_version_t;
