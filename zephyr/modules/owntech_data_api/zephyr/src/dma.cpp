@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 LAAS-CNRS
+ * Copyright (c) 2021-2024 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2023
+ * @date   2024
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
@@ -31,7 +31,7 @@
 #include <zephyr/kernel.h>
 #include <zephyr/drivers/dma.h>
 
-// STM32
+// STM32 LL
 #include <stm32_ll_dma.h>
 
 // Current module private functions
@@ -67,6 +67,16 @@ static const uint32_t source_triggers[5] =
 
 static size_t buffers_sizes[5] = {0};
 
+typedef struct
+{
+	bool     has_interrupt;
+	uint32_t src;
+	uint32_t dst;
+	size_t   size;
+	uint32_t channel;
+} dma_user_data_t;
+
+static dma_user_data_t user_data[5] = {0};
 
 /////
 // Private API
@@ -81,12 +91,19 @@ static size_t buffers_sizes[5] = {0};
 static void _dma_callback(const struct device* dev, void* user_data, uint32_t dma_channel, int status)
 {
 	UNUSED(dev);
-	UNUSED(user_data);
-	UNUSED(status);
+	UNUSED(dma_channel);
 
-	// DMA channel value comes raw from LL (starts at 0): convert to number
-	uint8_t channel_number = dma_channel + 1;
-	data_dispatch_do_dispatch(channel_number);
+	// Get user data for current channel
+	dma_user_data_t* my_user_data = (dma_user_data_t*) user_data;
+
+	// Do dispatch
+	data_dispatch_do_dispatch(my_user_data->channel);
+
+	// Reload DMA on last transaction
+	if ( (my_user_data->has_interrupt == true) && (status == DMA_STATUS_COMPLETE) )
+	{
+		dma_reload(dma1, my_user_data->channel, my_user_data->src, my_user_data->dst, my_user_data->size);
+	}
 }
 
 
@@ -103,15 +120,22 @@ void dma_configure_adc_acquisition(uint8_t adc_number, bool disable_interrupts, 
 	uint32_t buffer_size_bytes = (uint32_t) buffer_size * sizeof(uint16_t);
 	buffers_sizes[dma_index] = buffer_size;
 
+	// Private data for DMA channel
+	user_data[dma_index].has_interrupt = !disable_interrupts;
+	user_data[dma_index].src           = source_registers[dma_index];
+	user_data[dma_index].dst           = (uint32_t)buffer;
+	user_data[dma_index].size          = buffer_size_bytes;
+	user_data[dma_index].channel       = adc_number;
+
 	// Configure DMA
 	struct dma_block_config dma_block_config_s = {0};
-	dma_block_config_s.source_address   = source_registers[dma_index]; // Source: ADC DR register
-	dma_block_config_s.dest_address     = (uint32_t)buffer;            // Dest: buffer in memory
-	dma_block_config_s.block_size       = buffer_size_bytes;           // Buffer size in bytes
-	dma_block_config_s.source_addr_adj  = DMA_ADDR_ADJ_NO_CHANGE;      // Source: no increment in ADC register
-	dma_block_config_s.dest_addr_adj    = DMA_ADDR_ADJ_INCREMENT;      // Dest: increment in memory
-	dma_block_config_s.dest_reload_en   = 1;                           // Reload destination address on block completion
-	dma_block_config_s.source_reload_en = 1;                           // Reload source address on block completion; Enables Half-transfer interrupt
+	dma_block_config_s.source_address   = user_data[dma_index].src;  // Source: ADC DR register
+	dma_block_config_s.dest_address     = user_data[dma_index].dst;  // Dest: buffer in memory
+	dma_block_config_s.block_size       = user_data[dma_index].size; // Buffer size in bytes
+	dma_block_config_s.source_addr_adj  = DMA_ADDR_ADJ_NO_CHANGE;    // Source: no increment in ADC register
+	dma_block_config_s.dest_addr_adj    = DMA_ADDR_ADJ_INCREMENT;    // Dest: increment in memory
+	dma_block_config_s.dest_reload_en   = 1;                         // Reload destination address on block completion
+	dma_block_config_s.source_reload_en = 1;                         // Reload source address on block completion; Enables Half-transfer interrupt
 
 	struct dma_config dma_config_s = {0};
 	dma_config_s.dma_slot            = source_triggers[dma_index]; // Trigger source: ADC
@@ -123,8 +147,10 @@ void dma_configure_adc_acquisition(uint8_t adc_number, bool disable_interrupts, 
 	dma_config_s.block_count         = 1;                          // 1 block
 	dma_config_s.head_block          = &dma_block_config_s;        // Block config as defined above
 	dma_config_s.dma_callback        = _dma_callback;              // DMA interrupt callback
+	dma_config_s.user_data           = &user_data[dma_index];      // User data provided to callback
 
-	dma_config(dma1, adc_number, &dma_config_s);
+	// Use DMA 1 channel x for ADC x
+	dma_config(dma1, user_data[dma_index].channel, &dma_config_s);
 
 	if (disable_interrupts == true)
 	{
@@ -132,7 +158,7 @@ void dma_configure_adc_acquisition(uint8_t adc_number, bool disable_interrupts, 
 		LL_DMA_DisableIT_TC(DMA1, dma_index);
 	}
 
-	dma_start(dma1, adc_number);
+	dma_start(dma1, user_data[dma_index].channel);
 }
 
 uint32_t dma_get_retreived_data_count(uint8_t adc_number)
