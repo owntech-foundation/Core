@@ -12,7 +12,7 @@ For information about Power API, check out its [Documentation](https://docs.ownt
 
 You fisrt need to download the Power API Core repository using the following command:
 
-`git clone https://gitlab.laas.fr/owntech/power-api/core.git owntech_power_api`
+`git clone https://github.com/owntech-foundation/Core.git owntech_power_api`
 
 Then, open VS Code and, if not already done, install the PlatformIO plugin.
 
