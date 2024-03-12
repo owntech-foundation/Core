@@ -26,11 +26,9 @@
 /*
  * Groups / first layer data object IDs
  */
-
 #define ID_ROOT         0x00
 #define ID_DEVICE       0x01
 #define ID_MEASUREMENTS 0x08
-#define ID_PUB          0x100
 #define ID_CTRL         0x8000
 
 /*
@@ -43,16 +41,8 @@
 /*
  * Exposed variables
  */
-
 extern bool      ctrl_enable;
 extern uint16_t  can_node_addr;
 extern float32_t reference_value;
-
-/*
- * Modifiers
- */
-
-void dataObjectsUpdateMeasures();
-
 
 #endif // DATA_OBJECTS_H_
