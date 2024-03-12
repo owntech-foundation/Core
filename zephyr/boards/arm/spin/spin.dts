@@ -29,6 +29,7 @@
 		zephyr,flash = &flash0;
 		zephyr,can-primary = &fdcan1;
 		zephyr,boot-mode = &retention0;
+		thingset,can = &fdcan1;
 	};
 
 	leds {
