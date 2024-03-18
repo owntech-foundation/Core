@@ -77,14 +77,37 @@ property from the Device Tree node with the given 'node_id'. */
  property from the Device Tree node with the given 'node_id'. */
 #define LEG_OUTPUT2(node_id) DT_PROP(node_id, output2_inactive),
 
+/**
+ * Define a macro LEG_HAS_DRIVER that retrieves whether or nor 
+ * the device tree has the proproety driver_pin_num which means 
+ * that the LEG need to enable optocoupler for MOSFET driver.
+*/
+#define  LEG_HAS_DRIVER(node_id) DT_NODE_HAS_PROP(node_id, driver_pin_num),
+
+/**
+ * Define a macro LEG_DRIVER_PIN that retrieves the pin number 
+ * which enables the optocouplers for MOSFET driver.
+ */
+#define  LEG_DRIVER_PIN(node_id) DT_PROP(node_id, driver_pin_num),
+
+
+/**
+ * Define a macro LEG_HAS_DRIVER that retrieves whether or nor 
+ * the device tree has the proproety driver_pin_num which means 
+ * that the LEG need to enable optocoupler for MOSFET driver.
+*/
+#define  LEG_HAS_CAPACITOR(node_id) DT_NODE_HAS_PROP(node_id, capa_pin_num),
+
+/**
+ * Define a macro LEG_CAPACITOR_PIN that retrieves the pin number
+ * which enables the connection to the electrolytic capacitor.
+*/
+#define  LEG_CAPACITOR_PIN(node_id) DT_PROP(node_id, capa_pin_num),
+
 #define LEG_COUNTER(node_id) +1 // this macro is needed to count the number of leg in the device tree
 
 // the shield node identifier in the device tree
 #define POWER_SHIELD_ID           DT_NODELABEL(power_shield)
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /* Enum to define which DAC to use for current mode */
 typedef enum{
@@ -145,8 +168,14 @@ extern uint8_t dt_output2_inactive[];
 'curent_pin_num' property from the children of the Device Tree node with the ID 'POWER_SHIELD_ID'. */
 extern uint16_t dt_current_pin[];
 
-#ifdef __cplusplus
-}
-#endif
+/**
+ * Define an array 'dt_pin_driver' of type 'uint16' and initialize it with an array of 
+ * 'driver_pin_num' values from the children of the Device Tree node with ID 'POWER_SHIELD_ID' */
+extern uint16_t dt_pin_driver[];
+
+/**
+ * Define an array 'dt_pin_driver' of type 'uint16' and initialize it with an array of 
+ * 'capa_pin_num' values from the children of the Device Tree node with ID 'POWER_SHIELD_ID' */
+extern uint16_t dt_pin_capacitor[];
 
 #endif // POWER_H_
