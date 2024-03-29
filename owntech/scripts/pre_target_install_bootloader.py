@@ -27,7 +27,7 @@ def installBootloader(target, source, env):
 	upload_protocol = env.subst("$UPLOAD_PROTOCOL")
 	server_arguments = debug_tools.get(upload_protocol).get("server").get("arguments", [])
 
-	bootloader_path = os.path.join(third_party_dir, bootloader_binary)
+	bootloader_path = "./owntech/bootloader/zephyr.bin"
 	program_arguments = ["-c", f"program {bootloader_path} 0x8000000 verify reset; shutdown;"]
 
 	command_line = uploader_path + debug_level + server_arguments + program_arguments
