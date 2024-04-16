@@ -137,7 +137,7 @@ When the compilation is completed, you should see:
 
 ![Compilation Complete](images/fig4-compilation_complete.png)
 
-Congratulations! You are all set to run [your first example]()!
+Congratulations! You are all set to run [your first example](first_example.md)!
 
 In the unlikely event that you cannot compile, please refer to the troubleshooting section below.
 
