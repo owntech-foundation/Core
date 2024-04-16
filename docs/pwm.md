@@ -1,3 +1,24 @@
+PWM, or Pulse Width Modulation, is a method used in electronics to control the power supplied to devices like motors, LEDs, and heaters. Instead of changing the voltage or current level, PWM changes the amount of time the power is on (the pulse width) compared to the time it's off.
+
+In power electronics, PWM is super important because it allows us to control the average power delivered to a load by varying the duty cycle of the pulse. This means we can regulate the speed of motors or the brightness of LEDs.
+
+## Pin localizations
+
+## Features
+- Up to 5 pair of PWMs possible (PWMA, PWC, PWMD, PWME, PWMF)
+- Each PWM unit has a resolution of 184ps.
+!!! note
+    The resolution of a PWM signal defines the maximum number of steps that can be present in a single PWM period. In other words, it determines how finely you can adjust the pulse width of the        signal. A higher resolution means you can make smaller and more precise adjustments to the pulse width.
+
+- Frequencies in the range of 650Hz to 1Ghz possible
+- Two different modulation mode possible : left aligned, and center aligned
+- Two ADC linkable to two differents PWM unit for precise measurement instant
+- Compatible for peak current control with the internal analog comparator
+- Positive and negative dead time set via software (from 0ns to 500ns)
+- Phase shift possible for interleaved operations
+
+## Snippet examples
+
 ### Single/Dual Output
 
 === "Single Output"
@@ -40,7 +61,7 @@
     ```
 
 === "How it works"
-    ![phase_shift_80](images/duty_cycle_how_it_works.svg)){ width=800 }
+    ![phase_shift_80](images/duty_cycle_how_it_works.svg){ width=800 }
 
     ```c++
         spin.pwm.setDutyCycle(PWMA, 0.8);
@@ -56,7 +77,7 @@
     ```
 
 === "80% Phase Shift"
-    ![phase_shift_80](images/phase_shift_80.svg)){ width=800 }
+    ![phase_shift_80](images/phase_shift_80.svg){ width=800 }
 
     ```c++
         spin.pwm.setPhaseShift(PWMA,  288);
