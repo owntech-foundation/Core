@@ -14,7 +14,7 @@ In power electronics, PWM is super important because it allows us to control the
 - Two different modulation mode possible : left aligned, and center aligned
 - Two ADC linkable to two differents PWM unit for precise measurement instant
 - Compatible for peak current control with the internal analog comparator
-- Positive and negative dead time set via software (from 0ns to 500ns)
+- Positive and negative dead time set via software
 - Phase shift possible for interleaved operations
 
 ## Snippet examples
@@ -140,3 +140,10 @@ In power electronics, PWM is super important because it allows us to control the
     ```
 
 ### Multiple PWM
+
+
+!!! Example 
+See this examples for more details :
+- [How to control duty cycle of a PWM unit](https://owntech-foundation.github.io/Documentation/examples/SPIN/PWM/duty_cycle_setting/)
+- [How to set the trigger instant by linking adc trigger to PWM unit](https://owntech-foundation.github.io/Documentation/examples/SPIN/ADC/adc_hrtim_trigger/)
+- [Managing phase shift between two PWM units](https://owntech-foundation.github.io/Documentation/examples/SPIN/PWM/phase_shift/)
