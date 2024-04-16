@@ -64,10 +64,88 @@ Now that you can upload code to your SPIN board, we will use the example wizard 
 
 ### Step 1 - Open project tasks
 
-Click on the PlatformIO alien icon. (1)
+Click on the PlatformIO alien icon. (1) And follow the tabs below.
 {.annotate}
 
 1. The alien icon looks like this ![Alien icon](images/icon-platformio.png)
+
+=== "Project Tasks"
+    ![Project tasks](images/example-fig4-platformio_tasks_1.png){align=left}
+
+    There are three group of tasks:
+    - Default:
+    - STLink:
+    - **USB:** These are the tasks we will work with.
+
+=== "USB"
+    ![Initial view of project tasks](images/example-fig4-platformio_tasks_2.png){align=left}
+
+    There are multiple folders on the **USB tasks**.
+    We will work on **Examples SPIN**.
+
+=== "Examples SPIN"
+    ![Initial view of project tasks](images/example-fig4-platformio_tasks_3.png){align=left}
+
+    Project tasks look like this
+
+=== "PWM examples"
+    ![Initial view of project tasks](images/example-fig4-platformio_tasks_4.png){align=left}
+
+    Project tasks look like this
+
+### Step 1 - Open Project tasks
+
+Click on the PlatformIO alien icon. (1) And follow the tabs below.
+{.annotate}
+
+1. The alien icon looks like this ![Alien icon](images/icon-platformio.png)
+
+![Project tasks](images/example-fig4-platformio_tasks_1.png)
+
+There are three group of tasks:
+- Default:
+- STLink:
+- **USB:** These are the tasks we will work with.
+
+
+### Step 2 - Open the USB tasks
+
+There are multiple folders on the **USB tasks**.
+
+We will work on **Examples SPIN**.
+
+![Initial view of project tasks](images/example-fig4-platformio_tasks_2.png)
+
+### Step 3 - Open the Examples SPIN folder
+
+Click on the **Examples SPIN** folder.
+
+We will work on
+
+![Initial view of project tasks](images/example-fig4-platformio_tasks_3.png)
+
+### Step 4 - Get your example
+
+Click on the **Setting PWM duty cycle** example.
+
+The file will be automatically downloaded and replace your `main.cpp`.
+
+![Initial view of project tasks](images/example-fig4-platformio_tasks_4.png)
+
+Your current code will be sent to the newly crated `/old/old0/src/` folder.
+
+You can access your old code anytime. Notice that the `readme.md` of the example was also downloaded.
+
+![View of the workspace after example download](images/example-fig5-workspace_after_example.png)
+
+
+### Step 5 - Upload your example
+
+Click on the flash icon. (1)
+{.annotate}
+
+1. The flash icon looks like this: ![flash icon](images/icon-flash.png)
+
 
 
 
