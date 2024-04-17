@@ -20,7 +20,7 @@ ADC1 and ADC2 can be associated with PWM channels at will.
 
     ::: doxy.powerAPI.class.method
     name: AdcHAL
-    method: void configureDiscontinuousMode()
+    method: void AdcHAL::configureDiscontinuousMode ()
 
 === "ADC1 and PWMC"
     ![left_aligned_ADC_PWM_C](images/left_aligned_ADC_PWM_C.svg){ width=800 }
