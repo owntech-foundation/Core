@@ -10,12 +10,14 @@ Before we start, make sure your machine meets all the requirements below.
         - **Git:** If you do not have git installed, get it here [git for Windows](https://gitforwindows.org)
         - **Python3:** If you do not have python3 installed, get it here [Python3 Installers](https://www.python.org/downloads/windows)
         - **CMake:** If you do not have CMake installed, get it here [CMake Installer](https://cmake.org/download/)
+        - **Internet connection**
 
     === "macOS"
 
         - **Git:** If you do not have git installed, get it here [git for macOS](https://git-scm.com/download/mac)
         - **Python3:** If you do not have python3 installed, get it here [Python3 Installers](https://www.python.org/downloads/macos/)
         - **CMake:** If you do not have CMake installed, get it here [CMake Installer](https://cmake.org/download/)
+        - **Internet connection**
 
     === "Linux"
 
@@ -23,11 +25,12 @@ Before we start, make sure your machine meets all the requirements below.
         - **Python3:** If you do not have python3 installed, get it here [Python3 Installers](https://docs.python-guide.org/starting/install3/linux/)
         - **CMake:** If you do not have CMake installed, get it here [CMake Installer](https://cmake.org/download/)
         - 64 bit linux installation
+        - **Internet connection**
 
 
 
 
-## Setup your VSCode work environment
+## Setup your work environment
 
 To use OwnTech's system, we will use:
 
@@ -89,7 +92,7 @@ In Visual Studio code, on the left side menu, click on PlatformIO icon ! (1)
         sudo apt install python3-venv
         ```
 
-### Step 5 - Clone our Core
+### Step 5 - Clone our Core repository
 In platformio, select "Clone Git Project ".
 
 latformIO will automatically open a field in which you can copy and paste the path below :
@@ -108,17 +111,14 @@ You can trust us. :smile:
 ![Clone the git repository](images/fig2-clone_git_repository.png)
 
 
-### Step 6 - Check your branch
+Make sure you are on the `main` branch of the Git project.
+
+You can see it on the bottom left of the VSCode window as shown in the image to the left.
+
+![View of the main branch](images/fig3-main_branch.png)
 
 
-=== " "
-     ![View of the main branch](images/fig3-main_branch.png){ align=left }
-
-     Make sure you are on the `main` branch of the Git project.
-
-     You can see it on the bottom left of the VSCode window as shown in the image to the left.
-
-### Step 7 - Build the code
+### Step 6 - Build our core code
 
 In the bottom menu, click on the Build icon. (1)
 { .annotate }
@@ -129,25 +129,83 @@ This will launch the compilation of the code.
 
 If this is the first time that you compile, Visual Studio Code will download several extensions that are required to write the code onto OwnTech’s microprocessor.
 
-!!! note "Coffee Time"
-    This step can take several minutes specially in older machines.
+!!! tip "Coffee Time"
+    During your first build, PlatformIO will download all the necessary dependencies of our code. This may take several minutes depending on your machine and your internet connection.
+
     Do not hesitate to go get yourself a coffee.
 
 When the compilation is completed, you should see:
 
 ![Compilation Complete](images/fig4-compilation_complete.png)
 
-Congratulations! You are all set to run [your first example](first_example.md)!
 
-In the unlikely event that you cannot compile, please refer to the troubleshooting section below.
+!!! note
+    In the unlikely event that you cannot compile, please refer to the troubleshooting section below.
 
-### Step 8 - Troubleshooting
+### Step 7 - Prepare your hardware
 
-From our exeprience, there are multiple types of errors that block compilation.
+Before we start, make sure that you meet the requirements below
+
+!!! note "Hardware Requirements"
+     - Have your [VSCode Environment](#setup-your-work-environment) already setup
+     - Run your first compilation [successfully](#step-6---build-our-core-code).
+     - Have an USB-C cable ready
+     - Have a SPIN board ready (stand-alone or embedded on a TWIST)
+
+=== " "
+    ![USB Connection of a SPIN board embeeded onto a TWIST board](images/example-fig1-usb_connection.svg){align=left}
+
+    - Connect the SPIN board to your computer via the USB.
+    - Notice that the LED PWR must turn on.
+    - Here you see the connection of a SPIN board embedded onto a TWIST board.
+
+
+
+### Step 8 - Upload our core code in your SPIN board
+
+The code you compiled implements a Blinky example.
+
+We will upload this code to the SPIN board. To do so press the flash icon. (1)
+{.annotate}
+
+1. The flash icon looks like this: ![flash icon](images/icon-flash.png)
+
+VSCode and PlatformIO will automatically download all the necessary libraries to flash the SPIN board.
+
+If everything goes well, you will get a success as in the image below.
+
+![Success of your first upload](images/example-fig2-upload.png)
+
+
+!!! tip "Coffee time 2"
+    During your first upload PlatformIO will download the necessary depencies to send data to the SPIN board. Depending on your machine and your internet connection, this might take some time.
+
+    Time to pour another coffee.
+
+??? bug "Known bug - mcumgr"
+
+    === "macOS"
+         The upload requires a software called **mcumgr**.
+
+         As of the time of writing, we have experienced issues with some macOS devices in finding it.
+
+         Please refer to the [ongoing issue](https://github.com/owntech-foundation/Core/issues/5) to handle it if you have the error below.
+
+         ![macOS error](images/example-fig3-macos_mcuboot_error.png)
+
+You will see the LED blink.
+
+!!! success " :party_popper: Success"
+     Congratulations! You have uploaded your first code!
+
+
+## Troubleshooting
+
+From our exeprience, there are multiple types of errors that can block your compilation.
 
 Check the list below of possible issues
 
-??? bug "List of known issues"
+??? bug "Troubleshooting"
 
     === "Windows"
         - **Git:** If you do not have git installed, get it here [git for Windows](https://gitforwindows.org)
@@ -158,11 +216,19 @@ Check the list below of possible issues
         - Check that you **do not have any spaces in the path** of your project
         - Check that the **length of your project** path is smaller than 256 characters.
         - You should preferably have your project folder as close as possible to the root
+        - Be sure the SPIN board PWR LED lights up correctly when connected to the USB
+        - Check your USB-C cable is working and can handle data
+        - Check your internet connectin is up and running
 
     === "macOS"
         - **Git:** If you do not have git installed, get it here [git for macOS](https://git-scm.com/download/mac)
         - **Python3:** If you do not have python3 installed, get it here [Python3 Installers](https://www.python.org/downloads/macos/)
         - **CMake:** If you do not have CMake installed, get it here [CMake Installer](https://cmake.org/download/)
+        - Be sure the SPIN board PWR LED lights up correctly when connected to the USB
+        - Check your USB-C cable is working and can handle data
+        - Check your internet connectin is up and running
+        - If you have a problem with `mcumgr`, please refer to the [ongoing issue](https://github.com/owntech-foundation/Core/issues/5) to handle it.
+
 
     === "Linux"
 
@@ -170,6 +236,11 @@ Check the list below of possible issues
         - **Python3:** If you do not have python3 installed, get it here [Python3 Installers](https://docs.python-guide.org/starting/install3/linux/)
         - **CMake:** If you do not have CMake installed, get it here [CMake Installer](https://cmake.org/download/)
         - Check that your Linux is 64bits
+        - Be sure the SPIN board PWR LED lights up correctly when connected to the USB
+        - Check your USB-C cable is working and can handle data
+        - Check your internet connectin is up and running
+
+
 
 
 ??? success "List of contributors"
