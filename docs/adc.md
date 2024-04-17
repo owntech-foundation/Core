@@ -11,6 +11,10 @@
 
 ADC1 and ADC2 can be associated with PWM channels at will. 
 
+::: doxy.powerAPI.class.method
+name: AdcHAL
+method: void configureDiscontinuousMode (uint8_t adc_number, uint32_t dicontinuous_count) 
+
 === "ADC1 and PWMA"
     ![left_aligned_ADC_50](images/left_aligned_ADC_50.svg){ width=800 }
 
@@ -18,9 +22,6 @@ ADC1 and ADC2 can be associated with PWM channels at will.
         spin.pwm.startSingleOutput(PWMA, TIMING_OUTPUT1);    
     ```
 
-    ::: doxy.powerAPI.class.method
-    name: AdcHAL
-    method: void AdcHAL::configureDiscontinuousMode ()
 
 === "ADC1 and PWMC"
     ![left_aligned_ADC_PWM_C](images/left_aligned_ADC_PWM_C.svg){ width=800 }
