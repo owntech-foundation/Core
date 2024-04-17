@@ -122,14 +122,14 @@ method: void configureDiscontinuousMode (uint8_t adc_number, uint32_t dicontinuo
     ![left_aligned_continuous_sampling](images/left_aligned_continuous_sampling.svg){ width=800 }
 
     ```c++
-        spin.pwm.configureDiscontinuousMode(1, 0);    
+        spin.adc.configureDiscontinuousMode(1, 0);    
     ```
 
 === "Discontinuous sequence "
     ![left_aligned_ADC_50](images/left_aligned_ADC_50.svg){ width=800 }
 
     ```c++
-        spin.pwm.configureDiscontinuousMode(1, 1);    
+        spin.adc.configureDiscontinuousMode(1, 1);    
     ```
 
 
