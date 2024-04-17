@@ -17,6 +17,25 @@ In power electronics, PWM is super important because it allows us to control the
 - Positive and negative dead time set via software
 - Phase shift possible for interleaved operations
 
+## How it works
+
+To generate a PWM you need two signals, a variable high frequency signals called the carrier and a constant signal called the duty cycle. 
+
+### Carrier signal
+
+Concerning the carrier, it is usually a counter in the form of a triangle wave. For example, it can be a counter incrementing from 0 to 27200.
+
+The increment between each step is made at the PWM resolution which is here 184ps, so the carrier gets from 0 to 27200 in 5µs so a frequency of 200kHz. 
+
+### Duty cycle
+
+The duty cycle is a constant value compared to the carrier. 
+
+When the carrier is superior to the duty cycle, the logic output is at high level. On the contrary, when the carrier is inferior to the duty cycle the the output logic is low level. A PWM signal is thus a sqarewave signal with a frequency (the **switching frequency**) is fixed by the carrier.
+
+Varying the duty cycle is how to vary the output of the PWM.
+
+
 ## Snippet examples
 
 ### Single/Dual Output
