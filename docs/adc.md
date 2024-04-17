@@ -14,7 +14,7 @@ An ADC, or Analog-to-Digital Converter, is a device that turns analog signals, l
     ```
 
     !!! example 
-    see the following example for an application :  
+        see the following example for an application :  
 
         - [Software trigerred ADC](https://owntech-foundation.github.io/Documentation/examples/SPIN/ADC/adc_software_trigger/) 
 
