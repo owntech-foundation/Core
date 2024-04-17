@@ -47,6 +47,26 @@ Varying the duty cycle is how to vary the output of the PWM.
 
 ## Snippet examples
 
+
+### Frequency
+
+=== "200kHz frequency"
+    ![frequency 200 kHz](images/frequency_200.svg){ width=800 }
+
+    ```c++
+        spin.pwm.setFrequency(PWMA, 200000);
+
+    ```
+
+
+=== "400kHz frequency"
+    ![frequency 400 kHz](images/frequency_400.svg){ width=800 }
+
+    ```c++
+        spin.pwm.setFrequency(PWMA, 400000);
+
+    ```
+
 ### Single/Dual Output
 
 === "Single Output"
