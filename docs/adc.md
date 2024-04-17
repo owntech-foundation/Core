@@ -156,5 +156,9 @@ Sampling times can be selected in order to take longer time measurement. It is s
     ```
 
 
+## API Reference 
+
+::: doxy.powerAPI.class
+name: AdcHAL
 
 
