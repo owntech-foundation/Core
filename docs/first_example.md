@@ -1,154 +1,149 @@
+The best way "to owntech" is to use our examples.
 
-The best way to OwnTech is to use our examples. In this section we will upload two examples together.
+In this section we will show you how to use our example interface.
 
 ## Requirements
 
-Before we start, make sure that you meet the requirements below
+Before you start, please make sure you fullfil the requirements below.
 
 !!! note "Requirements"
-     - Have your [VSCode Environment](vscode_setup.md) already setup
-     - Run your first compilation [successfully](vscode_setup.md#step-7---build-the-code).
+     - Have your [VSCode Environment](environment_setup.md#setup-your-work-environment) already setup
+     - Run your first compilation [successfully](environment_setup.md#step-6---build-our-core-code).
+     - Run your first upload [successfully](environment_setup.md#step-8---upload-our-core-code-in-your-spin-board).
      - Have an USB-C cable ready
-     - Have a SPIN board ready (stand-alone or embedded)
+     - Have a SPIN board ready (stand-alone or embedded on a TWIST)
+     - Have an internet connection up and running
 
-## Setup your hardware
+## Using the example interface
 
-Connect the SPIN board to your computer via the USB.
+We have developed an automatic method to use the examples available in our [github example repository](https://github.com/owntech-foundation/examples) within our environment.
 
-Notice that the LED2 must turn on.
-
-Here below you see the connection of a SPIN board embedded onto a TWIST board.
-
-![USB Connection of a SPIN board embeeded onto a TWIST board](images/example-fig1-usb_connection.svg)
-
-
-## Uploading your first code - Blinky
-
-
-The code you compiled in the [VSCode setup page](vscode_setup.md) is actually a Blinky example.
-
-We will upload this code to the SPIN board. To do so press the flash icon. (1)
-{.annotate}
-
-1. The flash icon looks like this: ![flash icon](images/icon-flash.png)
-
-VSCode and PlatformIO will automatically download all the necessary libraries to flash the SPIN board.
-
-If everything goes well, you will get a success as in the image below.
-
-![Success of your first upload](images/example-fig2-upload.png)
-
-
-!!! tip "Coffee time"
-    Depending on your machine, the first flash might take a while.
-    Time to pour another coffee.
-
-??? bug "macOS error - mcumgr"
-
-    === "macOS"
-         The upload requires a software called **mcumgr**.
-
-         As of the time of writing, we have experienced issues with some macOS devices in finding it.
-
-         Please refer to the [ongoing issue](https://github.com/owntech-foundation/Core/issues/5) to handle it if you have the error below.
-
-         ![macOS error](images/example-fig3-macos_mcuboot_error.png)
-
-You will see the LED blink.
-
-:party_popper: Congratulations! You have uploaded your first code!
-
-## Your first example
-
-Now that you can upload code to your SPIN board, we will use the example wizard of OwnTech.
+Here are the steps to use it.
 
 ### Step 1 - Open project tasks
 
-Click on the PlatformIO alien icon. (1) And follow the tabs below.
-{.annotate}
-
-1. The alien icon looks like this ![Alien icon](images/icon-platformio.png)
-
-=== "Project Tasks"
+=== " "
     ![Project tasks](images/example-fig4-platformio_tasks_1.png){align=left}
 
+    Click on the PlatformIO alien icon. (1)
+    {.annotate}
+
+    1. The alien icon looks like this ![Alien icon](images/icon-platformio.png)
+
     There are three group of tasks:
+
     - Default:
     - STLink:
-    - **USB:** These are the tasks we will work with.
+    - **USB:** These are the tasks we will work with
 
-=== "USB"
-    ![Initial view of project tasks](images/example-fig4-platformio_tasks_2.png){align=left}
 
-    There are multiple folders on the **USB tasks**.
-    We will work on **Examples SPIN**.
+!!! note "Environments"
+    These three groups of tasks are called "environments" in PlatformIO.
 
-=== "Examples SPIN"
-    ![Initial view of project tasks](images/example-fig4-platformio_tasks_3.png){align=left}
+    - **Default** is given by PlatformIO itself and we do not use it.
+    - **STLink** is the environment that supports using an STLink when interacting to the SPIN board.
+    - **USB** is the default environment which uses an USB cable to interact with the SPIN board.
 
-    Project tasks look like this
-
-=== "PWM examples"
-    ![Initial view of project tasks](images/example-fig4-platformio_tasks_4.png){align=left}
-
-    Project tasks look like this
-
-### Step 1 - Open Project tasks
-
-Click on the PlatformIO alien icon. (1) And follow the tabs below.
-{.annotate}
-
-1. The alien icon looks like this ![Alien icon](images/icon-platformio.png)
-
-![Project tasks](images/example-fig4-platformio_tasks_1.png)
-
-There are three group of tasks:
-- Default:
-- STLink:
-- **USB:** These are the tasks we will work with.
-
+    We will work with different environments in later more advanced examples.
 
 ### Step 2 - Open the USB tasks
 
-There are multiple folders on the **USB tasks**.
+=== " "
+    ![Initial view of project tasks](images/example-fig4-platformio_tasks_2.png){align=left}
 
-We will work on **Examples SPIN**.
+    There are multiple folders on the **USB tasks**.
 
-![Initial view of project tasks](images/example-fig4-platformio_tasks_2.png)
+    - From **General to Msciellaneous** are tasks by default that we don not use
+    - OwnTech: are tasks that can be used for more advanced users.
+    - Examples TWIST: are the examples dedicated to the TWIST board which we will see later.
+    - **Examples SPIN:** groups all the examples related to the SPIN board.
+
 
 ### Step 3 - Open the Examples SPIN folder
 
-Click on the **Examples SPIN** folder.
+=== " "
+     ![Initial view of project tasks](images/example-fig4-platformio_tasks_3.png){align=left}
 
-We will work on
+     Click on the **Examples SPIN** folder.
 
-![Initial view of project tasks](images/example-fig4-platformio_tasks_3.png)
+     You will see multiple examples on this folder.
+
+     - Blinky LED: Your trusted companion.
+     - Setting PWM: An example to create a single PWM signal
+     - Setting multiple PWM: An example for creating multiple PWM signals
+     - Setting PWM phase shift: An example for shifting two PWM signals
+     - DAC signal: An example for generating an analog signal from digital data
+     - Software triggered ADC: An example to activate
+     - HRTIM triggered ADC: An example to active an ADC measuremente using a hardware trigger
+     - Incremental encoder: An example on how to interface an incremental encoder to the SPIN board
+
 
 ### Step 4 - Get your example
 
-Click on the **Setting PWM duty cycle** example.
+=== " "
+     ![Initial view of project tasks](images/example-fig4-platformio_tasks_4.png){align=left}
 
-The file will be automatically downloaded and replace your `main.cpp`.
+     Click on the **Setting PWM duty cycle** example.
 
-![Initial view of project tasks](images/example-fig4-platformio_tasks_4.png)
-
-Your current code will be sent to the newly crated `/old/old0/src/` folder.
-
-You can access your old code anytime. Notice that the `readme.md` of the example was also downloaded.
-
-![View of the workspace after example download](images/example-fig5-workspace_after_example.png)
+     The file will be automatically downloaded and replace your `main.cpp`.
 
 
-### Step 5 - Upload your example
+### Step 5 - Build the example
 
-Click on the flash icon. (1)
+
+=== " "
+     ![View of the workspace after example download](images/example-fig5-workspace_after_example.png){align=left}
+
+     Go back to your VSCode Explorer tab.(1)
+     {.annotate}
+
+     1. The explorer tab icon looks like this: ![explorer icon](images/icon-explorer.png)
+
+     Notice that an `old/old0/src` folder has been created.
+     You will find your previous `main.cpp` in this folder.
+     This way you can access your old code anytime.
+
+     In the `src` folder, notice that an `Image` folder has been created and that the `readme.md` of the example was downloaded.
+
+     You can click on the new `main.cpp` file to explore the newly downloaded example.
+
+     When you are ready to build, click on the build icon. (1)
+     {.annotate}
+
+     1. The build icon looks like this: ![build icon](images/icon-build.png)
+
+
+### Step 6 - Upload the example
+
+If the build is successful, connect your SPIN board and click on the flash icon. (1)
 {.annotate}
 
 1. The flash icon looks like this: ![flash icon](images/icon-flash.png)
 
+!!! note "Connect your SPIN board"
+
+    Remember to connect your SPIN board to your computer to allow you to upload the new example.
+
+=== " "
+    ![View of the workspace after example download](images/example-fig6_output_PWM_example.png){align=left}
+
+    Once the upload is completed, the LED will stop blinking.
+
+    You can connect to the serial port by cliking on its icon. (1)
+    {.annotate}
+
+    1. The serial icon looks like this: ![serial icon](images/icon-serial.png)
+
+    VSCode will open a `TERMINAL` window and show what the SPIN board is writing on the console.
+
+    You should see a `0.300000` which represents a duty cycle of 30%.
 
 
+If you click on the terminal and push the `d` key on your keyboard, the value will go `DOWN` and decrease to `0.250000`.
 
+If you push the `u` key on your key board, the value will go `UP` and increase back to `0.300000`.
+
+Congratulations! you have uploaded your fist example. Do not hesitate to explore more examples either via our interface or our [repository](https://github.com/owntech-foundation/examples).
 
 ??? success "List of contributors"
     Here is a short list of contributors to this page:
@@ -164,3 +159,9 @@ Click on the flash icon. (1)
     - 2023.07.10: Luiz Villa
     - 2023.09.02: Mathilde Longuet
     - 2023.09.25: Mathilde Longuet
+
+
+*[ADC]: Analog-to-Digital Converter
+*[DAC]: Digital-to-Analog Converter
+*[PWM]: Pulse Width Modulation
+*[HRTIM]: High-Resolution Timer
