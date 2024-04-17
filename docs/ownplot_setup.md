@@ -13,7 +13,7 @@ Before you start, make sure you meet the requirements below.
      - Have a SPIN board ready and connected to your computer (stand-alone or embedded on a TWIST)
      - Have an internet connection up and running
 
-
+<!--
 ## Installing OwnPlot
 
 Choose your system and follow the installation procedure.
@@ -121,6 +121,8 @@ Great! Now that you have OwnPlot installed and all setup, we can proceed
 OwnPlot latest releases can be downloaded on [github](https://github.com/owntech-foundation/OwnPlot/releases)
 
 !!! warning "Performances issues"
+-->
+{% include '/OwnPlot/docs/user-manual/setup.md' %}
 
 	As of today, The last version available is [v0.6.0](https://github.com/owntech-foundation/OwnPlot/releases/tag/release-0.6.0).
 
