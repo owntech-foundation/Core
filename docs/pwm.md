@@ -2,20 +2,25 @@ PWM, or Pulse Width Modulation, is a method used in electronics to control the p
 
 In power electronics, PWM is super important because it allows us to control the average power delivered to a load by varying the duty cycle of the pulse. This means we can regulate the speed of motors or the brightness of LEDs.
 
-## Pin localizations
-
 ## Features
-- Up to 5 pair of PWMs possible (PWMA, PWC, PWMD, PWME, PWMF)
-- Each PWM unit has a resolution of 184ps.
-!!! note
-    The resolution of a PWM signal defines the maximum number of steps that can be present in a single PWM period. In other words, it determines how finely you can adjust the pulse width of the        signal. A higher resolution means you can make smaller and more precise adjustments to the pulse width.
 
-- Frequencies in the range of 650Hz to 1Ghz possible
-- Two different modulation mode possible : left aligned, and center aligned
-- Two ADC linkable to two differents PWM unit for precise measurement instant
-- Compatible for peak current control with the internal analog comparator
-- Positive and negative dead time set via software
-- Phase shift possible for interleaved operations
+=== " "
+
+    ![HRTIM pin](images/SPIN_1.1.0_main_hrtim.svg){ align=left }
+
+    - Up to 5 pair of PWMs possible (PWMA, PWC, PWMD, PWME, PWMF)
+    - Each PWM unit has a resolution of 184ps.
+    !!! note
+        The resolution of a PWM signal defines the maximum number of steps that can be present in a single PWM period. In other words, it determines how finely you can adjust the pulse width of the        signal. A higher resolution means you can make smaller and more precise adjustments to the pulse width.
+
+    - Frequencies in the range of 650Hz to 1Ghz theorically possible
+    !!! warning
+        Only 200Khz was tested with SPIN and TWIST
+    - Two different modulation mode possible : left aligned, and center aligned
+    - Two ADC linkable to two differents PWM unit for precise measurement instant
+    - Compatible for peak current control with the internal analog comparator
+    - Positive and negative dead time set via software
+    - Phase shift possible for interleaved operations
 
 ## How it works
 
@@ -25,11 +30,15 @@ To generate a PWM you need two signals, a variable high frequency signals called
 
 Concerning the carrier, it is usually a counter in the form of a triangle wave. For example, it can be a counter incrementing from 0 to 27200.
 
+![PWM carrier](images/Carrier_PWM.svg)
+
 The increment between each step is made at the PWM resolution which is here 184ps, so the carrier gets from 0 to 27200 in 5µs so a frequency of 200kHz. 
 
 ### Duty cycle
 
 The duty cycle is a constant value compared to the carrier. 
+
+![Duty cycle](images/changing_duty_cycle.gif)
 
 When the carrier is superior to the duty cycle, the logic output is at high level. On the contrary, when the carrier is inferior to the duty cycle the the output logic is low level. A PWM signal is thus a sqarewave signal with a frequency (the **switching frequency**) is fixed by the carrier.
 
