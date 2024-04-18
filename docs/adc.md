@@ -24,6 +24,19 @@
 Software triggers is generally speaking not suitable for applications that requires precise timing. 
 Sometimes measurement have to be taken at a specific time, in interaction with the control signal. 
 
+!!! info
+    This kind of acquisition have a side benefit. It operates in the background and does not interfer with software. 
+    It means that periodical sampling will not interrupt code execution. 
+
+The trigger is the PWM peripheral, the ADC performs the conversion and place the result in an output buffer, the output buffer is directly placed in memory by a DMA. A rather complex software mechanics execute periodically and serve each measurement in a dedicated memory space. The periodical routine is executed at the beggining of the controlTask. 
+
+!!! info 
+    Synchronous measurement require having a controlTask running. 
+
+!!! tip 
+    This page informs on how to parameters the triggering of the measurement
+    To retrieve measurement values please refer to DataAPI 
+
 The section below explain how to synchronize measurements with control signals.
 
 !!! note
