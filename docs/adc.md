@@ -7,9 +7,9 @@ SPIN boards have 5 independant ADC units. Each unit can measure multiple analog 
 
 !!! abstract "Capabilities"
     Each ADC channel has :  
-    * 12 bit resolution: 0b to 4096b  
-    * Sensing full scale: 0V to 2.048V  
-    * Sampling time down to 42ns
+    -  12 bit resolution: 0b to 4096b  
+    -  Sensing full scale: 0V to 2.048V  
+    -  Sampling time down to 42ns
 
 === "SPIN v1.1.0"
     ![SPIN_1_1_0_ADC_pinout_main](images/SPIN_1.0.0_main_adc.png){ width=451 align=left }
@@ -22,6 +22,31 @@ SPIN boards have 5 independant ADC units. Each unit can measure multiple analog 
 
 !!! info 
     ADC12 means that the pin can be used either as ADC1 or ADC2
+
+## Channel sequence
+
+Each ADC unit can measure multiple analog signal. This works by defining an acquisition sequence. 
+
+!!! tip
+    By default the aquisition sequence is in continuous mode. It means than one trigger will trigger all the sequence of acquisition. 
+    This can be changed using [Discontinuous Mode](### Continuous / Discontinuous sequence)
+
+!!! example 
+    === "3 channel on ADC1"
+    ```c++
+    spin.adc.enableChannel(1, 2)
+    spin.adc.enableChannel(1, 3)
+    spin.adc.enableChannel(1, 1)
+    ```
+    In this example, for each trigger action, the ADC1 will measure channel 2, then channel 3, then channel 1.
+
+    !!! note 
+        Sequence order is given by `spin.adc.enableChannel()` order.
+
+    === "Single channel"
+    ```spin.adc.enableChannel(1, 1)```
+
+    In this example, for each trigger, the ADC1 will measure  channel 1.
 
 ## Software triggered
 
