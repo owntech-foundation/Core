@@ -6,18 +6,19 @@
 SPIN boards have 5 independant ADC units. Each unit can measure multiple analog signals, using a measurment sequence.
 
 !!! abstract "Capabilities"
-    Each ADC channel has :
-    - 12 bit resolution: 0b to 4096b 
-    - Sensing full scale: 0V to 2.048V
-    - Sampling time down to 42ns
-
-=== "SPIN v1.0.0"
-    ![SPIN_1_0_0_ADC_pinout_main](images/SPIN_1.0.0_main_adc.png){ height=300 align=left }
-    ![SPIN_1_0_0_ADC_pinout_inner](images/SPIN_1.0.0_inner_adc.png){ height=300 }
+    Each ADC channel has :  
+    * 12 bit resolution: 0b to 4096b  
+    * Sensing full scale: 0V to 2.048V  
+    * Sampling time down to 42ns
 
 === "SPIN v1.1.0"
-    ![SPIN_1_1_0_ADC_pinout_main](images/SPIN_1.0.0_main_adc.png){ height=300 align=left }
-    ![SPIN_1_1_0_ADC_pinout_inner](images/SPIN_1.0.0_inner_adc.png){ height=300 }
+    ![SPIN_1_1_0_ADC_pinout_main](images/SPIN_1.0.0_main_adc.png){ width=451 align=left }
+    ![SPIN_1_1_0_ADC_pinout_inner](images/SPIN_1.0.0_inner_adc.png){ width=243 }
+
+=== "SPIN v1.0.0"
+    ![SPIN_1_0_0_ADC_pinout_main](images/SPIN_1.0.0_main_adc.png){ width=451 align=left }
+    ![SPIN_1_0_0_ADC_pinout_inner](images/SPIN_1.0.0_inner_adc.png){ width=243 }
+
 
 !!! info 
     ADC12 means that the pin can be used either as ADC1 or ADC2
