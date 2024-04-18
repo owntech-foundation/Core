@@ -204,3 +204,6 @@ Varying the duty cycle is how to vary the output of the PWM.
     - [How to set the trigger instant by linking adc trigger to PWM unit](https://owntech-foundation.github.io/Documentation/examples/SPIN/ADC/adc_hrtim_trigger/)  
 
     - [Managing phase shift between two PWM units](https://owntech-foundation.github.io/Documentation/examples/SPIN/PWM/phase_shift/)
+
+::: doxy.powerAPI.class
+name: PwmHAL
