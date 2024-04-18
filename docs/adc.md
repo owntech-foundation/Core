@@ -29,10 +29,10 @@ Each ADC unit can measure multiple analog signal. This works by defining an acqu
 
 !!! tip
     By default the aquisition sequence is in continuous mode. It means than one trigger will trigger all the sequence of acquisition. 
-    This can be changed using [Discontinuous Mode](### Continuous / Discontinuous sequence)
+    This can be changed using [Discontinuous Mode](#continuous-discontinuous-sequence)
 
 !!! example 
-    === "3 channel on ADC1"
+    === "3 channels on ADC1"
     ```c++
     spin.adc.enableChannel(1, 2)
     spin.adc.enableChannel(1, 3)
@@ -40,13 +40,13 @@ Each ADC unit can measure multiple analog signal. This works by defining an acqu
     ```
     In this example, for each trigger action, the ADC1 will measure channel 2, then channel 3, then channel 1.
 
-    !!! note 
-        Sequence order is given by `spin.adc.enableChannel()` order.
-
     === "Single channel"
     ```spin.adc.enableChannel(1, 1)```
 
     In this example, for each trigger, the ADC1 will measure  channel 1.
+
+!!! note 
+    Sequence order is given by `spin.adc.enableChannel()` order.
 
 ## Software triggered
 
