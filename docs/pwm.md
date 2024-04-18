@@ -1,6 +1,7 @@
-PWM, or Pulse Width Modulation, is a method used in electronics to control the power supplied to devices like motors, LEDs, and heaters. Instead of changing the voltage or current level, PWM changes the amount of time the power is on (the pulse width) compared to the time it's off.
+!!! note ""
+    PWM, or Pulse Width Modulation, is a method used in electronics to control the power supplied to devices like motors, LEDs, and heaters. Instead of changing the voltage or current level, PWM changes the amount of time the power is on (the pulse width) compared to the time it's off.
 
-In power electronics, PWM is super important because it allows us to control the average power delivered to a load by varying the duty cycle of the pulse. This means we can regulate the speed of motors or the brightness of LEDs.
+    In power electronics, PWM is super important because it allows us to control the average power delivered to a load by varying the duty cycle of the pulse. This means we can regulate the speed of motors or the brightness of LEDs.
 
 ## Features
 
@@ -26,13 +27,16 @@ In power electronics, PWM is super important because it allows us to control the
 
 To generate a PWM you need two signals, a variable high frequency signals called the carrier and a constant signal called the duty cycle. 
 
-### Carrier signal
+### Carrier signal and PWM resolution
 
-Concerning the carrier, it is usually a counter in the form of a triangle wave. For example, it can be a counter incrementing from 0 to 27200.
+The carrier signal is usually a counter in the form of a sawtooth or triangle wave. The frequency of the PWM is given by the max value of that counter. It means that the minimal duty cycle step of phase step, is proportional to the frequency of the signal.
 
-![PWM carrier](images/Carrier_PWM.svg)
+!!! example
+    Here is a counter incrementing from 0 to 27200.
+    ![PWM carrier](images/Carrier_PWM.svg)
 
-The increment between each step is made at the PWM resolution which is here 184ps, so the carrier gets from 0 to 27200 in 5µs so a frequency of 200kHz. 
+    The increment between each step is made at the PWM resolution which is here 184ps, so the carrier gets from 0 to 27200 in 5µs so a frequency of 200kHz.  
+    In other words the smallest step is 1/27200 or 0.0037% of the period. 
 
 ### Duty cycle
 
@@ -116,6 +120,11 @@ Varying the duty cycle is how to vary the output of the PWM.
     ```
 
 ### Phase Shift
+
+!!! tip 
+    PWMA is defined as the phase reference. It can not be phase shifted. 
+    If you are not using PWMA, you can define any PWM channel as the reference by setting its phase shift to 0°  
+    NB: Phase reference is 0°.
 
 === "20% Phase Shift"
     ![phase_shift_20](images/phase_shift_20.svg){ width=800 }
