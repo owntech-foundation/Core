@@ -12,8 +12,8 @@ SPIN boards have 5 independant ADC units. Each unit can measure multiple analog 
     -  Sampling time down to 42ns
 
 === "SPIN v1.1.0"
-    ![SPIN_1_1_0_ADC_pinout_main](images/SPIN_1.0.0_main_adc.png){ width=451 align=left }
-    ![SPIN_1_1_0_ADC_pinout_inner](images/SPIN_1.0.0_inner_adc.png){ width=243 }
+    ![SPIN_1_1_0_ADC_pinout_main](images/SPIN_1.1.0_main_adc.png){ width=451 align=left }
+    ![SPIN_1_1_0_ADC_pinout_inner](images/SPIN_1.1.0_inner_adc.png){ width=243 }
 
 === "SPIN v1.0.0"
     ![SPIN_1_0_0_ADC_pinout_main](images/SPIN_1.0.0_main_adc.png){ width=451 align=left }
@@ -21,7 +21,8 @@ SPIN boards have 5 independant ADC units. Each unit can measure multiple analog 
 
 
 !!! info 
-    ADC12 means that the pin can be used either as ADC1 or ADC2
+    -  ADC12 means that the pin can be used either as ADC1 or ADC2  
+    -  INx means that it is channel x. 
 
 ## Channel sequence
 
