@@ -59,6 +59,6 @@ In the powerAPI, non time critical tasks are refered as background tasks.
         ```
         In that case after executing `do_stuff();` the task will be suspended for 500us and resumed after. It creates a pseudo periodical task, runs every 500us + the time taken to execute `do_stuff()`.
 
-:::Doxy.powerAPI.class
+::: doxy.powerAPI.class
 name: TaskAPI
 
