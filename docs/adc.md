@@ -162,8 +162,7 @@ method: void configureDiscontinuousMode (uint8_t adc_number, uint32_t dicontinuo
 
 ### Measurment trigger instant
 
-!!! note 
-    This feature is only available in left aligned modulation.
+Trigger timing can be defined or changed dynamically. 
 
 === "20% Duty cycle"
     ![left_aligned_ADC_20](images/left_aligned_ADC_20.svg){ width=800 }
