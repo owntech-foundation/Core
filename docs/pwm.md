@@ -9,7 +9,7 @@
 
     ![HRTIM pin](images/SPIN_1.1.0_main_hrtim.svg){ align=left }
 
-    - Up to 5 pair of PWMs possible (PWMA, PWC, PWMD, PWME, PWMF)
+    - Up to 5 pairs of PWMs possible (PWMA, PWC, PWMD, PWME, PWMF)
     - Each PWM unit has a resolution of 184ps.
     !!! note
         The resolution of a PWM signal defines the maximum number of steps that can be present in a single PWM period. In other words, it determines how finely you can adjust the pulse width of the        signal. A higher resolution means you can make smaller and more precise adjustments to the pulse width.
@@ -22,6 +22,14 @@
     - Compatible for peak current control with the internal analog comparator
     - Positive and negative dead time set via software
     - Phase shift possible for interleaved operations
+
+## Include
+
+!!! note 
+    ```
+    #include <SpinAPI.h>
+    ```
+    Make sure that SPIN API is included to use AdcHAL 
 
 ## How it works
 
