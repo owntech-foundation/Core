@@ -43,6 +43,17 @@ SPIN boards have 5 independant ADC units. Each unit can measure multiple analog 
 6.  If hardware triggered : `data.start()`
 7.  Retrieve value : `data.getLatest(ADCx, pinx)`
 
+!!! example 
+    
+    === "Software triggered"
+        ```
+        dummy_code_block
+        ```
+    === "Hardware triggered"
+        ```
+        dummy_code_block
+        ```
+
 ## Channel sequence
 
 Each ADC unit can measure multiple analog signal. This works by defining an acquisition sequence. 
