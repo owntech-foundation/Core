@@ -24,6 +24,14 @@ SPIN boards have 5 independant ADC units. Each unit can measure multiple analog 
     -  ADC12 means that the pin can be used either as ADC1 or ADC2  
     -  INx means that it is channel x. 
 
+## Include
+
+!!! note 
+    ```
+    #include <SpinAPI.h>
+    ```
+    Make sure that SPIN API is included to use AdcHAL 
+
 ## Channel sequence
 
 Each ADC unit can measure multiple analog signal. This works by defining an acquisition sequence. 
