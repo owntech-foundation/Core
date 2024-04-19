@@ -32,6 +32,15 @@ SPIN boards have 5 independant ADC units. Each unit can measure multiple analog 
     ```
     Make sure that SPIN API is included to use AdcHAL 
 
+## Initialization sequence
+
+1.  `spin.adc.configureTriggerSource(ADCx, TRIG)`
+2.  Optional : `spin.adc.configureDiscontinuousMode(x, 0/1)`
+3.  `spin.adc.enableChannel(ADCx, channelx)`
+4.  Ìf software triggered : `data.triggerAcquisition(ADCx)`
+5.  If hardware triggered : `data.start()`
+6.  Retrieve value : `data.getLatest(ADCx, pinx)`
+
 ## Channel sequence
 
 Each ADC unit can measure multiple analog signal. This works by defining an acquisition sequence. 
