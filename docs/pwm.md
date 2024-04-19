@@ -130,14 +130,14 @@ Varying the duty cycle is how to vary the output of the PWM.
     ![phase_shift_20](images/phase_shift_20.svg){ width=800 }
 
     ```c++
-        spin.pwm.setPhaseShift(PWMA,  72);
+        spin.pwm.setPhaseShift(PWMC,  72);
     ```
 
 === "80% Phase Shift"
     ![phase_shift_80](images/phase_shift_80.svg){ width=800 }
 
     ```c++
-        spin.pwm.setPhaseShift(PWMA,  288);
+        spin.pwm.setPhaseShift(PWMC,  288);
     ```
 
 === "How it works"
