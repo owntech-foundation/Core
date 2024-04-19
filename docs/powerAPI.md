@@ -48,7 +48,8 @@
 
     Measurements done right in time
 
-    [:octicons-arrow-right-24: HAL Reference](https://owntech-foundation.github.io/Documentation/core/docs/adc/)
+    [:octicons-arrow-right-24: HAL Reference](https://owntech-foundation.github.io/Documentation/core/docs/adc/)  
+    
     [:octicons-arrow-right-24: API Reference](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/)
 
 -   :fontawesome-solid-microchip:{ .lg .middle } __Analog accelerated control loops__
@@ -59,7 +60,7 @@
 
     [:octicons-arrow-right-24: HAL Reference](#)
 
--   :fontawesome-solid-up-right-and-down-left-from-center":{ .lg .middle } __Real time synchronization__
+-   :fontawesome-solid-up-right-and-down-left-from-center:{ .lg .middle } __Real time synchronization__
 
     ---
 
@@ -73,7 +74,8 @@
 
     Send critical data, at real time pace.
 
-    [:octicons-arrow-right-24: Digital communication API](https://owntech-foundation.github.io/Documentation/powerAPI/classRs485Communication/)
+    [:octicons-arrow-right-24: Digital communication API](https://owntech-foundation.github.io/Documentation/powerAPI/classRs485Communication/)  
+
     [:octicons-arrow-right-24: Analog communication API](https://owntech-foundation.github.io/Documentation/powerAPI/classAnalogCommunication/)
 
 </div>
