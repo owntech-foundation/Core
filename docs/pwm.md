@@ -45,6 +45,17 @@
 10. `spin.pwm.startDualOutput(PWMx)` / `spin.pwm.startSingleOutput(PWMx, PWMx1/PWMx2)`
 11. if ADC hardware triggered : [follow ADC init sequence](adc/#initialization-sequence)
 
+!!! example 
+    
+    === "Software triggered"
+        ```
+        dummy_code_block
+        ```
+    === "Hardware triggered"
+        ```
+        dummy_code_block
+        ```
+
 ## How it works
 
 To generate a PWM you need two signals, a variable high frequency signals called the carrier and a constant signal called the duty cycle. 

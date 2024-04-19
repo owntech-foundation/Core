@@ -11,6 +11,14 @@
     ```
     Make sure that Data API is included
 
+## Initialization sequence 
+
+1.  if hardware triggered : [Make sure PWM engine is initialized](pwm/#initialization-sequence)
+2.  [Make sure ADC is initialized](adc/#initialization-sequence) 
+2.  Define acquisition conversion parameter: `data.setParameters()`
+3.  if Hardware triggered : `data.start()`
+4.  Retrieve values : `data.getLatest()` or `data.getRawValues()`
+`
 ## Retrieving values
 
 Getting the last measured value to feed the control algorithm is super simple. 
