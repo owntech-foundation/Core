@@ -3,6 +3,14 @@
 
     In the powerAPI context, the DataAPI helps the user retrieve the values sampled by the [ADC](adc.md)
 
+## Include
+
+!!! note 
+    ```
+    #include <DataAPI.h>
+    ```
+    Make sure that Data API is included
+
 ## Retrieving values
 
 Getting the last measured value to feed the control algorithm is super simple. 
