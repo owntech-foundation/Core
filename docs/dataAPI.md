@@ -19,7 +19,7 @@
 3.  if Hardware triggered : `data.start()`
 4.  Retrieve values : `data.getLatest()` or `data.getRawValues()`
 `
-## Retrieving values
+## Retrieving last value
 
 Getting the last measured value to feed the control algorithm is super simple. 
 
@@ -30,22 +30,21 @@ Getting the last measured value to feed the control algorithm is super simple.
         ```
         This will retrieve the last sampled value of ADC1 channel 1. 
 
-It is also possible to retrieve a vector containing multiple values. For that we use :
-
-
 ## Getting values with the right unit
 
 DataAPI contains commodity functions to convert the raw binary measurement values in meaningful units. 
 
 !!! example 
     === "Converting in volts"
+        ```data.setParameters()```
 
-    === "Converting in Degrees °C"
+## Get an array of values
 
-    Note that here the convertion in not a affine law but an exponential law to match a thermistor reading.
+DataAPI contains commodity function to retrieve an array of raw values that can be fed to a [post processing filter](controlLibrary/controlLibrary/docs/use-filters).
 
-!!! tip 
-    Conversion parameters are set in memory. They remain after reboot.
+!!! example 
+    === "Retrieve 5 values"
+        ```data.getRawValues()```
 
 ::: doxy.powerAPI.class
 name: DataAPI
