@@ -29,7 +29,21 @@
     ```
     #include <SpinAPI.h>
     ```
-    Make sure that SPIN API is included to use AdcHAL 
+    Make sure that SPIN API is included to use PwmHAL 
+
+## Initialization sequence
+
+1.  `spin.pwm.setModulation(PWMx, lft_aligned/upDwn)`
+2.  if ADC hardware triggered `spin.pwm.setAdcEdgeTrigger(PWMx, edgeTrigUp/edgeTrigDwn)`
+3.  if ADC hardware triggered `spin.pwm.setAdcDecimation(PWMx, DecimValue)`
+4.  `spin.pwm.setSwitchConvention(PWMx, PWMx1/PWMx2)`
+5.  `spin.pwm.setMode(PWMx, voltageMode/currentMode)`
+6.  `spin.pwm.initUnit(PWMx)`
+7.  can be changed after init : `spin.pwm.setDeadTime(PWMx, rise, fall)`
+8.  post init if hardware trigger: `spin.pwm.setAdcTrigger(PWMx, ADCtrig)`
+9.  `spin.pwm.enableAdcTrigger`
+10. `spin.pwm.startDualOutput(PWMx)` / `spin.pwm.startSingleOutput(PWMx, PWMx1/PWMx2)`
+11. if ADC hardware triggered : [follow ADC init sequence](adc/#initialization-sequence)
 
 ## How it works
 
