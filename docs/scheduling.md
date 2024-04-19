@@ -2,6 +2,14 @@
     PowerAPI is meant to deploy easily Real-time programs that must guarantee response within specified time constraints.  
     In that context, scheduling is the action of asigning computing ressources to perform tasks.  
 
+## Include
+
+!!! note 
+    ```
+    #include <TataAPI.h>
+    ```
+    Make sure that Task API is included
+
 ## Deploying a real time control task
 
 Having a periodical code execution is key to real time applications. It is easy to spawn one using the TaskAPI.
