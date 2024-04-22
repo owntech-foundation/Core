@@ -43,7 +43,7 @@ SPIN boards have 5 independant ADC units. Each unit can measure multiple analog 
         3.  trigger an adc [`data.triggerAcquisition()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-triggeracquisition)  
         4.  Retrieve value : [`data.getLatest(ADCx, pinx)`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getlatest-22)  
         ```
-    === "Hardware trigerred"
+    === "Hardware triggered"
         ```cpp
         1\. [Make sure PWM engine is initialized](pwm/#initialization-sequence)  
         2. Link an adc trigger event to the ADC [`spin.adc.configureTriggerSource(ADCx, TRIG)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-configuretriggersource)  
