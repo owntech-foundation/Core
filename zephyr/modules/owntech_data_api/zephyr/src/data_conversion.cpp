@@ -101,9 +101,13 @@ float32_t data_conversion_convert_raw_value(uint8_t adc_num, uint8_t channel_num
 		case conversion_linear:
 			return (raw_value*conversion_parameters[adc_index][channel_index][0]) + conversion_parameters[adc_index][channel_index][1];
 			break;
+		case no_channel_error:
+			return -5000;
+			break;
+		default:
+			return -5000;
+			break;
 	}
-
-	return 0;
 }
 
 void data_conversion_set_conversion_parameters_linear(uint8_t adc_num, uint8_t channel_num, float32_t gain, float32_t offset)
