@@ -33,27 +33,44 @@
 
 ## Initialization sequence
 
-1.  `spin.pwm.setModulation(PWMx, lft_aligned/upDwn)`
-2.  if ADC hardware triggered `spin.pwm.setAdcEdgeTrigger(PWMx, edgeTrigUp/edgeTrigDwn)`
-3.  if ADC hardware triggered `spin.pwm.setAdcDecimation(PWMx, DecimValue)`
-4.  `spin.pwm.setSwitchConvention(PWMx, PWMx1/PWMx2)`
-5.  `spin.pwm.setMode(PWMx, voltageMode/currentMode)`
-6.  `spin.pwm.initUnit(PWMx)`
-7.  can be changed after init : `spin.pwm.setDeadTime(PWMx, rise, fall)`
-8.  post init if hardware trigger: `spin.pwm.setAdcTrigger(PWMx, ADCtrig)`
-9.  `spin.pwm.enableAdcTrigger`
-10. `spin.pwm.startDualOutput(PWMx)` / `spin.pwm.startSingleOutput(PWMx, PWMx1/PWMx2)`
-11. if ADC hardware triggered : [follow ADC init sequence](adc/#initialization-sequence)
+1.  Set the modulation type : [`spin.pwm.setModulation(PWMx, lft_aligned/upDwn)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setmodulation)
+    - if ADC hardware triggered :
+      2. Set ow which edge (up/down) to trigger adc conversion [`spin.pwm.setAdcEdgeTrigger(PWMx, edgeTrigUp/edgeTrigDwn)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setadcedgetrigger)
+      3. Set the division of the number of trigger in a fixed period [`spin.pwm.setAdcDecimation(PWMx, DecimValue)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setadcdecimation)
+4. Set wich output (1 or 2) will be constrolled by the duty cycle, the other will be complementary [`spin.pwm.setSwitchConvention(PWMx, PWMx1/PWMx2)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setswitchconvention)
+5.  Set if the pwm is designed to be duty-cycle driven (voltage mode) or current driven (current mode) [`spin.pwm.setMode(PWMx, voltageMode/currentMode)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setmode)
+6.  Initialize the pwm unit : [`spin.pwm.initUnit(PWMx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-initunit)
+7.  Set the rising/falling dead time. Can be changed before/after init : [`spin.pwm.setDeadTime(PWMx, rise, fall)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setdeadtime)
+    - Post init if hardware trigger: 
+      8. Set wich ADC trigger to link to PWM unit [`spin.pwm.setAdcTrigger(PWMx, ADCtrig)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setadcedgetrigger)
+      9.  Enable the adc trigger [`spin.pwm.enableAdcTrigger`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-enableadctrigger)
+10. Set an initial value for the  duty cycle [`spin.pwm.setDutyCycle(0.5)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setdutycycle)
+11. Start the PWM, either start both outout or just one [`spin.pwm.startDualOutput(PWMx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-startdualoutput) / [`spin.pwm.startSingleOutput(PWMx, PWMx1/PWMx2)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-startsingleoutput)
+12. if ADC hardware triggered : [follow ADC init sequence](adc/#initialization-sequence)
 
 !!! example 
     
     === "Software triggered"
-        ```
-        dummy_code_block
+        ```cpp 
+        spin.pwm.setModulation(PWMA, UpDwn);
+        spin.pwm.setAdcEdgeTrigger(PWMA, EdgeTrigger_up);
+        spin.pwm.setAdcDecimation(PWMA, 1);
+        spin.pwm.setMode(PWMA, VOLTAGE_MODE);
+        spin.pwm.initUnit(PWMA);
+        spin.pwm.setDeadTime(PWMA, 200,200);
+        spin.pwm.setAdcTrigger(PWMA, ADCTRIG_1);
+        spin.pwm.enableAdcTrigger(PWMA);
+        spin.pwm.setDutyCycle(0.5);
+        spin.pwm.startDualOutput(PWMA);
         ```
     === "Hardware triggered"
         ```
-        dummy_code_block
+        spin.pwm.setModulation(PWMA, UpDwn);
+        spin.pwm.setMode(PWMA, VOLTAGE_MODE);
+        spin.pwm.initUnit(PWMA);
+        spin.pwm.setDeadTime(PWMA, 200,200);
+        spin.pwm.setDutyCycle(0.5);
+        spin.pwm.startDualOutput(PWMA);
         ```
 
 ## How it works
