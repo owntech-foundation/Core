@@ -34,24 +34,46 @@ SPIN boards have 5 independant ADC units. Each unit can measure multiple analog 
 
 ## Initialization sequence
 
-
-1.  if ADC hardware triggered : [Make sure PWM engine is initialized](pwm/#initialization-sequence)
-2.  `spin.adc.configureTriggerSource(ADCx, TRIG)`
-3.  Optional : `spin.adc.configureDiscontinuousMode(x, 0/1)`
-4.  Define acquisition sequence : `spin.adc.enableChannel(ADCx, channelx)`
-5.  Ìf software triggered : `data.triggerAcquisition(ADCx)`
-6.  If hardware triggered : `data.start()`
-7.  Retrieve value : `data.getLatest(ADCx, pinx)`
+    - if ADC hardware triggered :
+      1. [Make sure PWM engine is initialized](pwm/#initialization-sequence)
+      2. Link an adc trigger event to the ADC [`spin.adc.configureTriggerSource(ADCx, TRIG)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-configuretriggersource)
+      3. Set continuous/discontinuous conversion mode. Optional : [`spin.adc.configureDiscontinuousMode(x, 0/1)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-configurediscontinuousmode)
+4.  Define acquisition sequence by enabling adc channel : [`spin.adc.enableChannel(ADCx, channelx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-enablechannel)
+    - **Ìf software triggered** : 
+      5. Trigger an initial adc conversion [`data.triggerAcquisition(ADCx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-enablechannel)
+    - **If hardware triggered** : 
+      6. Start data dispatching to get acquired values [`data.start()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-start)
+7.  Retrieve value : [`data.getLatest(ADCx, pinx)`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getlatest-22)
 
 !!! example 
     
     === "Software triggered"
-        ```
-        dummy_code_block
+        ```cpp
+        spin.adc.configureTriggerSource(1, software);
+        data.triggerAcquisition(1);
+        spin.adc.enableChannel(1, 30);
+        float32_t adc_value = 	data.getLatest(1, 30);
         ```
     === "Hardware triggered"
-        ```
-        dummy_code_block
+        ```cpp
+        /* PWM unit initialization */
+        spin.pwm.setModulation(PWMA, UpDwn);
+        spin.pwm.setAdcEdgeTrigger(PWMA, EdgeTrigger_up);
+        spin.pwm.setAdcDecimation(PWMA, 1);
+        spin.pwm.setMode(PWMA, VOLTAGE_MODE);
+        spin.pwm.initUnit(PWMA);
+        spin.pwm.setDeadTime(PWMA, 200,200);
+        spin.pwm.setAdcTrigger(PWMA, ADCTRIG_1);
+        spin.pwm.enableAdcTrigger(PWMA);
+        spin.pwm.setDutyCycle(0.5);
+        spin.pwm.startDualOutput(PWMA);
+
+        /* ADC initialization */
+        spin.adc.configureTriggerSource(1, hrtim_eev1);
+        spin.adc.configureDiscontinuousMode(1,1);
+        spin.adc.enableChannel(1, 30);
+        data.start();
+        float32_t adc_value = 	data.getLatest(1, 30);
         ```
 
 ## Channel sequence
