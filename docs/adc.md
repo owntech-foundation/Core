@@ -41,8 +41,8 @@ SPIN boards have 5 independant ADC units. Each unit can measure multiple analog 
 4.  Define acquisition sequence by enabling adc channel : [`spin.adc.enableChannel(ADCx, channelx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-enablechannel)    
     &emsp; - **Ìf software triggered** :   
       &emsp; &emsp; 5. Trigger an initial adc conversion [`data.triggerAcquisition(ADCx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-enablechannel)  
-    &emsp; - **If hardware triggered** : 
-      &emsp; &emsp; 6. Start data dispatching to get acquired values [`data.start()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-start)
+    &emsp; - **If hardware triggered** :   
+      &emsp; &emsp; 6. Start data dispatching to get acquired values [`data.start()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-start)  
 7.  Retrieve value : [`data.getLatest(ADCx, pinx)`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getlatest-22)  
 
 !!! example 
