@@ -13,16 +13,6 @@
 
 ## Initialization sequence 
 
-&emsp; -**If hardware triggered** :  
-    &emsp; &emsp; 1\. [Make sure PWM engine is initialized](pwm/#initialization-sequence)   
-2.  [Make sure ADC is initialized](adc/#initialization-sequence)   
-3.  Define acquisition conversion parameter: [`data.setParameters()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-setparameters-22)       
-&emsp; **-If Hardware triggered** :  
-    &emsp; &emsp; 4.  start data dispatching [`data.start()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-start)  
-&emsp; **-If Software triggered** :  
-    &emsp; &emsp; 5. Trigger an initial adc conversion [`data.triggerAcquisition(ADCx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-enablechannel)   
-6.  Retrieve values : [`data.getLatest()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getlatest-12) or [`data.getRawValues()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getrawvalues-12)  
-`
 !!! Note
 
     === "Software triggered" 
@@ -31,7 +21,7 @@
         3. Trigger an initial adc conversion [`data.triggerAcquisition(ADCx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-enablechannel)   
         4.  Retrieve values : [`data.getLatest()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getlatest-12) or [`data.getRawValues()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getrawvalues-12)  
 
-    === "Hardware trigerred"
+    === "Hardware triggered"
         1\. [Make sure PWM engine is initialized](https://owntech-foundation.github.io/Documentation/core/docs/pwm/)   
         2.  [Make sure ADC is initialized](https://owntech-foundation.github.io/Documentation/core/docs/adc/)   
         3.  Define acquisition conversion parameter: [`data.setParameters()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-setparameters-22)       
