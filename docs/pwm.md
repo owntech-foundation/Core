@@ -48,6 +48,40 @@
 11. Start the PWM, either start both outout or just one [`spin.pwm.startDualOutput(PWMx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-startdualoutput) / [`spin.pwm.startSingleOutput(PWMx, PWMx1/PWMx2)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-startsingleoutput)      
 12. if ADC hardware triggered : [follow ADC init sequence](adc/#initialization-sequence)  
 
+!!! Note Pre-initialization
+    Function to call before initializing the PWM unit.
+
+    === "Software triggered"
+    1\.  Set the modulation type : [`spin.pwm.setModulation(PWMx, lft_aligned/upDwn)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setmodulation)  
+    2. Set wich output (1 or 2) will be controlled by the duty cycle, the other will be complementary [`spin.pwm.setSwitchConvention(PWMx, PWMx1/PWMx2)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setswitchconvention)  
+    3.  Set if the pwm is designed to be duty-cycle driven (voltage mode) or current driven (current mode) [`spin.pwm.setMode(PWMx, voltageMode/currentMode)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setmode)  
+    4.  Initialize the pwm unit : [`spin.pwm.initUnit(PWMx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-initunit)  
+
+    === "Hardware triggered"
+    1\.  Set the modulation type : [`spin.pwm.setModulation(PWMx, lft_aligned/upDwn)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setmodulation)  
+    2. Set ow which edge (up/down) to trigger adc conversion [`spin.pwm.setAdcEdgeTrigger(PWMx, edgeTrigUp/edgeTrigDwn)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setadcedgetrigger)  
+    3. Set the division of the number of trigger in a fixed period [`spin.pwm.setAdcDecimation(PWMx, DecimValue)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setadcdecimation)  
+    4. Set wich output (1 or 2) will be constrolled by the duty cycle, the other will be complementary [`spin.pwm.setSwitchConvention(PWMx, PWMx1/PWMx2)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setswitchconvention)  
+    5.  Set if the pwm is designed to be duty-cycle driven (voltage mode) or current driven (current mode) [`spin.pwm.setMode(PWMx, voltageMode/currentMode)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setmode)  
+    6.  Initialize the pwm unit : [`spin.pwm.initUnit(PWMx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-initunit)  
+
+!!! Note Post-initialization
+    Function to call after initializing PWM unit.
+
+    === "Software triggered"
+    1.  Set the rising/falling dead time. Can be changed before/after init : [`spin.pwm.setDeadTime(PWMx, rise, fall)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setdeadtime)  
+    2. Set an initial value for the  duty cycle [`spin.pwm.setDutyCycle(0.5)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setdutycycle)  
+    3. Start the PWM, either start both outout or just one [`spin.pwm.startDualOutput(PWMx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-startdualoutput) / [`spin.pwm.startSingleOutput(PWMx, PWMx1/PWMx2)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-startsingleoutput)      
+    4. if ADC hardware triggered : [follow ADC init sequence](adc/#initialization-sequence)  
+
+    === "Hardware triggered" 
+    1.  Set the rising/falling dead time. Can be changed before/after init : [`spin.pwm.setDeadTime(PWMx, rise, fall)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setdeadtime)  
+    2. Set wich ADC trigger to link to PWM unit [`spin.pwm.setAdcTrigger(PWMx, ADCtrig)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setadcedgetrigger)  
+    3.  Enable the adc trigger [`spin.pwm.enableAdcTrigger`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-enableadctrigger)  
+    4. Set an initial value for the  duty cycle [`spin.pwm.setDutyCycle(0.5)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setdutycycle)  
+    5. Start the PWM, either start both outout or just one [`spin.pwm.startDualOutput(PWMx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-startdualoutput) / [`spin.pwm.startSingleOutput(PWMx, PWMx1/PWMx2)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-startsingleoutput)      
+    6. if ADC hardware triggered : [follow ADC init sequence](adc/#initialization-sequence)  
+
 !!! example 
     
     === "Software triggered"
