@@ -13,12 +13,48 @@
 
 ## Initialization sequence 
 
-1.  if hardware triggered : [Make sure PWM engine is initialized](pwm/#initialization-sequence)
-2.  [Make sure ADC is initialized](adc/#initialization-sequence) 
-2.  Define acquisition conversion parameter: `data.setParameters()`
-3.  if Hardware triggered : `data.start()`
-4.  Retrieve values : `data.getLatest()` or `data.getRawValues()`
+&emsp; -**If hardware triggered** :  
+    &emsp; &emsp; 1\. [Make sure PWM engine is initialized](pwm/#initialization-sequence)   
+2.  [Make sure ADC is initialized](adc/#initialization-sequence)   
+3.  Define acquisition conversion parameter: [`data.setParameters()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-setparameters-22)       
+&emsp; **-If Hardware triggered** :  
+    &emsp; &emsp; 4.  start data dispatching [`data.start()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-start)  
+&emsp; **-If Software triggered** :  
+    &emsp; &emsp; 5. Trigger an initial adc conversion [`data.triggerAcquisition(ADCx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-enablechannel)   
+6.  Retrieve values : [`data.getLatest()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getlatest-12) or [`data.getRawValues()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getrawvalues-12)  
 `
+
+!!! example 
+    
+    === "Software triggered ADC"
+        ```cpp
+        spin.adc.configureTriggerSource(1, software);
+        data.triggerAcquisition(1);
+        spin.adc.enableChannel(1, 30);
+        float32_t adc_value = 	data.getLatest(1, 30);
+        ```
+    === "Hardware triggered ADC"
+        ```cpp
+        /* PWM unit initialization */
+        spin.pwm.setModulation(PWMA, UpDwn);
+        spin.pwm.setAdcEdgeTrigger(PWMA, EdgeTrigger_up);
+        spin.pwm.setAdcDecimation(PWMA, 1);
+        spin.pwm.setMode(PWMA, VOLTAGE_MODE);
+        spin.pwm.initUnit(PWMA);
+        spin.pwm.setDeadTime(PWMA, 200,200);
+        spin.pwm.setAdcTrigger(PWMA, ADCTRIG_1);
+        spin.pwm.enableAdcTrigger(PWMA);
+        spin.pwm.setDutyCycle(0.5);
+        spin.pwm.startDualOutput(PWMA);
+
+        /* ADC initialization */
+        spin.adc.configureTriggerSource(1, hrtim_eev1);
+        spin.adc.configureDiscontinuousMode(1,1);
+        spin.adc.enableChannel(1, 30);
+        data.start();
+        float32_t adc_value = 	data.getLatest(1, 30);
+        ```
+
 ## Retrieving last value
 
 Getting the last measured value to feed the control algorithm is super simple. 
