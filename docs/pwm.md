@@ -53,6 +53,15 @@
     === "Software triggered"
         ```cpp 
         spin.pwm.setModulation(PWMA, UpDwn);
+        spin.pwm.setMode(PWMA, VOLTAGE_MODE);
+        spin.pwm.initUnit(PWMA);
+        spin.pwm.setDeadTime(PWMA, 200,200);
+        spin.pwm.setDutyCycle(0.5);
+        spin.pwm.startDualOutput(PWMA);
+        ```
+    === "Hardware triggered"
+        ```cpp
+        spin.pwm.setModulation(PWMA, UpDwn);
         spin.pwm.setAdcEdgeTrigger(PWMA, EdgeTrigger_up);
         spin.pwm.setAdcDecimation(PWMA, 1);
         spin.pwm.setMode(PWMA, VOLTAGE_MODE);
@@ -60,15 +69,6 @@
         spin.pwm.setDeadTime(PWMA, 200,200);
         spin.pwm.setAdcTrigger(PWMA, ADCTRIG_1);
         spin.pwm.enableAdcTrigger(PWMA);
-        spin.pwm.setDutyCycle(0.5);
-        spin.pwm.startDualOutput(PWMA);
-        ```
-    === "Hardware triggered"
-        ```
-        spin.pwm.setModulation(PWMA, UpDwn);
-        spin.pwm.setMode(PWMA, VOLTAGE_MODE);
-        spin.pwm.initUnit(PWMA);
-        spin.pwm.setDeadTime(PWMA, 200,200);
         spin.pwm.setDutyCycle(0.5);
         spin.pwm.startDualOutput(PWMA);
         ```
