@@ -40,7 +40,7 @@ SPIN boards have 5 independant ADC units. Each unit can measure multiple analog 
       &emsp; &emsp; 3. Set continuous/discontinuous conversion mode. Optional : [`spin.adc.configureDiscontinuousMode(x, 0/1)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-configurediscontinuousmode)  
 4.  Define acquisition sequence by enabling adc channel : [`spin.adc.enableChannel(ADCx, channelx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-enablechannel)    
     &emsp; - **Ìf software triggered** :   
-      &emsp; &emsp; 5. Trigger an initial adc conversion [`data.triggerAcquisition(ADCx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-enablechannel)  
+    &emsp; &emsp; 5.  trigger an adc [`data.start()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-start)  
     &emsp; - **If hardware triggered** :   
       &emsp; &emsp; 6. Start data dispatching to get acquired values [`data.start()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-start)  
 7.  Retrieve value : [`data.getLatest(ADCx, pinx)`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getlatest-22)  
@@ -50,8 +50,8 @@ SPIN boards have 5 independant ADC units. Each unit can measure multiple analog 
     === "Software triggered"
         ```cpp
         spin.adc.configureTriggerSource(1, software);
-        data.triggerAcquisition(1);
         spin.adc.enableChannel(1, 30);
+        data.triggerAcquisition(1);
         float32_t adc_value = 	data.getLatest(1, 30);
         ```
     === "Hardware triggered"
