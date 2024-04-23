@@ -73,6 +73,7 @@
     === "Software triggered"
         ```cpp 
         spin.pwm.setModulation(PWMA, UpDwn);
+        spin.pwm.setSwitchConvention(PWMA, PWMx1);
         spin.pwm.setMode(PWMA, VOLTAGE_MODE);
         spin.pwm.initUnit(PWMA);
         spin.pwm.setDeadTime(PWMA, 200,200);
@@ -83,6 +84,7 @@
         ```cpp
         spin.pwm.setModulation(PWMA, UpDwn);
         spin.pwm.setAdcEdgeTrigger(PWMA, EdgeTrigger_up);
+        spin.pwm.setSwitchConvention(PWMA, PWMx1);
         spin.pwm.setAdcDecimation(PWMA, 1);
         spin.pwm.setMode(PWMA, VOLTAGE_MODE);
         spin.pwm.initUnit(PWMA);
