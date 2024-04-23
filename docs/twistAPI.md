@@ -1,6 +1,9 @@
+!!! Note ""
+    This API is compatible with TWIST, with a set of functions to control the output power.
+
 ## Features
 
-==== ""
+=== " "
     ![TWIST schema](images/TWIST_illustration.svg){ width=300 align=left }
     - Different control mode : voltage and peak current mode.
     - 2 legs can independently work with different topology : boost, buck
