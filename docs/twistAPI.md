@@ -9,6 +9,7 @@
     - 2 legs can independently work with different topology : boost, buck  
     - Configure different paramaters for power electronics (dead time, phase shift)  
     - Simplified ADC value retrieval  
+    - See [TWIST hardware specifications](https://github.com/owntech-foundation/TWIST) for more detail on TWIST board.
 
 ## Initialization sequence 
 
@@ -120,3 +121,42 @@ However having a constant peak current reference can causes subharmonic oscillat
 
 ![](images/current_mode_schema_final.svg){ width=600 }  
 ![](images/current_mode_pwm_scheme_final.svg)
+
+The sawtooth signal `Ipeak - Slope compensation` is generated with the function [`twist.setAllSlopeCompensation`](https://owntech-foundation.github.io/Documentation/powerAPI/classTwistAPI/#function-setallslopecompensation) or [`twist.steLegSlopeCompensation`](https://owntech-foundation.github.io/Documentation/powerAPI/classTwistAPI/#function-setallslopecompensation). It will set the slope compensation so that you get the input parameter of the functions for example `twist.setAllSlopeCompensation(1.4, 1.0)` generate a sawtooth signal between 1.4V and 1.0V, you can have a sawtooth between 2.048V and  0V. This signal is then compared with the value of the current coming in the ADC, so you need to take into account the conversion of current to voltage when choosing the sawtooth parameter.
+
+
+## Snippets examples
+
+### Buck topology
+
+![](images/twist_buck_conf.png){ width=400 }
+
+```cpp
+    twist.initAllBuck();
+    twist.setAllDutyCycle(0.5);
+    twist.startAll();
+```
+
+### Boost topology 
+
+![](images/twist_boost_conf.png){ width=400 }
+
+```cpp
+    twist.initAllBoost();
+    twist.setAllDutyCycle(0.5);
+    twist.startAll();
+```
+
+### Inverter topology
+
+![](images/twist_inverter_conf.png){ width=400 }
+
+```cpp
+    twist.initLegBuck(LEG1);
+    twist.initLegBoost(LEG2);
+    twist.setAllDutyCycle(0.5);
+    twist.startAll();
+```
+
+::: doxy.twistAPI.class
+name: twistAPI
