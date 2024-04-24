@@ -5,20 +5,14 @@
  width="955.000000pt" height="735.000000pt" viewBox="0 0 955.000000 735.000000"
  preserveAspectRatio="xMidYMid meet">
   
-  <style>
-    :root {
-      --fill-color: #FFFFFF; /* Couleur de remplissage par défaut (light mode) */
-      --stroke-color: #FFFFFF; /* Couleur de trait par défaut (light mode) */
-    }
-    
-    /* Dark mode */
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --fill-color: #000000; /* Couleur de remplissage pour le dark mode */
-        --stroke-color: #000000; /* Couleur de trait pour le dark mode */
-      }
-    }
-  </style>
+   <style>
+        path {
+            fill: black;
+        }
+        @media (prefers-color-scheme: dark) {
+            path { fill: white; }
+        }
+    </style>
   
 <g transform="translate(0.000000,735.000000) scale(0.100000,-0.100000)"
 fill="#000000" stroke="none">
