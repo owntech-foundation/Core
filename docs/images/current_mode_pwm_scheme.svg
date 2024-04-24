@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+ <style>
+    path {
+    fill: black;
+    }
+    @media (prefers-color-scheme: dark) {
+    path {
+    fill: white;
+    }
+    }
+  </style>
+
 <svg
    version="1.0"
    width="792.000000pt"
