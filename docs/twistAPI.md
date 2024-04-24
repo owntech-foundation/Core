@@ -104,4 +104,19 @@ Voltage mode is the classic way where we control the output voltage from the dut
 
 In peak current mode control, the controller monitors the current flowing through the power switch. When the current reaches its peak value, the controller turns off the power switch. This helps in maintaining a constant output voltage.
 
-![](images/current_mode%20_schema.svg)
+Below a simple schematic example to understand how it works in a buck configuration :
+
+![](images/current_mode_schema.svg){ width=600 }  
+_Source : STM32 AN5497_
+
+ A clock generate the moment to close the switch (it defines the switching frequency), the controller sends a reference of the peak current and when the inductors current reach this value we open the switch.
+
+
+![](images/current_mode_pwm_scheme.svg){ width=600 }  
+_Source : STM32 AN5497_
+
+
+However having a constant peak current reference can causes subharmonic oscillations. To avoid that we use what we call **slope compensation**. The peak current reference is a sawtooth instead of a constant value. So the final schema will look like this :
+
+![](images/current_mode_schema_final.svg){ width=600 }  
+![](images/current_mode_pwm_scheme_final.svg)
