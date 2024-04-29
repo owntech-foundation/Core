@@ -48,7 +48,7 @@ child-binding:
       required : true
       description : Current mode is used to control the output current. We use a comparator and DAC generation
                     for slope compensation. The availability of the current mode depends on the pin connected
-                    to the current measure.
+                    to the current measure. Below you can see every possible pin. Choose 0 if no pin is required. 
 
       # +----------+-----------------+
       # | GPIO PIN | SPIN PIN NUMBER |
@@ -56,7 +56,16 @@ child-binding:
       # | PA1      | 25              |
       # | PC1      | 30              |
       # +----------+-----------------+
+    
+    capa-pin-num :
+      type : int
+      required : true
+      description : It is the pin driving the electrolytic capacitor since twist V1.4.0. Choose 0 if no pin is required.
 
+    driver-pin-num :
+      type : int
+      required : true
+      description : It is the pin driving the optocoupler for the mosfet driver since twist V1.3. Choose 0 if no pin is required.
 
     adc-trigger :
       type : string
