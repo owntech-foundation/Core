@@ -102,10 +102,10 @@ float32_t data_conversion_convert_raw_value(uint8_t adc_num, uint8_t channel_num
 			return (raw_value*conversion_parameters[adc_index][channel_index][0]) + conversion_parameters[adc_index][channel_index][1];
 			break;
 		case no_channel_error:
-			return -5000;
+			return ERROR_CHANNEL_NOT_FOUND;
 			break;
 		default:
-			return -5000;
+			return ERROR_CHANNEL_NOT_FOUND;
 			break;
 	}
 }
