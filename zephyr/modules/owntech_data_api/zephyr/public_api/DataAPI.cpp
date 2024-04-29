@@ -115,6 +115,12 @@ void DataAPI::setTwistChannelsUserCalibrationFactors()
 	shield_channels_set_user_acquisition_parameters();
 }
 
+int8_t DataAPI::getParametersFromNVS(channel_t channel)
+{
+	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
+	return data_conversion_retrieve_channel_parameters_from_nvs(channel_info.adc_num, channel_info.channel_num);
+}
+
 #endif // CONFIG_SHIELD_TWIST
 
 
