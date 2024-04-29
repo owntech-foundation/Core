@@ -1,12 +1,12 @@
 !!! note ""
-    PowerAPI is meant to deploy easily Real-time programs that must guarantee response within specified time constraints.  
-    In that context, scheduling is the action of asigning computing ressources to perform tasks.  
+    PowerAPI is meant to deploy easily Real-time programs that must guarantee response within specified time constraints.
+    In that context, scheduling is the action of asigning computing ressources to perform tasks.
 
 ## Include
 
-!!! note 
+!!! note
     ```
-    #include <TataAPI.h>
+    #include <TaskAPI.h>
     ```
     Make sure that Task API is included
 
@@ -17,24 +17,24 @@ Having a periodical code execution is key to real time applications. It is easy 
 !!! example
     === "20kHz Periodic task based on PWM"
         ```
-            spin.taskAPI.createCritical(my_critical_function, 50, HRTIM);
-            spin.taskAPI.startCritical();
+            task.createCritical(my_critical_function, 50, HRTIM);
+            task.startCritical();
         ```
     === "10kHz Periodic task based on Timer6"
         ```
-            spin.taskAPI.createCritical(my_critical_function, 100, TIM6);
-            spin.taskAPI.startCritical();
+            task.createCritical(my_critical_function, 100, TIM6);
+            task.startCritical();
         ```
 
-A periodic task runs on a trigger based on a counter. Each time the counter is reached, the control task is executed. 
+A periodic task runs on a trigger based on a counter. Each time the counter is reached, the control task is executed.
 
 !!! note
-    The control task has priority over any other task. It will preempts any [background task](#non-time-critical-tasks).  
+    The control task has priority over any other task. It will preempts any [background task](#non-time-critical-tasks).
     The control task can not be preempted. That is why it is also refered as an ininteruptible task.
 
 Often the control task has to be in sync with the output PWM signals. Has the [PWM generator is a counter](pwm/#carrier-signal-and-pwm-resolution), the trigger source of the control task can be the PWMs.
 
-!!! tip 
+!!! tip
     If PWM counter is used as the clock source for the control task, the period has to be a multiple of PWM frequency.
     It is not the case if Timer6 is used a clock source.
 
@@ -42,11 +42,11 @@ Often the control task has to be in sync with the output PWM signals. Has the [P
     Periodic clock source for the control task can be choosed between PWM and Timer6.
 
 !!! tip
-    Having a control Task is required for [synchronous measurements](adc/#synchronous-with-pwms) to work correctly. 
+    Having a control Task is required for [synchronous measurements](adc/#synchronous-with-pwms) to work correctly.
 
 ## Non time critical tasks
 
-In the powerAPI, non time critical tasks are refered as background tasks. 
+In the powerAPI, non time critical tasks are refered as background tasks.
 
 !!! example
     === "Spawning a background task"
@@ -69,4 +69,3 @@ In the powerAPI, non time critical tasks are refered as background tasks.
 
 ::: doxy.powerAPI.class
 name: TaskAPI
-
