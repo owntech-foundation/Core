@@ -1,15 +1,15 @@
 !!! Note ""
-    This API is compatible with TWIST, with a set of functions to control the output power.
+    This API is designed to work with the TWIST hardware, providing a set of functions to manage and control the output power.
 
 ## Features
 
 === " "
     ![TWIST schema](images/TWIST_illustration.svg){ width=200 align=left }  
-    - Different control mode : voltage and peak current mode.  
-    - 2 legs can independently work with different topology : boost, buck  
-    - Configure different paramaters for power electronics (dead time, phase shift)  
-    - Simplified ADC value retrieval  
-    - See [TWIST hardware specifications](https://github.com/owntech-foundation/TWIST) for more detail on TWIST board.
+    - **Versatile Control Modes**: The API supports both voltage and peak current control modes, allowing you to choose the best option for your specific application.  
+    - **Independent Leg Operation**: Each of the two legs can operate independently with different topologies, such as boost or buck, offering greater flexibility in power management.
+    - **Configure different paramaters** for power electronics (dead time, phase shift)  
+    - **Simplified ADC value retrieval**  
+    - Refer to [TWIST hardware specifications](https://github.com/owntech-foundation/TWIST) for more detail on TWIST board.
 
 ## Initialization sequence 
 
@@ -97,32 +97,38 @@ There is two different way to control the power delivered by TWIST : voltage and
 
 ### Voltage mode
 
-Voltage mode is the classic way where we control the output voltage from the duty cycle. The duty cycle in power electronics controls the power delivered to a load by regulating the proportion of time that a switch (such as a transistor) is on compared to the total switching period. A higher duty cycle means the switch is on for a greater portion of the time, delivering more power to the load. Conversely, a lower duty cycle reduces the power delivered. Thus, by adjusting the duty cycle, the average power and voltage applied to the load can be controlled effectively. 
+Voltage mode is a traditional and widely-used approach in power electronics, where the output voltage is regulated by controlling the duty cycle. The duty cycle is a crucial parameter that determines the proportion of time a switch (such as a transistor) is active during a complete switching period. By adjusting the duty cycle, you can effectively manage the power delivered to a load.
+
+A higher duty cycle indicates that the switch remains on for a more extended period, resulting in increased power delivery to the load. Conversely, a lower duty cycle means the switch is on for a shorter duration, thereby reducing the power supplied. Consequently, the average power and voltage applied to the load can be precisely controlled by fine-tuning the duty cycle.
 
 ![duty cycle](./images/changing_duty_cycle.gif)
 
 ### Current mode
 
-In peak current mode control, the controller monitors the current flowing through the power switch. When the current reaches its peak value, the controller turns off the power switch. This helps in maintaining a constant output voltage.
+In peak current mode control,  we monitors the current flowing through the power switch. Once the current reaches a predetermined peak value, we promptly turns off the power switch. This mechanism helps maintain a constant output voltage by regulating the current flow.
 
 Below a simple schematic example to understand how it works in a buck configuration :
 
 ![](images/current_mode_schema.svg){ width=600 }  
 _Source : STM32 AN5497_
 
- A clock generate the moment to close the switch (it defines the switching frequency), the controller sends a reference of the peak current and when the inductors current reach this value we open the switch.
+ In this setup, a clock signal determines the switching frequency and triggers the switch to close. The controller then sends a reference peak current value. When the inductor's current reaches this reference value, the switch opens.
 
 
 ![](images/current_mode_pwm_scheme.svg){ width=600 }  
 _Source : STM32 AN5497_
 
 
-However having a constant peak current reference can causes subharmonic oscillations. To avoid that we use what we call **slope compensation**. The peak current reference is a sawtooth instead of a constant value. So the final schema will look like this :
+However, using a constant peak current reference can lead to subharmonic oscillations. To prevent this issue, we employ a technique called slope compensation. Instead of a constant value, the peak current reference is a sawtooth waveform. The final schematic with slope compensation is shown below:
 
 ![](images/current_mode_schema_final.svg){ width=600 }  
 ![](images/current_mode_pwm_scheme_final.svg)
 
-The sawtooth signal `Ipeak - Slope compensation` is generated with the function [`twist.setAllSlopeCompensation`](https://owntech-foundation.github.io/Documentation/powerAPI/classTwistAPI/#function-setallslopecompensation) or [`twist.steLegSlopeCompensation`](https://owntech-foundation.github.io/Documentation/powerAPI/classTwistAPI/#function-setallslopecompensation). It will set the slope compensation so that you get the input parameter of the functions for example `twist.setAllSlopeCompensation(1.4, 1.0)` generate a sawtooth signal between 1.4V and 1.0V, you can have a sawtooth between 2.048V and  0V. This signal is then compared with the value of the current coming in the ADC, so you need to take into account the conversion of current to voltage when choosing the sawtooth parameter.
+The sawtooth signal `Ipeak - Slope compensation` is generated with the function [`twist.setAllSlopeCompensation`](https://owntech-foundation.github.io/Documentation/powerAPI/classTwistAPI/#function-setallslopecompensation) or [`twist.steLegSlopeCompensation`](https://owntech-foundation.github.io/Documentation/powerAPI/classTwistAPI/#function-setallslopecompensation). These functions set the slope compensation based on the input parameters.  for example `twist.setAllSlopeCompensation(1.4, 1.0)` generates a sawtooth signal ranging from 1.4V to 1.0V. You can create a sawtooth signal between 2.048V and 0V as well.
+
+This sawtooth signal is then compared with the ADC's current value. When selecting the sawtooth parameters, it's essential to consider the conversion of current to voltage.
+
+On the TWIST board, a voltage value of 1.024V on the ADC corresponds to a current of 0A. The system has a gain of 100mV per ampere, meaning that for each ampere increase in current, the voltage value increases by 100 millivolts. 
 
 
 ## Snippets examples
@@ -157,6 +163,13 @@ The sawtooth signal `Ipeak - Slope compensation` is generated with the function 
     twist.setAllDutyCycle(0.5);
     twist.startAll();
 ```
+!!! example
+
+    Check the following examples for an application :  
+        - [Voltage mode buck](https://owntech-foundation.github.io/Documentation/examples/TWIST/DC_DC/buck_voltage_mode/)  
+        - [Current mode buck](https://owntech-foundation.github.io/Documentation/examples/TWIST/DC_DC/buck_current_mode/)  
+        - [Voltage mode boost](https://owntech-foundation.github.io/Documentation/examples/TWIST/DC_DC/boost_voltage_mode/)  
+
 
 ::: doxy.powerAPI.class
 name: TwistAPI
