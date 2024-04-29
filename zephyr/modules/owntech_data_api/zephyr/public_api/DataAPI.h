@@ -243,6 +243,23 @@ public:
 	void setParameters(channel_t channel, float32_t gain, float32_t offset);
 
 	/**
+	 * @brief Use this function to write the gain and offset parameters of the board to is non-volatile memory.
+	 *
+	 * @note  This function should be called after updating the parameters using setParameters.
+	 *
+	 * @param channel Name of the shield channel to save the values.
+	 */
+	int8_t saveParametersInNVS(channel_t channel);
+
+	/**
+	 * @brief Use this function to read the gain and offset parameters of the board to is non-volatile memory.
+	 *
+	 * @param channel Name of the shield channel to save the values.
+	 */
+	int8_t getParametersFromNVS(channel_t channel);
+
+
+	/**
 	 * @brief Retrieve stored parameters from Flash memory and configure ADC parameters
 	 *
 	 * @note  This function requires Console to interact with the user.
