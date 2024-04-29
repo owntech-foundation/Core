@@ -157,3 +157,6 @@ The sawtooth signal `Ipeak - Slope compensation` is generated with the function 
     twist.setAllDutyCycle(0.5);
     twist.startAll();
 ```
+
+::: doxy.powerAPI.class
+name: TwistAPI
