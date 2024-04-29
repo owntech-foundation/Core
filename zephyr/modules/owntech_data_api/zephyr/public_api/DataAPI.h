@@ -46,6 +46,8 @@
 #define ADC_3 3
 #define ADC_4 4
 
+#define ERROR_CHANNEL_OFF -5
+#define ERROR_CHANNEL_NOT_FOUND -5000
 
 typedef enum : uint8_t
 {
@@ -259,7 +261,7 @@ public:
 	 * @param channel Name of the shield channel to get a conversion parameter.
 	 * @param parameter_name Paramater to be retreived: `gain` or `offset`.
 	 */
-	float32_t getParameter(channel_t channel, parameter_t parameter_name);
+	float32_t retrieveStoredParameterValue(channel_t channel, parameter_t parameter_name);
 
 	/**
 	 * @brief Use this function to get the current conversion type for the chosen channel.
@@ -268,7 +270,7 @@ public:
 	 *
 	 * @param channel Name of the shield channel to get a conversion parameter.
 	 */
-	conversion_type_t getConversionType(channel_t channel);
+	conversion_type_t retrieveStoredConversionType(channel_t channel);
 
 
 	/**
@@ -278,14 +280,14 @@ public:
 	 *
 	 * @param channel Name of the shield channel to save the values.
 	 */
-	int8_t saveParametersInNVS(channel_t channel);
+	int8_t storeParametersInMemory(channel_t channel);
 
 	/**
 	 * @brief Use this function to read the gain and offset parameters of the board to is non-volatile memory.
 	 *
 	 * @param channel Name of the shield channel to save the values.
 	 */
-	int8_t getParametersFromNVS(channel_t channel);
+	int8_t retrieveParametersFromMemory(channel_t channel);
 
 
 	/**
@@ -555,7 +557,7 @@ public:
 	 *
 	 * @return Returns the value of the parameter. Returns -5000 if the channel is not active.
 	 */
-	float32_t getParameter(uint8_t adc_num, uint8_t pin_num, parameter_t parameter_name);
+	float32_t retrieveStoredParameterValue(uint8_t adc_num, uint8_t pin_num, parameter_t parameter_name);
 
 	/**
 	 * @brief Use this function to get the current conversion type for the chosen channel.
@@ -566,7 +568,7 @@ public:
 	 *
 	 * @return Returns the type of convertion of the given pin. Returns -5 if the channel is not active.
 	 */
-	conversion_type_t getConversionType(uint8_t adc_num, uint8_t pin_num);
+	conversion_type_t retrieveStoredConversionType(uint8_t adc_num, uint8_t pin_num);
 
 
 	/**
@@ -577,9 +579,9 @@ public:
 	 *
 	 * @return 0 if parameters were correcly stored, negative value if there was an error:
 	 * 			-1: There was an error,
-	 * 			-5: No parameters are available for the selected pin.
+	 * 			-5000: Channel not found.
 	 */
-	int8_t saveParametersInNVS(uint8_t adc_num, uint8_t pin_num);
+	int8_t storeParametersInMemory(uint8_t adc_num, uint8_t pin_num);
 
 	/**
 	 * @brief Retreived previously configured conversion parameters from NVS.
@@ -592,9 +594,9 @@ public:
 	 *         -2: NVS contains data, but their version doesn't match current version
 	 *         -3: NVS data is corrupted
 	 *         -4: NVS contains data, but not for the requested channel
-	 *         -5: No parameters are available for the selected pin
+	 *         -5000: Channel not found.
 	 */
-	int8_t getParametersFromNVS(uint8_t adc_num, uint8_t pin_num);
+	int8_t retrieveParametersFromMemory(uint8_t adc_num, uint8_t pin_num);
 
 
 

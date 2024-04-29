@@ -110,22 +110,26 @@ void DataAPI::setParameters(channel_t channel, float32_t gain, float32_t offset)
 	data_conversion_set_conversion_parameters_linear(channel_info.adc_num, channel_info.channel_num, gain, offset);
 }
 
-float32_t DataAPI::getParameter(channel_t channel, parameter_t parameter_name)
+float32_t DataAPI::retrieveStoredParameterValue(channel_t channel, parameter_t parameter_name)
 {
 	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
 	return data_conversion_get_parameter(channel_info.adc_num,channel_info.channel_num, parameter_name);
 
 }
 
-conversion_type_t DataAPI::getConversionType(channel_t channel)
+conversion_type_t DataAPI::retrieveStoredConversionType(channel_t channel)
 {
 	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
 	return data_conversion_get_conversion_type(channel_info.adc_num,channel_info.channel_num);
 }
 
+int8_t DataAPI::retrieveParametersFromMemory(channel_t channel)
+{
+	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
+	return data_conversion_retrieve_channel_parameters_from_nvs(channel_info.adc_num, channel_info.channel_num);
+}
 
-
-int8_t DataAPI::saveParametersInNVS(channel_t channel)
+int8_t DataAPI::storeParametersInMemory(channel_t channel)
 {
 	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
 	return data_conversion_store_channel_parameters_in_nvs(channel_info.adc_num, channel_info.channel_num);
@@ -136,11 +140,6 @@ void DataAPI::setTwistChannelsUserCalibrationFactors()
 	shield_channels_set_user_acquisition_parameters();
 }
 
-int8_t DataAPI::getParametersFromNVS(channel_t channel)
-{
-	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
-	return data_conversion_retrieve_channel_parameters_from_nvs(channel_info.adc_num, channel_info.channel_num);
-}
 
 #endif // CONFIG_SHIELD_TWIST
 
@@ -258,7 +257,7 @@ float32_t DataAPI::convert(uint8_t adc_num, uint8_t pin_num, uint16_t raw_value)
 	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
 	if (channel_num == 0)
 	{
-		return -5000;
+		return ERROR_CHANNEL_NOT_FOUND;
 	}
 
 	return data_conversion_convert_raw_value(adc_num, channel_num, raw_value);
@@ -276,42 +275,42 @@ void DataAPI::setParameters(uint8_t adc_num, uint8_t pin_num, float32_t gain, fl
 }
 
 
-int8_t DataAPI::saveParametersInNVS(uint8_t adc_num, uint8_t pin_num)
+int8_t DataAPI::storeParametersInMemory(uint8_t adc_num, uint8_t pin_num)
 {
 	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
 	if (channel_num == 0)
 	{
-		return -5;
+		return ERROR_CHANNEL_NOT_FOUND;
 	}
 
 	return data_conversion_store_channel_parameters_in_nvs(adc_num, channel_num);
 }
 
 
-int8_t DataAPI::getParametersFromNVS(uint8_t adc_num, uint8_t pin_num)
+int8_t DataAPI::retrieveParametersFromMemory(uint8_t adc_num, uint8_t pin_num)
 {
 	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
 	if (channel_num == 0)
 	{
-		return -5;
+		return ERROR_CHANNEL_NOT_FOUND;
 	}
 
 	return data_conversion_retrieve_channel_parameters_from_nvs(adc_num, channel_num);
 }
 
-float32_t DataAPI::getParameter(uint8_t adc_num, uint8_t pin_num, parameter_t parameter_name)
+float32_t DataAPI::retrieveStoredParameterValue(uint8_t adc_num, uint8_t pin_num, parameter_t parameter_name)
 {
 	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
 	if (channel_num == 0)
 	{
-		return -5000;
+		return ERROR_CHANNEL_NOT_FOUND;
 	}
 
 	return data_conversion_get_parameter(adc_num,channel_num, parameter_name);
 
 }
 
-conversion_type_t DataAPI::getConversionType(uint8_t adc_num, uint8_t pin_num)
+conversion_type_t DataAPI::retrieveStoredConversionType(uint8_t adc_num, uint8_t pin_num)
 {
 	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
 	if (channel_num == 0)
