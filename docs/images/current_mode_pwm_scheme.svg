@@ -17,9 +17,15 @@
     path {
     fill: black;
     }
+    text {
+    fill: black;
+    }
     @media (prefers-color-scheme: dark) {
     path {
     fill: white;
+    }
+    text {
+    fill: white ;
     }
     }
   </style>
