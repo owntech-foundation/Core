@@ -110,6 +110,21 @@ void DataAPI::setParameters(channel_t channel, float32_t gain, float32_t offset)
 	data_conversion_set_conversion_parameters_linear(channel_info.adc_num, channel_info.channel_num, gain, offset);
 }
 
+float32_t DataAPI::getParameter(channel_t channel, parameter_t parameter_name)
+{
+	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
+	return data_conversion_get_parameter(channel_info.adc_num,channel_info.channel_num, parameter_name);
+
+}
+
+conversion_type_t DataAPI::getConversionType(channel_t channel)
+{
+	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
+	return data_conversion_get_conversion_type(channel_info.adc_num,channel_info.channel_num);
+}
+
+
+
 int8_t DataAPI::saveParametersInNVS(channel_t channel)
 {
 	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
@@ -243,7 +258,7 @@ float32_t DataAPI::convert(uint8_t adc_num, uint8_t pin_num, uint16_t raw_value)
 	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
 	if (channel_num == 0)
 	{
-		return 0;
+		return -5000;
 	}
 
 	return data_conversion_convert_raw_value(adc_num, channel_num, raw_value);
@@ -259,6 +274,55 @@ void DataAPI::setParameters(uint8_t adc_num, uint8_t pin_num, float32_t gain, fl
 
 	data_conversion_set_conversion_parameters_linear(adc_num, channel_num, gain, offset);
 }
+
+
+int8_t DataAPI::saveParametersInNVS(uint8_t adc_num, uint8_t pin_num)
+{
+	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
+	if (channel_num == 0)
+	{
+		return -5;
+	}
+
+	return data_conversion_store_channel_parameters_in_nvs(adc_num, channel_num);
+}
+
+
+int8_t DataAPI::getParametersFromNVS(uint8_t adc_num, uint8_t pin_num)
+{
+	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
+	if (channel_num == 0)
+	{
+		return -5;
+	}
+
+	return data_conversion_retrieve_channel_parameters_from_nvs(adc_num, channel_num);
+}
+
+float32_t DataAPI::getParameter(uint8_t adc_num, uint8_t pin_num, parameter_t parameter_name)
+{
+	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
+	if (channel_num == 0)
+	{
+		return -5000;
+	}
+
+	return data_conversion_get_parameter(adc_num,channel_num, parameter_name);
+
+}
+
+conversion_type_t DataAPI::getConversionType(uint8_t adc_num, uint8_t pin_num)
+{
+	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
+	if (channel_num == 0)
+	{
+		return no_channel_error;
+	}
+
+	return data_conversion_get_conversion_type(adc_num,channel_num);
+}
+
+
 
 
 /////

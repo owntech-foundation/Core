@@ -34,11 +34,13 @@
 /////
 // Type definitions
 
-typedef enum : uint8_t
+typedef enum : int8_t
 {
-	conversion_linear = 0
+	conversion_linear = 0,
+	no_channel_error = -5
 
 } conversion_type_t;
+
 
 /////
 // API
