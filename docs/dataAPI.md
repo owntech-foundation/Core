@@ -77,9 +77,9 @@ Getting the last measured value to feed the control algorithm is super simple.
 !!! example
     === "Get last value"
         ```
-        spin.data.getLatest(1)
+        data.getLatest(1, 5)
         ```
-        This will retrieve the last sampled value of pin 1.
+        This will retrieve the last sampled value of ADC 1 pin 5.
 
 ## Getting values with the right unit
 
