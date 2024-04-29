@@ -1,14 +1,18 @@
 !!! note ""
     An ADC, or Analog-to-Digital Converter, is a device that turns analog signals, like sound or temperature, into digital data that a computer or microcontroller can understand. It measures the analog voltage and converts it into a digital value that can be used by digital systems for processing, storage, or display.
 
+!!! warning
+    The ADC API is an advanced interface provided for users with technical background.
+    For most data acquisition tasks, use the [Data API](dataAPI.md) which provides a more user-friendly and higher-level entry point.
+
 ## Pinout
 
 SPIN boards have 5 independant ADC units. Each unit can measure multiple analog signals, using a measurment sequence.
 
 !!! abstract "Capabilities"
-    Each ADC channel has :  
-    -  12 bit resolution: 0b to 4096b  
-    -  Sensing full scale: 0V to 2.048V  
+    Each ADC channel has :
+    -  12 bit resolution: 0b to 4096b
+    -  Sensing full scale: 0V to 2.048V
     -  Sampling time down to 42ns
 
 === "SPIN v1.1.0"
@@ -20,38 +24,38 @@ SPIN boards have 5 independant ADC units. Each unit can measure multiple analog 
     ![SPIN_1_0_0_ADC_pinout_inner](images/SPIN_1.0.0_inner_adc.png){ width=243 }
 
 
-!!! info 
-    -  ADC12 means that the pin can be used either as ADC1 or ADC2  
-    -  INx means that it is channel x. 
+!!! info
+    -  ADC12 means that the pin can be used either as ADC1 or ADC2
+    -  INx means that it is channel x.
 
 ## Include
 
-!!! note 
+!!! note
     ```
     #include <SpinAPI.h>
     ```
-    Make sure that SPIN API is included to use AdcHAL 
+    Make sure that SPIN API is included to use AdcHAL
 
 ## Initialization sequence
 
 !!! Note
 
     === "Software triggered"
-        1. Link an adc trigger event to the ADC [`spin.adc.configureTriggerSource(ADCx, TRIG)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-configuretriggersource)  
-        2.  Define acquisition sequence by enabling adc channel : [`spin.adc.enableChannel(ADCx, channelx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-enablechannel)    
-        3.  trigger an adc [`data.triggerAcquisition()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-triggeracquisition)  
-        4.  Retrieve value : [`data.getLatest(ADCx, pinx)`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getlatest-22)  
+        1. Link an adc trigger event to the ADC [`spin.adc.configureTriggerSource(ADCx, TRIG)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-configuretriggersource)
+        2.  Define acquisition sequence by enabling adc channel : [`spin.adc.enableChannel(ADCx, channelx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-enablechannel)
+        3.  trigger an adc [`data.triggerAcquisition()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-triggeracquisition)
+        4.  Retrieve value : [`data.getLatest(ADCx, pinx)`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getlatest-22)
 
     === "Hardware triggered"
-        1\. [Make sure PWM engine is initialized](pwm/#initialization-sequence)  
-        2. Link an adc trigger event to the ADC [`spin.adc.configureTriggerSource(ADCx, TRIG)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-configuretriggersource)  
-        3. Set continuous/discontinuous conversion mode. Optional : [`spin.adc.configureDiscontinuousMode(x, 0/1)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-configurediscontinuousmode)  
-        4.  Define acquisition sequence by enabling adc channel : [`spin.adc.enableChannel(ADCx, channelx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-enablechannel)    
-        6. Start data dispatching to get acquired values [`data.start()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-start)  
-        7.  Retrieve value : [`data.getLatest(ADCx, pinx)`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getlatest-22)  
+        1\. [Make sure PWM engine is initialized](pwm/#initialization-sequence)
+        2. Link an adc trigger event to the ADC [`spin.adc.configureTriggerSource(ADCx, TRIG)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-configuretriggersource)
+        3. Set continuous/discontinuous conversion mode. Optional : [`spin.adc.configureDiscontinuousMode(x, 0/1)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-configurediscontinuousmode)
+        4.  Define acquisition sequence by enabling adc channel : [`spin.adc.enableChannel(ADCx, channelx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-enablechannel)
+        6. Start data dispatching to get acquired values [`data.start()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-start)
+        7.  Retrieve value : [`data.getLatest(ADCx, pinx)`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getlatest-22)
 
-!!! example 
-    
+!!! example
+
     === "Software triggered"
         ```cpp
         spin.adc.configureTriggerSource(1, software);
@@ -83,13 +87,13 @@ SPIN boards have 5 independant ADC units. Each unit can measure multiple analog 
 
 ## Channel sequence
 
-Each ADC unit can measure multiple analog signal. This works by defining an acquisition sequence. 
+Each ADC unit can measure multiple analog signal. This works by defining an acquisition sequence.
 
 !!! tip
-    By default the aquisition sequence is in continuous mode. It means than one trigger will trigger all the sequence of acquisition. 
+    By default the aquisition sequence is in continuous mode. It means than one trigger will trigger all the sequence of acquisition.
     This can be changed using [Discontinuous Mode](#continuous-discontinuous-sequence)
 
-!!! example 
+!!! example
     === "3 channels on ADC1"
     ```c++
     spin.adc.enableChannel(1, 2)
@@ -103,7 +107,7 @@ Each ADC unit can measure multiple analog signal. This works by defining an acqu
 
     In this example, for each trigger, the ADC1 will measure  channel 1.
 
-!!! note 
+!!! note
     Sequence order is given by `spin.adc.enableChannel()` order.
 
 ## Software triggered
@@ -119,28 +123,28 @@ Each ADC unit can measure multiple analog signal. This works by defining an acqu
     adc_value = data.getLatest(2, 35); // Get the acquired data
     ```
 
-    !!! example 
-        See the following example for an application :  
+    !!! example
+        See the following example for an application :
 
-        - [Software trigerred ADC](https://owntech-foundation.github.io/Documentation/examples/SPIN/ADC/adc_software_trigger/) 
+        - [Software trigerred ADC](https://owntech-foundation.github.io/Documentation/examples/SPIN/ADC/adc_software_trigger/)
 
 ## Synchronous with PWMs
 
-Software triggers is generally speaking not suitable for applications that requires precise timing. 
-Sometimes measurement have to be taken at a specific time, in interaction with the control signal. 
+Software triggers is generally speaking not suitable for applications that requires precise timing.
+Sometimes measurement have to be taken at a specific time, in interaction with the control signal.
 
 !!! info
-    This kind of acquisition have a side benefit. It operates in the background and does not interfer with software. 
-    It means that periodical sampling will not interrupt code execution. 
+    This kind of acquisition have a side benefit. It operates in the background and does not interfer with software.
+    It means that periodical sampling will not interrupt code execution.
 
-The trigger is the PWM peripheral, the ADC performs the conversion and place the result in an output buffer, the output buffer is directly placed in memory by a DMA. A rather complex software mechanics execute periodically and serve each measurement in a dedicated memory space. The periodical routine is executed at the beggining of the controlTask. 
+The trigger is the PWM peripheral, the ADC performs the conversion and place the result in an output buffer, the output buffer is directly placed in memory by a DMA. A rather complex software mechanics execute periodically and serve each measurement in a dedicated memory space. The periodical routine is executed at the beggining of the controlTask.
 
-!!! info 
-    Synchronous measurement require having a controlTask running. 
+!!! info
+    Synchronous measurement require having a controlTask running.
 
-!!! tip 
+!!! tip
     This page informs on how to parameters the triggering of the measurement
-    To retrieve measurement values please refer to DataAPI 
+    To retrieve measurement values please refer to DataAPI
 
 The section below explain how to synchronize measurements with control signals.
 
@@ -149,38 +153,38 @@ The section below explain how to synchronize measurements with control signals.
 
 ### Linking ADC and PWM channel
 
-ADC1 and ADC2 can be associated with PWM channels at will. 
+ADC1 and ADC2 can be associated with PWM channels at will.
 
 ::: doxy.powerAPI.class.method
 name: AdcHAL
-method: void configureDiscontinuousMode (uint8_t adc_number, uint32_t dicontinuous_count) 
+method: void configureDiscontinuousMode (uint8_t adc_number, uint32_t dicontinuous_count)
 
 === "ADC1 and PWMA"
     ![left_aligned_ADC_50](images/left_aligned_ADC_50.svg){ width=800 }
 
     ```c++
-        spin.pwm.setAdcTrigger(PWMA, ADCTRIG_1);    
+        spin.pwm.setAdcTrigger(PWMA, ADCTRIG_1);
         spin.pwm.enableAdcTrigger(PWMA);
     ```
-    
+
 === "ADC1 and PWMC"
     ![left_aligned_ADC_PWM_C](images/left_aligned_ADC_PWM_C.svg){ width=800 }
 
     ```c++
-        spin.pwm.setAdcTrigger(PWMC, ADCTRIG_1);    
+        spin.pwm.setAdcTrigger(PWMC, ADCTRIG_1);
         spin.pwm.enableAdcTrigger(PWMC);
     ```
 
 ### Modulation impact
 
-!!! note 
+!!! note
     Hardware trigger depends on PWM modulation.
 
 === "Left Aligned Modulation"
     ![left_aligned_ADC_50](images/left_aligned_ADC_50.svg){ width=800 }
 
     ```c++
-        spin.pwm.setAdcTrigger(PWMA, ADCTRIG_1);    
+        spin.pwm.setAdcTrigger(PWMA, ADCTRIG_1);
         spin.pwm.enableAdcTrigger(PWMA);
     ```
 
@@ -188,13 +192,13 @@ method: void configureDiscontinuousMode (uint8_t adc_number, uint32_t dicontinuo
     ![center_aligned_ADC_rising_edge](images/center_aligned_ADC_rising_edge.svg){ width=800 }
 
     ```c++
-        spin.pwm.setAdcTrigger(PWMA, ADCTRIG_1);    
+        spin.pwm.setAdcTrigger(PWMA, ADCTRIG_1);
         spin.pwm.enableAdcTrigger(PWMA);
     ```
 
 ### Rising Edge / Falling edge
 
-!!! note 
+!!! note
     This only applies to center aligned modulation.
 
 === "Rising Edge"
@@ -202,7 +206,7 @@ method: void configureDiscontinuousMode (uint8_t adc_number, uint32_t dicontinuo
 
     ```c++
         spin.pwm.setAdcEdgeTrigger(PWMA, EdgeTrigger_up);
-        spin.pwm.setAdcTrigger(PWMA, ADCTRIG_1);    
+        spin.pwm.setAdcTrigger(PWMA, ADCTRIG_1);
         spin.pwm.enableAdcTrigger(PWMA);
     ```
 
@@ -212,14 +216,14 @@ method: void configureDiscontinuousMode (uint8_t adc_number, uint32_t dicontinuo
 
     ```c++
         spin.pwm.setAdcEdgeTrigger(PWMA, EdgeTrigger_down);
-        spin.pwm.setAdcTrigger(PWMA, ADCTRIG_1);    
+        spin.pwm.setAdcTrigger(PWMA, ADCTRIG_1);
         spin.pwm.enableAdcTrigger(PWMA);
     ```
 
 
 ### Measurment trigger instant
 
-Trigger timing can be defined or changed dynamically. 
+Trigger timing can be defined or changed dynamically.
 
 === "20% Duty cycle"
     ![left_aligned_ADC_20](images/left_aligned_ADC_20.svg){ width=800 }
@@ -238,57 +242,55 @@ Trigger timing can be defined or changed dynamically.
 
 ### Continuous / Discontinuous sequence
 
-!!! note 
+!!! note
     This is relevant if more than one measurement is taken with the same ADC.
 
 === "Continuous sequence"
     ![left_aligned_continuous_sampling](images/left_aligned_continuous_sampling.svg){ width=800 }
 
     ```c++
-        spin.adc.configureDiscontinuousMode(1, 0);    
+        spin.adc.configureDiscontinuousMode(1, 0);
     ```
 
 === "Discontinuous sequence "
     ![left_aligned_ADC_50](images/left_aligned_ADC_50.svg){ width=800 }
 
     ```c++
-        spin.adc.configureDiscontinuousMode(1, 1);    
+        spin.adc.configureDiscontinuousMode(1, 1);
     ```
 
 
 ### Number of PWM period between acquisition
 
-!!! note 
+!!! note
     This is relevant if more than one measurement is taken with the same ADC.
 
 === "With 2 periods"
     ![sparse_sampling_2](images/sparse_sampling_2.svg){ width=800 }
 
     ```c++
-        spin.pwm.setAdcTriggerPostScaler(PWMA, 2);    
+        spin.pwm.setAdcTriggerPostScaler(PWMA, 2);
     ```
 
 === "With 4 periods"
     ![sparse_sampling_4](images/sparse_sampling_4.svg){ width=800 }
 
     ```c++
-        spin.pwm.setAdcTriggerPostScaler(PWMA, 4);    
+        spin.pwm.setAdcTriggerPostScaler(PWMA, 4);
     ```
 
 === "Without interuptions"
     ![left_aligned_continuous_sampling](images/left_aligned_continuous_sampling.svg){ width=800 }
 
     ```c++
-        spin.pwm.setAdcTriggerPostScaler(PWMA, 1);    
+        spin.pwm.setAdcTriggerPostScaler(PWMA, 1);
     ```
 !!! example
-    see the following example for an application :  
+    see the following example for an application :
 
-    - [PWM trigerred ADC](https://owntech-foundation.github.io/Documentation/examples/SPIN/ADC/adc_hrtim_trigger/) 
+    - [PWM trigerred ADC](https://owntech-foundation.github.io/Documentation/examples/SPIN/ADC/adc_hrtim_trigger/)
 
-## API Reference 
+## API Reference
 
 ::: doxy.powerAPI.class
 name: AdcHAL
-
-
