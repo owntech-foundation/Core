@@ -135,7 +135,11 @@ On the TWIST board, a voltage value of 1.024V on the ADC corresponds to a curren
 
 ### Buck topology
 
-![](images/twist_buck_conf.png){ width=400 }
+=== " Connection "
+    ![](images/twist_buck_conf.png){ width=400 }
+
+=== " Schematic "
+    ![](images/twist_buck_schematic.svg)
 
 ```cpp
     twist.initAllBuck();
