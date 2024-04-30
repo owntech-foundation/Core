@@ -135,8 +135,10 @@ On the TWIST board, a voltage value of 1.024V on the ADC corresponds to a curren
 
 ### Buck topology
 
+#### 1 leg operation 
+
 === " Connection "
-    ![](images/twist_buck_conf.png){ width=400 }
+    ![](images/twist_buck_conf.svg){ width=400 }
 
 === " Schematic "
     ![](images/twist_buck_schematic.svg)
@@ -147,9 +149,30 @@ On the TWIST board, a voltage value of 1.024V on the ADC corresponds to a curren
     twist.startAll();
 ```
 
+#### 2 legs operation
+
+
+=== " Connection "
+    ![](images/twist_buck_2leg_conf.svg){ width=400 }
+
+=== " Schematic "
+    ![](images/twist_buck_2leg_schematic.svg)
+
+```cpp
+    twist.initLegBuck(LEG1);
+    twist.initLegBuck(LEG2);
+    twist.setLegDutyCycle(LEG1, 0.3);
+    twist.setLegDutyCycle(LEG2, 0.5);
+    twist.startAll();
+```
+
 ### Boost topology 
 
-![](images/twist_boost_conf.png){ width=400 }
+=== " Connection "
+    ![](images/twist_boost_conf.svg){ width=400 }
+
+=== " Schematic "
+    ![](images/twist_boost_schematic.svg)
 
 ```cpp
     twist.initAllBoost();
@@ -159,7 +182,11 @@ On the TWIST board, a voltage value of 1.024V on the ADC corresponds to a curren
 
 ### Inverter topology
 
-![](images/twist_inverter_conf.png){ width=400 }
+=== " Connection "
+    ![](images/twist_inverter_conf.svg){ width=400 }
+
+=== " Schematic "
+    ![](images/twist_inverter_schematic.svg)
 
 ```cpp
     twist.initLegBuck(LEG1);
