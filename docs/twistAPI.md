@@ -122,13 +122,11 @@ In peak current mode control,  we monitors the current flowing through the power
 Below a simple schematic example to understand how it works in a buck configuration :
 
 ![](images/current_mode_schema.svg){ width=600 }  
-_Source : STM32 AN5497_
 
  In this setup, a clock signal determines the switching frequency and triggers the switch to close. The controller then sends a reference peak current value. When the inductor's current reaches this reference value, the switch opens.
 
 
 ![](images/current_mode_pwm_scheme.svg){ width=600 }  
-_Source : STM32 AN5497_
 
 
 However, using a constant peak current reference can lead to subharmonic oscillations. To prevent this issue, we employ a technique called slope compensation. Instead of a constant value, the peak current reference is a sawtooth waveform. The final schematic with slope compensation is shown below:
