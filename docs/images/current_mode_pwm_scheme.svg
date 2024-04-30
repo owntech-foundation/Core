@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-
 <svg
    version="1.0"
    width="792.000000pt"
@@ -7,13 +6,14 @@
    viewBox="0 0 792.000000 807.000000"
    preserveAspectRatio="xMidYMid meet"
    id="svg205"
-   sodipodi:docname="Capture-d’écran-du-2024-04-24-12-13-23.svg"
+   sodipodi:docname="current_mode_pwm_scheme.svg"
    inkscape:version="1.3.2 (091e20e, 2023-11-25)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
- <style>
+  <style
+     id="style1">
     path {
     fill: black;
     }
@@ -41,13 +41,13 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="pt"
-     inkscape:zoom="0.64304585"
-     inkscape:cx="580.8295"
-     inkscape:cy="519.40309"
+     inkscape:zoom="1.8067175"
+     inkscape:cx="345.93122"
+     inkscape:cy="223.05645"
      inkscape:window-width="1850"
      inkscape:window-height="1016"
      inkscape:window-x="70"
-     inkscape:window-y="27"
+     inkscape:window-y="1107"
      inkscape:window-maximized="1"
      inkscape:current-layer="g205" />
   <g
@@ -107,7 +107,7 @@
        d="M7470 7430 c0 -27 5 -50 10 -50 6 0 10 23 10 50 0 28 -4 50 -10 50 -5 0 -10 -22 -10 -50z"
        id="path39" />
     <path
-       d="M2330 7297 c0 -32 -19 -35 -45 -7 -10 11 -25 20 -34 20 -10 0 -2 -12 23 -33 l38 -33 -28 -13 -29 -14 70 -18 c39 -10 76 -19 83 -19 14 0 -36 99 -64 130 -12 12 -14 11 -14 -13z"
+       d="m 2712.4651,7302.4968 c 0,-32 -19,-35 -45,-7 -10,11 -25,20 -34,20 -10,0 -2,-12 23,-33 l 38,-33 -28,-13 -29,-14 70,-18 c 39,-10 76,-19 83,-19 14,0 -36,99 -64,130 -12,12 -14,11 -14,-13 z"
        id="path50" />
     <path
        d="M3263 7220 c0 -30 2 -43 4 -27 2 15 2 39 0 55 -2 15 -4 2 -4 -28z"
@@ -361,42 +361,42 @@
     <text
        xml:space="preserve"
        style="font-size:240px;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:8;stroke-miterlimit:3.8;stroke-dasharray:none;stroke-opacity:1"
-       x="1362.2316"
-       y="-7589.3687"
+       x="1455.218"
+       y="-7561.6553"
        id="text205"
        transform="scale(1,-1)"><tspan
          sodipodi:role="line"
-         id="tspan205"
          style="font-size:240px;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:8;stroke-dasharray:none;stroke-opacity:1"
-         x="1362.2316"
-         y="-7589.3687">Controller</tspan><tspan
+         x="1455.218"
+         y="-7561.6553"
+         id="tspan206">peak current </tspan><tspan
          sodipodi:role="line"
          style="font-size:240px;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:8;stroke-dasharray:none;stroke-opacity:1"
-         x="1362.2316"
-         y="-7289.3687"
-         id="tspan206">Output</tspan><tspan
+         x="1455.218"
+         y="-7261.6553"
+         id="tspan1">reference</tspan><tspan
          sodipodi:role="line"
          style="font-size:240px;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:8;stroke-dasharray:none;stroke-opacity:1"
-         x="1362.2316"
-         y="-6989.3687"
+         x="1455.218"
+         y="-6961.6553"
          id="tspan207" /></text>
     <text
        xml:space="preserve"
        style="font-size:240px;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:8.00002;stroke-miterlimit:3.8;stroke-dasharray:none;stroke-opacity:1"
-       x="57.877407"
-       y="-6308.9053"
+       x="205.44017"
+       y="-6257.9131"
        id="text208"
        transform="scale(1,-1)"><tspan
          sodipodi:role="line"
          id="tspan208"
          style="stroke-width:8"
-         x="57.877407"
-         y="-6308.9053">Inductor</tspan><tspan
+         x="205.44017"
+         y="-6257.9131">Inductor</tspan><tspan
          sodipodi:role="line"
          style="stroke-width:8"
-         x="57.877407"
-         y="-6008.9053"
-         id="tspan211">current (A)</tspan></text>
+         x="205.44017"
+         y="-5957.9131"
+         id="tspan211">current </tspan></text>
     <text
        xml:space="preserve"
        style="font-size:210px;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:8.00002;stroke-miterlimit:3.8;stroke-dasharray:none;stroke-opacity:1"
@@ -531,7 +531,7 @@
          id="tspan220"
          style="stroke-width:8"
          x="8220.6201"
-         y="-5682.1582"></tspan><tspan
+         y="-5682.1582" /><tspan
          sodipodi:role="line"
          style="stroke-width:8"
          id="tspan221"
