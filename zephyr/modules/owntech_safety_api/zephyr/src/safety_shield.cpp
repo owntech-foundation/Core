@@ -31,7 +31,7 @@
 
 #define TRHRESHOLD_WRITE_PROP(node_id) \
         { \
-            .channel = DT_STRING_TOKEN(node_id, channel_name),\
+            .channel = DT_STRING_TOKEN(node_id, sensor_name),\
             .name = DT_PROP(node_id, threshold_name), \
             .threshold_min = DT_PROP(node_id, threshold_low),  \
             .threshold_max = DT_PROP(node_id, threshold_high),  \

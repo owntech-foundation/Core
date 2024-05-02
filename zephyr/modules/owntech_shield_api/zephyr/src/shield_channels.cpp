@@ -50,7 +50,7 @@
 /////
 // Device-tree related macros
 
-#define CHANNEL_NAME(node_id)    DT_STRING_TOKEN(node_id, channel_name)
+#define CHANNEL_NAME(node_id)    DT_STRING_TOKEN(node_id, sensor_name)
 #define CHANNEL_IS_DIFF(node_id) DT_PROP(node_id, differential)
 #define CHANNEL_NUMBER(node_id)  DT_PHA_BY_IDX(node_id, io_channels, 0, input)
 #define PIN_NUMBER(node_id)      DT_PROP(node_id, spin_pin)
@@ -76,7 +76,7 @@
 // Channel count. This is very dirty!
 #define CHANNEL_COUNTER(node_id) +1
 #define SUBCHANNEL_COUNTER(node_id) DT_FOREACH_CHILD(node_id, CHANNEL_COUNTER)
-#define DT_CHANNELS_COUNT DT_FOREACH_STATUS_OKAY(adc_channels, SUBCHANNEL_COUNTER)
+#define DT_CHANNELS_COUNT DT_FOREACH_STATUS_OKAY(shield_sensors, SUBCHANNEL_COUNTER)
 
 
 /////
@@ -110,7 +110,7 @@ typedef struct
 // extracted from the device tree.
 static channel_prop_t dt_channels_props[] =
 {
-	DT_FOREACH_STATUS_OKAY(adc_channels, SUBCHANNEL_WRITE_PROP)
+	DT_FOREACH_STATUS_OKAY(shield_sensors, SUBCHANNEL_WRITE_PROP)
 };
 
 // Number of available channels defined in device tree for each ADC.

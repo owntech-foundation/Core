@@ -44,7 +44,7 @@
 /////
 // Device-tree related macro
 
-#define CHANNEL_TOKEN(node_id) DT_STRING_TOKEN(node_id, channel_name),
+#define SENSOR_TOKEN(node_id) DT_STRING_TOKEN(node_id, sensor_name),
 
 
 /////
@@ -53,7 +53,7 @@
 typedef enum
 {
 	UNDEFINED_CHANNEL = 0,
-	DT_FOREACH_STATUS_OKAY(adc_channels, CHANNEL_TOKEN)
+	DT_FOREACH_STATUS_OKAY(shield_sensors, SENSOR_TOKEN)
 } channel_t;
 
 

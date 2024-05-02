@@ -5,7 +5,7 @@
  */
 
 #include "can-standby-switch.dtsi"
-#include "adc-channels.dtsi"
+#include "sensors.dtsi"
 #include "ngnd.dtsi"
 #include "pwm_legs.dtsi"
 #include "safety-thresholds.dtsi"

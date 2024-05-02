@@ -49,7 +49,7 @@
  * V1_LOW, V2_LOW, V_HIGH, I1_LOW, I2_LOW, I_HIGH, TEMP_SENSOR, EXTRA_MEAS, ANALOG_COMM
  */
 #define CHANNEL_COUNTER(node_id) +1
-#define DT_CHANNELS_NUMBER DT_FOREACH_STATUS_OKAY(adc_channels, CHANNEL_COUNTER)
+#define DT_CHANNELS_NUMBER DT_FOREACH_STATUS_OKAY(shield_sensors, CHANNEL_COUNTER)
 
 /**
  * Counts the number of LEGs (i.e. the converters that need to be stopped for safety)

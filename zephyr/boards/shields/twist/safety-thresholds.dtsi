@@ -11,7 +11,7 @@
 
 		v1lowtd: v1-low-td {
 			compatible = "safety-thresholds";
-			channel-name = "V1_LOW";
+			sensor-name = "V1_LOW";
 			threshold-name = "V1_LOW_TD";
 			threshold-high = <0x428c0000>; /* 70.0 */
 			threshold-low = <0xc1200000>; /* -10.0 */
@@ -19,7 +19,7 @@
 
 		v2lowtd: v2-low-td {
 			compatible = "safety-thresholds";
-			channel-name = "V2_LOW";
+			sensor-name = "V2_LOW";
 			threshold-name = "V2_LOW_TD";
 			threshold-high = <0x428c0000>; /* 70.0 */
 			threshold-low = <0xc1200000>; /* -10.0 */
@@ -27,7 +27,7 @@
 
 		vhightd: v-high-td {
 			compatible = "safety-thresholds";
-			channel-name = "V_HIGH";
+			sensor-name = "V_HIGH";
 			threshold-name = "V_HIGH_TD";
 			threshold-high = <0x42c80000>; /* 100.0 */
 			threshold-low = <0x41200000>; /* 10.0 */
@@ -37,7 +37,7 @@
 
 		i1lowtd: i1-low-td {
 			compatible = "safety-thresholds";
-			channel-name = "I1_LOW";
+			sensor-name = "I1_LOW";
 			threshold-name = "I1_LOW_TD";
 			threshold-high = <0x40e00000>; /* 7.0 */
 			threshold-low = <0xc0e00000>; /* -7.0 */
@@ -45,7 +45,7 @@
 
 		i2lowtd: i2-low-td {
 			compatible = "safety-thresholds";
-			channel-name = "I2_LOW";
+			sensor-name = "I2_LOW";
 			threshold-name = "I2_LOW_TD";
 			threshold-high = <0x40e00000>; /* 7.0 */
 			threshold-low = <0xc0e00000>; /* -7.0 */
@@ -53,7 +53,7 @@
 
 		ihightd: i-high-td {
 			compatible = "safety-thresholds";
-			channel-name = "I_HIGH";
+			sensor-name = "I_HIGH";
 			threshold-name = "I_HIGH_TD";
 			threshold-high = <0x40e00000>; /* 7.0 */
 			threshold-low = <0xc0e00000>; /* -7.0 */
@@ -63,7 +63,7 @@
 
 		temptd: temp-sensor-td {
 			compatible = "safety-thresholds";
-			channel-name = "TEMP_SENSOR";
+			sensor-name = "TEMP_SENSOR";
 			threshold-name = "TEMP_SENSOR_TD";
 			threshold-high = <0x00000000>;
 			threshold-low = <0x00000000>;
@@ -71,7 +71,7 @@
 
 		extratd: extra-sensor-td {
 			compatible = "safety-thresholds";
-			channel-name = "EXTRA_MEAS";
+			sensor-name = "EXTRA_MEAS";
 			threshold-name = "EXTRA_MEAS_TD";
 			threshold-high = <0x00000000>;
 			threshold-low = <0x00000000>;
@@ -79,7 +79,7 @@
 
 		analogtd: analog-comm-td {
 			compatible = "safety-thresholds";
-			channel-name = "ANALOG_COMM";
+			sensor-name = "ANALOG_COMM";
 			threshold-name = "ANALOG_COMM_TD";
 			threshold-high = <0x00000000>;
 			threshold-low = <0x00000000>;
