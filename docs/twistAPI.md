@@ -117,7 +117,7 @@ A higher duty cycle indicates that the switch remains on for a more extended per
 <figure markdown>
     ![voltage mode schema](./images/voltage_mode_schema.svg)
     ![duty cycle](./images/changing_duty_cycle.gif)
-  <figcaption>Voltage Mode PWM</figcaption>
+    <figcaption>Voltage Mode PWM</figcaption>
 </figure>
 
 ### Current mode
