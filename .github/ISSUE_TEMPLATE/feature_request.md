@@ -1,7 +1,7 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
-title: "[FEATURE][NAME_OF_API] Title of your feature request"
+title: "[NAME_OF_SOFT_OR_HARD] Title of your feature request"
 labels: enhancement
 assignees: jalinei, luizvilla
 
