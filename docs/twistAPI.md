@@ -123,20 +123,22 @@ A higher duty cycle indicates that the switch remains on for a more extended per
 
 In peak current mode control,  we monitors the current flowing through the power switch. Once the current reaches a predetermined peak value, we promptly turns off the power switch. This mechanism helps maintain a constant output voltage by regulating the current flow.
 
-Below a simple schematic example to understand how it works in a buck configuration :
-
-![](images/current_mode_schema.svg){ width=600 }  
-
  In this setup, a clock signal determines the switching frequency and triggers the switch to close. The controller then sends a reference peak current value. When the inductor's current reaches this reference value, the switch opens.
 
+=== " Current mode schematic "
+    ![](images/current_mode_schema.svg){ width=600 }  
 
-![](images/current_mode_pwm_scheme.svg){ width=600 }  
-
+=== " Current mode waveform "
+    ![](images/current_mode_pwm_scheme.svg){ width=600 }  
 
 However, using a constant peak current reference can lead to subharmonic oscillations. To prevent this issue, we employ a technique called slope compensation. Instead of a constant value, the peak current reference is a sawtooth waveform. The final schematic with slope compensation is shown below:
 
-![](images/current_mode_schema_final.svg){ width=600 }  
-![](images/current_mode_pwm_scheme_final.svg)
+
+=== " Final current mode schematic "
+    ![](images/current_mode_schema_final.svg){ width=600 }  
+
+=== "Final current mode waveform "
+    ![](images/current_mode_pwm_scheme_final.svg)
 
 The sawtooth signal `Slope compensation` is generated with the function [`twist.setAllSlopeCompensation`](https://owntech-foundation.github.io/Documentation/powerAPI/classTwistAPI/#function-setallslopecompensation) or [`twist.setLegSlopeCompensation`](https://owntech-foundation.github.io/Documentation/powerAPI/classTwistAPI/#function-setallslopecompensation). These functions set the slope compensation based on the input parameters.  for example `twist.setAllSlopeCompensation(1.4, 1.0)` generates a sawtooth signal ranging from 1.4V to 1.0V. You can create a sawtooth signal between 2.048V and 0V as well.
 
