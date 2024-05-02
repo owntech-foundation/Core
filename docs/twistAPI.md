@@ -113,9 +113,12 @@ Voltage mode is a traditional and widely-used approach in power electronics, whe
 
 A higher duty cycle indicates that the switch remains on for a more extended period, resulting in increased power delivery to the load. Conversely, a lower duty cycle means the switch is on for a shorter duration, thereby reducing the power supplied. Consequently, the average power and voltage applied to the load can be precisely controlled by fine-tuning the duty cycle.
 
-![voltage mode schema](./images/voltage_mode_schema.svg)
 
-![duty cycle](./images/changing_duty_cycle.gif)
+<figure markdown>
+    ![voltage mode schema](./images/voltage_mode_schema.svg)
+    ![duty cycle](./images/changing_duty_cycle.gif)
+  <figcaption>Voltage Mode PWM</figcaption>
+</figure>
 
 ### Current mode
 
