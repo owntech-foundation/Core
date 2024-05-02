@@ -1,7 +1,7 @@
 ---
 name: Bug report
-about: Create a report to help us improve
-title: "[NAME_OF_SOFT_OR_HARD] Name of your issue"
+about: Report a bug to help us improve our code base
+title: "[NAME_OF_API] Name of your issue"
 labels: bug, documentation, enhancement
 assignees: jalinei, luizvilla
 

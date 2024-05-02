@@ -1,7 +1,7 @@
 ---
 name: Enhancement request
 about: Request a modification to the existing hardware/software
-title: "[NAME_OF_SOFT_OR_HARD] Title of your enhancement"
+title: "[NAME_OF_API] Title of your enhancement"
 labels: enhancement
 assignees: jalinei, luizvilla
 

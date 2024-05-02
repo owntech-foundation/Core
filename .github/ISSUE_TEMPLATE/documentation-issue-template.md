@@ -1,7 +1,7 @@
 ---
 name: Documentation issue template
-about: Describe this issue template's purpose here.
-title: "[DOC] Title of your documentation issue here"
+about: Suggest modifications to the project documentation
+title: "[NAME_OF_API] Title of your documentation issue here"
 labels: documentation
 assignees: jalinei, luizvilla
 
