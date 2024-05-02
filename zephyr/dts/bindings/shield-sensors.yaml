@@ -1,12 +1,12 @@
-description: List of channels connected to ADCs that can be acquired by OwnTech Data Acquisition
+description: List of a shield sensors that can be acquired by Spin ADCs
 
-compatible: "adc-channels"
+compatible: "shield-sensors"
 
 properties:
-  channel-name:
+  sensor-name:
     type: string
     required: true
-    description: Name under which the channel will be referred to in user code.
+    description: Name under which the sensor will be referred to in user code.
 
   default-gain:
     type: int
@@ -23,7 +23,7 @@ properties:
 
 child-binding:
 
-  description: Channel node ADC info
+  description: Sensor node ADC info
 
   properties:
 
