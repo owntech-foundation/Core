@@ -14,6 +14,32 @@
 
 Having a periodical code execution is key to real time applications. It is easy to spawn one using the TaskAPI.
 
+
+ ### The control task sources
+
+ You can have different **source** calling the control task.
+
+The control task is synchronous, it means that it is called at fixed period. So we need some kind of timer calling the control, this timer is considered as the **source**. There are two sources : 
+- The PWM carrier
+- An independant timer
+
+#### The PWM carrier
+
+The carrier has a period called the **switching period**, we can use it to call the control task after a fixed number of period. 
+
+![PWM control task](images/pwm_source_task.svg)
+
+On the figure above, the switching period is 5µs (200Khz) and we call the control every 10 switching cycle so 50µs (20Khz).
+
+!!! warning
+    There are limitations when using this method : 
+        - You need to start the a PWM to start the control task
+        - You can only have control period which are multiple of the switching period
+        - You can not have a control period inferior to the switching period
+
+!!! tip
+    Synchronizing the control task period with PWM period can be usefull when you try to synchronize PWM between several SPIN or TWIST, in that case the control task is also synchronized.
+
 !!! example
     === "20kHz Periodic task based on PWM"
         ```
