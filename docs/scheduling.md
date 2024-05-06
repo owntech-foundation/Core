@@ -55,8 +55,8 @@ A simple timer not related to the PWM can be used to compute the control task pe
 ### Initialization sequence
 
 !!! note
-    1\. Create the critical task and link it to the function to be called.
-    2\. Start the critical function.
+    1\. Create the critical task and link it to the function to be called.  
+    2\. Start the critical function.  
 
 !!! example
     === "20kHz Periodic task based on PWM"
@@ -86,8 +86,8 @@ The control task has priority over any other task. It will preempts any backgrou
 ### Initialization sequence
 
 !!! note
-    1\. Create the background task and link it to the function to be called.
-    2\. Start the background function.
+    1\. Create the background task and link it to the function to be called.  
+    2\. Start the background function.  
 
 !!! example
     === "Spawning a background task"
