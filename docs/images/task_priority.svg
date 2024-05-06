@@ -13,8 +13,7 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns:xhtml="http://www.w3.org/1999/xhtml">
+   xmlns:svg="http://www.w3.org/2000/svg">
   <sodipodi:namedview
      id="namedview1"
      pagecolor="#ffffff"
@@ -25,13 +24,13 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="0.65044582"
-     inkscape:cx="455.8412"
-     inkscape:cy="9.2244425"
+     inkscape:zoom="0.81726578"
+     inkscape:cx="472.91837"
+     inkscape:cy="217.7994"
      inkscape:window-width="1850"
      inkscape:window-height="1016"
      inkscape:window-x="70"
-     inkscape:window-y="27"
+     inkscape:window-y="1107"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1" />
   <defs
@@ -207,6 +206,44 @@
          d="M 5.77,0 -2.88,5 V -5 Z"
          id="path8-6" />
     </marker>
+    <marker
+       style="overflow:visible"
+       id="marker8-7"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path8-5" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="marker8-7-9"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path8-5-3" />
+    </marker>
   </defs>
   <g
      inkscape:label="Calque 1"
@@ -322,42 +359,6 @@
          id="rect28" />
     </g>
     <g
-       id="g31"
-       transform="matrix(0.26458333,0,0,0.26458333,92.070327,-69.269155)">
-      <g
-         transform="translate(-0.5,-0.5)"
-         id="g30">
-        <switch
-           id="switch29">
-          <foreignObject
-             style="overflow: visible; text-align: left;"
-             pointer-events="none"
-             width="100%"
-             height="100%"
-             requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
-            <xhtml:div
-               style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 58px; height: 1px; padding-top: 451px; margin-left: 21px;">
-              <xhtml:div
-                 style="box-sizing: border-box; font-size: 0px; text-align: center;"
-                 data-drawio-colors="color: rgb(0, 0, 0); ">
-                <xhtml:div
-                   style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">controlTask</xhtml:div>
-              </xhtml:div>
-            </xhtml:div>
-          </foreignObject>
-          <text
-             x="50"
-             y="455"
-             fill="#000000"
-             font-family="Helvetica"
-             font-size="12px"
-             text-anchor="middle"
-             id="text29"
-             style="font-size:32px">control task</text>
-        </switch>
-      </g>
-    </g>
-    <g
        id="g32"
        transform="matrix(0.26458333,0,0,0.26458333,-3.2188249,-8.0128569)">
       <rect
@@ -369,42 +370,6 @@
          stroke="none"
          pointer-events="all"
          id="rect31" />
-    </g>
-    <g
-       id="g34"
-       transform="matrix(0.26458333,0,0,0.26458333,71.980691,-26.948703)">
-      <g
-         transform="translate(-0.5,-0.5)"
-         id="g33">
-        <switch
-           id="switch32">
-          <foreignObject
-             style="overflow: visible; text-align: left;"
-             pointer-events="none"
-             width="100%"
-             height="100%"
-             requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
-            <xhtml:div
-               style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 58px; height: 1px; padding-top: 356px; margin-left: 21px;">
-              <xhtml:div
-                 style="box-sizing: border-box; font-size: 0px; text-align: center;"
-                 data-drawio-colors="color: rgb(0, 0, 0); ">
-                <xhtml:div
-                   style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">backgroundTask</xhtml:div>
-              </xhtml:div>
-            </xhtml:div>
-          </foreignObject>
-          <text
-             x="140.23845"
-             y="361.95065"
-             fill="#000000"
-             font-family="Helvetica"
-             font-size="12px"
-             text-anchor="middle"
-             id="text32"
-             style="font-size:32px">background task</text>
-        </switch>
-      </g>
     </g>
     <g
        id="g36"
@@ -449,42 +414,6 @@
          id="rect36" />
     </g>
     <g
-       id="g39"
-       transform="matrix(0.26458333,0,0,0.26458333,-3.0865317,-106.75837)">
-      <g
-         transform="translate(-0.5,-0.5)"
-         id="g38">
-        <switch
-           id="switch37">
-          <foreignObject
-             style="overflow: visible; text-align: left;"
-             pointer-events="none"
-             width="100%"
-             height="100%"
-             requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
-            <xhtml:div
-               style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 188px; height: 1px; padding-top: 511px; margin-left: 221px;">
-              <xhtml:div
-                 style="box-sizing: border-box; font-size: 0px; text-align: center;"
-                 data-drawio-colors="color: rgb(0, 0, 0); ">
-                <xhtml:div
-                   style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">Typical - 50 to 100µs</xhtml:div>
-              </xhtml:div>
-            </xhtml:div>
-          </foreignObject>
-          <text
-             x="315"
-             y="515"
-             fill="#000000"
-             font-family="Helvetica"
-             font-size="12px"
-             text-anchor="middle"
-             id="text37"
-             style="font-size:32px">Typical - 100µs</text>
-        </switch>
-      </g>
-    </g>
-    <g
        id="g40"
        transform="matrix(0.28033373,0,0,0.27490528,-15.219694,-11.945521)"
        style="stroke-width:2.44231;stroke-dasharray:none">
@@ -524,6 +453,10 @@
        style="fill:none;fill-opacity:1;stroke:#0a0a0a;stroke-width:0.494961;stroke-miterlimit:3.8;stroke-dasharray:none;marker-end:url(#marker8)"
        d="m 19.861064,73.564986 2.300281,-4.249695 -2.92734,-1.652213 0.639474,-1.820266 0.0224,-3.334643"
        id="path7" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#0a0a0a;stroke-width:0.494961;stroke-miterlimit:3.8;stroke-dasharray:none;marker-end:url(#marker8-7)"
+       d="m 74.362479,58.958717 -2.300281,4.249695 2.92734,1.652213 -0.639474,1.820266 -0.0224,3.334643"
+       id="path7-5" />
     <text
        xml:space="preserve"
        style="font-size:4.93889px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:#0a0a0a;stroke-width:0;stroke-miterlimit:3.8;stroke-dasharray:none"
@@ -535,6 +468,42 @@
          style="font-size:4.93889px;fill:#000000;fill-opacity:1;stroke-width:0;stroke-dasharray:none"
          x="37.950489"
          y="68.579216">Interruption</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:4.93889px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:#0a0a0a;stroke-width:0;stroke-miterlimit:3.8;stroke-dasharray:none"
+       x="88.673706"
+       y="68.981949"
+       id="text8-1"><tspan
+         sodipodi:role="line"
+         id="tspan8-2"
+         style="font-size:4.93889px;fill:#000000;fill-opacity:1;stroke-width:0;stroke-dasharray:none"
+         x="88.673706"
+         y="68.981949">Resume</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:4.93889px;fill:#000000;fill-opacity:1;stroke-width:0;stroke-dasharray:none"
+         x="88.673706"
+         y="75.155563"
+         id="tspan6" /></text>
+    <path
+       style="fill:none;fill-opacity:1;stroke:#0a0a0a;stroke-width:0.494961;stroke-miterlimit:3.8;stroke-dasharray:none;marker-end:url(#marker8-7-9)"
+       d="m 207.34464,60.79392 -2.30028,4.249695 2.92734,1.652213 -0.63948,1.820266 -0.0224,3.334643"
+       id="path7-5-0" />
+    <text
+       xml:space="preserve"
+       style="font-size:4.93889px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:#0a0a0a;stroke-width:0;stroke-miterlimit:3.8;stroke-dasharray:none"
+       x="221.65587"
+       y="70.817154"
+       id="text8-1-6"><tspan
+         sodipodi:role="line"
+         id="tspan8-2-2"
+         style="font-size:4.93889px;fill:#000000;fill-opacity:1;stroke-width:0;stroke-dasharray:none"
+         x="221.65587"
+         y="70.817154">Resume</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:4.93889px;fill:#000000;fill-opacity:1;stroke-width:0;stroke-dasharray:none"
+         x="221.65587"
+         y="76.990768"
+         id="tspan6-6" /></text>
     <path
        style="fill:none;fill-opacity:1;stroke:#0a0a0a;stroke-width:0.494961;stroke-miterlimit:3.8;stroke-dasharray:none;marker-end:url(#marker8-3)"
        d="m 153.78112,72.042541 2.30028,-4.249695 -2.92734,-1.652213 0.63948,-1.820266 0.0224,-3.334643"
@@ -542,13 +511,51 @@
     <text
        xml:space="preserve"
        style="font-size:4.93889px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:#0a0a0a;stroke-width:0;stroke-miterlimit:3.8;stroke-dasharray:none"
-       x="171.87056"
-       y="67.05677"
+       x="173.07864"
+       y="70.414421"
        id="text8-2"><tspan
          sodipodi:role="line"
          id="tspan8-6"
          style="font-size:4.93889px;fill:#000000;fill-opacity:1;stroke-width:0;stroke-dasharray:none"
-         x="171.87056"
-         y="67.05677">Interruption</tspan></text>
+         x="173.07864"
+         y="70.414421">Interruption</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:5.64444px;text-align:center;text-anchor:middle;fill:#000000;stroke:#0a0a0a;stroke-width:0;stroke-miterlimit:3.8;stroke-dasharray:none"
+       x="80.124924"
+       y="27.299501"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         style="font-size:5.64444px;fill:#000000;fill-opacity:1;stroke-width:0;stroke-dasharray:none"
+         x="80.124924"
+         y="27.299501">typical 100µs</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:5.64444px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:#0a0a0a;stroke-width:0;stroke-miterlimit:3.8;stroke-dasharray:none"
+       x="112.33318"
+       y="52.021172"
+       id="text2"><tspan
+         sodipodi:role="line"
+         id="tspan2"
+         style="stroke-width:0"
+         x="112.33318"
+         y="52.021172">Control task</tspan><tspan
+         sodipodi:role="line"
+         style="stroke-width:0"
+         x="112.33318"
+         y="59.076721"
+         id="tspan3" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:5.64444px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:#0a0a0a;stroke-width:0;stroke-miterlimit:3.8;stroke-dasharray:none"
+       x="46.924942"
+       y="90.467262"
+       id="text4"><tspan
+         sodipodi:role="line"
+         id="tspan4"
+         style="stroke-width:0"
+         x="46.924942"
+         y="90.467262">Background task</tspan></text>
   </g>
 </svg>
