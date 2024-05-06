@@ -15,30 +15,43 @@
 Having a periodical code execution is key to real time applications. It is easy to spawn one using the TaskAPI.
 
 
- ### The control task sources
+### The control task sources
 
  You can have different **source** calling the control task.
 
 The control task is synchronous, it means that it is called at fixed period. So we need some kind of timer calling the control, this timer is considered as the **source**. There are two sources : 
-- The PWM carrier
-- An independant timer
+- The PWM carrier  
+- An independant timer  
 
 #### The PWM carrier
 
-The carrier has a period called the **switching period**, we can use it to call the control task after a fixed number of period. 
+The carrier has a period called the **switching period**, we can use it to call the control task after a fixed number of switching period. 
 
 ![PWM control task](images/pwm_source_task.svg)
 
 On the figure above, the switching period is 5µs (200Khz) and we call the control every 10 switching cycle so 50µs (20Khz).
 
 !!! warning
-    There are limitations when using this method : 
-        - You need to start the a PWM to start the control task
-        - You can only have control period which are multiple of the switching period
-        - You can not have a control period inferior to the switching period
+    There are limitations when using this method :   
+        - You need to start the a PWM to start the control task  
+        - You can only have control period which are multiple of the switching period  
+        - You can not have a control period inferior to the switching period  
 
 !!! tip
-    Synchronizing the control task period with PWM period can be usefull when you try to synchronize PWM between several SPIN or TWIST, in that case the control task is also synchronized.
+    Synchronizing the control task period with PWM period can be usefull when you try to synchronize PWM between several SPIN or TWIST, in that case the control task is also synchronized between the board.
+
+#### Independant timer
+
+A simple timer not related to the PWM can be used to compute the control task period. We choose one of the MCU timer (the `timer 6`), to which we give our control period and this timer will call the control task each period.
+
+![timer source](images/timer_source_task.svg)
+
+!!! tip
+    With an independant timer you can choose any value in µs as the control period, there is not the same limitation as the PWM source.
+
+!!! warning
+    The disavantage of such method is that since it is independant from the PWM you can't have synchronization between several control task modules.
+
 
 !!! example
     === "20kHz Periodic task based on PWM"
@@ -51,21 +64,6 @@ On the figure above, the switching period is 5µs (200Khz) and we call the contr
             task.createCritical(my_critical_function, 100, TIM6);
             task.startCritical();
         ```
-
-A periodic task runs on a trigger based on a counter. Each time the counter is reached, the control task is executed.
-
-!!! note
-    The control task has priority over any other task. It will preempts any [background task](#non-time-critical-tasks).
-    The control task can not be preempted. That is why it is also refered as an ininteruptible task.
-
-Often the control task has to be in sync with the output PWM signals. Has the [PWM generator is a counter](pwm/#carrier-signal-and-pwm-resolution), the trigger source of the control task can be the PWMs.
-
-!!! tip
-    If PWM counter is used as the clock source for the control task, the period has to be a multiple of PWM frequency.
-    It is not the case if Timer6 is used a clock source.
-
-!!! tip
-    Periodic clock source for the control task can be choosed between PWM and Timer6.
 
 !!! tip
     Having a control Task is required for [synchronous measurements](adc/#synchronous-with-pwms) to work correctly.
@@ -92,6 +90,11 @@ In the powerAPI, non time critical tasks are refered as background tasks.
             }
         ```
         In that case after executing `do_stuff();` the task will be suspended for 500us and resumed after. It creates a pseudo periodical task, runs every 500us + the time taken to execute `do_stuff()`.
+
+### Priority between critical and non-critical task
+
+The control task has priority over any other task. It will preempts any background task. The control task can not be preempted. That is why it is also refered as an uninteruptible task.
+
 
 ::: doxy.powerAPI.class
 name: TaskAPI
