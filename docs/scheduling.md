@@ -95,6 +95,8 @@ In the powerAPI, non time critical tasks are refered as background tasks.
 
 The control task has priority over any other task. It will preempts any background task. The control task can not be preempted. That is why it is also refered as an uninteruptible task.
 
+![task priority](images/task_priority.svg)
+
 
 ::: doxy.powerAPI.class
 name: TaskAPI
