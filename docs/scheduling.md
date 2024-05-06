@@ -55,18 +55,23 @@ A simple timer not related to the PWM can be used to compute the control task pe
 ### Initialization sequence
 
 !!! note
-    1\. Create the critical task and link it to the function to be called.  
+    === "Periodic task based on PWM source"
+    1\. Create the critical task and link it to the function to be called and choose hrtim as the source source.
+    2\. Start the critical function.  
+
+    === "Periodic task based on Timer6"
+    1\. Create the critical task and link it to the function to be called and choose tim6 as the source.  
     2\. Start the critical function.  
 
 !!! example
     === "20kHz Periodic task based on PWM"
         ```
-            task.createCritical(my_critical_function, 50, HRTIM);
+            task.createCritical(my_critical_function, 50, source_hrtim);
             task.startCritical();
         ```
     === "10kHz Periodic task based on Timer6"
         ```
-            task.createCritical(my_critical_function, 100, TIM6);
+            task.createCritical(my_critical_function, 100, source_tim6);
             task.startCritical();
         ```
 
@@ -82,6 +87,11 @@ In the powerAPI, non time critical tasks are refered as background tasks.
 The control task has priority over any other task. It will preempts any background task. The control task can not be preempted. That is why it is also refered as an uninteruptible task.
 
 ![task priority](images/task_priority.svg)
+
+### Pseudo periodicity of non-critical task
+
+![](images/task_pseudo_periodic.svg)
+
 
 ### Initialization sequence
 
