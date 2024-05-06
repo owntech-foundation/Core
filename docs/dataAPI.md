@@ -16,11 +16,12 @@
 
 To use the Data API, include `DataAPI.h` in your source file. From there, a `data` object is available to interact with the API.
 
-![data dispatch](images/data_dispatch.svg)
 
 ## Data dispatching
 
 When using the control task (critical task) data are dispatched at the start, which means there are ready to be retrieved.
+
+![data dispatch](images/data_dispatch.svg)
 
 ## Initialization sequence
 
