@@ -7,31 +7,31 @@
 
 !!! note
 
-    === "Set the output pin"
-        1\. Configure the pin in output mode.
-        2\. Set the pin.
+    === "Set the output pin"  
+        1\. Configure the pin in output mode.  
+        2\. Set the pin.  
     
-    === "Reset the output pin"
-        1\. Configure the pin in output mode.
-        2\. Reset the pin
+    === "Reset the output pin"  
+        1\. Configure the pin in output mode.  
+        2\. Reset the pin  
     
-    === "Read the input pin"
-        1\. Configure the pin in input mode.
-        2\. Read the pin input.
+    === "Read the input pin"  
+        1\. Configure the pin in input mode.  
+        2\. Read the pin input.  
 
 !!! example 
 
-    === "Set the output pin"
-        spin.gpio.configurePin(9, OUTPUT);
-        spin.gpio.setPin(9);
+    === "Set the output pin"  
+        spin.gpio.configurePin(9, OUTPUT);  
+        spin.gpio.setPin(9);  
 
-    === "Reset the output pin"
-        spin.gpio.configurePin(9, OUTPUT);
-        spin.gpio.resetPin(9);
+    === "Reset the output pin"  
+        spin.gpio.configurePin(9, OUTPUT);  
+        spin.gpio.resetPin(9);  
     
-    === "Read the input pin"
-        spin.gpio.configurePin(9, INPUT);
-        uint8_t return_gpio = spin.gpio.readPin(9);
+    === "Read the input pin"  
+        spin.gpio.configurePin(9, INPUT);  
+        uint8_t return_gpio = spin.gpio.readPin(9);  
 
 
 
