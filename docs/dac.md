@@ -4,8 +4,8 @@
 ## Initialization sequence
 
 !!! note
-    1\. First start by calling the initialization function of the DAC `spin.dac.initConsValue(DAC_NUM)`.
-    2\. Second enter the integer value to send to the DAC `spin.dac.setConstValue(DAC_NUM, DAC_CHAN, DAC_VALUE)`
+    1\. First start by calling the initialization function of the DAC `spin.dac.initConsValue(DAC_NUM)`.  
+    2\. Second enter the integer value to send to the DAC `spin.dac.setConstValue(DAC_NUM, DAC_CHAN, DAC_VALUE)`  
 
 !!! example
     ```cpp
