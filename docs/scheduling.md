@@ -55,13 +55,13 @@ A simple timer not related to the PWM can be used to compute the control task pe
 ### Initialization sequence
 
 !!! note
-=== "Periodic task based on PWM source"
-    1\. Create the critical task and link it to the function to be called and choose hrtim as the source source. [`task.createCritical(critical_function, control_period, source_hrtim);`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-createcritical)
-    2\. Start the critical function.  [`task.startCritical()`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-startcritical)
+    === "Periodic task based on PWM source"
+        1\. Create the critical task and link it to the function to be called and choose hrtim as the source source. [`task.createCritical(critical_function, control_period, source_hrtim);`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-createcritical)  
+        2\. Start the critical function.  [`task.startCritical()`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-startcritical)  
 
-=== "Periodic task based on Timer6"
-    1\. Create the critical task and link it to the function to be called and choose tim6 as the source.  [`task.createCritical(critical_function, control_period, source_tim6);`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-createcritical)
-    2\. Start the critical function.  [`task.startCritical()`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-startcritical)
+    === "Periodic task based on Timer6"
+        1\. Create the critical task and link it to the function to be called and choose tim6 as the source.  [`task.createCritical(critical_function, control_period, source_tim6);`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-createcritical)  
+        2\. Start the critical function.  [`task.startCritical()`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-startcritical)  
 
 !!! example
     === "20kHz Periodic task based on PWM"
@@ -98,8 +98,8 @@ Non-critical tasks aren't synchronous, meaning they're not recurring at regular 
 ### Initialization sequence
 
 !!! note
-    1\. Create the background task and link it to the function to be called. [`task.createBackground(function)](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-createbackground) 
-    2\. Start the background function. [`task.startCritical()`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-startbackground)
+    1\. Create the background task and link it to the function to be called. [`task.createBackground(function)](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-createbackground)   
+    2\. Start the background function. [`task.startCritical()`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-startbackground)  
 
 !!! example
     === "Spawning a background task"
