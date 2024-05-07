@@ -90,6 +90,8 @@ The control task has priority over any other task. It will preempts any backgrou
 
 ### Pseudo periodicity of non-critical task
 
+Non-critical tasks aren't synchronous, meaning they're not recurring at regular intervals. Instead, they operate in a pseudo-periodic manner: we can temporarily halt them for a specific duration, during which they remain inactive.  Below, in the illustration we suspend the background task for a period of 500ms. After 500ms we can execute again the background task, but we need to end the control task to do that (the critical task is uninteruptible).
+
 ![](images/task_pseudo_periodic.svg)
 
 
