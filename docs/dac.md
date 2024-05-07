@@ -4,8 +4,8 @@
 ## Initialization sequence
 
 !!! note
-    1\. First start by calling the initialization function of the DAC `spin.dac.initConsValue(DAC_NUM)`.  
-    2\. Second enter the integer value to send to the DAC `spin.dac.setConstValue(DAC_NUM, DAC_CHAN, DAC_VALUE)`  
+    1\. First start by calling the initialization function of the DAC [`spin.dac.initConsValue(DAC_NUM)`](https://owntech-foundation.github.io/Documentation/core/docs/dac/#function-initconstvalue).   
+    2\. Second enter the integer value to send to the DAC [`spin.dac.setConstValue(DAC_NUM, DAC_CHAN, DAC_VALUE)`](https://owntech-foundation.github.io/Documentation/core/docs/dac/#function-setconstvalue)  
 
 !!! example
     ```cpp
@@ -25,6 +25,9 @@ Generate a 1.024V signal.
 
 ![dac value](images/dac_value.svg)
 
+!!! example
+    For a pratical example of the DAC see the example : 
+        - [Signal generation](https://owntech-foundation.github.io/Documentation/examples/SPIN/DAC/signal_generation/)
 
 ## API Reference
 
