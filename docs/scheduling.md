@@ -98,7 +98,7 @@ Non-critical tasks aren't synchronous, meaning they're not recurring at regular 
 ### Initialization sequence
 
 !!! note
-    1\. Create the background task and link it to the function to be called. [`task.createBackground(function)](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-createbackground)   
+    1\. Create the background task and link it to the function to be called. [`task.createBackground(function)`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-createbackground)   
     2\. Start the background function. [`task.startCritical()`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-startbackground)  
 
 !!! example
