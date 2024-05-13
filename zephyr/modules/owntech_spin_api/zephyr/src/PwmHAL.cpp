@@ -344,3 +344,8 @@ void PwmHAL::setAdcDecimation(hrtim_tu_number_t pwmX, uint32_t decimation)
 		decimation = 1;
 	hrtim_adc_trigger_set_postscaler(pwmX, decimation - 1);
 }
+
+uint32_t PwmHAL::changeFrequency(uint32_t frequency_update)
+{
+	return hrtim_change_frequency(frequency_update);
+}

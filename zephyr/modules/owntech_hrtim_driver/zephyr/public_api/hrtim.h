@@ -724,6 +724,13 @@ void hrtim_eev_set(hrtim_tu_number_t tu_number, hrtim_external_trigger_t eev);
  */
 hrtim_external_trigger_t hrtim_eev_get(hrtim_tu_number_t tu_number);
 
+/**
+ * @brief Change the frequency/period after it has been initialized.
+ * @param[in] new_frequency The new frequency in Hz
+ * @warning the new frequency can't be inferior to the the one set in the initialization step
+*/
+uint32_t hrtim_change_frequency(uint32_t new_frequency);
+
 #ifdef __cplusplus
 }
 #endif

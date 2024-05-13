@@ -898,3 +898,42 @@ void DualDAC_init(hrtim_tu_number_t tu_number)
     LL_HRTIM_TIM_SetDualDacStepTrigger(HRTIM1, tu_channel[tu_number]->pwm_conf.pwm_tu, LL_HRTIM_DCDS_CMP2);
     LL_HRTIM_TIM_EnableDualDacTrigger(HRTIM1, tu_channel[tu_number]->pwm_conf.pwm_tu);
 }
+
+uint32_t hrtim_change_frequency(uint32_t new_frequency)
+{
+    uint32_t f_hrtim = hrtim_get_apb2_clock();
+    float32_t duty_cycle;
+    uint32_t period = ((f_hrtim / new_frequency) * 32 + (f_hrtim % new_frequency) * 32 / new_frequency) / (1 << timerMaster.pwm_conf.ckpsc);
+
+    if(timerMaster.pwm_conf.frequency <= new_frequency)
+    {
+        LL_HRTIM_TIM_SetPeriod(HRTIM1, LL_HRTIM_TIMER_MASTER, period);
+
+        duty_cycle = (float32_t)LL_HRTIM_TIM_GetCompare1(HRTIM1, LL_HRTIM_TIMER_A)/(float32_t)LL_HRTIM_TIM_GetPeriod(HRTIM1, LL_HRTIM_TIMER_A);
+        LL_HRTIM_TIM_SetPeriod(HRTIM1, LL_HRTIM_TIMER_A, period);
+        LL_HRTIM_TIM_SetCompare1(HRTIM1, LL_HRTIM_TIMER_A, duty_cycle*period);
+
+        duty_cycle = (float32_t)LL_HRTIM_TIM_GetCompare1(HRTIM1, LL_HRTIM_TIMER_C)/(float32_t)LL_HRTIM_TIM_GetPeriod(HRTIM1, LL_HRTIM_TIMER_C);
+        LL_HRTIM_TIM_SetPeriod(HRTIM1, LL_HRTIM_TIMER_C, period);
+        LL_HRTIM_TIM_SetCompare1(HRTIM1, LL_HRTIM_TIMER_C, duty_cycle*period);
+
+        duty_cycle = (float32_t)LL_HRTIM_TIM_GetCompare1(HRTIM1, LL_HRTIM_TIMER_D)/(float32_t)LL_HRTIM_TIM_GetPeriod(HRTIM1, LL_HRTIM_TIMER_D);
+        LL_HRTIM_TIM_SetPeriod(HRTIM1, LL_HRTIM_TIMER_D, period);
+        LL_HRTIM_TIM_SetCompare1(HRTIM1, LL_HRTIM_TIMER_D, duty_cycle*period);
+
+        duty_cycle = (float32_t)LL_HRTIM_TIM_GetCompare1(HRTIM1, LL_HRTIM_TIMER_E)/(float32_t)LL_HRTIM_TIM_GetPeriod(HRTIM1, LL_HRTIM_TIMER_E);
+        LL_HRTIM_TIM_SetPeriod(HRTIM1, LL_HRTIM_TIMER_E, period);
+        LL_HRTIM_TIM_SetCompare1(HRTIM1, LL_HRTIM_TIMER_E, duty_cycle*period);
+
+        duty_cycle = (float32_t)LL_HRTIM_TIM_GetCompare1(HRTIM1, LL_HRTIM_TIMER_F)/(float32_t)LL_HRTIM_TIM_GetPeriod(HRTIM1, LL_HRTIM_TIMER_F);
+        LL_HRTIM_TIM_SetPeriod(HRTIM1, LL_HRTIM_TIMER_F, period);
+        LL_HRTIM_TIM_SetCompare1(HRTIM1, LL_HRTIM_TIMER_F, duty_cycle*period);
+
+        duty_cycle = (float32_t)LL_HRTIM_TIM_GetCompare1(HRTIM1, LL_HRTIM_TIMER_B)/(float32_t)LL_HRTIM_TIM_GetPeriod(HRTIM1, LL_HRTIM_TIMER_B);
+        LL_HRTIM_TIM_SetPeriod(HRTIM1, LL_HRTIM_TIMER_B, period);
+        LL_HRTIM_TIM_SetCompare1(HRTIM1, LL_HRTIM_TIMER_B, duty_cycle*period);
+
+    }
+
+    return period;
+}
