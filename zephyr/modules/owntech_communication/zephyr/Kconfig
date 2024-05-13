@@ -17,10 +17,10 @@ if OWNTECH_COMMUNICATION
 	config OWNTECH_COMMUNICATION_ENABLE_CAN
 		bool "Enable CAN bus communication API (Thingset over CAN)"
 		default n
-		select CAN
-		select ISOTP
-		select THINGSET
-		select OWNTECH_DATA_API
+		depends on CAN
+		depends on ISOTP
+		depends on THINGSET
+		depends on OWNTECH_DATA_API
 
 	config OWNTECH_COMMUNICATION_ENABLE_RS485
 		bool "Enable RS485 bus communication API"

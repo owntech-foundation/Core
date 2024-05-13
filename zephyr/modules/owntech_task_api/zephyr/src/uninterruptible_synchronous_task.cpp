@@ -30,7 +30,7 @@
 // OwnTech Power API
 #include "timer.h"
 #include "hrtim.h"
-#include "DataAPI.h"
+#include "SpinAPI.h"
 #include "data_api_internal.h"
 #include "safety_internal.h"
 #include "SafetyAPI.h"
@@ -185,14 +185,14 @@ void scheduling_start_uninterruptible_synchronous_task(bool manage_data_acquisit
 	if (interrupt_source == scheduling_interrupt_source_t::source_uninitialized)
 		return;
 
-	if ( (manage_data_acquisition == true) && (data.started() == false) )
+	if ( (manage_data_acquisition == true) && (spin.data.started() == false) )
 	{
 		// If Data Acquisition has not been started yet,
 		// then Scheduling will be in charge of data dispatch
 		do_data_dispatch = true;
 
 		// Configure Data Acquisition module
-		data.setDispatchMethod(DispatchMethod_t::externally_triggered);
+		spin.data.setDispatchMethod(DispatchMethod_t::externally_triggered);
 
 		uint32_t repetition;
 		if (interrupt_source == scheduling_interrupt_source_t::source_hrtim)
@@ -209,10 +209,10 @@ void scheduling_start_uninterruptible_synchronous_task(bool manage_data_acquisit
 
 			repetition = task_period / hrtim_period_us;
 		}
-		data.setRepetitionsBetweenDispatches(repetition);
+		spin.data.setRepetitionsBetweenDispatches(repetition);
 
 		// Then start it
-		data.start();
+		spin.data.start();
 	}
 
 	if (interrupt_source == source_tim6)

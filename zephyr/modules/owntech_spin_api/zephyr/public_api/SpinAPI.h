@@ -46,9 +46,12 @@
 #include "../src/VersionHAL.h"
 #include "../src/GpioHAL.h"
 
+#ifdef CONFIG_OWNTECH_DATA_API
+#include "../src/DataAPI.h"
+#endif
 
 #ifdef CONFIG_SHIELD_TWIST
-	#include "../src/NgndHAL.h"
+#include "../src/NgndHAL.h"
 #endif
 
 
@@ -105,6 +108,13 @@ public:
 	 * @brief Contains all the function related to the versioning of the microcontroller boards.
 	 */
 	VersionHAL version;
+
+#ifdef CONFIG_OWNTECH_DATA_API
+	/**
+	 * @brief Data acquisition from Spin ADCs.
+	 */
+	DataAPI data;
+#endif
 
 #ifdef CONFIG_SHIELD_TWIST
 	/**

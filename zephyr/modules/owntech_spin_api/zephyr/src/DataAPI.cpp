@@ -36,7 +36,7 @@
 #include "SpinAPI.h"
 
 // Current module private functions
-#include "../src/data_dispatch.h"
+#include "./data/data_dispatch.h"
 
 
 /////
