@@ -39,7 +39,7 @@
 #include <arm_math.h>
 
 // Current module private functions
-#include "../src/data_conversion.h"
+#include "./data/data_conversion.h"
 
 #define ADC_1 1
 #define ADC_2 2

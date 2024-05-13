@@ -44,7 +44,7 @@
 #include <arm_math.h>
 
 // Other modules public API
-#include "DataAPI.h"
+#include "SpinAPI.h"
 
 
 /////
@@ -142,7 +142,7 @@ public:
 	 *        from each other.
 	 *
 	 * @note  When using this functions, the user is responsible for data
-	 *        conversion. Use matching data.convert*() function
+	 *        conversion. Use matching spin.data.convert*() function
 	 *        for this purpose.
 	 *
 	 * @note  When using this function, DO NOT use the function to get the
@@ -189,14 +189,14 @@ public:
 	 *        or by starting the Uninterruptible task.
 	 *
 	 * @note  When using this functions, you loose the ability to access raw
-	 *        values using data.get*RawValues() function for the
-	 *        matching sensor, as data.get*() function clears the
+	 *        values using spin.data.get*RawValues() function for the
+	 *        matching sensor, as spin.data.get*() function clears the
 	 *        buffer on each call.
 	 *
 	 * @param sensor_name Name of the shield sensor from which to obtain value.
 	 * @param dataValid Pointer to an uint8_t variable. This parameter is
 	 *        facultative. If this parameter is provided, it will be updated
-	 *        to indicate information about data. Possible values for this
+	 *        to indicate information about spin.data. Possible values for this
 	 *        parameter will be:
 	 *        - DATA_IS_OK if returned data is a newly acquired data,
 	 *        - DATA_IS_OLD if returned data has already been provided before
@@ -211,7 +211,7 @@ public:
 
 	/**
 	 * @brief Use this function to convert values obtained using matching
-	 *        data.get*RawValues() function to relevant
+	 *        spin.data.get*RawValues() function to relevant
 	 *        unit for the data: Volts, Amperes, or Degree Celcius.
 	 *
 	 * @note  This function can't be called before the sensor is enabled.

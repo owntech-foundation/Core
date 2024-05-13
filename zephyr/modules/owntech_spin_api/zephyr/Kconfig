@@ -13,10 +13,29 @@ config OWNTECH_SPIN_API
 		This abstracts base drivers by providing an object-based,
 		user-friendly API.
 
-config OWNTECH_GPIO_API
-	bool "Enables the OwnTech GPIO API integrated with the SPIN Board"
-	default y
-	help
-		The GPIO API provides ways to interact with Spin
-		GPIO by referencing them by their name, either
-		by using Spin nexus or STM32-style names.
+if OWNTECH_SPIN_API
+
+	config OWNTECH_GPIO_API
+		bool "Enables the OwnTech GPIO API integrated with the SPIN Board"
+		default y
+		depends on OWNTECH_SPIN_API
+		help
+			The GPIO API provides ways to interact with Spin
+			GPIO by referencing them by their name, either
+			by using Spin nexus or STM32-style names.
+
+	config OWNTECH_DATA_API
+		bool "Enable OwnTech data acquisition using ADCs"
+		default y
+		select DMA
+		depends on CONSOLE_GETCHAR
+		depends on OWNTECH_SPIN_API
+		depends on OWNTECH_FLASH
+		help
+			The data API provides a framework for automatically gathering
+			data from Spin board ADCs into buffers which can be auto generated.
+			It also interfaces with the Twist shield, providing	ways to
+			interact with the sensors available on the shield and converting
+			raw data in their relevant unit.
+
+endif
