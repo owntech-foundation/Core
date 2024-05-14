@@ -548,7 +548,7 @@ inline uint16_t hrtim_period_Master_get()
 
 inline uint16_t hrtim_period_get(hrtim_tu_number_t tu_number)
 {
-    return tu_channel[tu_number]->pwm_conf.period; // returns the value of the period
+    return LL_HRTIM_TIM_GetPeriod(HRTIM1, tu_channel[tu_number]->pwm_conf.pwm_tu); // returns the value of the period
 }
 
 uint32_t hrtim_period_Master_get_us()
