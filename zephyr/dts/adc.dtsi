@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2022 OwnTech.
  *
- * SPDX-License-Identifier: LGLPV2.1
+ * SPDX-License-Identifier: LGPL-2.1
  *
  * Ideally, this file's content should be contributed
  * to Zephyr's definition of STM32G4 SOC.
