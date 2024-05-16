@@ -17,7 +17,6 @@
 					  "timd", "time", "flt", "timf";
 			st,prescaler = <0>;
 			status = "okay";
-			label = "HRTIM_1";
 			outputs {
 				compatible = "hrtim";
 				pinctrl-0 = <&hrtim1_cha1_pa8 &hrtim1_cha2_pa9

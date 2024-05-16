@@ -9,7 +9,6 @@
 		compatible = "gpio-device";
 		ngnd-gpio-pin {
 			gpios = <&gpiob 11 GPIO_ACTIVE_HIGH>;
-			label = "Neutral to GND shunt";
 		};
 	};
 };
