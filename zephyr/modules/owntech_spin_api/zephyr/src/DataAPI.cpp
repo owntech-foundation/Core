@@ -50,6 +50,8 @@ DispatchMethod_t DataAPI::dispatch_method = DispatchMethod_t::on_dma_interrupt;
 uint32_t DataAPI::repetition_count_between_dispatches = 0;
 
 
+adc_t DataAPI::current_adc[PIN_COUNT] = {DEFAULT_ADC};
+
 /////
 // Public functions accessible only when using Twist
 
@@ -57,13 +59,31 @@ uint32_t DataAPI::repetition_count_between_dispatches = 0;
 /////
 // Public functions
 
-int8_t DataAPI::enableAcquisition(uint8_t pin_num, uint8_t adc_num)
+int8_t DataAPI::enableAcquisition(uint8_t pin_num, adc_t adc_num)
 {
+	if (adc_num == DEFAULT_ADC)
+	{
+		adc_num = DataAPI::getDefaultAdcForPin(pin_num);
+	}
+
+	if (adc_num == UNKNOWN_ADC)
+	{
+		return -1;
+	}
+
 	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
 	if (channel_num == 0)
+	{
 		return -1;
+	}
 
-	return this->enableChannel(adc_num, channel_num);
+	int8_t err = this->enableChannel(adc_num, channel_num);
+	if (err == 0)
+	{
+		DataAPI::current_adc[pin_num-1] = adc_num;
+	}
+
+	return err;
 }
 
 int8_t DataAPI::start()
@@ -136,7 +156,7 @@ DispatchMethod_t DataAPI::getDispatchMethod()
 	return this->dispatch_method;
 }
 
-void DataAPI::triggerAcquisition(uint8_t adc_num)
+void DataAPI::triggerAcquisition(adc_t adc_num)
 {
 	/////
 	// Make sure module is initialized
@@ -153,7 +173,7 @@ void DataAPI::triggerAcquisition(uint8_t adc_num)
 	adc_trigger_software_conversion(adc_num, enabled_channels);
 }
 
-uint16_t* DataAPI::getRawValues(uint8_t adc_num, uint8_t pin_num, uint32_t& number_of_values_acquired)
+uint16_t* DataAPI::getRawValues(adc_t adc_num, uint8_t pin_num, uint32_t& number_of_values_acquired)
 {
 	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
 	if (channel_num == 0)
@@ -165,7 +185,7 @@ uint16_t* DataAPI::getRawValues(uint8_t adc_num, uint8_t pin_num, uint32_t& numb
 	return this->getChannelRawValues(adc_num, channel_num, number_of_values_acquired);
 }
 
-float32_t DataAPI::peek(uint8_t adc_num, uint8_t pin_num)
+float32_t DataAPI::peek(adc_t adc_num, uint8_t pin_num)
 {
 	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
 	if (channel_num == 0)
@@ -176,7 +196,7 @@ float32_t DataAPI::peek(uint8_t adc_num, uint8_t pin_num)
 	return this->peekChannel(adc_num, channel_num);
 }
 
-float32_t DataAPI::getLatest(uint8_t adc_num, uint8_t pin_num, uint8_t* dataValid)
+float32_t DataAPI::getLatest(adc_t adc_num, uint8_t pin_num, uint8_t* dataValid)
 {
 	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
 	if (channel_num == 0)
@@ -191,7 +211,7 @@ float32_t DataAPI::getLatest(uint8_t adc_num, uint8_t pin_num, uint8_t* dataVali
 	return this->getChannelLatest(adc_num, channel_num, dataValid);
 }
 
-float32_t DataAPI::convert(uint8_t adc_num, uint8_t pin_num, uint16_t raw_value)
+float32_t DataAPI::convert(adc_t adc_num, uint8_t pin_num, uint16_t raw_value)
 {
 	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
 	if (channel_num == 0)
@@ -202,7 +222,7 @@ float32_t DataAPI::convert(uint8_t adc_num, uint8_t pin_num, uint16_t raw_value)
 	return data_conversion_convert_raw_value(adc_num, channel_num, raw_value);
 }
 
-void DataAPI::setParameters(uint8_t adc_num, uint8_t pin_num, float32_t gain, float32_t offset)
+void DataAPI::setParameters(adc_t adc_num, uint8_t pin_num, float32_t gain, float32_t offset)
 {
 	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
 	if (channel_num == 0)
@@ -214,7 +234,7 @@ void DataAPI::setParameters(uint8_t adc_num, uint8_t pin_num, float32_t gain, fl
 }
 
 
-int8_t DataAPI::storeParametersInMemory(uint8_t adc_num, uint8_t pin_num)
+int8_t DataAPI::storeParametersInMemory(adc_t adc_num, uint8_t pin_num)
 {
 	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
 	if (channel_num == 0)
@@ -226,7 +246,7 @@ int8_t DataAPI::storeParametersInMemory(uint8_t adc_num, uint8_t pin_num)
 }
 
 
-int8_t DataAPI::retrieveParametersFromMemory(uint8_t adc_num, uint8_t pin_num)
+int8_t DataAPI::retrieveParametersFromMemory(adc_t adc_num, uint8_t pin_num)
 {
 	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
 	if (channel_num == 0)
@@ -237,7 +257,7 @@ int8_t DataAPI::retrieveParametersFromMemory(uint8_t adc_num, uint8_t pin_num)
 	return data_conversion_retrieve_channel_parameters_from_nvs(adc_num, channel_num);
 }
 
-float32_t DataAPI::retrieveStoredParameterValue(uint8_t adc_num, uint8_t pin_num, parameter_t parameter_name)
+float32_t DataAPI::retrieveStoredParameterValue(adc_t adc_num, uint8_t pin_num, parameter_t parameter_name)
 {
 	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
 	if (channel_num == 0)
@@ -249,7 +269,7 @@ float32_t DataAPI::retrieveStoredParameterValue(uint8_t adc_num, uint8_t pin_num
 
 }
 
-conversion_type_t DataAPI::retrieveStoredConversionType(uint8_t adc_num, uint8_t pin_num)
+conversion_type_t DataAPI::retrieveStoredConversionType(adc_t adc_num, uint8_t pin_num)
 {
 	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
 	if (channel_num == 0)
@@ -260,7 +280,7 @@ conversion_type_t DataAPI::retrieveStoredConversionType(uint8_t adc_num, uint8_t
 	return data_conversion_get_conversion_type(adc_num,channel_num);
 }
 
-void DataAPI::configureDiscontinuousMode(uint8_t adc_number, uint32_t discontinuous_count)
+void DataAPI::configureDiscontinuousMode(adc_t adc_number, uint32_t discontinuous_count)
 {
 	/////
 	// Make sure module is initialized
@@ -276,7 +296,7 @@ void DataAPI::configureDiscontinuousMode(uint8_t adc_number, uint32_t discontinu
 	adc_configure_discontinuous_mode(adc_number, discontinuous_count);
 }
 
-void DataAPI::configureTriggerSource(uint8_t adc_number, adc_ev_src_t trigger_source)
+void DataAPI::configureTriggerSource(adc_t adc_number, adc_ev_src_t trigger_source)
 {
 	/////
 	// Make sure module is initialized
@@ -311,7 +331,7 @@ void DataAPI::initializeAllAdcs()
 	}
 }
 
-int8_t DataAPI::enableChannel(uint8_t adc_num, uint8_t channel_num)
+int8_t DataAPI::enableChannel(adc_t adc_num, uint8_t channel_num)
 {
 	if (DataAPI::is_started == true)
 		return -1;
@@ -347,7 +367,7 @@ int8_t DataAPI::enableChannel(uint8_t adc_num, uint8_t channel_num)
 	return 0;
 }
 
-void DataAPI::disableChannel(uint8_t adc_num, uint8_t channel)
+void DataAPI::disableChannel(adc_t adc_num, uint8_t channel)
 {
 	/////
 	// Make sure module is initialized
@@ -363,7 +383,7 @@ void DataAPI::disableChannel(uint8_t adc_num, uint8_t channel)
 	adc_remove_channel(adc_num, channel);
 }
 
-uint16_t* DataAPI::getChannelRawValues(uint8_t adc_num, uint8_t channel_num, uint32_t& number_of_values_acquired)
+uint16_t* DataAPI::getChannelRawValues(adc_t adc_num, uint8_t channel_num, uint32_t& number_of_values_acquired)
 {
 	if (DataAPI::is_started == false)
 	{
@@ -381,7 +401,7 @@ uint16_t* DataAPI::getChannelRawValues(uint8_t adc_num, uint8_t channel_num, uin
 	return data_dispatch_get_acquired_values(adc_num, channel_rank, number_of_values_acquired);
 }
 
-float32_t DataAPI::peekChannel(uint8_t adc_num, uint8_t channel_num)
+float32_t DataAPI::peekChannel(adc_t adc_num, uint8_t channel_num)
 {
 	if (DataAPI::is_started == false)
 	{
@@ -403,7 +423,7 @@ float32_t DataAPI::peekChannel(uint8_t adc_num, uint8_t channel_num)
 	return data_conversion_convert_raw_value(adc_num, channel_num, raw_value);
 }
 
-float32_t DataAPI::getChannelLatest(uint8_t adc_num, uint8_t channel_num, uint8_t* dataValid)
+float32_t DataAPI::getChannelLatest(adc_t adc_num, uint8_t channel_num, uint8_t* dataValid)
 {
 	if (DataAPI::is_started == false)
 	{
@@ -465,7 +485,7 @@ float32_t DataAPI::getChannelLatest(uint8_t adc_num, uint8_t channel_num, uint8_
 	}
 }
 
-uint8_t DataAPI::getChannelRank(uint8_t adc_num, uint8_t channel_num)
+uint8_t DataAPI::getChannelRank(adc_t adc_num, uint8_t channel_num)
 {
 	if ( (adc_num > ADC_COUNT) || (channel_num > CHANNELS_PER_ADC) )
 		return 0;
@@ -476,7 +496,7 @@ uint8_t DataAPI::getChannelRank(uint8_t adc_num, uint8_t channel_num)
 	return DataAPI::channels_ranks[adc_index][channel_index];
 }
 
-uint8_t DataAPI::getChannelNumber(uint8_t adc_num, uint8_t twist_pin)
+uint8_t DataAPI::getChannelNumber(adc_t adc_num, uint8_t twist_pin)
 {
 	switch (adc_num)
 	{
@@ -631,6 +651,56 @@ uint8_t DataAPI::getChannelNumber(uint8_t adc_num, uint8_t twist_pin)
 	default:
 		return 0;
 		break;
+	}
+}
+
+adc_t DataAPI::getDefaultAdcForPin(uint8_t pin_number)
+{
+	switch (pin_number)
+	{
+		// These pins allow only ADC 1
+		case 51:
+		case 52:
+		// These pins allow ADC 1 and ADC 2: default to ADC 1
+		case 1:
+		case 24:
+		case 25:
+		case 26:
+		case 27:
+		case 29:
+		case 30:
+		// These pins allow ADC 1 and ADC 3: default to ADC 1
+		case 31:
+		case 37:
+			return ADC_1;
+			break;
+		// These pins allow only ADC 2
+		case 32:
+		case 34:
+		case 35:
+		case 42:
+		case 43:
+		case 44:
+		case 45:
+		// This pin allows ADC 2 and ADC 4: default to ADC 2
+		case 5:
+			return ADC_2;
+			break;
+		// This pin allows only ADC 3
+		case 4:
+			return ADC_3;
+			break;
+		// This pin allows only ADC 4
+		case 2:
+			return ADC_4;
+			break;
+		// This pin allows only ADC 5
+		case 12:
+		case 14:
+			return ADC_5;
+			break;
+		default:
+			return UNKNOWN_ADC;
 	}
 }
 
