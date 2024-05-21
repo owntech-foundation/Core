@@ -64,14 +64,14 @@ typedef enum
 
 struct sensor_info_t
 {
-	sensor_info_t(uint8_t adc_num, uint8_t channel_num, uint8_t pin_num)
+	sensor_info_t(adc_t adc_num, uint8_t channel_num, uint8_t pin_num)
 	{
 		this->adc_num     = adc_num;
 		this->channel_num = channel_num;
 		this->pin_num     = pin_num;
 	}
 
-	uint8_t adc_num;
+	adc_t   adc_num;
 	uint8_t channel_num;
 	uint8_t pin_num;
 };

@@ -44,13 +44,9 @@
 // Current module private functions
 #include "./data/data_conversion.h"
 
-#define ADC_1 1
-#define ADC_2 2
-#define ADC_3 3
-#define ADC_4 4
 
-#define ERROR_CHANNEL_OFF -5
-#define ERROR_CHANNEL_NOT_FOUND -2
+/////
+// Type definitions
 
 typedef enum : uint8_t
 {
@@ -59,8 +55,16 @@ typedef enum : uint8_t
 
 } parameter_t;
 
-/////
-// Type definitions
+typedef enum : int8_t
+{
+	UNKNOWN_ADC = -1,
+	DEFAULT_ADC = 0,
+	ADC_1 = 1,
+	ADC_2 = 2,
+	ADC_3 = 3,
+	ADC_4 = 4,
+	ADC_5 = 5
+} adc_t;
 
 enum class DispatchMethod_t
 {
@@ -68,15 +72,17 @@ enum class DispatchMethod_t
 	externally_triggered
 };
 
-
 //////
 // Constants definitions
 
-static const uint8_t ADC_COUNT        = 5;
+static const uint8_t ADC_COUNT = 5;
+static const uint8_t PIN_COUNT = 59;
 static const uint8_t CHANNELS_PER_ADC = 19;
 
 // Define "no value" as an impossible, out of range value
 const float32_t NO_VALUE = -10000;
+#define ERROR_CHANNEL_OFF -5
+#define ERROR_CHANNEL_NOT_FOUND -2
 
 const uint8_t DATA_IS_OK      = 0;
 const uint8_t DATA_IS_OLD     = 1;
@@ -102,14 +108,22 @@ public:
 	 *        to a channel of the given ADC. Refer to Spin pinout image for
 	 *        PIN/ADC relations.
 	 *
-	 * @note  This function must be called *before* ADC is started.
+	 * @note  This function must be called *before* Data API is started.
 	 *
-	 * @param pin_num Number of the Spin pin to acquire.
-	 * @param adc_number Number of the ADC on which acquisition is to be done.
+	 * @param[in] pin_number Number of the Spin pin on which to enable acquisition.
+	 * @param[in] adc_number Number of the ADC on which acquisition is to be done.
+	 *            This parameter can be omitted, in which case:
+	 *            - If only one ADC is linked to the given pin, it will be selected.
+	 *            - If two ADCs are available for acquisition on the given pin, the
+	 *            ADC with the lowest number will be selected.
 	 *
 	 * @return 0 if acquisition was correctly enabled, -1 if there was an error.
+	 *         Errors generally indicate that the given pin is not linked to and
+	 *         ADC, and thus can not be used for acquisition. If the adc_number
+	 *         parameter was explicitely provided, it can also indicate that the
+	 *         given ADC is not available for acquisition on the provided pin.
 	 */
-	int8_t enableAcquisition(uint8_t pin_num, uint8_t adc_num);
+	int8_t enableAcquisition(uint8_t pin_number, adc_t adc_number = DEFAULT_ADC);
 
 	/**
 	 * @brief This functions manually starts the acquisition chain.
@@ -186,9 +200,9 @@ public:
 	 *        is enabled on the ADC and the DataAPI module is started,
 	 *        either explicitly or by starting the Uninterruptible task.
 	 *
-	 * @param adc_num Number of the ADC on which to acquire channels.
+	 * @param adc_number Number of the ADC on which to acquire channels.
 	 */
-	void triggerAcquisition(uint8_t adc_num);
+	void triggerAcquisition(adc_t adc_number);
 
 
 	/////
@@ -220,7 +234,7 @@ public:
 	 *       latest converted value for the same channel as this function
 	 *       will clear the buffer and disregard all values but the latest.
 	 *
-	 * @param adc_num Number of the ADC from which to obtain values.
+	 * @param adc_number Number of the ADC from which to obtain values.
 	 * @param pin_num Number of the pin from which to obtain values.
 	 * @param number_of_values_acquired Pass an uint32_t variable.
 	 *        This variable will be updated with the number of values that
@@ -230,7 +244,7 @@ public:
 	 *         If number_of_values_acquired is 0, do not try to access the
 	 *         buffer as it may be nullptr.
 	 */
-	uint16_t* getRawValues(uint8_t adc_num, uint8_t pin_num, uint32_t& number_of_values_acquired);
+	uint16_t* getRawValues(adc_t adc_number, uint8_t pin_num, uint32_t& number_of_values_acquired);
 
 	/**
 	 * @brief Function to access the latest value available from a pin,
@@ -243,13 +257,13 @@ public:
 	 *        The DataAPI module must have been started, either
 	 *        explicitly or by starting the Uninterruptible task.
 	 *
-	 * @param adc_num Number of the ADC from which to obtain value.
+	 * @param adc_number Number of the ADC from which to obtain value.
 	 * @param pin_num Number of the pin from which to obtain values.
 	 * @return Latest available value available from the given channel.
 	 *         If there was no value acquired in this channel yet,
 	 *         return value is NO_VALUE.
 	 */
-	float32_t peek(uint8_t adc_num, uint8_t pin_num);
+	float32_t peek(adc_t adc_number, uint8_t pin_num);
 
 	/**
 	 * @brief This function returns the latest acquired measure expressed
@@ -265,7 +279,7 @@ public:
 	 *        matching channel, as data.get*() function clears the
 	 *        buffer on each call.
 	 *
-	 * @param adc_num Number of the ADC from which to obtain value.
+	 * @param adc_number Number of the ADC from which to obtain value.
 	 * @param pin_num Number of the pin from which to obtain values.
 	 * @param dataValid Pointer to an uint8_t variable. This parameter is
 	 *        facultative. If this parameter is provided, it will be updated
@@ -280,7 +294,7 @@ public:
 	 *         If no value was acquired in this channel yet, return value is NO_VALUE.
 	 *
 	 */
-	float32_t getLatest(uint8_t adc_num, uint8_t pin_num, uint8_t* dataValid = nullptr);
+	float32_t getLatest(adc_t adc_number, uint8_t pin_num, uint8_t* dataValid = nullptr);
 
 	/**
 	 * @brief Use this function to convert values obtained using matching
@@ -289,13 +303,13 @@ public:
 	 *
 	 * @note  This function can't be called before the pin is enabled.
 	 *
-	 * @param adc_num Number of the ADC from which the value originates.
+	 * @param adc_number Number of the ADC from which the value originates.
 	 * @param pin_num Number of the pin from which to obtain values.
 	 * @param raw_value Raw value obtained from the channel buffer.
 	 *
 	 * @return Converted value in the relevant unit. If there is an error, returns -5000.
 	 */
-	float32_t convert(uint8_t adc_num, uint8_t pin_num, uint16_t raw_value);
+	float32_t convert(adc_t adc_number, uint8_t pin_num, uint16_t raw_value);
 
 	/**
 	 * @brief Use this function to tweak the conversion values for the
@@ -305,53 +319,55 @@ public:
 	 *        The DataAPI module must not have been started, neither
 	 *        explicitly nor by starting the Uninterruptible task.
 	 *
-	 * @param adc_num Number of the ADC to set conversion values.
+	 * @param adc_number Number of the ADC to set conversion values.
 	 * @param pin_num Number of the pin from which to obtain values.
 	 * @param gain Gain to be applied (multiplied) to the channel raw value.
 	 * @param offset Offset to be applied (added) to the channel value
 	 *        after gain has been applied.
 	 */
-	void setParameters(uint8_t adc_num, uint8_t pin_num, float32_t gain, float32_t offset);
+	void setParameters(adc_t adc_number, uint8_t pin_num, float32_t gain, float32_t offset);
 
 	/**
 	 * @brief Use this function to get the current conversion parameteres for the chosen channel .
 	 *
 	 * @note  This function can't be called before the channel is enabled.
 	 *
-	 * @param channel Name of the shield channel to get a conversion parameter.
+	 * @param adc_number Number of the ADC to set conversion values.
+	 * @param pin_num Number of the pin from which to obtain values.
 	 * @param parameter_name Paramater to be retreived: `gain` or `offset`.
 	 *
 	 * @return Returns the value of the parameter. Returns -5000 if the channel is not active.
 	 */
-	float32_t retrieveStoredParameterValue(uint8_t adc_num, uint8_t pin_num, parameter_t parameter_name);
+	float32_t retrieveStoredParameterValue(adc_t adc_number, uint8_t pin_num, parameter_t parameter_name);
 
 	/**
 	 * @brief Use this function to get the current conversion type for the chosen channel.
 	 *
 	 * @note  This function can't be called before the channel is enabled.
 	 *
-	 * @param channel Name of the shield channel to get a conversion parameter.
+	 * @param adc_number Number of the ADC to set conversion values.
+	 * @param pin_num Number of the pin from which to obtain values.
 	 *
 	 * @return Returns the type of convertion of the given pin. Returns -5 if the channel is not active.
 	 */
-	conversion_type_t retrieveStoredConversionType(uint8_t adc_num, uint8_t pin_num);
+	conversion_type_t retrieveStoredConversionType(adc_t adc_number, uint8_t pin_num);
 
 	/**
 	 * @brief Store the currently configured conversion parameters of a given channel in NVS.
 	 *
-	 * @param[in] adc_num       ADC number
+	 * @param[in] adc_number    ADC number
 	 * @param[in] pin_num   	SPIN pin number
 	 *
 	 * @return 0 if parameters were correcly stored, negative value if there was an error:
 	 * 			-1: There was an error,
 	 * 			-5000: Channel not found.
 	 */
-	int8_t storeParametersInMemory(uint8_t adc_num, uint8_t pin_num);
+	int8_t storeParametersInMemory(adc_t adc_number, uint8_t pin_num);
 
 	/**
 	 * @brief Retreived previously configured conversion parameters from NVS.
 	 *
-	 * @param[in] adc_num       ADC number
+	 * @param[in] adc_number    ADC number
 	 * @param[in] pin_num   	SPIN pin number
 	 *
 	 * @return 0 if parameters were correcly retreived, negative value if there was an error:
@@ -361,7 +377,7 @@ public:
 	 *         -4: NVS contains data, but not for the requested channel
 	 *         -5000: Channel not found.
 	 */
-	int8_t retrieveParametersFromMemory(uint8_t adc_num, uint8_t pin_num);
+	int8_t retrieveParametersFromMemory(adc_t adc_number, uint8_t pin_num);
 
 	/**
 	 * @brief Set the discontinuous count for an ADC.
@@ -374,7 +390,7 @@ public:
 	 * @param discontinuous_count Number of channels to acquire on each
 	 *        trigger event. 0 to disable discontinuous mode (default).
 	 */
-	void configureDiscontinuousMode(uint8_t adc_number, uint32_t dicontinuous_count);
+	void configureDiscontinuousMode(adc_t adc_number, uint32_t dicontinuous_count);
 
 	/**
 	 * @brief Change the trigger source of an ADC.
@@ -387,17 +403,18 @@ public:
 	 * @param  adc_number Number of the ADC to configure
 	 * @param  trigger_source Source of the trigger
 	 */
-	void configureTriggerSource(uint8_t adc_number, adc_ev_src_t trigger_source);
+	void configureTriggerSource(adc_t adc_number, adc_ev_src_t trigger_source);
 
 private:
 	static void initializeAllAdcs();
-	static int8_t enableChannel(uint8_t adc_num, uint8_t channel_num);
-	static void disableChannel(uint8_t adc_number, uint8_t channel);
-	static uint16_t* getChannelRawValues(uint8_t adc_num, uint8_t channel_num, uint32_t& number_of_values_acquired);
-	static float32_t peekChannel(uint8_t adc_num, uint8_t channel_num);
-	static float32_t getChannelLatest(uint8_t adc_num, uint8_t channel_num, uint8_t* dataValid = nullptr);
-	static uint8_t getChannelRank(uint8_t adc_num, uint8_t channel_num);
-	static uint8_t getChannelNumber(uint8_t adc_num, uint8_t twist_pin);
+	static int8_t enableChannel(adc_t adc_number, uint8_t channel_num);
+	static void disableChannel(adc_t adc_number, uint8_t channel);
+	static uint16_t* getChannelRawValues(adc_t adc_number, uint8_t channel_num, uint32_t& number_of_values_acquired);
+	static float32_t peekChannel(adc_t adc_number, uint8_t channel_num);
+	static float32_t getChannelLatest(adc_t adc_number, uint8_t channel_num, uint8_t* dataValid = nullptr);
+	static uint8_t getChannelRank(adc_t adc_number, uint8_t channel_num);
+	static uint8_t getChannelNumber(adc_t adc_number, uint8_t twist_pin);
+	static adc_t getDefaultAdcForPin(uint8_t pin_number);
 
 	// Private members accessed by external friend members
 	static void setRepetitionsBetweenDispatches(uint32_t repetition);
@@ -411,6 +428,7 @@ private:
 	static uint8_t current_rank[ADC_COUNT];
 	static DispatchMethod_t dispatch_method;
 	static uint32_t repetition_count_between_dispatches;
+	static adc_t current_adc[PIN_COUNT];
 
 };
 

@@ -204,14 +204,14 @@ int8_t SensorsAPI::storeParametersInMemory(sensor_t sensor_name)
 
 void SensorsAPI::enableDefaultTwistSensors()
 {
-	spin.data.configureTriggerSource(1, hrtim_ev1);
-	spin.data.configureTriggerSource(2, hrtim_ev3);
-	spin.data.configureTriggerSource(3, software);
-	spin.data.configureTriggerSource(4, software);
-	spin.data.configureTriggerSource(5, software);
+	spin.data.configureTriggerSource(ADC_1, hrtim_ev1);
+	spin.data.configureTriggerSource(ADC_2, hrtim_ev3);
+	spin.data.configureTriggerSource(ADC_3, software);
+	spin.data.configureTriggerSource(ADC_4, software);
+	spin.data.configureTriggerSource(ADC_5, software);
 
-	spin.data.configureDiscontinuousMode(1,1);
-	spin.data.configureDiscontinuousMode(2, 1);
+	spin.data.configureDiscontinuousMode(ADC_1, 1);
+	spin.data.configureDiscontinuousMode(ADC_2, 1);
 
 	this->enableSensor(I1_LOW, 1);
 	this->enableSensor(V1_LOW, 1);
@@ -317,11 +317,11 @@ sensor_info_t SensorsAPI::getEnabledSensorInfo(sensor_t sensor_name)
 	sensor_prop_t* sensor_prop = enabled_sensors[sensor_index];
 	if (sensor_prop != nullptr)
 	{
-		return sensor_info_t(sensor_prop->adc_number, sensor_prop->channel_number, sensor_prop->pin_number);
+		return sensor_info_t((adc_t)sensor_prop->adc_number, sensor_prop->channel_number, sensor_prop->pin_number);
 	}
 	else
 	{
-		return sensor_info_t(0, 0, 0);
+		return sensor_info_t(DEFAULT_ADC, 0, 0);
 	}
 }
 
