@@ -200,7 +200,7 @@ public:
 	 *        is enabled on the ADC and the DataAPI module is started,
 	 *        either explicitly or by starting the Uninterruptible task.
 	 *
-	 * @param adc_number Number of the ADC on which to acquire channels.
+	 * @param[in] adc_number Number of the ADC on which to acquire channels.
 	 */
 	void triggerAcquisition(adc_t adc_number);
 
@@ -234,9 +234,8 @@ public:
 	 *       latest converted value for the same channel as this function
 	 *       will clear the buffer and disregard all values but the latest.
 	 *
-	 * @param adc_number Number of the ADC from which to obtain values.
-	 * @param pin_num Number of the pin from which to obtain values.
-	 * @param number_of_values_acquired Pass an uint32_t variable.
+	 * @param[in] pin_number Number of the pin from which to obtain values.
+	 * @param[out] number_of_values_acquired Pass an uint32_t variable.
 	 *        This variable will be updated with the number of values that
 	 *        are present in the returned buffer.
 	 *
@@ -244,7 +243,7 @@ public:
 	 *         If number_of_values_acquired is 0, do not try to access the
 	 *         buffer as it may be nullptr.
 	 */
-	uint16_t* getRawValues(adc_t adc_number, uint8_t pin_num, uint32_t& number_of_values_acquired);
+	uint16_t* getRawValues(uint8_t pin_number, uint32_t& number_of_values_acquired);
 
 	/**
 	 * @brief Function to access the latest value available from a pin,
@@ -257,13 +256,12 @@ public:
 	 *        The DataAPI module must have been started, either
 	 *        explicitly or by starting the Uninterruptible task.
 	 *
-	 * @param adc_number Number of the ADC from which to obtain value.
-	 * @param pin_num Number of the pin from which to obtain values.
+	 * @param[in] pin_number Number of the pin from which to obtain values.
 	 * @return Latest available value available from the given channel.
 	 *         If there was no value acquired in this channel yet,
 	 *         return value is NO_VALUE.
 	 */
-	float32_t peek(adc_t adc_number, uint8_t pin_num);
+	float32_t peek(uint8_t pin_number);
 
 	/**
 	 * @brief This function returns the latest acquired measure expressed
@@ -279,9 +277,8 @@ public:
 	 *        matching channel, as data.get*() function clears the
 	 *        buffer on each call.
 	 *
-	 * @param adc_number Number of the ADC from which to obtain value.
-	 * @param pin_num Number of the pin from which to obtain values.
-	 * @param dataValid Pointer to an uint8_t variable. This parameter is
+	 * @param[in] pin_number Number of the pin from which to obtain values.
+	 * @param[out] dataValid Pointer to an uint8_t variable. This parameter is
 	 *        facultative. If this parameter is provided, it will be updated
 	 *        to indicate information about data. Possible values for this
 	 *        parameter will be:
@@ -294,7 +291,7 @@ public:
 	 *         If no value was acquired in this channel yet, return value is NO_VALUE.
 	 *
 	 */
-	float32_t getLatest(adc_t adc_number, uint8_t pin_num, uint8_t* dataValid = nullptr);
+	float32_t getLatest(uint8_t pin_number, uint8_t* dataValid = nullptr);
 
 	/**
 	 * @brief Use this function to convert values obtained using matching
@@ -303,13 +300,12 @@ public:
 	 *
 	 * @note  This function can't be called before the pin is enabled.
 	 *
-	 * @param adc_number Number of the ADC from which the value originates.
-	 * @param pin_num Number of the pin from which to obtain values.
-	 * @param raw_value Raw value obtained from the channel buffer.
+	 * @param[in] pin_number Number of the pin from which to obtain values.
+	 * @param[in] raw_value Raw value obtained from the channel buffer.
 	 *
 	 * @return Converted value in the relevant unit. If there is an error, returns -5000.
 	 */
-	float32_t convert(adc_t adc_number, uint8_t pin_num, uint16_t raw_value);
+	float32_t convert(uint8_t pin_number, uint16_t raw_value);
 
 	/**
 	 * @brief Use this function to tweak the conversion values for the
@@ -319,56 +315,51 @@ public:
 	 *        The DataAPI module must not have been started, neither
 	 *        explicitly nor by starting the Uninterruptible task.
 	 *
-	 * @param adc_number Number of the ADC to set conversion values.
-	 * @param pin_num Number of the pin from which to obtain values.
-	 * @param gain Gain to be applied (multiplied) to the channel raw value.
-	 * @param offset Offset to be applied (added) to the channel value
+	 * @param[in] pin_number Number of the pin from which to obtain values.
+	 * @param[in] gain Gain to be applied (multiplied) to the channel raw value.
+	 * @param[in] offset Offset to be applied (added) to the channel value
 	 *        after gain has been applied.
 	 */
-	void setParameters(adc_t adc_number, uint8_t pin_num, float32_t gain, float32_t offset);
+	void setParameters(uint8_t pin_number, float32_t gain, float32_t offset);
 
 	/**
 	 * @brief Use this function to get the current conversion parameteres for the chosen channel .
 	 *
 	 * @note  This function can't be called before the channel is enabled.
 	 *
-	 * @param adc_number Number of the ADC to set conversion values.
-	 * @param pin_num Number of the pin from which to obtain values.
-	 * @param parameter_name Paramater to be retreived: `gain` or `offset`.
+	 * @param[in] pin_number Number of the pin from which to obtain values.
+	 * @param[in] parameter_name Paramater to be retreived: `gain` or `offset`.
 	 *
 	 * @return Returns the value of the parameter. Returns -5000 if the channel is not active.
 	 */
-	float32_t retrieveStoredParameterValue(adc_t adc_number, uint8_t pin_num, parameter_t parameter_name);
+	float32_t retrieveStoredParameterValue(uint8_t pin_number, parameter_t parameter_name);
 
 	/**
 	 * @brief Use this function to get the current conversion type for the chosen channel.
 	 *
 	 * @note  This function can't be called before the channel is enabled.
 	 *
-	 * @param adc_number Number of the ADC to set conversion values.
-	 * @param pin_num Number of the pin from which to obtain values.
+	 * @param[in] pin_number Number of the pin from which to obtain values.
 	 *
 	 * @return Returns the type of convertion of the given pin. Returns -5 if the channel is not active.
 	 */
-	conversion_type_t retrieveStoredConversionType(adc_t adc_number, uint8_t pin_num);
+	conversion_type_t retrieveStoredConversionType(uint8_t pin_number);
 
 	/**
 	 * @brief Store the currently configured conversion parameters of a given channel in NVS.
 	 *
-	 * @param[in] adc_number    ADC number
-	 * @param[in] pin_num   	SPIN pin number
+	 * @param[in] pin_number SPIN pin number
 	 *
-	 * @return 0 if parameters were correcly stored, negative value if there was an error:
+	 * @return 0 if parameters were correctly stored, negative value if there was an error:
 	 * 			-1: There was an error,
 	 * 			-5000: Channel not found.
 	 */
-	int8_t storeParametersInMemory(adc_t adc_number, uint8_t pin_num);
+	int8_t storeParametersInMemory(uint8_t pin_number);
 
 	/**
 	 * @brief Retreived previously configured conversion parameters from NVS.
 	 *
-	 * @param[in] adc_number    ADC number
-	 * @param[in] pin_num   	SPIN pin number
+	 * @param[in] pin_number SPIN pin number
 	 *
 	 * @return 0 if parameters were correcly retreived, negative value if there was an error:
 	 *         -1: NVS is empty
@@ -377,7 +368,7 @@ public:
 	 *         -4: NVS contains data, but not for the requested channel
 	 *         -5000: Channel not found.
 	 */
-	int8_t retrieveParametersFromMemory(adc_t adc_number, uint8_t pin_num);
+	int8_t retrieveParametersFromMemory(uint8_t pin_number);
 
 	/**
 	 * @brief Set the discontinuous count for an ADC.
@@ -386,8 +377,8 @@ public:
 	 *        Applied configuration will only be set when ADC is started.
 	 *        If ADC is already started, it must be stopped then started again.
 	 *
-	 * @param adc_number Number of the ADC to configure.
-	 * @param discontinuous_count Number of channels to acquire on each
+	 * @param[in] adc_number Number of the ADC to configure.
+	 * @param[in] discontinuous_count Number of channels to acquire on each
 	 *        trigger event. 0 to disable discontinuous mode (default).
 	 */
 	void configureDiscontinuousMode(adc_t adc_number, uint32_t dicontinuous_count);
@@ -400,8 +391,8 @@ public:
 	 *        Applied configuration will only be set when ADC is started.
 	 *        If ADC is already started, it must be stopped then started again.
 	 *
-	 * @param  adc_number Number of the ADC to configure
-	 * @param  trigger_source Source of the trigger
+	 * @param[in] adc_number Number of the ADC to configure
+	 * @param[in] trigger_source Source of the trigger
 	 */
 	void configureTriggerSource(adc_t adc_number, adc_ev_src_t trigger_source);
 
@@ -415,6 +406,7 @@ private:
 	static uint8_t getChannelRank(adc_t adc_number, uint8_t channel_num);
 	static uint8_t getChannelNumber(adc_t adc_number, uint8_t twist_pin);
 	static adc_t getDefaultAdcForPin(uint8_t pin_number);
+	static adc_t getCurrentAdcForPin(uint8_t pin_number);
 
 	// Private members accessed by external friend members
 	static void setRepetitionsBetweenDispatches(uint32_t repetition);
