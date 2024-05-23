@@ -116,12 +116,12 @@ public:
 	 *
 	 * @note  This function must be called *before* ADC is started.
 	 *
-	 * @param sensor_name Name of the sensor using enumeration sensor_t.
-	 * @param adc_number Number of the ADC which should be used for acquisition.
+	 * @param[in] sensor_name Name of the sensor using enumeration sensor_t.
+	 * @param[in] adc_number Number of the ADC which should be used for acquisition.
 	 *
 	 * @return 0 if the sensor was correctly enabled, negative value if there was an error.
 	 */
-	int8_t enableSensor(sensor_t sensor_name, uint8_t adc_num);
+	int8_t enableSensor(sensor_t sensor_name, uint8_t adc_number);
 
 	/**
 	 * @brief Function to access the acquired data for specified sensor.
@@ -149,8 +149,8 @@ public:
 	 *        latest converted value for the same sensor as this function
 	 *        will clear the buffer and disregard all values but the latest.
 	 *
-	 * @param sensor_name Name of the shield sensor from which to obtain values.
-	 * @param number_of_values_acquired Pass an uint32_t variable.
+	 * @param[in]  sensor_name Name of the shield sensor from which to obtain values.
+	 * @param[out] number_of_values_acquired Pass an uint32_t variable.
 	 *        This variable will be updated with the number of values that
 	 *        are present in the returned buffer.
 	 *
@@ -171,7 +171,7 @@ public:
 	 *        and the DataAPI module is started, either explicitly
 	 *        or by starting the Uninterruptible task.
 	 *
-	 * @param sensor_name Name of the shield sensor from which to obtain value.
+	 * @param[in] sensor_name Name of the shield sensor from which to obtain value.
 	 *
 	 * @return Latest available value available from the given sensor.
 	 *         If there was no value acquired by this sensor yet,
@@ -193,8 +193,8 @@ public:
 	 *        matching sensor, as spin.data.get*() function clears the
 	 *        buffer on each call.
 	 *
-	 * @param sensor_name Name of the shield sensor from which to obtain value.
-	 * @param dataValid Pointer to an uint8_t variable. This parameter is
+	 * @param[in]  sensor_name Name of the shield sensor from which to obtain value.
+	 * @param[out] dataValid Pointer to an uint8_t variable. This parameter is
 	 *        facultative. If this parameter is provided, it will be updated
 	 *        to indicate information about spin.data. Possible values for this
 	 *        parameter will be:
@@ -216,8 +216,8 @@ public:
 	 *
 	 * @note  This function can't be called before the sensor is enabled.
 	 *
-	 * @param sensor_name Name of the shield sensor from which the value originates
-	 * @param raw_value Raw value obtained from which the value originates
+	 * @param[in] sensor_name Name of the shield sensor from which the value originates
+	 * @param[in] raw_value Raw value obtained from which the value originates
 	 *
 	 * @return Converted value in the relevant unit. Returns ERROR_CHANNEL_NOT_FOUND
 	 *         if the sensor is not active.
@@ -232,9 +232,9 @@ public:
 	 *        The DataAPI must not have been started, neither explicitly
 	 *        nor by starting the Uninterruptible task.
 	 *
-	 * @param sensor_name Name of the shield sensor to set conversion values.
-	 * @param gain Gain to be applied (multiplied) to the sensor raw value.
-	 * @param offset Offset to be applied (added) to the sensor value
+	 * @param[in] sensor_name Name of the shield sensor to set conversion values.
+	 * @param[in] gain Gain to be applied (multiplied) to the sensor raw value.
+	 * @param[in] offset Offset to be applied (added) to the sensor value
 	 *        after gain has been applied.
 	 */
 	void setConversionParameters(sensor_t sensor_name, float32_t gain, float32_t offset);
@@ -244,8 +244,8 @@ public:
 	 *
 	 * @note  This function can't be called before the sensor is enabled.
 	 *
-	 * @param sensor_name Name of the shield sensor to get a conversion parameter.
-	 * @param parameter_name Paramater to be retreived: `gain` or `offset`.
+	 * @param[in] sensor_name Name of the shield sensor to get a conversion parameter.
+	 * @param[in] parameter_name Paramater to be retreived: `gain` or `offset`.
 	 */
 	float32_t retrieveStoredParameterValue(sensor_t sensor_name, parameter_t parameter_name);
 
@@ -254,7 +254,7 @@ public:
 	 *
 	 * @note  This function can't be called before the sensor is enabled.
 	 *
-	 * @param sensor_name Name of the shield sensor to get a conversion parameter.
+	 * @param[in] sensor_name Name of the shield sensor to get a conversion parameter.
 	 */
 	conversion_type_t retrieveStoredConversionType(sensor_t sensor_name);
 
@@ -263,14 +263,14 @@ public:
 	 *
 	 * @note  This function should be called after updating the parameters using setParameters.
 	 *
-	 * @param sensor_name Name of the shield sensor to save the values.
+	 * @param[in] sensor_name Name of the shield sensor to save the values.
 	 */
 	int8_t storeParametersInMemory(sensor_t sensor_name);
 
 	/**
 	 * @brief Use this function to read the gain and offset parameters of the board to is non-volatile memory.
 	 *
-	 * @param sensor_name Name of the shield sensor to save the values.
+	 * @param[in] sensor_name Name of the shield sensor to save the values.
 	 */
 	int8_t retrieveParametersFromMemory(sensor_t sensor_name);
 
@@ -295,10 +295,13 @@ public:
 	void enableDefaultTwistSensors();
 
 	/**
-	 * @brief Retrieve stored parameters from Flash memory and configure ADC parameters
+	 * @brief Manually set parameters values using console. After the parameters
+	 *        have been inputed, they will be stored in Spin memory so that they
+	 *        are automatically applied on subsequent boots.
 	 *
-	 * @note  This function requires Console to interact with the user.
-	 *        You must first call console_init() before calling this function.
+	 * @note  This function requires a console to interact with the user.
+	 *        The board must be connected to a comuter using USB to display
+	 *        the console.
 	 *
 	 * @note  This function can't be called before the *all* Twist sensors have
 	 *        been enabled (you can use enableDefaultTwistSensors() for that
@@ -315,7 +318,7 @@ private:
 	 * @brief  This function returns a structure containing information about
 	 *         an enabled sensor from a sensor name.
 	 *
-	 * @param  sensor_name Name of the sensor as defined in the device tree.
+	 * @param[in] sensor_name Name of the sensor as defined in the device tree.
 	 * @return Structure containing the ADC number, channel number and pin
 	 *         number for the given sensor name, or (0, 0, 0) if sensor
 	 *         name doesn't exist or hasn't been configured.
