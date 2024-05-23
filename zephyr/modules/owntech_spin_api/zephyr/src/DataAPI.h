@@ -182,16 +182,6 @@ public:
 	int8_t stop();
 
 	/**
-	 * @brief  Gets the dispatch method of the module.
-	 *
-	 * @note   End-user should not worry about this function, which
-	 *         is used internally by the Scheduling module.
-	 *
-	 * @return Dispatch method indicatinng when the dispatch is done.
-	 */
-	DispatchMethod_t getDispatchMethod();
-
-	/**
 	 * @brief Triggers an acquisition on a given ADC. Each channel configured
 	 *        on this ADC will be acquired one after the other until all
 	 *        configured channels have been acquired.
@@ -203,10 +193,6 @@ public:
 	 * @param[in] adc_number Number of the ADC on which to acquire channels.
 	 */
 	void triggerAcquisition(adc_t adc_number);
-
-
-	/////
-	// Accessor API
 
 	/**
 	 * @brief Function to access the acquired data for specified pin.
@@ -261,7 +247,7 @@ public:
 	 *         If there was no value acquired in this channel yet,
 	 *         return value is NO_VALUE.
 	 */
-	float32_t peek(uint8_t pin_number);
+	float32_t peekValue(uint8_t pin_number);
 
 	/**
 	 * @brief This function returns the latest acquired measure expressed
@@ -291,11 +277,11 @@ public:
 	 *         If no value was acquired in this channel yet, return value is NO_VALUE.
 	 *
 	 */
-	float32_t getLatest(uint8_t pin_number, uint8_t* dataValid = nullptr);
+	float32_t getLatestValue(uint8_t pin_number, uint8_t* dataValid = nullptr);
 
 	/**
 	 * @brief Use this function to convert values obtained using matching
-	 *        data.get*RawValues() function to relevant
+	 *        data.getRawValues() function to relevant
 	 *        unit for the data: Volts, Amperes, or Degree Celcius.
 	 *
 	 * @note  This function can't be called before the pin is enabled.
@@ -305,7 +291,7 @@ public:
 	 *
 	 * @return Converted value in the relevant unit. If there is an error, returns -5000.
 	 */
-	float32_t convert(uint8_t pin_number, uint16_t raw_value);
+	float32_t convertValue(uint8_t pin_number, uint16_t raw_value);
 
 	/**
 	 * @brief Use this function to tweak the conversion values for the
@@ -320,7 +306,7 @@ public:
 	 * @param[in] offset Offset to be applied (added) to the channel value
 	 *        after gain has been applied.
 	 */
-	void setParameters(uint8_t pin_number, float32_t gain, float32_t offset);
+	void setConversionParameters(uint8_t pin_number, float32_t gain, float32_t offset);
 
 	/**
 	 * @brief Use this function to get the current conversion parameteres for the chosen channel .
@@ -332,7 +318,7 @@ public:
 	 *
 	 * @return Returns the value of the parameter. Returns -5000 if the channel is not active.
 	 */
-	float32_t retrieveStoredParameterValue(uint8_t pin_number, parameter_t parameter_name);
+	float32_t getConversionParameterValue(uint8_t pin_number, parameter_t parameter_name);
 
 	/**
 	 * @brief Use this function to get the current conversion type for the chosen channel.
@@ -343,32 +329,32 @@ public:
 	 *
 	 * @return Returns the type of convertion of the given pin. Returns -5 if the channel is not active.
 	 */
-	conversion_type_t retrieveStoredConversionType(uint8_t pin_number);
+	conversion_type_t getConversionParameterType(uint8_t pin_number);
 
 	/**
-	 * @brief Store the currently configured conversion parameters of a given channel in NVS.
+	 * @brief Store the currently configured conversion parameters of a given channel in persistent memory.
 	 *
 	 * @param[in] pin_number SPIN pin number
 	 *
 	 * @return 0 if parameters were correctly stored, negative value if there was an error:
 	 * 			-1: There was an error,
-	 * 			-5000: Channel not found.
+	 * 			-5000: pin not found.
 	 */
-	int8_t storeParametersInMemory(uint8_t pin_number);
+	int8_t storeConversionParametersInMemory(uint8_t pin_number);
 
 	/**
-	 * @brief Retreived previously configured conversion parameters from NVS.
+	 * @brief Retrieved previously configured conversion parameters from persistent memory.
 	 *
 	 * @param[in] pin_number SPIN pin number
 	 *
-	 * @return 0 if parameters were correcly retreived, negative value if there was an error:
-	 *         -1: NVS is empty
-	 *         -2: NVS contains data, but their version doesn't match current version
-	 *         -3: NVS data is corrupted
-	 *         -4: NVS contains data, but not for the requested channel
-	 *         -5000: Channel not found.
+	 * @return 0 if parameters were correcly retrieved, negative value if there was an error:
+	 *         -1: persistent memory is empty
+	 *         -2: persistent memory contains data, but its version doesn't match current version
+	 *         -3: data in persistent memory is corrupted
+	 *         -4: persistent memory contains data, but not for the requested pin
+	 *         -5000: pin not found.
 	 */
-	int8_t retrieveParametersFromMemory(uint8_t pin_number);
+	int8_t retrieveConversionParametersFromMemory(uint8_t pin_number);
 
 	/**
 	 * @brief Set the discontinuous count for an ADC.
@@ -376,6 +362,9 @@ public:
 	 *
 	 *        Applied configuration will only be set when ADC is started.
 	 *        If ADC is already started, it must be stopped then started again.
+	 *
+	 * @note This is an advanced function that requires to understand the
+	 *       way the ADC work. Only for use if you explicitely requires it.
 	 *
 	 * @param[in] adc_number Number of the ADC to configure.
 	 * @param[in] discontinuous_count Number of channels to acquire on each
