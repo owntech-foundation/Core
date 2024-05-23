@@ -151,11 +151,6 @@ int8_t DataAPI::stop()
 	return 0;
 }
 
-DispatchMethod_t DataAPI::getDispatchMethod()
-{
-	return this->dispatch_method;
-}
-
 void DataAPI::triggerAcquisition(adc_t adc_num)
 {
 	/////
@@ -192,7 +187,7 @@ uint16_t* DataAPI::getRawValues(uint8_t pin_num, uint32_t& number_of_values_acqu
 	return this->getChannelRawValues(adc_num, channel_num, number_of_values_acquired);
 }
 
-float32_t DataAPI::peek(uint8_t pin_num)
+float32_t DataAPI::peekValue(uint8_t pin_num)
 {
 	adc_t adc_num = DataAPI::getCurrentAdcForPin(pin_num);
 	if (adc_num == UNKNOWN_ADC)
@@ -209,7 +204,7 @@ float32_t DataAPI::peek(uint8_t pin_num)
 	return this->peekChannel(adc_num, channel_num);
 }
 
-float32_t DataAPI::getLatest(uint8_t pin_num, uint8_t* dataValid)
+float32_t DataAPI::getLatestValue(uint8_t pin_num, uint8_t* dataValid)
 {
 	adc_t adc_num = DataAPI::getCurrentAdcForPin(pin_num);
 	if (adc_num == UNKNOWN_ADC)
@@ -234,7 +229,7 @@ float32_t DataAPI::getLatest(uint8_t pin_num, uint8_t* dataValid)
 	return this->getChannelLatest(adc_num, channel_num, dataValid);
 }
 
-float32_t DataAPI::convert(uint8_t pin_num, uint16_t raw_value)
+float32_t DataAPI::convertValue(uint8_t pin_num, uint16_t raw_value)
 {
 	adc_t adc_num = DataAPI::getCurrentAdcForPin(pin_num);
 	if (adc_num == UNKNOWN_ADC)
@@ -251,7 +246,7 @@ float32_t DataAPI::convert(uint8_t pin_num, uint16_t raw_value)
 	return data_conversion_convert_raw_value(adc_num, channel_num, raw_value);
 }
 
-void DataAPI::setParameters(uint8_t pin_num, float32_t gain, float32_t offset)
+void DataAPI::setConversionParameters(uint8_t pin_num, float32_t gain, float32_t offset)
 {
 	adc_t adc_num = DataAPI::getCurrentAdcForPin(pin_num);
 	if (adc_num == UNKNOWN_ADC)
@@ -268,7 +263,7 @@ void DataAPI::setParameters(uint8_t pin_num, float32_t gain, float32_t offset)
 	data_conversion_set_conversion_parameters_linear(adc_num, channel_num, gain, offset);
 }
 
-float32_t DataAPI::retrieveStoredParameterValue(uint8_t pin_num, parameter_t parameter_name)
+float32_t DataAPI::getConversionParameterValue(uint8_t pin_num, parameter_t parameter_name)
 {
 	adc_t adc_num = DataAPI::getCurrentAdcForPin(pin_num);
 	if (adc_num == UNKNOWN_ADC)
@@ -286,7 +281,7 @@ float32_t DataAPI::retrieveStoredParameterValue(uint8_t pin_num, parameter_t par
 
 }
 
-conversion_type_t DataAPI::retrieveStoredConversionType(uint8_t pin_num)
+conversion_type_t DataAPI::getConversionParameterType(uint8_t pin_num)
 {
 	adc_t adc_num = DataAPI::getCurrentAdcForPin(pin_num);
 	if (adc_num == UNKNOWN_ADC)
@@ -303,7 +298,7 @@ conversion_type_t DataAPI::retrieveStoredConversionType(uint8_t pin_num)
 	return data_conversion_get_conversion_type(adc_num,channel_num);
 }
 
-int8_t DataAPI::storeParametersInMemory(uint8_t pin_num)
+int8_t DataAPI::storeConversionParametersInMemory(uint8_t pin_num)
 {
 	adc_t adc_num = DataAPI::getCurrentAdcForPin(pin_num);
 	if (adc_num == UNKNOWN_ADC)
@@ -321,7 +316,7 @@ int8_t DataAPI::storeParametersInMemory(uint8_t pin_num)
 }
 
 
-int8_t DataAPI::retrieveParametersFromMemory(uint8_t pin_num)
+int8_t DataAPI::retrieveConversionParametersFromMemory(uint8_t pin_num)
 {
 	adc_t adc_num = DataAPI::getCurrentAdcForPin(pin_num);
 	if (adc_num == UNKNOWN_ADC)
