@@ -127,7 +127,8 @@ public:
       * @param[in] init_frequency frequency in Hz
       *
       * @warning this function must be called BEFORE initialiazing any timing unit. 
-      *          the frequency initialized becomes the MINIMUM possible.
+      *          the frequency initialized becomes the MINIMUM possible. 
+      *          use it BEFORE initialization of the timing unit.
       */
      void initFrequency(uint32_t init_frequency);
 
@@ -365,6 +366,7 @@ public:
       * @brief Change the frequency/period after it has been initialized.
       * @param[in] frequency_update The new frequency in Hz
       * @warning The new frequency can't be inferior to the the one set in the initialization step
+      *          Use it AFTER the initialization of the timing unit.
      */
      void setFrequency(uint32_t frequency_update);
 };
