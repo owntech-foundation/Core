@@ -144,9 +144,12 @@ static inline uint32_t _period_ckpsc(uint32_t freq, timer_hrtim_t *tu)
      * the modulo to preserve accuracy. */
     uint32_t period = (f_hrtim / freq) * 32 + (f_hrtim % freq) * 32 / freq;
 
+    /* The period_max is the desired maximum period (or minimum frequency) to reach */
+    uint32_t period_max = (f_hrtim / HRTIM_MINIM_FREQUENCY) * 32 + (f_hrtim % HRTIM_MINIM_FREQUENCY) * 32 / HRTIM_MINIM_FREQUENCY;
+
     /* period = t_hrck / 2^ckpsc so bits over 15 position directly give
      * the needed prescaller */
-    tu->pwm_conf.ckpsc = (_msb(period) > 15) ? _msb(period) - 15 : 0;
+    tu->pwm_conf.ckpsc = (_msb(period_max) > 15) ? _msb(period_max) - 15 : 0;
 
     /* All the timing unit receive the master timer prescaler to
        to make sure that they have the same to be synchronized. */
@@ -237,11 +240,6 @@ void _init_master()
     /* At start-up, it is mandatory to initialize first the prescaler
      * bitfields before writing the compare and period registers. */
     timerMaster.pwm_conf.frequency = _period_ckpsc(timerMaster.pwm_conf.frequency, &timerMaster);
-
-    /* After computing prescaler for frequency,there is minimum frequency reachable with this prescaler
-       we can not go below this frequency (see table 216 of RM0440). For now this frequency is fixed
-       the initialization frequency. */
-    HRTIM_MINIM_FREQUENCY = timerMaster.pwm_conf.frequency;
 
     /* master timer prescaler init */
     LL_HRTIM_TIM_SetPrescaler(HRTIM1, LL_HRTIM_TIMER_MASTER, timerMaster.pwm_conf.ckpsc);
@@ -540,15 +538,16 @@ void hrtim_cmpl_pwm_out2(hrtim_tu_number_t tu_number)
     LL_HRTIM_OUT_SetOutputResetSrc(HRTIM1, tu_channel[tu_number]->gpio_conf.OUT_L, tu_channel[tu_number]->switch_conv.reset_L[tu_channel[tu_number]->switch_conv.convention]);
 }
 
-void hrtim_frequency_set(uint32_t value)
+void hrtim_frequency_set(uint32_t frequency_set, uint32_t frequency_min)
 {
-    timerMaster.pwm_conf.frequency = value;
-    tu_channel[PWMA]->pwm_conf.frequency = value;
-    tu_channel[PWMB]->pwm_conf.frequency = value;
-    tu_channel[PWMC]->pwm_conf.frequency = value;
-    tu_channel[PWMD]->pwm_conf.frequency = value;
-    tu_channel[PWME]->pwm_conf.frequency = value;
-    tu_channel[PWMF]->pwm_conf.frequency = value;
+    HRTIM_MINIM_FREQUENCY = frequency_min;
+    timerMaster.pwm_conf.frequency = frequency_set;
+    tu_channel[PWMA]->pwm_conf.frequency = frequency_set;
+    tu_channel[PWMB]->pwm_conf.frequency = frequency_set;
+    tu_channel[PWMC]->pwm_conf.frequency = frequency_set;
+    tu_channel[PWMD]->pwm_conf.frequency = frequency_set;
+    tu_channel[PWME]->pwm_conf.frequency = frequency_set;
+    tu_channel[PWMF]->pwm_conf.frequency = frequency_set;
 }
 
 inline uint16_t hrtim_period_Master_get()
@@ -779,9 +778,7 @@ void hrtim_phase_shift_set(hrtim_tu_number_t tu_number, uint16_t shift)
     }
 }
 
-/* Note : The dead time is configured centered by default,
- * there are no options available to modify this, so the dead time
- * must be taken into account when calculating the PWM duty cycle */
+/* This initialize the dead time prescaler, once done it can't be changed. */
 void hrtim_dt_init(hrtim_tu_number_t tu_number)
 {
     uint32_t rise_ps = tu_channel[tu_number]->pwm_conf.rise_dead_time * 1000;
@@ -796,7 +793,7 @@ void hrtim_dt_init(hrtim_tu_number_t tu_number)
 #warning "unsupported stm32XX family"
 #endif
 
-    uint8_t dtpsc = 0; // Deadtime clock prescaler set at xx
+    uint8_t dtpsc = 0; // Deadtime clock prescaler
     uint16_t rise_dt = 0;
     uint16_t fall_dt = 0;
     uint32_t t_dtg_ps = (1 << dtpsc) * 1000000 / ((f_hrtim * 8) / 1000000); // intermediate gain for dead time calculation
@@ -982,7 +979,7 @@ void DualDAC_init(hrtim_tu_number_t tu_number)
     LL_HRTIM_TIM_EnableDualDacTrigger(HRTIM1, tu_channel[tu_number]->pwm_conf.pwm_tu);
 }
 
-uint32_t hrtim_change_frequency(uint32_t new_frequency)
+void hrtim_change_frequency(uint32_t new_frequency)
 {
     #if defined(CONFIG_SOC_SERIES_STM32F3X)
         uint32_t f_hrtim = hrtim_get_apb2_clock() * 2;
@@ -1108,6 +1105,4 @@ uint32_t hrtim_change_frequency(uint32_t new_frequency)
             tu_channel[PWMF]->pwm_conf.period = period;
         }
     }
-
-    return period;
 }

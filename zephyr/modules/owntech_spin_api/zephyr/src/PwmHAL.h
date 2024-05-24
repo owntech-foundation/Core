@@ -122,13 +122,24 @@ public:
      void setSwitchConvention(hrtim_tu_number_t pwmX, hrtim_switch_convention_t convention);
 
      /**
-      * @brief     This function sets the frequency
+      * @brief     This function initialize the frequency
       *
-      * @param[in] value frequency in Hz
+      * @param[in] init_frequency frequency in Hz
+      *
+      * @warning this function must be called BEFORE initialiazing any timing unit. 
+      *          the frequency initialized becomes the MINIMUM possible.
+      */
+     void initFrequency(uint32_t init_frequency);
+
+     /**
+      * @brief This functions initialize the frequency and also sets the minimal reachable frequency.
+      *
+      * @param[in] init_frequency frequency in Hz
+      * @param[in] minimal_frequency desired minimal frequency in Hz
       *
       * @warning this function must be called BEFORE initialiazing any timing unit
-      */
-     void setFrequency(uint32_t value);
+     */
+     void initFrequency(uint32_t init_frequency, uint32_t minimal_frequency);
 
      /**
       * @brief     This function sets the dead time for the selected timing unit
@@ -137,7 +148,7 @@ public:
       * @param[in] rise_ns		rising edge dead time in ns
       * @param[in] falling_ns	falling edge dead time in ns
       *
-      * @warning use this function AFTER initializing the chosen timer
+      * @warning use this function BEFORE initializing the chosen timer
       */
      void setDeadTime(hrtim_tu_number_t pwmX, uint16_t rise_ns, uint16_t fall_ns);
 
@@ -355,7 +366,7 @@ public:
       * @param[in] frequency_update The new frequency in Hz
       * @warning The new frequency can't be inferior to the the one set in the initialization step
      */
-     uint32_t changeFrequency(uint32_t frequency_update);
+     void setFrequency(uint32_t frequency_update);
 };
 
 #endif // PWMHAL_H_

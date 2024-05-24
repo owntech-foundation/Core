@@ -73,7 +73,7 @@ void TwistAPI::setVersion(twist_version_t twist_ver)
 
 void TwistAPI::initLegMode(leg_t leg, hrtim_switch_convention_t leg_convention, hrtim_pwm_mode_t leg_mode)
 {
-    spin.pwm.setFrequency(timer_frequency); // Configure PWM frequency
+    spin.pwm.initFrequency(timer_frequency); // Configure PWM frequency
 
     spin.pwm.setModulation(spinNumberToTu(dt_pwm_pin[leg]), dt_modulation[leg]); // Set modulation
 

@@ -171,11 +171,18 @@ void PwmHAL::setSwitchConvention(hrtim_tu_number_t pwmX, hrtim_switch_convention
 	hrtim_set_switch_convention(pwmX, convention);
 }
 
-void PwmHAL::setFrequency(uint32_t value)
+void PwmHAL::initFrequency(uint32_t init_frequency, uint32_t minimal_frequency)
 {
 	if (!hrtim_get_status(PWMA))
 		hrtim_init_default_all(); // initialize default parameters before
-	hrtim_frequency_set(value);
+	hrtim_frequency_set(init_frequency, minimal_frequency);
+}
+
+void PwmHAL::initFrequency(uint32_t init_frequency)
+{
+	if (!hrtim_get_status(PWMA))
+		hrtim_init_default_all(); // initialize default parameters before
+	hrtim_frequency_set(init_frequency, init_frequency);
 }
 
 void PwmHAL::setDeadTime(hrtim_tu_number_t pwmX, uint16_t rise_ns, uint16_t fall_ns)
@@ -345,7 +352,7 @@ void PwmHAL::setAdcDecimation(hrtim_tu_number_t pwmX, uint32_t decimation)
 	hrtim_adc_trigger_set_postscaler(pwmX, decimation - 1);
 }
 
-uint32_t PwmHAL::changeFrequency(uint32_t frequency_update)
+void PwmHAL::setFrequency(uint32_t frequency_update)
 {
-	return hrtim_change_frequency(frequency_update);
+	hrtim_change_frequency(frequency_update);
 }
