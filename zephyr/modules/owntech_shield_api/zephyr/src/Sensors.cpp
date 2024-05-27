@@ -150,6 +150,12 @@ uint16_t* SensorsAPI::getRawValues(sensor_t sensor_name, uint32_t& number_of_val
 	return DataAPI::getChannelRawValues(sensor_info.adc_num, sensor_info.channel_num, number_of_values_acquired);
 }
 
+float32_t* SensorsAPI::getValues(sensor_t sensor_name, uint32_t& number_of_values_acquired)
+{
+	sensor_info_t sensor_info = getEnabledSensorInfo(sensor_name);
+	return DataAPI::getChannelValues(sensor_info.adc_num, sensor_info.channel_num, number_of_values_acquired);
+}
+
 float32_t SensorsAPI::peekLatestValue(sensor_t sensor_name)
 {
 	sensor_info_t sensor_info = getEnabledSensorInfo(sensor_name);
@@ -374,7 +380,7 @@ void SensorsAPI::buildSensorListFromDeviceTree()
 					{
 						float32_t gain   = data_conversion_get_parameter(dt_sensors_props[dt_sensor_index].adc_number, dt_sensors_props[dt_sensor_index].channel_number, 1);
 						float32_t offset = data_conversion_get_parameter(dt_sensors_props[dt_sensor_index].adc_number, dt_sensors_props[dt_sensor_index].channel_number, 2);
-						printk("    Conversion type is linear, with gain=%f and offset=%f\n", gain, offset);
+						printk("    Conversion type is linear, with gain=%f and offset=%f\n", (double)gain, (double)offset);
 					}
 					break;
 					case no_channel_error:
@@ -499,7 +505,7 @@ float32_t SensorsAPI::getCalibrationCoefficients(const char* physicalParameter, 
 		parameterCoefficient = atof(line);
 
 		// Get confirmation
-		printk("%s %s applied will be : %f\n", physicalParameter, gainOrOffset, parameterCoefficient);
+		printk("%s %s applied will be : %f\n", physicalParameter, gainOrOffset, (double)parameterCoefficient);
 		printk("Press y to validate, any other character to retype the %s \n", gainOrOffset);
 		received_char = console_getchar();
 

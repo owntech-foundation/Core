@@ -151,14 +151,50 @@ public:
 	 *
 	 * @param[in]  sensor_name Name of the shield sensor from which to obtain values.
 	 * @param[out] number_of_values_acquired Pass an uint32_t variable.
-	 *        This variable will be updated with the number of values that
-	 *        are present in the returned buffer.
+	 *             This variable will be updated with the number of values that
+	 *             are present in the returned buffer.
 	 *
 	 * @return Pointer to a buffer in which the acquired values are stored.
 	 *         If number_of_values_acquired is 0, do not try to access the
 	 *         buffer as it may be nullptr.
 	 */
 	uint16_t* getRawValues(sensor_t sensor_name, uint32_t& number_of_values_acquired);
+
+	/**
+	 * @brief Function to access the acquired data for specified pin.
+	 *        This function converts all values that have been acquired
+	 *        since last call are stored and provide an array containing
+	 *        all of them. The count of these values is returned as an
+	 *        output parameter: the user has to define a variable and pass
+	 *        it as the parameter of the function. The variable will be
+	 *        updated with the number of values that are available in the buffer.
+	 *
+	 * @warning This is an expensive function. Calling this function trigger
+	 *          the conversion of all values acquired since the last call.
+	 *          If only the lastet value is required, it is advised to call
+	 *          getLatestValue() instead. If multiple values are required,
+	 *          but not all, it is advised to call getRawValues() instead,
+	 *          then explicitely convert required values using convertValue().
+	 *
+	 * @note  This function can't be called before the pin is enabled.
+	 *        The DataAPI module must have been started, either
+	 *        explicitly or by starting the Uninterruptible task.
+	 *
+	 * @note  When calling this function, it invalidates the array
+	 *        returned by a previous call to the same function.
+	 *        However, different channels buffers are independent
+	 *        from each other.
+	 *
+	 * @param[in]  sensor_name Name of the shield sensor from which to obtain values.
+	 * @param[out] number_of_values_acquired Pass an uint32_t variable.
+	 *             This variable will be updated with the number of values that
+	 *             are present in the returned buffer.
+	 *
+	 * @return Pointer to an array in which the acquired values are stored.
+	 *         If number_of_values_acquired is 0, do not try to access the
+	 *         buffer as it may be nullptr.
+	 */
+	float32_t* getValues(sensor_t sensor_name, uint32_t& number_of_values_acquired);
 
 	/**
 	 * @brief Function to access the latest value available from the sensor,
@@ -195,13 +231,13 @@ public:
 	 *
 	 * @param[in]  sensor_name Name of the shield sensor from which to obtain value.
 	 * @param[out] dataValid Pointer to an uint8_t variable. This parameter is
-	 *        facultative. If this parameter is provided, it will be updated
-	 *        to indicate information about spin.data. Possible values for this
-	 *        parameter will be:
-	 *        - DATA_IS_OK if returned data is a newly acquired data,
-	 *        - DATA_IS_OLD if returned data has already been provided before
-	 *        (no new data available since latest time this function was called),
-	 *        - DATA_IS_MISSING if returned data is NO_VALUE.
+	 *             facultative. If this parameter is provided, it will be updated
+	 *             to indicate information about spin.data. Possible values for this
+	 *             parameter will be:
+	 *             - DATA_IS_OK if returned data is a newly acquired data,
+	 *             - DATA_IS_OLD if returned data has already been provided before
+	 *             (no new data available since latest time this function was called),
+	 *             - DATA_IS_MISSING if returned data is NO_VALUE.
 	 *
 	 * @return Latest measure acquired by the sensor.
 	 *         If no value was acquired by this sensor yet, return value is NO_VALUE.
@@ -235,7 +271,7 @@ public:
 	 * @param[in] sensor_name Name of the shield sensor to set conversion values.
 	 * @param[in] gain Gain to be applied (multiplied) to the sensor raw value.
 	 * @param[in] offset Offset to be applied (added) to the sensor value
-	 *        after gain has been applied.
+	 *            after gain has been applied.
 	 */
 	void setConversionParameters(sensor_t sensor_name, float32_t gain, float32_t offset);
 
@@ -303,7 +339,7 @@ public:
 	 *        The board must be connected to a comuter using USB to display
 	 *        the console.
 	 *
-	 * @note  This function can't be called before the *all* Twist sensors have
+	 * @note  This function can't be called before *all* Twist sensors have
 	 *        been enabled (you can use enableDefaultTwistSensors() for that
 	 *        purpose). The DataAPI must not have been started, neither
 	 *        explicitly nor by starting the Uninterruptible task.
@@ -319,6 +355,7 @@ private:
 	 *         an enabled sensor from a sensor name.
 	 *
 	 * @param[in] sensor_name Name of the sensor as defined in the device tree.
+	 *
 	 * @return Structure containing the ADC number, channel number and pin
 	 *         number for the given sensor name, or (0, 0, 0) if sensor
 	 *         name doesn't exist or hasn't been configured.

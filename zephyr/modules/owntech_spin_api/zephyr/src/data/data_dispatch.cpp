@@ -44,8 +44,6 @@
 /////
 // Local variables
 
-#define CHANNELS_BUFFERS_SIZE 32
-
 // Number of channels in each ADC (cell i is ADC number i+1)
 static uint8_t* enabled_channels_count = nullptr;
 
