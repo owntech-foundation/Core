@@ -39,7 +39,10 @@
 #include <stdint.h>
 
 
+// Constants
+
 const uint16_t PEEK_NO_VALUE = 0xFFFF;
+const uint8_t CHANNELS_BUFFERS_SIZE = 32;
 
 /**
  * Dispatch method
