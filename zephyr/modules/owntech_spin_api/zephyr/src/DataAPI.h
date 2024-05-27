@@ -213,14 +213,13 @@ public:
 	 *        from each other.
 	 *
 	 * @note When using this functions, the user is responsible for data
-	 *       conversion. Use matching data.convert*() function
-	 *       for this purpose.
+	 *       conversion. Use data.convertValue() function for this purpose.
 	 *
 	 * @note When using this function, DO NOT use the function to get the
 	 *       latest converted value for the same channel as this function
 	 *       will clear the buffer and disregard all values but the latest.
 	 *
-	 * @param[in] pin_number Number of the pin from which to obtain values.
+	 * @param[in]  pin_number Number of the pin from which to obtain values.
 	 * @param[out] number_of_values_acquired Pass an uint32_t variable.
 	 *        This variable will be updated with the number of values that
 	 *        are present in the returned buffer.
@@ -230,6 +229,42 @@ public:
 	 *         buffer as it may be nullptr.
 	 */
 	uint16_t* getRawValues(uint8_t pin_number, uint32_t& number_of_values_acquired);
+
+	/**
+	 * @brief Function to access the acquired data for specified pin.
+	 *        This function converts all values that have been acquired
+	 *        since last call are stored and provide an array containing
+	 *        all of them. The count of these values is returned as an
+	 *        output parameter: the user has to define a variable and pass
+	 *        it as the parameter of the function. The variable will be
+	 *        updated with the number of values that are available in the buffer.
+	 *
+	 * @warning This is an expensive function. Calling this function trigger
+	 *          the conversion of all values acquired since the last call.
+	 *          If only the lastet value is required, it is advised to call
+	 *          getLatestValue() instead. If multiple values are required,
+	 *          but not all, it is advised to call getRawValues() instead,
+	 *          then explicitely convert required values using convertValue().
+	 *
+	 * @note  This function can't be called before the pin is enabled.
+	 *        The DataAPI module must have been started, either
+	 *        explicitly or by starting the Uninterruptible task.
+	 *
+	 * @note  When calling this function, it invalidates the array
+	 *        returned by a previous call to the same function.
+	 *        However, different channels buffers are independent
+	 *        from each other.
+	 *
+	 * @param[in]  pin_number Number of the pin from which to obtain values.
+	 * @param[out] number_of_values_acquired Pass an uint32_t variable.
+	 *        This variable will be updated with the number of values that
+	 *        are present in the returned buffer.
+	 *
+	 * @return Pointer to an array in which the acquired values are stored.
+	 *         If number_of_values_acquired is 0, do not try to access the
+	 *         buffer as it may be nullptr.
+	 */
+	float32_t* getValues(uint8_t pin_number, uint32_t& number_of_values_acquired);
 
 	/**
 	 * @brief Function to access the latest value available from a pin,
@@ -243,11 +278,12 @@ public:
 	 *        explicitly or by starting the Uninterruptible task.
 	 *
 	 * @param[in] pin_number Number of the pin from which to obtain values.
+	 *
 	 * @return Latest available value available from the given channel.
 	 *         If there was no value acquired in this channel yet,
 	 *         return value is NO_VALUE.
 	 */
-	float32_t peekValue(uint8_t pin_number);
+	float32_t peekLatestValue(uint8_t pin_number);
 
 	/**
 	 * @brief This function returns the latest acquired measure expressed
@@ -259,11 +295,11 @@ public:
 	 *        explicitly or by starting the Uninterruptible task.
 	 *
 	 * @note  When using this functions, you loose the ability to access raw
-	 *        values using data.get*RawValues() function for the
-	 *        matching channel, as data.get*() function clears the
+	 *        values using data.getRawValues() function for the
+	 *        matching channel, as data.getLatestValue() function clears the
 	 *        buffer on each call.
 	 *
-	 * @param[in] pin_number Number of the pin from which to obtain values.
+	 * @param[in]  pin_number Number of the pin from which to obtain values.
 	 * @param[out] dataValid Pointer to an uint8_t variable. This parameter is
 	 *        facultative. If this parameter is provided, it will be updated
 	 *        to indicate information about data. Possible values for this
@@ -368,7 +404,7 @@ public:
 	 *
 	 * @param[in] adc_number Number of the ADC to configure.
 	 * @param[in] discontinuous_count Number of channels to acquire on each
-	 *        trigger event. 0 to disable discontinuous mode (default).
+	 *            trigger event. 0 to disable discontinuous mode (default).
 	 */
 	void configureDiscontinuousMode(adc_t adc_number, uint32_t dicontinuous_count);
 
@@ -390,6 +426,7 @@ private:
 	static int8_t enableChannel(adc_t adc_number, uint8_t channel_num);
 	static void disableChannel(adc_t adc_number, uint8_t channel);
 	static uint16_t* getChannelRawValues(adc_t adc_number, uint8_t channel_num, uint32_t& number_of_values_acquired);
+	static float32_t* getChannelValues(adc_t adc_number, uint8_t channel_num, uint32_t& number_of_values_acquired);
 	static float32_t peekChannel(adc_t adc_number, uint8_t channel_num);
 	static float32_t getChannelLatest(adc_t adc_number, uint8_t channel_num, uint8_t* dataValid = nullptr);
 	static uint8_t getChannelRank(adc_t adc_number, uint8_t channel_num);
@@ -410,6 +447,7 @@ private:
 	static DispatchMethod_t dispatch_method;
 	static uint32_t repetition_count_between_dispatches;
 	static adc_t current_adc[PIN_COUNT];
+	static float32_t*** converted_values_buffer;
 
 };
 
