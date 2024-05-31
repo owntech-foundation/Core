@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-#include "can-standby-switch.dtsi"
+#include "can.dtsi"
 #include "adc-channels.dtsi"
 #include "ngnd.dtsi"
 #include "pwm_legs.dtsi"

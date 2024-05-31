@@ -1,0 +1,21 @@
+/*
+ * Copyright (c) 2024 OwnTech.
+ *
+ * SPDX-License-Identifier: LGPL-2.1
+ */
+
+/ {
+	chosen {
+		thingset,can = &fdcan2;
+	};
+};
+
+&fdcan2 {
+	pinctrl-0 = <&fdcan2_rx_pb5 &fdcan2_tx_pb6>;
+	pinctrl-names = "default";
+	bus-speed = <500000>;
+	sample-point = <875>;
+	bus-speed-data = <2000000>;
+	sample-point-data = <875>;
+	status = "okay";
+};

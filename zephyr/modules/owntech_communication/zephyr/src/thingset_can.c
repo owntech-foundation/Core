@@ -29,7 +29,7 @@
 #include <thingset/can.h>
 #include <thingset/sdk.h>
 
-LOG_MODULE_REGISTER(ts_can, CONFIG_THINGSET_SDK_LOG_LEVEL_DEFAULT);
+LOG_MODULE_REGISTER(ts_can, CONFIG_THINGSET_SDK_LOG_LEVEL);
 
 extern struct thingset_context ts;
 
