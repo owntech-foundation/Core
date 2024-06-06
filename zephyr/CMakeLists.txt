@@ -71,17 +71,28 @@ if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/third_party_modules)
   list(APPEND ZEPHYR_EXTRA_MODULES ${THIRDPARTY})
 endif()
 
-# Board
+# Add OwnTech Board repository
+# Board repository contains all boards and shields dts overlays and 
+# config files required for the build
 list(APPEND BOARD_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
-# Enable Twist shield
-set(SHIELD twist)
+# Set Board - It will be changed automatically by pre_version.py
+# Use platformio.ini and define board and board_version
+# board_version is concatenated to board with an extra "@"
+# "@" is the default versionning notation for zephyr build system. 
 
+# Set Shield - It will be changed automatically by pre_version.py
+# Use platformio.ini and define board_shield and board_shield_version
+# board_shield_version is concatenated to board_shield. 
+
+set(BOARD spin)
+set(SHIELD twist_v1_4_1)
+
+set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "")
 # Configure Zephyr
 cmake_minimum_required(VERSION 3.13.1)
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
 project(owntech_power_api)
-
 target_sources(app PRIVATE ../src/main.cpp)
 zephyr_include_directories(../src)
