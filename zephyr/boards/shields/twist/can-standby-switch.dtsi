@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 OwnTech.
+ * Copyright (c) 2022-2024 OwnTech.
  *
  * SPDX-License-Identifier: LGPL-2.1
  */
@@ -9,7 +9,6 @@
 		compatible = "gpio-device";
 		can-standby-gpio-pin {
 			gpios = <&gpiob 10 GPIO_ACTIVE_HIGH>;
-			label = "CAN Standby output";
 		};
 	};
 };
