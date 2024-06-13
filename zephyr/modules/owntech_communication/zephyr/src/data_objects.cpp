@@ -22,8 +22,8 @@
 #include "DataAPI.h"
 
 char manufacturer[] = "OwnTech";
-char device_type[] = "Synchronous Buck";
-char hardware_version[] = "0.9";
+char device_type[] = "Twist";
+char hardware_version[] = "1.4.1";
 char firmware_version[] = "0.0.1";
 char device_id[9]="Twist";
 
