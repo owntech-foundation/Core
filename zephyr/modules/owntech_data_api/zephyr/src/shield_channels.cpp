@@ -187,7 +187,7 @@ static void _adc_channels_build_available_channels_lists()
 					{
 						float32_t gain   = data_conversion_get_parameter(dt_channels_props[dt_channel_index].adc_number, dt_channels_props[dt_channel_index].channel_number, 1);
 						float32_t offset = data_conversion_get_parameter(dt_channels_props[dt_channel_index].adc_number, dt_channels_props[dt_channel_index].channel_number, 2);
-						printk("    Conversion type is linear, with gain=%f and offset=%f\n", gain, offset);
+						printk("    Conversion type is linear, with gain=%f and offset=%f\n", (double)gain, (double)offset);
 					}
 					break;
 				}
@@ -368,7 +368,7 @@ static float32_t _shield_channels_get_calibration_coefficients(const char* physi
 		parameterCoefficient = atof(line);
 
 		// Get confirmation
-		printk("%s %s applied will be : %f\n", physicalParameter, gainOrOffset, parameterCoefficient);
+		printk("%s %s applied will be : %f\n", physicalParameter, gainOrOffset, (double)parameterCoefficient);
 		printk("Press y to validate, any other character to retype the %s \n", gainOrOffset);
 		received_char = console_getchar();
 
