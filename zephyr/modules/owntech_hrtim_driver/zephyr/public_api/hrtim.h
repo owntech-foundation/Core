@@ -286,7 +286,7 @@ void hrtim_cmpl_pwm_out2(hrtim_tu_number_t tu_number);
  *            @arg @ref PWMF
  * @param[in] tu_number        Timing unit number:
  */
-void hrtim_frequency_set(uint32_t value);
+void hrtim_frequency_set(uint32_t frequency_set, uint32_t frequency_min);
 
 /**
  * @brief   Returns the period of a given timing unit
@@ -723,6 +723,13 @@ void hrtim_eev_set(hrtim_tu_number_t tu_number, hrtim_external_trigger_t eev);
  *            @arg @ref EEV9 = external event 9
  */
 hrtim_external_trigger_t hrtim_eev_get(hrtim_tu_number_t tu_number);
+
+/**
+ * @brief Change the frequency/period after it has been initialized.
+ * @param[in] new_frequency The new frequency in Hz
+ * @warning the new frequency can't be inferior to the the one set in the initialization step
+*/
+void hrtim_change_frequency(uint32_t new_frequency);
 
 #ifdef __cplusplus
 }
