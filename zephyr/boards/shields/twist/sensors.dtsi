@@ -14,12 +14,13 @@
 			sensor-name = "V1_LOW";
 			default-gain = <0x3d3851ec>;
 			default-offset = <0xc2b867f0>;
-			spin-pin = <29>;
 			v1-low-adc1 {
 				io-channels = <&adc1 1>;
+				spin-pin = <29>;
 			};
 			v1-low-adc2 {
 				io-channels = <&adc2 1>;
+				spin-pin = <29>;
 			};
 		};
 
@@ -28,12 +29,13 @@
 			sensor-name = "V2_LOW";
 			default-gain = <0x3d3851ec>;
 			default-offset = <0xc2b867f0>;
-			spin-pin = <24>;
 			v2-low-adc1 {
 				io-channels = <&adc1 6>;
+				spin-pin = <24>;
 			};
 			v2-low-adc2 {
 				io-channels = <&adc2 6>;
+				spin-pin = <24>;
 			};
 		};
 
@@ -42,12 +44,13 @@
 			sensor-name = "V_HIGH";
 			default-gain = <0x3cf57710>;
 			default-offset = <0x00000000>;
-			spin-pin = <27>;
 			v-high-adc1 {
 				io-channels = <&adc1 9>;
+				spin-pin = <27>;
 			};
 			v-high-adc2 {
 				io-channels = <&adc2 9>;
+				spin-pin = <27>;
 			};
 		};
 
@@ -58,12 +61,13 @@
 			sensor-name = "I1_LOW";
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
-			spin-pin = <30>;
 			i1-low-adc1 {
 				io-channels = <&adc1 2>;
+				spin-pin = <30>;
 			};
 			i1-low-adc2 {
 				io-channels = <&adc2 2>;
+				spin-pin = <30>;
 			};
 		};
 
@@ -72,12 +76,13 @@
 			sensor-name = "I2_LOW";
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
-			spin-pin = <25>;
 			i2-low-adc1 {
 				io-channels = <&adc1 7>;
+				spin-pin = <25>;
 			};
 			i2-low-adc2 {
 				io-channels = <&adc2 7>;
+				spin-pin = <25>;
 			};
 		};
 
@@ -86,12 +91,13 @@
 			sensor-name = "I_HIGH";
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
-			spin-pin = <26>;
 			i-high-adc1 {
 				io-channels = <&adc1 8>;
+				spin-pin = <26>;
 			};
 			i-high-adc2 {
 				io-channels = <&adc2 8>;
+				spin-pin = <26>;
 			};
 		};
 
@@ -102,9 +108,9 @@
 			sensor-name = "TEMP_SENSOR";
 			default-gain = <0x3f800000>;
 			default-offset = <0x00000000>;
-			spin-pin = <31>;
 			temp-sensor-adc3 {
 				io-channels = <&adc3 12>;
+				spin-pin = <31>;
 			};
 		};
 
@@ -113,9 +119,9 @@
 			sensor-name = "EXTRA_MEAS";
 			default-gain = <0x3f800000>;
 			default-offset = <0x00000000>;
-			spin-pin = <6>;
 			analog-comm-adc4 {
 				io-channels = <&adc4 5>;
+				spin-pin = <6>;
 			};
 		};
 
@@ -124,9 +130,9 @@
 			sensor-name = "ANALOG_COMM";
 			default-gain = <0x3f800000>;
 			default-offset = <0x00000000>;
-			spin-pin = <35>;
 			extra-sensor-adc2 {
 				io-channels = <&adc2 5>;
+				spin-pin = <35>;
 			};
 		};
 	};

@@ -16,11 +16,6 @@ properties:
     type: int
     required: false
 
-  spin-pin:
-    type: int
-    required: true
-
-
 child-binding:
 
   description: Sensor node ADC info
@@ -31,6 +26,10 @@ child-binding:
       type: phandle-array
       required: true
       description: ADC number and channel description.
+
+    spin-pin:
+      type: int
+      required: true
 
     differential:
       type: boolean
