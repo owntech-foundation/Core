@@ -5,7 +5,6 @@ if(CONFIG_OWNTECH_SHIELD_API)
   zephyr_library()
   # Select source files to be compiled
   zephyr_library_sources(
-    ./src/shield_channels.cpp
     ./src/Sensors.cpp
     ./public_api/ShieldAPI.cpp
     )
