@@ -2,6 +2,7 @@ config OWNTECH_COMMUNICATION
 	bool "Enable OwnTech communication module [EXPERIMENTAL]"
 	# OwnTech Communication API in still experimental: disable by default
 	default n
+	depends on OWNTECH_SHIELD_API
 	help
 		This experimental module provides various ways of communicating
 		(CAN, RS485, analog) for OwnTech Power API.

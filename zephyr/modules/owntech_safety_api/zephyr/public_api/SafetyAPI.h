@@ -30,7 +30,7 @@
 #define SAFETY_H_
 
 #include "arm_math.h"
-#include "DataAPI.h"
+#include "ShieldAPI.h"
 #include "../src/safety_enum.h"
 
 

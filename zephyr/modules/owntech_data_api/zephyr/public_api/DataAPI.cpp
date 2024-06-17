@@ -37,9 +37,6 @@
 
 // Current module private functions
 #include "../src/data_dispatch.h"
-#ifdef CONFIG_SHIELD_TWIST
-#include "../src/shield_channels.h"
-#endif
 
 
 /////
@@ -47,101 +44,18 @@
 
 DataAPI data;
 
+/////
+// Static class members
+
+bool DataAPI::is_started = false;
+uint8_t DataAPI::channels_ranks[ADC_COUNT][CHANNELS_PER_ADC] = {0};
+uint8_t DataAPI::current_rank[ADC_COUNT] = {0};
+DispatchMethod_t DataAPI::dispatch_method = DispatchMethod_t::on_dma_interrupt;
+uint32_t DataAPI::repetition_count_between_dispatches = 0;
+
 
 /////
 // Public functions accessible only when using Twist
-
-#ifdef CONFIG_SHIELD_TWIST
-
-int8_t DataAPI::enableShieldChannel(uint8_t adc_num, channel_t channel_name)
-{
-	shield_channels_enable_adc_channel(adc_num, channel_name);
-	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel_name);
-	return this->enableChannel(channel_info.adc_num, channel_info.channel_num);
-}
-
-void DataAPI::enableTwistDefaultChannels()
-{
-	spin.adc.configureTriggerSource(1, hrtim_ev1);
-	spin.adc.configureTriggerSource(2, hrtim_ev3);
-	spin.adc.configureTriggerSource(3, software);
-	spin.adc.configureTriggerSource(4, software);
-	spin.adc.configureTriggerSource(5, software);
-
-	spin.adc.configureDiscontinuousMode(1,1);
-	spin.adc.configureDiscontinuousMode(2, 1);
-
-	this->enableShieldChannel(1, I1_LOW);
-	this->enableShieldChannel(1, V1_LOW);
-	this->enableShieldChannel(1, V_HIGH);
-
-	this->enableShieldChannel(2, I2_LOW);
-	this->enableShieldChannel(2, V2_LOW);
-	this->enableShieldChannel(2, I_HIGH);
-}
-
-uint16_t* DataAPI::getRawValues(channel_t channel, uint32_t& number_of_values_acquired)
-{
-	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
-	return this->getChannelRawValues(channel_info.adc_num, channel_info.channel_num, number_of_values_acquired);
-}
-
-float32_t DataAPI::peek(channel_t channel)
-{
-	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
-	return this->peekChannel(channel_info.adc_num, channel_info.channel_num);
-}
-
-float32_t DataAPI::getLatest(channel_t channel, uint8_t* dataValid)
-{
-	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
-	return this->getChannelLatest(channel_info.adc_num, channel_info.channel_num, dataValid);
-}
-
-float32_t DataAPI::convert(channel_t channel, uint16_t raw_value)
-{
-	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
-	return data_conversion_convert_raw_value(channel_info.adc_num, channel_info.channel_num, raw_value);
-}
-
-void DataAPI::setParameters(channel_t channel, float32_t gain, float32_t offset)
-{
-	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
-	data_conversion_set_conversion_parameters_linear(channel_info.adc_num, channel_info.channel_num, gain, offset);
-}
-
-float32_t DataAPI::retrieveStoredParameterValue(channel_t channel, parameter_t parameter_name)
-{
-	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
-	return data_conversion_get_parameter(channel_info.adc_num,channel_info.channel_num, parameter_name);
-
-}
-
-conversion_type_t DataAPI::retrieveStoredConversionType(channel_t channel)
-{
-	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
-	return data_conversion_get_conversion_type(channel_info.adc_num,channel_info.channel_num);
-}
-
-int8_t DataAPI::retrieveParametersFromMemory(channel_t channel)
-{
-	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
-	return data_conversion_retrieve_channel_parameters_from_nvs(channel_info.adc_num, channel_info.channel_num);
-}
-
-int8_t DataAPI::storeParametersInMemory(channel_t channel)
-{
-	channel_info_t channel_info = shield_channels_get_enabled_channel_info(channel);
-	return data_conversion_store_channel_parameters_in_nvs(channel_info.adc_num, channel_info.channel_num);
-}
-
-void DataAPI::setTwistChannelsUserCalibrationFactors()
-{
-	shield_channels_set_user_acquisition_parameters();
-}
-
-
-#endif // CONFIG_SHIELD_TWIST
 
 
 /////
@@ -328,7 +242,7 @@ conversion_type_t DataAPI::retrieveStoredConversionType(uint8_t adc_num, uint8_t
 
 int8_t DataAPI::enableChannel(uint8_t adc_num, uint8_t channel_num)
 {
-	if (this->is_started == true)
+	if (DataAPI::is_started == true)
 		return -1;
 
 	if ( (adc_num == 0) || (adc_num > ADC_COUNT) )
@@ -344,21 +258,21 @@ int8_t DataAPI::enableChannel(uint8_t adc_num, uint8_t channel_num)
 	// Remember rank
 	uint8_t adc_index = adc_num-1;
 	uint8_t channel_index = channel_num-1;
-	this->current_rank[adc_index]++;
-	this->channels_ranks[adc_index][channel_index] = this->current_rank[adc_index];
+	DataAPI::current_rank[adc_index]++;
+	DataAPI::channels_ranks[adc_index][channel_index] = DataAPI::current_rank[adc_index];
 
 	return 0;
 }
 
 uint16_t* DataAPI::getChannelRawValues(uint8_t adc_num, uint8_t channel_num, uint32_t& number_of_values_acquired)
 {
-	if (this->is_started == false)
+	if (DataAPI::is_started == false)
 	{
 		number_of_values_acquired = 0;
 		return nullptr;
 	}
 
-	uint8_t channel_rank = this->getChannelRank(adc_num, channel_num);
+	uint8_t channel_rank = DataAPI::getChannelRank(adc_num, channel_num);
 	if (channel_rank == 0)
 	{
 		number_of_values_acquired = 0;
@@ -370,12 +284,12 @@ uint16_t* DataAPI::getChannelRawValues(uint8_t adc_num, uint8_t channel_num, uin
 
 float32_t DataAPI::peekChannel(uint8_t adc_num, uint8_t channel_num)
 {
-	if (this->is_started == false)
+	if (DataAPI::is_started == false)
 	{
 		return NO_VALUE;
 	}
 
-	uint8_t channel_rank = this->getChannelRank(adc_num, channel_num);
+	uint8_t channel_rank = DataAPI::getChannelRank(adc_num, channel_num);
 	if (channel_rank == 0)
 	{
 		return NO_VALUE;
@@ -392,7 +306,7 @@ float32_t DataAPI::peekChannel(uint8_t adc_num, uint8_t channel_num)
 
 float32_t DataAPI::getChannelLatest(uint8_t adc_num, uint8_t channel_num, uint8_t* dataValid)
 {
-	if (this->is_started == false)
+	if (DataAPI::is_started == false)
 	{
 		if (dataValid != nullptr)
 		{
@@ -401,7 +315,7 @@ float32_t DataAPI::getChannelLatest(uint8_t adc_num, uint8_t channel_num, uint8_
 		return NO_VALUE;
 	}
 
-	uint8_t channel_rank = this->getChannelRank(adc_num, channel_num);
+	uint8_t channel_rank = DataAPI::getChannelRank(adc_num, channel_num);
 	if (channel_rank == 0)
 	{
 		if (dataValid != nullptr)
@@ -460,7 +374,7 @@ uint8_t DataAPI::getChannelRank(uint8_t adc_num, uint8_t channel_num)
 	uint8_t adc_index = adc_num-1;
 	uint8_t channel_index = channel_num-1;
 
-	return this->channels_ranks[adc_index][channel_index];
+	return DataAPI::channels_ranks[adc_index][channel_index];
 }
 
 uint8_t DataAPI::getChannelNumber(uint8_t adc_num, uint8_t twist_pin)

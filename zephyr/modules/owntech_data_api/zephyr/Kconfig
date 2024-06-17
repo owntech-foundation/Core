@@ -4,6 +4,7 @@ config OWNTECH_DATA_API
 	select DMA
 	depends on CONSOLE_GETCHAR
 	depends on OWNTECH_SPIN_API
+	depends on OWNTECH_FLASH
 	help
 		The data API provides a framework for automatically gathering
 		data from Spin board ADCs into buffers which can be auto generated.

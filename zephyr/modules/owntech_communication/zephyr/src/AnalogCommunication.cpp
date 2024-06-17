@@ -28,7 +28,7 @@
 #include "AnalogCommunication.h"
 
 /* OwnTech Power API */
-#include "DataAPI.h"
+#include "ShieldAPI.h"
 #include "SpinAPI.h"
 
 /* LL drivers */
@@ -47,7 +47,7 @@ void AnalogCommunication::init()
     LL_GPIO_SetPinOutputType(GPIOC, LL_GPIO_PIN_4, LL_GPIO_OUTPUT_PUSHPULL);
     LL_GPIO_SetPinPull      (GPIOC, LL_GPIO_PIN_4, LL_GPIO_PULL_NO);
 
-    data.enableShieldChannel(ADC_NUM, ANALOG_COMM);
+    shield.sensors.enableShieldChannel(ADC_NUM, ANALOG_COMM);
 
     /* Initialize the DAC */
     spin.dac.initConstValue(ADC_NUM);
@@ -56,7 +56,7 @@ void AnalogCommunication::init()
 
 float32_t AnalogCommunication::getAnalogCommValue()
 {
-	float32_t ret =  data.getLatest(ANALOG_COMM);
+    float32_t ret =  shield.sensors.getLatest(ANALOG_COMM);
     return ret;
 }
 
@@ -64,4 +64,3 @@ void AnalogCommunication::setAnalogCommValue(uint32_t analog_bus_value)
 {
     spin.dac.setConstValue(DAC_NUM, DAC_CHAN, analog_bus_value);
 }
-

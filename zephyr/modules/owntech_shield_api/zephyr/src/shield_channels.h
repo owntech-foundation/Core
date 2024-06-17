@@ -31,7 +31,7 @@
 
 #include <stdint.h>
 
-#include "DataAPI.h"
+#include "ShieldAPI.h"
 
 
 /////
@@ -53,8 +53,6 @@ typedef struct channel_info_t
 
 
 /**
- *
- * OLD
  *
  * @brief  This function is used to enable a channel on the shield.
  *
