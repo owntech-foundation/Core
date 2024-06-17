@@ -119,7 +119,7 @@ public:
 	 * @param sensor_name Name of the sensor using enumeration sensor_t.
 	 * @param adc_number Number of the ADC which should be used for acquisition.
 	 *
-	 * @return 0 if the sensor was correctly enabled, -1 if there was an error.
+	 * @return 0 if the sensor was correctly enabled, negative value if there was an error.
 	 */
 	int8_t enableSensor(sensor_t sensor_name, uint8_t adc_num);
 

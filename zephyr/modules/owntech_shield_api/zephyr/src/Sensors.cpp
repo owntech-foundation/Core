@@ -204,14 +204,14 @@ int8_t SensorsAPI::storeParametersInMemory(sensor_t sensor_name)
 
 void SensorsAPI::enableDefaultTwistSensors()
 {
-	spin.adc.configureTriggerSource(1, hrtim_ev1);
-	spin.adc.configureTriggerSource(2, hrtim_ev3);
-	spin.adc.configureTriggerSource(3, software);
-	spin.adc.configureTriggerSource(4, software);
-	spin.adc.configureTriggerSource(5, software);
+	spin.data.configureTriggerSource(1, hrtim_ev1);
+	spin.data.configureTriggerSource(2, hrtim_ev3);
+	spin.data.configureTriggerSource(3, software);
+	spin.data.configureTriggerSource(4, software);
+	spin.data.configureTriggerSource(5, software);
 
-	spin.adc.configureDiscontinuousMode(1,1);
-	spin.adc.configureDiscontinuousMode(2, 1);
+	spin.data.configureDiscontinuousMode(1,1);
+	spin.data.configureDiscontinuousMode(2, 1);
 
 	this->enableSensor(I1_LOW, 1);
 	this->enableSensor(V1_LOW, 1);
@@ -377,6 +377,8 @@ void SensorsAPI::buildSensorListFromDeviceTree()
 						printk("    Conversion type is linear, with gain=%f and offset=%f\n", gain, offset);
 					}
 					break;
+					case no_channel_error:
+						continue;
 				}
 				nvsRetrieved = true;
 			}

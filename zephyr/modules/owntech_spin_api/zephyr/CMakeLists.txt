@@ -11,7 +11,6 @@ if(CONFIG_OWNTECH_SPIN_API OR CONFIG_OWNTECH_GPIO_API)
   if (CONFIG_OWNTECH_GPIO_API)
     zephyr_library_sources(
       src/hardware_auto_configuration.cpp
-      src/AdcHAL.cpp
       src/CompHAL.cpp
       src/DacHAL.cpp
       src/LedHAL.cpp

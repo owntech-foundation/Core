@@ -31,7 +31,6 @@
 #include "timer.h"
 #include "hrtim.h"
 #include "SpinAPI.h"
-#include "data_api_internal.h"
 #include "safety_internal.h"
 #include "SafetyAPI.h"
 
@@ -107,7 +106,7 @@ void user_task_proxy()
 
 	if (do_data_dispatch == true)
 	{
-		data_dispatch_do_full_dispatch();
+		spin.data.doFullDispatch();
 	}
 
 	user_periodic_task();
