@@ -57,7 +57,7 @@
 	{                                                                    \
 		.name=SENSOR_NAME(DT_PARENT(node_id)),                           \
 		.channel_number=CHANNEL_NUMBER(node_id),                         \
-		.pin_number=PIN_NUMBER(DT_PARENT(node_id)),                      \
+		.pin_number=PIN_NUMBER(node_id),                                 \
 		.is_differential=CHANNEL_IS_DIFF(node_id),                       \
 		.adc_reg_addr=ADC_REG_ADDR(node_id),                             \
 		.default_gain={.raw_value = SENSOR_GAIN(DT_PARENT(node_id))},    \
