@@ -266,7 +266,7 @@ int8_t safety_watch()
     {
         if (channel_watch[i])
         {
-            float32_t measure = data.peek(static_cast<channel_t>(i));
+            float32_t measure = shield.sensors.peek(static_cast<channel_t>(i));
             if(measure != -10000) channel_errors[i] = (measure > channel_threshold_max[i] || measure < channel_threshold_min[i]) ? true : false;
             if (channel_errors[i])
                 status = -1;
@@ -448,4 +448,3 @@ int8_t  safety_retrieve_threshold_in_nvs(channel_t channel)
 	k_free(buffer);
 	return ret;
 }
-
