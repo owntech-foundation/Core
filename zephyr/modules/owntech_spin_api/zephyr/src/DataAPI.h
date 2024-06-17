@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 LAAS-CNRS
+ * Copyright (c) 2022-2024 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2023
+ * @date   2024
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Thomas Walter <thomas.walter@laas.fr>
@@ -38,6 +38,9 @@
 // ARM CMSIS library
 #include <arm_math.h>
 
+// Other modules includes
+#include "adc.h"
+
 // Current module private functions
 #include "./data/data_conversion.h"
 
@@ -47,7 +50,7 @@
 #define ADC_4 4
 
 #define ERROR_CHANNEL_OFF -5
-#define ERROR_CHANNEL_NOT_FOUND -5000
+#define ERROR_CHANNEL_NOT_FOUND -2
 
 typedef enum : uint8_t
 {
@@ -84,8 +87,10 @@ const uint8_t DATA_IS_MISSING = 2;
 
 class DataAPI
 {
-	// Allow SensorsAPI class to access private members
+	// Allow specific extenal members to access private members of this class
 	friend class SensorsAPI;
+	friend void user_task_proxy();
+	friend void scheduling_start_uninterruptible_synchronous_task(bool);
 
 public:
 
@@ -99,12 +104,12 @@ public:
 	 *
 	 * @note  This function must be called *before* ADC is started.
 	 *
-	 * @param adc_number Number of the ADC on which acquisition is to be done.
 	 * @param pin_num Number of the Spin pin to acquire.
+	 * @param adc_number Number of the ADC on which acquisition is to be done.
 	 *
 	 * @return 0 if acquisition was correctly enabled, -1 if there was an error.
 	 */
-	int8_t enableAcquisition(uint8_t adc_num, uint8_t pin_num);
+	int8_t enableAcquisition(uint8_t pin_num, uint8_t adc_num);
 
 	/**
 	 * @brief This functions manually starts the acquisition chain.
@@ -154,23 +159,13 @@ public:
 	bool started();
 
 	/**
-	 * @brief Sets the dispatch method of the module.
+	 * @brief Stops the module if it is started.
 	 *
-	 *        Dispatch makes data from ADCs available to data.get*()
-	 *        functions, thus available to the user.
-	 *        By default, dispatch is done on interrupt when DMA buffer is
-	 *        filled. However, if using the uninterruptible task from the
-	 *        scheduling module, Scheduling will take care of dispatch itself
-	 *        for better performances. This function is by this module to
-	 *        indicate that dispatch is triggered externally.
-	 *
-	 * @note  End-user should not worry about this function, which
-	 *        is used internally by the Scheduling module.
-	 *
-	 * @param dispatch_method Indicates when the dispatch should be done
-	 *        (default value: DispatchMethod_t::on_dma_interrupt)
+	 * @return 0 if everything went well, -1 if there was an error.
+	 *         Error is triggered when trying to stop Data API
+	 *         while it was not started.
 	 */
-	void setDispatchMethod(DispatchMethod_t dispatch_method);
+	int8_t stop();
 
 	/**
 	 * @brief  Gets the dispatch method of the module.
@@ -181,19 +176,6 @@ public:
 	 * @return Dispatch method indicatinng when the dispatch is done.
 	 */
 	DispatchMethod_t getDispatchMethod();
-
-	/**
-	 * @brief Indicates the repetition count between two external dispatches
-	 *        when it is handled externally by the Scheduling module. This value
-	 *        is used to calibrate buffers sizes.
-	 *
-	 * @note  End-user should not worry about this function, which
-	 *        is used internally by the Scheduling module.
-	 *
-	 * @param repetition Number of repetitions between two calls of
-	 *        dispatch. Used to calibrate buffers sizes.
-	 */
-	void setRepetitionsBetweenDispatches(uint32_t repetition);
 
 	/**
 	 * @brief Triggers an acquisition on a given ADC. Each channel configured
@@ -354,7 +336,6 @@ public:
 	 */
 	conversion_type_t retrieveStoredConversionType(uint8_t adc_num, uint8_t pin_num);
 
-
 	/**
 	 * @brief Store the currently configured conversion parameters of a given channel in NVS.
 	 *
@@ -382,29 +363,55 @@ public:
 	 */
 	int8_t retrieveParametersFromMemory(uint8_t adc_num, uint8_t pin_num);
 
+	/**
+	 * @brief Set the discontinuous count for an ADC.
+	 *        By default, ADCs are not in discontinuous mode.
+	 *
+	 *        Applied configuration will only be set when ADC is started.
+	 *        If ADC is already started, it must be stopped then started again.
+	 *
+	 * @param adc_number Number of the ADC to configure.
+	 * @param discontinuous_count Number of channels to acquire on each
+	 *        trigger event. 0 to disable discontinuous mode (default).
+	 */
+	void configureDiscontinuousMode(uint8_t adc_number, uint32_t dicontinuous_count);
+
+	/**
+	 * @brief Change the trigger source of an ADC.
+	 *        By default, triggger source for ADC 1/2 is on HRTIM1,
+	 *        and ADC 3/4 is software-triggered.
+	 *
+	 *        Applied configuration will only be set when ADC is started.
+	 *        If ADC is already started, it must be stopped then started again.
+	 *
+	 * @param  adc_number Number of the ADC to configure
+	 * @param  trigger_source Source of the trigger
+	 */
+	void configureTriggerSource(uint8_t adc_number, adc_ev_src_t trigger_source);
 
 private:
+	static void initializeAllAdcs();
 	static int8_t enableChannel(uint8_t adc_num, uint8_t channel_num);
+	static void disableChannel(uint8_t adc_number, uint8_t channel);
 	static uint16_t* getChannelRawValues(uint8_t adc_num, uint8_t channel_num, uint32_t& number_of_values_acquired);
 	static float32_t peekChannel(uint8_t adc_num, uint8_t channel_num);
 	static float32_t getChannelLatest(uint8_t adc_num, uint8_t channel_num, uint8_t* dataValid = nullptr);
 	static uint8_t getChannelRank(uint8_t adc_num, uint8_t channel_num);
 	static uint8_t getChannelNumber(uint8_t adc_num, uint8_t twist_pin);
 
+	// Private members accessed by external friend members
+	static void setRepetitionsBetweenDispatches(uint32_t repetition);
+	static void setDispatchMethod(DispatchMethod_t dispatch_method);
+	static void doFullDispatch();
+
 private:
 	static bool is_started;
+	static bool adcInitialized;
 	static uint8_t channels_ranks[ADC_COUNT][CHANNELS_PER_ADC];
 	static uint8_t current_rank[ADC_COUNT];
 	static DispatchMethod_t dispatch_method;
 	static uint32_t repetition_count_between_dispatches;
 
 };
-
-
-/////
-// Public object to interact with the class
-
-extern DataAPI data;
-
 
 #endif // DATAAPI_H_

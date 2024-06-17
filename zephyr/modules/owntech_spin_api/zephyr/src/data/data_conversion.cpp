@@ -59,6 +59,8 @@ static uint8_t _data_conversion_get_parameters_count(conversion_type_t type)
 			// Param 1 = offset
 			parameters_count = 2;
 			break;
+		case no_channel_error:
+			break;
 	}
 
 	return parameters_count;
@@ -84,6 +86,8 @@ void data_conversion_init()
 						// For linear conversion, set default gain to 1 and default offset to 0
 						conversion_parameters[adc_index][channel_index][0]= 1;
 						conversion_parameters[adc_index][channel_index][1]= 0;
+						break;
+					case no_channel_error:
 						break;
 				}
 			}

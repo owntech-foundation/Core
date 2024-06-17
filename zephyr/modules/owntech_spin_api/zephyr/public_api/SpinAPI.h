@@ -40,7 +40,6 @@
 #include "../src/DacHAL.h"
 #include "../src/CompHAL.h"
 #include "../src/PwmHAL.h"
-#include "../src/AdcHAL.h"
 #include "../src/UartHAL.h"
 #include "../src/TimerHAL.h"
 #include "../src/VersionHAL.h"
@@ -88,11 +87,6 @@ public:
 	 * @brief Contains all the function of the STM32 hrtim PWM generator.
 	 */
 	PwmHAL pwm;
-
-	/**
-	 * @brief Contains all the function of the STM32 ADC including configuration and synchronization with the HRTIM.
-	 */
-	AdcHAL adc;
 
 	/**
 	 * @brief Contains all the function of the STM32 Usart1 functions.
