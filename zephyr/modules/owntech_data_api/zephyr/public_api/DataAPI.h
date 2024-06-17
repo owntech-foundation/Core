@@ -296,7 +296,7 @@ public:
 	 * @note  This function requires Console to interact with the user.
 	 *        You must first call console_init() before calling this function.
 	 *
-	 * @note  This function can't be called before the *all* Twist channels have
+	 * @note  This function can't be called before *all* Twist channels have
 	 *        been enabled (you can use enableTwistDefaultChannels() for that
 	 *        purpose). The DataAPI must not have been started, neither
 	 *        explicitly nor by starting the Uninterruptible task.

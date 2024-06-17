@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 LAAS-CNRS
+ * Copyright (c) 2022-2024 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2023
+ * @date   2024
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
@@ -211,7 +211,6 @@ void DataAPI::triggerAcquisition(uint8_t adc_num)
 {
 	uint8_t enabled_channels = spin.adc.getEnabledChannelsCount(adc_num);
 	spin.adc.triggerSoftwareConversion(adc_num, enabled_channels);
-
 }
 
 uint16_t* DataAPI::getRawValues(uint8_t adc_num, uint8_t pin_num, uint32_t& number_of_values_acquired)
@@ -342,8 +341,6 @@ int8_t DataAPI::enableChannel(uint8_t adc_num, uint8_t channel_num)
 	spin.adc.enableDma(adc_num, true);
 	spin.adc.enableChannel(adc_num, channel_num);
 
-
-
 	// Remember rank
 	uint8_t adc_index = adc_num-1;
 	uint8_t channel_index = channel_num-1;
@@ -433,7 +430,7 @@ float32_t DataAPI::getChannelLatest(uint8_t adc_num, uint8_t channel_num, uint8_
 		float32_t peekValue;
 		if (raw_value != PEEK_NO_VALUE)
 		{
-			data_conversion_convert_raw_value(adc_num, channel_num, raw_value);
+			peekValue = data_conversion_convert_raw_value(adc_num, channel_num, raw_value);
 		}
 		else
 		{

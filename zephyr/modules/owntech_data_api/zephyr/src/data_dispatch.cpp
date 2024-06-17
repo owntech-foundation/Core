@@ -135,8 +135,9 @@ void data_dispatch_init(dispatch_t dispatch_method, uint32_t repetitions)
 	for (uint8_t adc_num = 1 ; adc_num <= ADC_COUNT ; adc_num++)
 	{
 		uint8_t adc_index = adc_num-1;
-		enabled_channels_count[adc_index] =  spin.adc.getEnabledChannelsCount(adc_num);
+		enabled_channels_count[adc_index] = spin.adc.getEnabledChannelsCount(adc_num);
 
+		// Ignore this ADC if it has no enabled channel
 		if (enabled_channels_count[adc_index] > 0)
 		{
 			// Prepare buffers for DMA
