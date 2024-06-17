@@ -32,8 +32,8 @@
  *        from the device tree. If there are values stored and found in the NVS they
  *        will be used instead.
  *
- * @param watch_all a boolean value, if true all the channels will be monitored to detect faults.
- *                   If false, none of the channel will be monitored and we can set the channels we desire
+ * @param watch_all a boolean value, if true all the sensors will be monitored to detect faults.
+ *                   If false, none of the sensors will be monitored and we can set the sensors we desire
  *                   to watch later.
  *        @arg true
  *        @arg false

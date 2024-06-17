@@ -31,32 +31,32 @@
 #include "safety_enum.h"
 
 /**
- * @brief Enables the monitoring of the selected channels for safety.
+ * @brief Enables the monitoring of the selected sensors for safety.
  *
- * @param safety_channels A list of the channels to watch. The variables in the list can be :
+ * @param safety_sensors A list of the sensors to watch. The variables in the list can be :
  *                        V1_LOW, V2_LOW, V_HIGH, I1_LOW, I2_LOW, I_HIGH, TEMP_SENSOR, EXTRA_MEAS, ANALOG_COMM
- * @param channels_number The number of channels present in the list safety_channels.
+ * @param sensors_number The number of sensors present in the list safety_sensors.
  *
  * @return 0 if sucessfull, or -1 if there was an error
 */
-int8_t safety_set_channel_watch(channel_t * safety_channels, uint8_t channels_number);
+int8_t safety_set_sensor_watch(sensor_t * safety_sensors, uint8_t sensors_number);
 
 
 /**
- * @brief Disables the monitoring of the selected channels for safety.
+ * @brief Disables the monitoring of the selected sensors for safety.
  *
- * @param safety_channels A list of the channels to unwatch. The variables in the list can be :
+ * @param safety_sensors A list of the sensors to unwatch. The variables in the list can be :
  *                        V1_LOW, V2_LOW, V_HIGH, I1_LOW, I2_LOW, I_HIGH, TEMP_SENSOR, EXTRA_MEAS, ANALOG_COMM
- * @param channels_number The number of channels present in the list safety_channels.
+ * @param sensors_number The number of sensors present in the list safety_sensors.
  *
  * @return 0 if sucessfull, or -1 if there was an error
 */
-int8_t safety_unset_channel_watch(channel_t * safety_channels, uint8_t channels_number);
+int8_t safety_unset_sensor_watch(sensor_t * safety_sensors, uint8_t sensors_number);
 
 /**
- * @brief Checks if a channel is being monitored or not.
+ * @brief Checks if a sensor is being monitored or not.
  *
- * @param safety_channels the channel to check
+ * @param safety_sensors the sensor to check
  *        @arg V1_LOW
  *        @arg V2_LOW
  *        @arg V_HIGH
@@ -67,9 +67,9 @@ int8_t safety_unset_channel_watch(channel_t * safety_channels, uint8_t channels_
  *        @arg EXTRA_MEAS
  *        @arg ANALOG_COMM
  *
- * @return true if the channel is being monitored, false if not
+ * @return true if the sensor is being monitored, false if not
 */
-bool safety_get_channel_watch(channel_t  safety_channels);
+bool safety_get_sensor_watch(sensor_t  safety_sensors);
 
 /**
  * @brief Sets the reaction to do if an error has been detected. Choose either open-circuit (both switches are opened
@@ -82,44 +82,44 @@ bool safety_get_channel_watch(channel_t  safety_channels);
  *
  * @return none
 */
-void safety_set_channel_reaction(safety_reaction_t reaction);
+void safety_set_sensor_reaction(safety_reaction_t reaction);
 
 /**
  * @brief Returns the reaction to do when encoutering an error.
  *
  * @return Open_Circuit or Short_Circuit
 */
-safety_reaction_t safety_get_channel_reaction();
+safety_reaction_t safety_get_sensor_reaction();
 
 /**
- * @brief Sets the maximum threshold for the channels present in the list safety_channels.
+ * @brief Sets the maximum threshold for the sensors present in the list safety_sensors.
  *
- * @param safety_channels A list of the channels to set the threshold. The variables in the list can be :
+ * @param safety_sensors A list of the sensors to set the threshold. The variables in the list can be :
  *                        V1_LOW, V2_LOW, V_HIGH, I1_LOW, I2_LOW, I_HIGH, TEMP_SENSOR, EXTRA_MEAS, ANALOG_COMM
- * @param threshold A list of the maximum threshold to apply to the channels in safety_channels.
- * @param channels_number the number of channels present in the list safety_channels
+ * @param threshold A list of the maximum threshold to apply to the sensors in safety_sensors.
+ * @param sensors_number the number of sensors present in the list safety_sensors
  *
  * @return 0 if sucessfull, or -1 if not.
 */
-int8_t safety_set_channel_threshold_max(channel_t *safety_channels, float32_t *threshold, uint8_t channels_number);
+int8_t safety_set_sensor_threshold_max(sensor_t *safety_sensors, float32_t *threshold, uint8_t sensors_number);
 
 
 /**
- * @brief Sets the minimum threshold for the channels present in the list safety_channels.
+ * @brief Sets the minimum threshold for the sensors present in the list safety_sensors.
  *
- * @param safety_channels A list of the channels to set the threshold. The variables in the list can be :
+ * @param safety_sensors A list of the sensors to set the threshold. The variables in the list can be :
  *                        V1_LOW, V2_LOW, V_HIGH, I1_LOW, I2_LOW, I_HIGH, TEMP_SENSOR, EXTRA_MEAS, ANALOG_COMM
- * @param threshold A list of the minimum threshold to apply to the channels in safety_channels.
- * @param channels_number the number of channels present in the list safety_channels
+ * @param threshold A list of the minimum threshold to apply to the sensors in safety_sensors.
+ * @param sensors_number the number of sensors present in the list safety_sensors
  *
  * @return 0 if sucessfull, or -1 if not.
 */
-int8_t safety_set_channel_threshold_min(channel_t *safety_channels, float32_t *threshold, uint8_t channels_number);
+int8_t safety_set_sensor_threshold_min(sensor_t *safety_sensors, float32_t *threshold, uint8_t sensors_number);
 
 /**
- * @brief Gets the maximum threshold of the selected channel
+ * @brief Gets the maximum threshold of the selected sensor
  *
- * @param safety_channels the channel to check
+ * @param safety_sensors the sensor to check
  *        @arg V1_LOW
  *        @arg V2_LOW
  *        @arg V_HIGH
@@ -132,12 +132,12 @@ int8_t safety_set_channel_threshold_min(channel_t *safety_channels, float32_t *t
  *
  * @return The maximum threshold
 */
-float32_t safety_get_channel_threshold_max(channel_t safety_channel);
+float32_t safety_get_sensor_threshold_max(sensor_t safety_sensor);
 
 /**
- * @brief Gets the minimum threshold of the selected channel
+ * @brief Gets the minimum threshold of the selected sensor
  *
- * @param safety_channels the channel to check
+ * @param safety_sensors the sensor to check
  *        @arg V1_LOW
  *        @arg V2_LOW
  *        @arg V_HIGH
@@ -150,12 +150,12 @@ float32_t safety_get_channel_threshold_max(channel_t safety_channel);
  *
  * @return the minimum threshold
 */
-float32_t safety_get_channel_threshold_min(channel_t safety_channel);
+float32_t safety_get_sensor_threshold_min(sensor_t safety_sensor);
 
 /**
- * @brief Checks if the channel faced an error (went over/under threshold)
+ * @brief Checks if the sensor faced an error (went over/under threshold)
  *
- * @param safety_channels the channel to check
+ * @param safety_sensors the sensor to check
  *        @arg V1_LOW
  *        @arg V2_LOW
  *        @arg V_HIGH
@@ -166,14 +166,14 @@ float32_t safety_get_channel_threshold_min(channel_t safety_channel);
  *        @arg EXTRA_MEAS
  *        @arg ANALOG_COMM
  *
- * @return true if the channel faced an error, false if not
+ * @return true if the sensor faced an error, false if not
 */
-bool safety_get_channel_error(channel_t safety_channel);
+bool safety_get_sensor_error(sensor_t safety_sensor);
 
 /**
- * @brief Monitors all the channel set as watchable and compare them with the chosen thresholds.
+ * @brief Monitors all the sensor set as watchable and compare them with the chosen thresholds.
  *
- * @return 0 if all the channels are within their trehold, or -1 if one of them went under/over the threshold.
+ * @return 0 if all the sensors are within their trehold, or -1 if one of them went under/over the threshold.
 */
 int8_t safety_watch();
 
@@ -201,7 +201,7 @@ void safety_disable_task();
 /**
  * @brief Stores the current minimum and maximum threshold in the flash (non volatile memory)
  *
- * @param safety_channels the channel for which we store the threshold in the NVS
+ * @param safety_sensors the sensor for which we store the threshold in the NVS
  *        @arg V1_LOW
  *        @arg V2_LOW
  *        @arg V_HIGH
@@ -215,12 +215,12 @@ void safety_disable_task();
  * @return 0 if parameters were correcly stored, -1 if there was an error.
  *
 */
-int8_t safety_store_threshold_in_nvs(channel_t channel);
+int8_t safety_store_threshold_in_nvs(sensor_t sensor);
 
 /**
  * @brief Stores the current minimum and maximum threshold in the flash (non volatile memory)
  *
- * @param safety_channels the channel for which we store the threshold in the NVS
+ * @param safety_sensors the sensor for which we store the threshold in the NVS
  *        @arg V1_LOW
  *        @arg V2_LOW
  *        @arg V_HIGH
@@ -235,10 +235,10 @@ int8_t safety_store_threshold_in_nvs(channel_t channel);
  *         -1: NVS is empty
  *         -2: NVS contains data, but their version doesn't match current version
  *         -3: NVS data is corrupted
- *         -4: NVS contains data, but not for the requested channel
+ *         -4: NVS contains data, but not for the requested sensor
  *
 */
-int8_t  safety_retrieve_threshold_in_nvs(channel_t channel);
+int8_t  safety_retrieve_threshold_in_nvs(sensor_t sensor);
 
 
 #endif // SAFETY_SETTING_H_

@@ -44,12 +44,12 @@
 /* Defines */
 
 /**
- * Defines the channel numbers.
+ * Defines the sensor numbers.
  * For twist we have :
  * V1_LOW, V2_LOW, V_HIGH, I1_LOW, I2_LOW, I_HIGH, TEMP_SENSOR, EXTRA_MEAS, ANALOG_COMM
  */
-#define CHANNEL_COUNTER(node_id) +1
-#define DT_CHANNELS_NUMBER DT_FOREACH_STATUS_OKAY(shield_sensors, CHANNEL_COUNTER)
+#define SENSOR_COUNTER(node_id) +1
+#define DT_SENSORS_NUMBER DT_FOREACH_STATUS_OKAY(shield_sensors, SENSOR_COUNTER)
 
 /**
  * Counts the number of LEGs (i.e. the converters that need to be stopped for safety)
@@ -66,11 +66,11 @@
 
 /* Global variables */
 
-static bool channel_watch[DT_CHANNELS_NUMBER + 1];             // channels that need to be watched (true) / ignored (false)
-static float32_t channel_threshold_max[DT_CHANNELS_NUMBER + 1]; // threshold max for each channel
-static float32_t channel_threshold_min[DT_CHANNELS_NUMBER + 1]; // threshold min for each channel
-static safety_reaction_t channel_reaction = Open_Circuit;      // Reaction type by default in open circuit mode
-static bool channel_errors[DT_CHANNELS_NUMBER + 1];            // channel that went over/below the threshold (true)
+static bool sensor_watch[DT_SENSORS_NUMBER + 1];             // sensors that need to be watched (true) / ignored (false)
+static float32_t sensor_threshold_max[DT_SENSORS_NUMBER + 1]; // threshold max for each sensor
+static float32_t sensor_threshold_min[DT_SENSORS_NUMBER + 1]; // threshold min for each sensor
+static safety_reaction_t sensor_reaction = Open_Circuit;      // Reaction type by default in open circuit mode
+static bool sensor_errors[DT_SENSORS_NUMBER + 1];            // sensor that went over/below the threshold (true)
 
 static uint8_t dt_pin_high_side[] = { DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_PWM_PIN_HIGH) }; // Pin number of the gpio driving high side switchs
 static uint8_t dt_pin_low_side[] = { DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_PWM_PIN_LOW) };   // Pin number of the gpio driving low side switchs
@@ -130,46 +130,46 @@ void _open_circuit(void)
 ///// Public functions
 
 /**
- * @brief Sets the channels that need to be monitored
+ * @brief Sets the sensors that need to be monitored
  */
-int8_t safety_set_channel_watch(channel_t * safety_channels, uint8_t channels_number)
+int8_t safety_set_sensor_watch(sensor_t * safety_sensors, uint8_t sensors_number)
 {
-    if (channels_number > DT_CHANNELS_NUMBER)
+    if (sensors_number > DT_SENSORS_NUMBER)
     {
-        printk("ERROR: number of channels superior to number of channels defined in device tree");
+        printk("ERROR: number of sensors superior to number of sensors defined in device tree");
         return -1;
     }
 
-    for (uint8_t i = 0; i < channels_number; i++)
+    for (uint8_t i = 0; i < sensors_number; i++)
     {
-        channel_watch[safety_channels[i]] = true;
+        sensor_watch[safety_sensors[i]] = true;
     }
 
     return 0;
 }
 
 /**
- * @brief Gets if chosen channel is being monitored or not
+ * @brief Gets if chosen sensor is being monitored or not
  */
-bool safety_get_channel_watch(channel_t  safety_channels)
+bool safety_get_sensor_watch(sensor_t  safety_sensors)
 {
-    return channel_watch[safety_channels];
+    return sensor_watch[safety_sensors];
 }
 
 /**
- * @brief Unsets from the watching list the channels that do not need to be monitored
+ * @brief Unsets from the watching list the sensors that do not need to be monitored
  */
-int8_t safety_unset_channel_watch(channel_t * safety_channels, uint8_t channels_number)
+int8_t safety_unset_sensor_watch(sensor_t * safety_sensors, uint8_t sensors_number)
 {
-    if (channels_number > DT_CHANNELS_NUMBER)
+    if (sensors_number > DT_SENSORS_NUMBER)
     {
-        printk("ERROR: number of channels superior to number of channels defined in device tree");
+        printk("ERROR: number of sensors superior to number of sensors defined in device tree");
         return -1;
     }
 
-    for (uint8_t i = 0; i < channels_number; i++)
+    for (uint8_t i = 0; i < sensors_number; i++)
     {
-        channel_watch[safety_channels[i]] = false;
+        sensor_watch[safety_sensors[i]] = false;
     }
 
     return 0;
@@ -178,54 +178,54 @@ int8_t safety_unset_channel_watch(channel_t * safety_channels, uint8_t channels_
 /**
  * @brief Sets reaction type : Short-Circuit or Open-Circuit
  */
-void safety_set_channel_reaction(safety_reaction_t reaction)
+void safety_set_sensor_reaction(safety_reaction_t reaction)
 {
 
-    channel_reaction = reaction;
+    sensor_reaction = reaction;
 }
 
 /**
  * @brief Gets reaction type : Short-Circuit or Open-Circuit
  */
-safety_reaction_t safety_get_channel_reaction()
+safety_reaction_t safety_get_sensor_reaction()
 {
 
-    return channel_reaction;
+    return sensor_reaction;
 }
 
 /**
- * @brief Sets channel threshold
+ * @brief Sets sensor threshold
  */
-int8_t safety_set_channel_threshold_max(channel_t *safety_channels, float32_t *threshold, uint8_t channels_number)
+int8_t safety_set_sensor_threshold_max(sensor_t *safety_sensors, float32_t *threshold, uint8_t sensors_number)
 {
-    if (channels_number > DT_CHANNELS_NUMBER)
+    if (sensors_number > DT_SENSORS_NUMBER)
     {
-        printk("ERROR: number of channels superior to number of channels defined in device tree");
+        printk("ERROR: number of sensors superior to number of sensors defined in device tree");
         return -1;
     }
 
-    for (uint8_t i = 0; i < channels_number; i++)
+    for (uint8_t i = 0; i < sensors_number; i++)
     {
-        channel_threshold_max[safety_channels[i]] = threshold[i];
+        sensor_threshold_max[safety_sensors[i]] = threshold[i];
     }
 
     return 0;
 }
 
 /**
- * @brief Sets channel threshold
+ * @brief Sets sensor threshold
  */
-int8_t safety_set_channel_threshold_min(channel_t *safety_channels, float32_t *threshold, uint8_t channels_number)
+int8_t safety_set_sensor_threshold_min(sensor_t *safety_sensors, float32_t *threshold, uint8_t sensors_number)
 {
-    if (channels_number > DT_CHANNELS_NUMBER)
+    if (sensors_number > DT_SENSORS_NUMBER)
     {
-        printk("ERROR: number of channels superior to number of channels defined in device tree");
+        printk("ERROR: number of sensors superior to number of sensors defined in device tree");
         return -1;
     }
 
-    for (uint8_t i = 0; i < channels_number; i++)
+    for (uint8_t i = 0; i < sensors_number; i++)
     {
-        channel_threshold_min[safety_channels[i]] = threshold[i];
+        sensor_threshold_min[safety_sensors[i]] = threshold[i];
     }
 
     return 0;
@@ -234,25 +234,25 @@ int8_t safety_set_channel_threshold_min(channel_t *safety_channels, float32_t *t
 /**
  * @brief Returns the minimum threshold
 */
-float32_t safety_get_channel_threshold_min(channel_t safety_channel)
+float32_t safety_get_sensor_threshold_min(sensor_t safety_sensor)
 {
-    return channel_threshold_min[safety_channel];
+    return sensor_threshold_min[safety_sensor];
 }
 
 /**
  * @brief Returns the maximum threshold
 */
-float32_t safety_get_channel_threshold_max(channel_t safety_channel)
+float32_t safety_get_sensor_threshold_max(sensor_t safety_sensor)
 {
-    return channel_threshold_max[safety_channel];
+    return sensor_threshold_max[safety_sensor];
 }
 
 /**
  * @brief Returns if an error has been detected
 */
-bool safety_get_channel_error(channel_t safety_channel)
+bool safety_get_sensor_error(sensor_t safety_sensor)
 {
-    return channel_errors[safety_channel];
+    return sensor_errors[safety_sensor];
 }
 
 /**
@@ -262,13 +262,13 @@ int8_t safety_watch()
 {
     uint8_t status = 0;
 
-    for (uint8_t i = 0; i < DT_CHANNELS_NUMBER; i++)
+    for (uint8_t i = 0; i < DT_SENSORS_NUMBER; i++)
     {
-        if (channel_watch[i])
+        if (sensor_watch[i])
         {
-            float32_t measure = shield.sensors.peek(static_cast<channel_t>(i));
-            if(measure != -10000) channel_errors[i] = (measure > channel_threshold_max[i] || measure < channel_threshold_min[i]) ? true : false;
-            if (channel_errors[i])
+            float32_t measure = shield.sensors.peekLatestValue(static_cast<sensor_t>(i));
+            if(measure != -10000) sensor_errors[i] = (measure > sensor_threshold_max[i] || measure < sensor_threshold_min[i]) ? true : false;
+            if (sensor_errors[i])
                 status = -1;
         }
     }
@@ -282,11 +282,11 @@ int8_t safety_watch()
 void safety_action()
 {
     twist.stopAll();
-    if (channel_reaction == Open_Circuit)
+    if (sensor_reaction == Open_Circuit)
     {
         _open_circuit();
     }
-    else if (channel_reaction == Short_Circuit)
+    else if (sensor_reaction == Short_Circuit)
     {
         _short_circuit();
     }
@@ -336,18 +336,18 @@ int8_t safety_task()
 /**
  * @brief Stores threshold value in the NVS
 */
-int8_t safety_store_threshold_in_nvs(channel_t channel)
+int8_t safety_store_threshold_in_nvs(sensor_t sensor)
 {
 	// The data structure is as follows:
-	// - 1 byte indicating the channel descriptor string size
-	// - The channel descriptor string (should be max. 23 bytes in current version)
-    // - 1 byte to store the channel number (in the order in the device tree)
-	// - 4 byte to store the channel threshold min
-	// - 4 byte to store the channel threshold max
+	// - 1 byte indicating the sensor descriptor string size
+	// - The sensor descriptor string (should be max. 23 bytes in current version)
+    // - 1 byte to store the sensor number (in the order in the device tree)
+	// - 4 byte to store the sensor threshold min
+	// - 4 byte to store the sensor threshold max
 
 	uint8_t* buffer = (uint8_t*)k_malloc(1 + 23 + 4 + 4);
 
-    switch(channel)
+    switch(sensor)
     {
         case I1_LOW:
             snprintk((char*)(&buffer[1]), 23, "I1_LOW_THRESHOLD");
@@ -381,13 +381,13 @@ int8_t safety_store_threshold_in_nvs(channel_t channel)
 	uint8_t string_len = strlen((char*)(&buffer[1]));
 
 	buffer[0]                                  = string_len;
-    buffer[string_len + 1]                     = channel;
-	*((float32_t*)&buffer[string_len + 2])     = channel_threshold_min[channel];
-	*((float32_t*)&buffer[string_len + 2 + 4]) = channel_threshold_max[channel];
+    buffer[string_len + 1]                     = sensor;
+	*((float32_t*)&buffer[string_len + 2])     = sensor_threshold_min[sensor];
+	*((float32_t*)&buffer[string_len + 2 + 4]) = sensor_threshold_max[sensor];
 
-	uint16_t channel_ID = MEASURE_THRESHOLD | (channel&0x0F);
+	uint16_t sensor_ID = MEASURE_THRESHOLD | (sensor&0x0F);
 
-	int ns = nvs_storage_store_data(channel_ID, buffer, 1 + string_len + 1 + 4 + 4);
+	int ns = nvs_storage_store_data(sensor_ID, buffer, 1 + string_len + 1 + 4 + 4);
 
 	k_free(buffer);
 
@@ -404,7 +404,7 @@ int8_t safety_store_threshold_in_nvs(channel_t channel)
 /**
  * @brief Retrieves threshold value from the NVS
 */
-int8_t  safety_retrieve_threshold_in_nvs(channel_t channel)
+int8_t  safety_retrieve_threshold_in_nvs(sensor_t sensor)
 {
 	// Checks that parameters currently stored in NVS are from the same version
 	uint16_t current_stored_version = nvs_storage_get_version_in_nvs();
@@ -417,12 +417,12 @@ int8_t  safety_retrieve_threshold_in_nvs(channel_t channel)
 		return -2;
 	}
 
-	uint16_t channel_ID = MEASURE_THRESHOLD | (channel&0x0F);
+	uint16_t sensor_ID = MEASURE_THRESHOLD | (sensor&0x0F);
 
 	int buffer_size = 1 + 23 + 4 + 4;
 	uint8_t* buffer = (uint8_t*)k_malloc(buffer_size);
 
-	int read_size = nvs_storage_retrieve_data(channel_ID, buffer, buffer_size);
+	int read_size = nvs_storage_retrieve_data(sensor_ID, buffer, buffer_size);
 
 	int ret = 0;
 	if (read_size > 0)
@@ -430,14 +430,14 @@ int8_t  safety_retrieve_threshold_in_nvs(channel_t channel)
 		uint8_t string_len = buffer[0];
 
 		// Check that all required values match
-		if (channel != buffer[string_len + 1])
+		if (sensor != buffer[string_len + 1])
 		{
 			ret = -3;
 		}
 		else
 		{
-            channel_threshold_min[channel] = *((float32_t*)&buffer[string_len + 2]);
-            channel_threshold_max[channel] = *((float32_t*)&buffer[string_len + 2 + 4]);
+            sensor_threshold_min[sensor] = *((float32_t*)&buffer[string_len + 2]);
+            sensor_threshold_max[sensor] = *((float32_t*)&buffer[string_len + 2 + 4]);
 		}
 	}
 	else

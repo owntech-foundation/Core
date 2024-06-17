@@ -47,7 +47,7 @@ void AnalogCommunication::init()
     LL_GPIO_SetPinOutputType(GPIOC, LL_GPIO_PIN_4, LL_GPIO_OUTPUT_PUSHPULL);
     LL_GPIO_SetPinPull      (GPIOC, LL_GPIO_PIN_4, LL_GPIO_PULL_NO);
 
-    shield.sensors.enableShieldChannel(ADC_NUM, ANALOG_COMM);
+    shield.sensors.enableSensor(ANALOG_COMM, ADC_NUM);
 
     /* Initialize the DAC */
     spin.dac.initConstValue(ADC_NUM);
@@ -56,7 +56,7 @@ void AnalogCommunication::init()
 
 float32_t AnalogCommunication::getAnalogCommValue()
 {
-    float32_t ret =  shield.sensors.getLatest(ANALOG_COMM);
+    float32_t ret =  shield.sensors.getLatestValue(ANALOG_COMM);
     return ret;
 }
 
