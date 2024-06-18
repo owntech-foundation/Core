@@ -49,7 +49,7 @@ Create an empty folder in which you will work throughout the tutorials.
 !!! warning
     === "Windows"
         - Make sure that you have **administrator privileges** on the folder where you clone your repository.
-        - Check that you are working on a **path that is not liked to OneDrive**
+        - Check that you are working on a **path that is not linked to OneDrive**
         - Check that you **do not have any spaces in the path** of your project
         - Check that the **length of your project** path is smaller than 256 characters.
         - You should preferably have your project folder as close as possible to the root
@@ -93,9 +93,9 @@ In Visual Studio code, on the left side menu, click on PlatformIO icon ! (1)
         ```
 
 ### Step 5 - Clone our Core repository
-In platformio, select "Clone Git Project ".
+In PlatformIO, select "Clone Git Project ".
 
-latformIO will automatically open a field in which you can copy and paste the path below :
+PlatformIO will automatically open a field in which you can copy and paste the path below :
 
 ```
 https://github.com/owntech-foundation/Core
