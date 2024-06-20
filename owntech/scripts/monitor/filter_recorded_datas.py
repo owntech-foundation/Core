@@ -20,6 +20,7 @@
 # Get more info @ https://docs.platformio.org/en/latest/core/userguide/device/cmd_monitor.html#filters
 #
 # @author Régis Ruelland <regis.ruelland@laas.fr>
+# @author Jean Alinei <jean.alinei@owntech.org>
 
 from platformio.public import DeviceMonitorFilterBase
 from datetime import datetime
