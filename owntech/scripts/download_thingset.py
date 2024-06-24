@@ -8,6 +8,9 @@
 import os
 Import("env")
 
+# Specify fixed commits for ThingSet libraries to make builds reproducible
+thingset_node_rev = "d3338c7623869637bc6ce0b95358e44db2a3443f"
+thingset_sdk_rev = "b3382df5b3bd6b7764756c3de42d94e9f42bd376"
 
 ####
 # Determine if thingset must be downloaded
@@ -36,11 +39,14 @@ if do_download:
 
 	third_party_dir = os.path.join(".", "zephyr", "third_party_modules")
 
-	def cloneRepo(folderName, url, branch):
+	def cloneRepo(org_url, repo_name, rev):
 		from git import Repo
-		repo = Repo.clone_from(url, folderName)
-		if branch is not None:
-			repo.git.checkout(branch)
+		path = os.path.join(third_party_dir, repo_name)
+		if os.path.isdir(path):
+			repo = Repo(path)
+		else:
+			repo = Repo.clone_from(org_url + "/" + repo_name, path)
+		repo.git.checkout(rev)
 
 
 	#####
@@ -53,6 +59,5 @@ if do_download:
 	#####
 	# Install thingset
 
-	thingset_dir = os.path.join(third_party_dir, "thingset")
-	if not os.path.isdir(thingset_dir):
-		cloneRepo(thingset_dir, "https://github.com/ThingSet/thingset-device-library", "main")
+	cloneRepo("https://github.com/ThingSet", "thingset-node-c", thingset_node_rev)
+	cloneRepo("https://github.com/ThingSet", "thingset-zephyr-sdk", thingset_sdk_rev)

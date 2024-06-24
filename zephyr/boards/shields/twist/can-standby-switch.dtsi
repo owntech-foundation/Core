@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/ {
-	can-standby-switch {
-		compatible = "gpio-device";
-		can-standby-gpio-pin {
-			gpios = <&gpiob 10 GPIO_ACTIVE_HIGH>;
-		};
+&fdcan1 {
+	transceiver0: can-phy0 {
+		compatible = "ti,tcan334", "can-transceiver-gpio";
+		max-bitrate = <1000000>;
+		standby-gpios = <&gpiob 10 GPIO_ACTIVE_HIGH>;
+		#phy-cells = <0>;
 	};
 };

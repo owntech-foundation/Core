@@ -31,8 +31,6 @@
 #include <stdint.h>
 #include <arm_math.h>
 
-#define CAN_STANDBY_DEVICE DT_CHILD(DT_PATH(can_standby_switch), can_standby_gpio_pin)
-
 /////
 // Static class definition
 
@@ -109,11 +107,6 @@ public:
 	 * @param time_100_ms The control period (in multiple of 100 ms) to set.
 	 */
 	static void setControlPeriod(uint16_t time_100_ms);
-
-	/**
-	 * @brief Enable can
-	*/
-	void enableCan();
 };
 
 #endif // CANCOMMUNICATION_H_

@@ -17,8 +17,13 @@ if OWNTECH_COMMUNICATION
 		bool "Enable CAN bus communication API (Thingset over CAN)"
 		default n
 		select CAN
+		select ENTROPY_GENERATOR
 		select ISOTP
+		select ISOTP_FAST
 		select THINGSET
+		select THINGSET_SDK
+		select THINGSET_CAN
+		select THINGSET_CAN_ITEM_RX
 		select OWNTECH_DATA_API
 
 	config OWNTECH_COMMUNICATION_ENABLE_RS485
