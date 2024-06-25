@@ -141,9 +141,9 @@ public:
 	 *
 	 * @note  Data Acquisition must be started only after ADC module configuration
 	 *        has been fully carried out. No ADC configuration change is allowed
-	 *        after module has been started. If you're using the Twist shield and
+	 *        after module has been started. If you're using a power shield and
 	 *        are not sure how to initialize ADCs, you can use
-	 *        data.enableTwistDefaultChannels() for that purpose.
+	 *        data.enableShieldDefaultChannels() for that purpose.
 	 *
 	 * @note  Data Acquisition must be started before accessing any data.get*()
 	 *        or data.peek*() function. Other Data Acquisition functions
@@ -430,7 +430,7 @@ private:
 	static float32_t peekChannel(adc_t adc_number, uint8_t channel_num);
 	static float32_t getChannelLatest(adc_t adc_number, uint8_t channel_num, uint8_t* dataValid = nullptr);
 	static uint8_t getChannelRank(adc_t adc_number, uint8_t channel_num);
-	static uint8_t getChannelNumber(adc_t adc_number, uint8_t twist_pin);
+	static uint8_t getChannelNumber(adc_t adc_number, uint8_t shield_pin);
 	static adc_t getDefaultAdcForPin(uint8_t pin_number);
 	static adc_t getCurrentAdcForPin(uint8_t pin_number);
 

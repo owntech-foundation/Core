@@ -3,4 +3,19 @@
 
 config SHIELD_TWIST
 	def_bool $(shields_list_contains,twist_v1_4_1) || \
-				$(shields_list_contains,twist)
+			 $(shields_list_contains,twist_v1_4_0) || \
+			 $(shields_list_contains,twist_v1_3_0) || \
+			 $(shields_list_contains,twist_v1_2_0) || \
+			 $(shields_list_contains,twist)
+
+config SHIELD_TWIST_V1_4_1
+	def_bool $(shields_list_contains,twist_v1_4_1)
+
+config SHIELD_TWIST_V1_4_0
+	def_bool $(shields_list_contains,twist_v1_4_0)
+
+config SHIELD_TWIST_V1_3_0
+	def_bool $(shields_list_contains,twist_v1_3_0)
+
+config SHIELD_TWIST_V1_2_0
+	def_bool $(shields_list_contains,twist_v1_2_0)

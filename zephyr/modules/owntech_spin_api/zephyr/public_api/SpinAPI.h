@@ -36,20 +36,23 @@
 #include <arm_math.h>
 
 // Private sources include
-#include "../src/LedHAL.h"
-#include "../src/DacHAL.h"
 #include "../src/CompHAL.h"
+#include "../src/DacHAL.h"
+#include "../src/GpioHAL.h"
+#include "../src/LedHAL.h"
 #include "../src/PwmHAL.h"
-#include "../src/UartHAL.h"
 #include "../src/TimerHAL.h"
 #include "../src/VersionHAL.h"
-#include "../src/GpioHAL.h"
 
 #ifdef CONFIG_OWNTECH_DATA_API
 #include "../src/DataAPI.h"
 #endif
 
-#ifdef CONFIG_SHIELD_TWIST
+#ifdef CONFIG_OWNTECH_UART_API
+#include "../src/UartHAL.h"
+#endif
+
+#ifdef CONFIG_OWNTECH_NGND_DRIVER
 #include "../src/NgndHAL.h"
 #endif
 
@@ -88,10 +91,12 @@ public:
 	 */
 	PwmHAL pwm;
 
+#ifdef CONFIG_OWNTECH_UART_API
 	/**
 	 * @brief Contains all the function of the STM32 Usart1 functions.
 	 */
 	UartHAL uart;
+#endif
 
 	/**
 	 * @brief Contains all the function of the STM32 Timer4 functions that handle the encoder.
@@ -105,12 +110,12 @@ public:
 
 #ifdef CONFIG_OWNTECH_DATA_API
 	/**
-	 * @brief Data acquisition from Spin ADCs.
+	 * @brief Data acquisition from SPIN ADCs
 	 */
 	DataAPI data;
 #endif
 
-#ifdef CONFIG_SHIELD_TWIST
+#ifdef CONFIG_OWNTECH_NGND_DRIVER
 	/**
 	 * @brief Contains all the function of the NGND switch compatible with TWISTs prior to 1.4.
 	 */

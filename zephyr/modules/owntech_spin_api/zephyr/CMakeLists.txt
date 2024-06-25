@@ -16,7 +16,6 @@ if(CONFIG_OWNTECH_SPIN_API OR CONFIG_OWNTECH_GPIO_API)
       src/LedHAL.cpp
       src/PwmHAL.cpp
       src/TimerHAL.cpp
-      src/UartHAL.cpp
       src/VersionHAL.cpp
     )
 
@@ -32,18 +31,17 @@ if(CONFIG_OWNTECH_SPIN_API OR CONFIG_OWNTECH_GPIO_API)
       )
     endif()
 
-    if (CONFIG_SHIELD_TWIST)
+    # NGND driver
+    if (CONFIG_OWNTECH_NGND_DRIVER)
       zephyr_library_sources(
         src/NgndHAL.cpp
-      )
+    )
     endif()
 
     # GPIO API
-    if (CONFIG_OWNTECH_GPIO_API)
-      zephyr_library_sources(
-        src/GpioHAL.cpp
-      )
-    endif()
+    zephyr_library_sources(
+      src/GpioHAL.cpp
+    )
 
   endif()
 

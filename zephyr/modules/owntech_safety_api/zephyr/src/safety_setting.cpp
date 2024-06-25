@@ -36,6 +36,7 @@
 // OWNTECH APIs
 #include "nvs_storage.h"
 #include "SpinAPI.h"
+#include "ShieldAPI.h"
 #include "TwistAPI.h"
 
 // Zephyr
@@ -54,7 +55,7 @@
 /**
  * Counts the number of LEGs (i.e. the converters that need to be stopped for safety)
 */
-#define POWER_SHIELD_ID DT_NODELABEL(power_shield)
+#define POWER_SHIELD_ID DT_NODELABEL(powershield)
 #define LEG_COUNTER(node_id) +1
 #define DT_LEG_NUMBER DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_COUNTER)
 

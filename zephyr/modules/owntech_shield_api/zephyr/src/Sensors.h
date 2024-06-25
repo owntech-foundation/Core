@@ -55,7 +55,6 @@
 
 /////
 // Type definitions
-
 typedef enum
 {
 	UNDEFINED_SENSOR = 0,

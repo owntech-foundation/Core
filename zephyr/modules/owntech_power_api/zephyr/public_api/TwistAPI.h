@@ -37,7 +37,7 @@
 /* All the leg with okay status in the device tree */
 typedef enum
 {
-	DT_FOREACH_CHILD_STATUS_OKAY(DT_NODELABEL(power_shield), LEG_TOKEN)
+	DT_FOREACH_CHILD_STATUS_OKAY(DT_NODELABEL(powershield), LEG_TOKEN)
 } leg_t;
 
 /* Enum to define the hardware version */
