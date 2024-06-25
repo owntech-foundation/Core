@@ -107,7 +107,7 @@ property from the Device Tree node with the given 'node_id'. */
 #define LEG_COUNTER(node_id) +1 // this macro is needed to count the number of leg in the device tree
 
 // the shield node identifier in the device tree
-#define POWER_SHIELD_ID           DT_NODELABEL(power_shield)
+#define POWER_SHIELD_ID           DT_NODELABEL(powershield)
 
 /* Enum to define which DAC to use for current mode */
 typedef enum{

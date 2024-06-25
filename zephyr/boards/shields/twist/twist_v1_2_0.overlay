@@ -6,7 +6,7 @@
 
 / {
 	choosen{
-		zephyr,can-primary = &fdcan2;
+		zephyr,can-primary = &fdcan1;
 	};
 	
 	powershield: power-shield{
@@ -14,9 +14,8 @@
         frequency = <200000>;
         leg1: leg1{
             leg-name = "LEG1";
-			pwms = <&pwma 1 0>, <&pwma 2 0>;
             pwm-pin-num = <12 14>;
-			pwm-x1-high = <1>;
+			pwm-x1-high = <0>;
             capa-pin-num = <7>;
             driver-pin-num = <19>;
             current-pin-num = <30>;
@@ -31,7 +30,6 @@
 
         leg2: leg2{
             leg-name = "LEG2";
-			pwms = <&pwmc 1 0>, <&pwmc 2 0>;
             pwm-pin-num = <2 4>;
 			pwm-x1-high = <1>;
             capa-pin-num = <56>;
@@ -54,13 +52,12 @@
 			sensor-name = "V1_LOW";
 			default-gain = <0x3d3851ec>;
 			default-offset = <0xc2b867f0>;
+			spin-pin = <29>;
 			v1-low-adc1 {
 				io-channels = <&adc1 1>;
-				spin-pin = <29>;
 			};
 			v1-low-adc2 {
 				io-channels = <&adc2 1>;
-				spin-pin = <29>;
 			};
 			status = "okay";
 		};
@@ -70,13 +67,12 @@
 			sensor-name = "V2_LOW";
 			default-gain = <0x3d3851ec>;
 			default-offset = <0xc2b867f0>;
+			spin-pin = <24>;
 			v2-low-adc1 {
 				io-channels = <&adc1 6>;
-				spin-pin = <24>;
 			};
 			v2-low-adc2 {
 				io-channels = <&adc2 6>;
-				spin-pin = <24>;
 			};
 			status = "okay";
 		};
@@ -86,13 +82,12 @@
 			sensor-name = "V_HIGH";
 			default-gain = <0x3cf57710>;
 			default-offset = <0x00000000>;
+			spin-pin = <27>;
 			v-high-adc1 {
 				io-channels = <&adc1 9>;
-				spin-pin = <27>;
 			};
 			v-high-adc2 {
 				io-channels = <&adc2 9>;
-				spin-pin = <27>;
 			};
 			status = "okay";
 		};
@@ -104,13 +99,12 @@
 			sensor-name = "I1_LOW";
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
+			spin-pin = <30>;
 			i1-low-adc1 {
 				io-channels = <&adc1 2>;
-				spin-pin = <30>;
 			};
 			i1-low-adc2 {
 				io-channels = <&adc2 2>;
-				spin-pin = <30>;
 			};
 			status = "okay";
 		};
@@ -120,13 +114,12 @@
 			sensor-name = "I2_LOW";
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
+			spin-pin = <25>;
 			i2-low-adc1 {
 				io-channels = <&adc1 7>;
-				spin-pin = <25>;
 			};
 			i2-low-adc2 {
 				io-channels = <&adc2 7>;
-				spin-pin = <25>;
 			};
 			status = "okay";
 		};
@@ -136,13 +129,12 @@
 			sensor-name = "I_HIGH";
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
+			spin-pin = <26>;
 			i-high-adc1 {
 				io-channels = <&adc1 8>;
-				spin-pin = <26>;
 			};
 			i-high-adc2 {
 				io-channels = <&adc2 8>;
-				spin-pin = <26>;
 			};
 			status = "okay";
 		};
@@ -154,9 +146,9 @@
 			sensor-name = "TEMP_SENSOR";
 			default-gain = <0x3f800000>;
 			default-offset = <0x00000000>;
+			spin-pin = <31>;
 			temp-sensor-adc3 {
 				io-channels = <&adc3 12>;
-				spin-pin = <31>;
 			};
 			status = "disabled";
 		};
@@ -166,9 +158,9 @@
 			sensor-name = "EXTRA_MEAS";
 			default-gain = <0x3f800000>;
 			default-offset = <0x00000000>;
+			spin-pin = <6>;
 			analog-comm-adc4 {
 				io-channels = <&adc4 5>;
-				spin-pin = <6>;
 			};
 			status = "disabled";
 		};
@@ -178,9 +170,9 @@
 			sensor-name = "ANALOG_COMM";
 			default-gain = <0x3f800000>;
 			default-offset = <0x00000000>;
+			spin-pin = <35>;
 			extra-sensor-adc2 {
 				io-channels = <&adc2 5>;
-				spin-pin = <35>;
 			};
 			status = "okay";
 		};
@@ -275,6 +267,13 @@
 			status = "disabled";
 		};
 	};
+	
+	ngnd: ngnd-switch {
+		compatible = "gpio-device";
+		ngnd-gpio-pin {
+			gpios = <&spin_header 1 GPIO_ACTIVE_HIGH>;
+		};
+	};
 };
 
 // UART / RS485 transceiver
@@ -288,12 +287,12 @@
 
 // CAN
 
-&fdcan2 {
-	pinctrl-0 = <&fdcan2_rx_pb5 &fdcan2_tx_pb6>;
+&fdcan1 {
+	pinctrl-0 = <&fdcan1_rx_pb8 &fdcan1_tx_pb9>;
 	pinctrl-names = "default";
 	bus-speed = <500000>;
 	sample-point = <875>;
-	bus-speed-data = <2000000>;
+	bus-speed-data = <500000>;
 	sample-point-data = <875>;
 	status = "okay";
 };
@@ -320,7 +319,7 @@
 
 &hrtim1 {
 	scin: scin {
-		pinctrl-0 = <&hrtim1_scin_pb2>;
+		pinctrl-0 = <&hrtim1_scin_pb6>;
 	};
 	scout: scout {
 		pinctrl-0 = <&hrtim1_scout_pb1>;

@@ -54,7 +54,7 @@ float32_t*** DataAPI::converted_values_buffer = nullptr;
 adc_t DataAPI::current_adc[PIN_COUNT] = {DEFAULT_ADC};
 
 /////
-// Public functions accessible only when using Twist
+// Public functions accessible only when using a power shield
 
 
 /////
@@ -625,12 +625,12 @@ uint8_t DataAPI::getChannelRank(adc_t adc_num, uint8_t channel_num)
 	return DataAPI::channels_ranks[adc_index][channel_index];
 }
 
-uint8_t DataAPI::getChannelNumber(adc_t adc_num, uint8_t twist_pin)
+uint8_t DataAPI::getChannelNumber(adc_t adc_num, uint8_t shield_pin)
 {
 	switch (adc_num)
 	{
 	case 1:
-		switch (twist_pin)
+		switch (shield_pin)
 		{
 			case 1:
 				return 14;
@@ -677,7 +677,7 @@ uint8_t DataAPI::getChannelNumber(adc_t adc_num, uint8_t twist_pin)
 		}
 		break;
 	case 2:
-		switch (twist_pin)
+		switch (shield_pin)
 		{
 			case 1:
 				return 14;
@@ -730,7 +730,7 @@ uint8_t DataAPI::getChannelNumber(adc_t adc_num, uint8_t twist_pin)
 		}
 		break;
 	case 3:
-		switch (twist_pin)
+		switch (shield_pin)
 		{
 			case 4:
 				return 5;
@@ -747,7 +747,7 @@ uint8_t DataAPI::getChannelNumber(adc_t adc_num, uint8_t twist_pin)
 		}
 		break;
 	case 4:
-		switch (twist_pin)
+		switch (shield_pin)
 		{
 			case 2:
 				return 3;
@@ -764,7 +764,7 @@ uint8_t DataAPI::getChannelNumber(adc_t adc_num, uint8_t twist_pin)
 		}
 		break;
 	case 5:
-		switch (twist_pin)
+		switch (shield_pin)
 		{
 			case 12:
 				return 1;

@@ -7,7 +7,7 @@
  / {
 	soc {
 		hrtim1: timers@40016800 {
-			compatible = "st,stm32-timers";
+			compatible = "hrtim";
 			reg = <0x40016800 0x400>;
 			clocks = <&rcc STM32_CLOCK_BUS_APB2 0x04000000>;
 			resets = <&rctl STM32_RESET(APB2, 26U)>;
@@ -17,14 +17,36 @@
 					  "timd", "time", "flt", "timf";
 			st,prescaler = <0>;
 			status = "okay";
-			outputs {
-				compatible = "hrtim";
-				pinctrl-0 = <&hrtim1_cha1_pa8 &hrtim1_cha2_pa9
-							&hrtim1_chb1_pa10 &hrtim1_chb2_pa11
-							&hrtim1_chc1_pb12 &hrtim1_chc2_pb13
-							&hrtim1_chd1_pb14 &hrtim1_chd2_pb15
-							&hrtim1_che1_pc8 &hrtim1_che2_pc9
-							&hrtim1_chf1_pc6 &hrtim1_chf2_pc7>;
+
+			pwma: pwm1 {
+				#pwm-cells = <2>;
+				pinctrl-0 = <&hrtim1_cha1_pa8 &hrtim1_cha2_pa9>;
+				status = "okay";
+			};
+			pwmb: pwm2 {
+				#pwm-cells = <2>;
+				pinctrl-0 = <&hrtim1_chb1_pa10 &hrtim1_chb2_pa11>;
+				status = "disabled";
+			};
+			pwmc: pwm3 {
+				#pwm-cells = <2>;
+				pinctrl-0 = <&hrtim1_chc1_pb12 &hrtim1_chc2_pb13>;
+				status = "okay";
+			};
+			pwmd: pwm4 {
+				#pwm-cells = <2>;
+				pinctrl-0 = <&hrtim1_chd1_pb14 &hrtim1_chd2_pb15>;
+				status = "okay";
+			};
+			pwme: pwm5 {
+				#pwm-cells = <2>;
+				pinctrl-0 = <&hrtim1_che1_pc8 &hrtim1_che2_pc9>;
+				status = "okay";
+			};
+			pwmf: pwm6 {
+				#pwm-cells = <2>;
+				pinctrl-0 = <&hrtim1_chf1_pc6 &hrtim1_chf2_pc7>;
+				status = "okay";
 			};
 		};
 	};

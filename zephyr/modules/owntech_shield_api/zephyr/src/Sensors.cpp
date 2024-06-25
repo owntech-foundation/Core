@@ -106,7 +106,7 @@ bool SensorsAPI::initialized = false;
 
 
 /////
-// Public functions accessible only when using Twist
+// Public functions accessible only when using a power shield
 
 
 int8_t SensorsAPI::enableSensor(sensor_t sensor_name, uint8_t adc_num)
