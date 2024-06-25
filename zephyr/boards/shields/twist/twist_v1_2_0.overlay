@@ -6,7 +6,7 @@
 
 / {
 	choosen{
-		zephyr,can-primary = &fdcan2;
+		zephyr,can-primary = &fdcan1;
 	};
 	
 	power_shield: power-shield{
@@ -14,9 +14,8 @@
         frequency = <200000>;
         leg1: leg1{
             leg-name = "LEG1";
-			pwms = <&pwma 1 0>, <&pwma 2 0>;
             pwm-pin-num = <12 14>;
-			pwm-x1-high = <1>;
+			pwm-x1-high = <0>;
             capa-pin-num = <7>;
             driver-pin-num = <19>;
             current-pin-num = <30>;
@@ -31,7 +30,6 @@
 
         leg2: leg2{
             leg-name = "LEG2";
-			pwms = <&pwmc 1 0>, <&pwmc 2 0>;
             pwm-pin-num = <2 4>;
 			pwm-x1-high = <1>;
             capa-pin-num = <56>;
@@ -269,6 +267,13 @@
 			status = "disabled";
 		};
 	};
+	
+	ngnd: ngnd-switch {
+		compatible = "gpio-device";
+		ngnd-gpio-pin {
+			gpios = <&gpiob 11 GPIO_ACTIVE_HIGH>;
+		};
+	};
 };
 
 // UART / RS485 transceiver
@@ -282,12 +287,12 @@
 
 // CAN
 
-&fdcan2 {
-	pinctrl-0 = <&fdcan2_rx_pb5 &fdcan2_tx_pb6>;
+&fdcan1 {
+	pinctrl-0 = <&fdcan1_rx_pb8 &fdcan1_tx_pb9>;
 	pinctrl-names = "default";
 	bus-speed = <500000>;
 	sample-point = <875>;
-	bus-speed-data = <2000000>;
+	bus-speed-data = <500000>;
 	sample-point-data = <875>;
 	status = "okay";
 };
@@ -314,7 +319,7 @@
 
 &hrtim1 {
 	scin: scin {
-		pinctrl-0 = <&hrtim1_scin_pb2>;
+		pinctrl-0 = <&hrtim1_scin_pb6>;
 	};
 	scout: scout {
 		pinctrl-0 = <&hrtim1_scout_pb1>;

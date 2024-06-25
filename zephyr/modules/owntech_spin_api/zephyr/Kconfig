@@ -6,12 +6,18 @@ config OWNTECH_SPIN_API
 	depends on OWNTECH_HRTIM_DRIVER
 	depends on OWNTECH_TIMER_DRIVER
 	depends on OWNTECH_COMPARATOR_DRIVER
-	depends on OWNTECH_NGND_DRIVER || !SHIELD_TWIST
 	help
 		The SPIN API is a module that aggregates all the drivers of
 		the STM32G474RE of the Spin board within a single object.
 		This abstracts base drivers by providing an object-based,
 		user-friendly API.
+
+config OWNTECH_UART_API
+	bool "Enable OwnTech UART API"
+	default n
+	help
+		The UART API is a module that aggregates basic UART functionality
+		for shields that supports it.
 
 config OWNTECH_GPIO_API
 	bool "Enables the OwnTech GPIO API integrated with the SPIN Board"

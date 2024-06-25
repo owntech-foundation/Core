@@ -37,7 +37,7 @@
 
 // Current module private functions
 #include "../src/data_dispatch.h"
-#ifdef CONFIG_SHIELD_TWIST
+#ifdef CONFIG_POWER_SHIELD
 #include "../src/shield_channels.h"
 #endif
 
@@ -51,7 +51,7 @@ DataAPI data;
 /////
 // Public functions accessible only when using Twist
 
-#ifdef CONFIG_SHIELD_TWIST
+#ifdef CONFIG_POWER_SHIELD
 
 int8_t DataAPI::enableShieldChannel(uint8_t adc_num, channel_t channel_name)
 {
@@ -141,7 +141,7 @@ void DataAPI::setTwistChannelsUserCalibrationFactors()
 }
 
 
-#endif // CONFIG_SHIELD_TWIST
+#endif // CONFIG_POWER_SHIELD
 
 
 /////

@@ -59,7 +59,7 @@ typedef enum : uint8_t
 /////
 // Device-tree related macro
 
-#ifdef CONFIG_SHIELD_TWIST
+#ifdef CONFIG_POWER_SHIELD
 #define CHANNEL_TOKEN(node_id) DT_STRING_TOKEN(node_id, channel_name),
 #endif
 
@@ -67,7 +67,7 @@ typedef enum : uint8_t
 /////
 // Type definitions
 
-#ifdef CONFIG_SHIELD_TWIST
+#ifdef CONFIG_POWER_SHIELD
 typedef enum
 {
 	UNDEFINED_CHANNEL = 0,
@@ -103,7 +103,7 @@ class DataAPI
 {
 public:
 
-#ifdef CONFIG_SHIELD_TWIST
+#ifdef CONFIG_POWER_SHIELD
 
 	/**
 	 * @brief This function is used to enable a channel on a given ADC using

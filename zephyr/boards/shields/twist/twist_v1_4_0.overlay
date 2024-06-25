@@ -315,8 +315,10 @@
 &hrtim1 {
 	scin: scin {
 		pinctrl-0 = <&hrtim1_scin_pb2>;
+		status = "okay";
 	};
 	scout: scout {
 		pinctrl-0 = <&hrtim1_scout_pb1>;
+		status = "okay";
 	};
 };

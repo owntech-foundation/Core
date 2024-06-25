@@ -15,18 +15,24 @@ if(CONFIG_OWNTECH_SPIN_API OR CONFIG_OWNTECH_GPIO_API)
       src/LedHAL.cpp
       src/TimerHAL.cpp
       src/PwmHAL.cpp
-      src/UartHAL.cpp
       src/AdcHAL.cpp
       src/CompHAL.cpp
       src/VersionHAL.cpp
     )
 
     # Conditional source files
-    if (CONFIG_SHIELD_TWIST)
+    if (CONFIG_OWNTECH_NGND_DRIVER)
       zephyr_library_sources(
         src/NgndHAL.cpp
     )
     endif()
+  endif()
+
+  # UART API
+  if (CONFIG_OWNTECH_UART_API)
+  zephyr_library_sources(
+    src/UartHAL.cpp
+  )
   endif()
 
   # GPIO API

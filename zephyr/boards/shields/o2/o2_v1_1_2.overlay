@@ -6,7 +6,7 @@
 
 / {
 	choosen{
-		zephyr,can-primary = &fdcan2;
+		zephyr,can-primary = &fdcan1;
 	};
 	
 	power_shield: power-shield{
@@ -14,11 +14,10 @@
         frequency = <200000>;
         leg1: leg1{
             leg-name = "LEG1";
-			pwms = <&pwma 1 0>, <&pwma 2 0>;
             pwm-pin-num = <12 14>;
 			pwm-x1-high = <1>;
-            capa-pin-num = <7>;
-            driver-pin-num = <19>;
+            capa-pin-num = <0>;
+            driver-pin-num = <0>;
             current-pin-num = <30>;
             adc-trigger = "ADCTRIG_1";
             default-adc-decim = <1>;
@@ -31,11 +30,10 @@
 
         leg2: leg2{
             leg-name = "LEG2";
-			pwms = <&pwmc 1 0>, <&pwmc 2 0>;
             pwm-pin-num = <2 4>;
 			pwm-x1-high = <1>;
-            capa-pin-num = <56>;
-            driver-pin-num = <22>;
+            capa-pin-num = <0>;
+            driver-pin-num = <0>;
             current-pin-num = <25>;
             adc-trigger = "ADCTRIG_3";
             default-adc-decim = <1>;
@@ -176,7 +174,7 @@
 			extra-sensor-adc2 {
 				io-channels = <&adc2 5>;
 			};
-			status = "okay";
+			status = "disabled";
 		};
 	};
 
@@ -269,54 +267,46 @@
 			status = "disabled";
 		};
 	};
+	
+	ngnd: ngnd-switch {
+		compatible = "gpio-device";
+		ngnd-gpio-pin {
+			gpios = <&gpiob 11 GPIO_ACTIVE_HIGH>;
+		};
+	};
 };
 
-// UART / RS485 transceiver
+// UART1
 
-&usart3 {
-	pinctrl-0 = < &usart3_tx_pc10 &usart3_rx_pc11 >;
+&usart1 {
+	pinctrl-0 = <&usart1_tx_pb6 &usart1_rx_pb7>;
 	pinctrl-names = "default";
-	current-speed = <10625000>;
+	current-speed = <115200>;
+	status = "okay";
+};
+
+// SPI
+
+&spi3 {
+	pinctrl-0 = <&spi3_nss_pa4 &spi3_sck_pc10 &spi3_miso_pb4 &spi3_mosi_pb5>;
+	pinctrl-names = "default";
 	status = "okay";
 };
 
 // CAN
 
-&fdcan2 {
-	pinctrl-0 = <&fdcan2_rx_pb5 &fdcan2_tx_pb6>;
+&fdcan1 {
+	pinctrl-0 = <&fdcan1_rx_pb8 &fdcan1_tx_pb9>;
 	pinctrl-names = "default";
 	bus-speed = <500000>;
 	sample-point = <875>;
-	bus-speed-data = <2000000>;
+	bus-speed-data = <500000>;
 	sample-point-data = <875>;
 	status = "okay";
-};
-
-&pwma {
-	status = "okay";
-};
-
-&pwmc {
-	status = "okay";
-};
-
-&pwmd {
-	status = "disabled";
-};
-
-&pwme {
-	status = "disabled";
-};
-
-&pwmf {
-	status = "disabled";
-};
-
-&hrtim1 {
-	scin: scin {
-		pinctrl-0 = <&hrtim1_scin_pb2>;
-	};
-	scout: scout {
-		pinctrl-0 = <&hrtim1_scout_pb1>;
+	transceiver0: can-phy0 {
+		compatible = "ti,tcan334", "can-transceiver-gpio";
+		max-bitrate = <1000000>;
+		standby-gpios = <&gpiob 10 GPIO_ACTIVE_HIGH>;
+		#phy-cells = <0>;
 	};
 };

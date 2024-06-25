@@ -41,13 +41,15 @@
 #include "../src/CompHAL.h"
 #include "../src/PwmHAL.h"
 #include "../src/AdcHAL.h"
-#include "../src/UartHAL.h"
 #include "../src/TimerHAL.h"
 #include "../src/VersionHAL.h"
 #include "../src/GpioHAL.h"
 
+#ifdef CONFIG_OWNTECH_UART_API
+	#include "../src/UartHAL.h"
+#endif
 
-#ifdef CONFIG_SHIELD_TWIST
+#ifdef CONFIG_POWER_SHIELD
 	#include "../src/NgndHAL.h"
 #endif
 
@@ -91,10 +93,12 @@ public:
 	 */
 	AdcHAL adc;
 
+#ifdef CONFIG_OWNTECH_UART_API
 	/**
 	 * @brief Contains all the function of the STM32 Usart1 functions.
 	 */
 	UartHAL uart;
+#endif
 
 	/**
 	 * @brief Contains all the function of the STM32 Timer4 functions that handle the encoder.
@@ -106,7 +110,7 @@ public:
 	 */
 	VersionHAL version;
 
-#ifdef CONFIG_SHIELD_TWIST
+#ifdef CONFIG_POWER_SHIELD
 	/**
 	 * @brief Contains all the function of the NGND switch compatible with TWISTs prior to 1.4.
 	 */

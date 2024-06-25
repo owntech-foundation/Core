@@ -6,9 +6,9 @@
 
 / {
 	choosen{
-		zephyr,can-primary = &fdcan2;
+		zephyr,can-primary = &fdcan1;
 	};
-	
+
 	power_shield: power-shield{
         compatible = "power-leg";
         frequency = <200000>;
@@ -17,9 +17,9 @@
 			pwms = <&pwma 1 0>, <&pwma 2 0>;
             pwm-pin-num = <12 14>;
 			pwm-x1-high = <1>;
-            capa-pin-num = <7>;
+            capa-pin-num = <0>;
             driver-pin-num = <19>;
-            current-pin-num = <30>;
+            current-pin-num = <25>;
             adc-trigger = "ADCTRIG_1";
             default-adc-decim = <1>;
             edge-trigger = "EdgeTrigger_up";
@@ -34,9 +34,26 @@
 			pwms = <&pwmc 1 0>, <&pwmc 2 0>;
             pwm-pin-num = <2 4>;
 			pwm-x1-high = <1>;
-            capa-pin-num = <56>;
+            capa-pin-num = <0>;
             driver-pin-num = <22>;
-            current-pin-num = <25>;
+            current-pin-num = <30>;
+            adc-trigger = "ADCTRIG_3";
+            default-adc-decim = <1>;
+            edge-trigger = "EdgeTrigger_up";
+            default-dead-time = <100 100>;
+            modulation = "UpDwn";
+            default-phase-shift = <0>;
+			status = "okay";
+        };
+
+		leg3: leg3{
+            leg-name = "LEG3";
+			pwms = <&pwme 1 0>, <&pwme 2 0>;
+            pwm-pin-num = <10 11>;
+			pwm-x1-high = <1>;
+            capa-pin-num = <0>;
+            driver-pin-num = <56>;
+            current-pin-num = <1>;
             adc-trigger = "ADCTRIG_3";
             default-adc-decim = <1>;
             edge-trigger = "EdgeTrigger_up";
@@ -54,12 +71,12 @@
 			channel-name = "V1_LOW";
 			default-gain = <0x3d3851ec>;
 			default-offset = <0xc2b867f0>;
-			spin-pin = <29>;
+			spin-pin = <24>;
 			v1-low-adc1 {
-				io-channels = <&adc1 1>;
+				io-channels = <&adc1 6>;
 			};
 			v1-low-adc2 {
-				io-channels = <&adc2 1>;
+				io-channels = <&adc2 6>;
 			};
 			status = "okay";
 		};
@@ -69,12 +86,27 @@
 			channel-name = "V2_LOW";
 			default-gain = <0x3d3851ec>;
 			default-offset = <0xc2b867f0>;
-			spin-pin = <24>;
+			spin-pin = <29>;
 			v2-low-adc1 {
-				io-channels = <&adc1 6>;
+				io-channels = <&adc1 1>;
 			};
 			v2-low-adc2 {
-				io-channels = <&adc2 6>;
+				io-channels = <&adc2 1>;
+			};
+			status = "okay";
+		};
+
+		v3low: v3-low {
+			compatible = "adc-channels";
+			channel-name = "V3_LOW";
+			default-gain = <0x3d3851ec>;
+			default-offset = <0xc2b867f0>;
+			spin-pin = <42>;
+			v3-low-adc1 {
+				io-channels = <&adc1 12>;
+			};
+			v3-low-adc2 {
+				io-channels = <&adc2 12>;
 			};
 			status = "okay";
 		};
@@ -101,12 +133,12 @@
 			channel-name = "I1_LOW";
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
-			spin-pin = <30>;
+			spin-pin = <25>;
 			i1-low-adc1 {
-				io-channels = <&adc1 2>;
+				io-channels = <&adc1 7>;
 			};
 			i1-low-adc2 {
-				io-channels = <&adc2 2>;
+				io-channels = <&adc2 7>;
 			};
 			status = "okay";
 		};
@@ -116,12 +148,27 @@
 			channel-name = "I2_LOW";
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
-			spin-pin = <25>;
+			spin-pin = <30>;
 			i2-low-adc1 {
-				io-channels = <&adc1 7>;
+				io-channels = <&adc1 2>;
 			};
 			i2-low-adc2 {
-				io-channels = <&adc2 7>;
+				io-channels = <&adc2 2>;
+			};
+			status = "okay";
+		};
+
+		i3low: i3-low {
+			compatible = "adc-channels";
+			channel-name = "I3_LOW";
+			default-gain = <0x3d3851ec>;
+			default-offset = <0xc2b867f0>;
+			spin-pin = <1>;
+			v3-low-adc1 {
+				io-channels = <&adc1 14>;
+			};
+			v3-low-adc2 {
+				io-channels = <&adc2 14>;
 			};
 			status = "okay";
 		};
@@ -131,12 +178,12 @@
 			channel-name = "I_HIGH";
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
-			spin-pin = <26>;
+			spin-pin = <27>;
 			i-high-adc1 {
-				io-channels = <&adc1 8>;
+				io-channels = <&adc1 9>;
 			};
 			i-high-adc2 {
-				io-channels = <&adc2 8>;
+				io-channels = <&adc2 9>;
 			};
 			status = "okay";
 		};
@@ -178,6 +225,30 @@
 			};
 			status = "okay";
 		};
+
+		sin: analog-sin {
+            compatible = "adc-channels";
+            channel-name = "ANALOG_SIN";
+            default-gain = <0x3f800000>;
+            default-offset = <0x00000000>;
+            spin-pin = <43>;
+            analog-sin-adc2 {
+                    io-channels = <&adc2 11>;
+            };
+			status = "okay";
+		};
+		cos: analog-cos {
+            compatible = "adc-channels";
+            channel-name = "ANALOG_COS";
+            default-gain = <0x3f800000>;
+            default-offset = <0x00000000>;
+            spin-pin = <45>;
+            analog-cos-adc2 {
+                    io-channels = <&adc2 17>;
+            };
+			status = "okay";
+		};
+
 	};
 
 	twist-safety-thresholds {
@@ -197,6 +268,15 @@
 			compatible = "safety-thresholds";
 			channel-name = "V2_LOW";
 			threshold-name = "V2_LOW_TD";
+			threshold-high = <0x428c0000>; /* 70.0 */
+			threshold-low = <0xc1200000>; /* -10.0 */
+			status = "okay";
+		};
+
+		v3lowtd: v3-low-td {
+			compatible = "safety-thresholds";
+			channel-name = "V3_LOW";
+			threshold-name = "V3_LOW_TD";
 			threshold-high = <0x428c0000>; /* 70.0 */
 			threshold-low = <0xc1200000>; /* -10.0 */
 			status = "okay";
@@ -231,10 +311,10 @@
 			status = "okay";
 		};
 
-		ihightd: i-high-td {
+		i3lowtd: i3-low-td {
 			compatible = "safety-thresholds";
-			channel-name = "I_HIGH";
-			threshold-name = "I_HIGH_TD";
+			channel-name = "I3_LOW";
+			threshold-name = "I3_LOW_TD";
 			threshold-high = <0x40e00000>; /* 7.0 */
 			threshold-low = <0xc0e00000>; /* -7.0 */
 			status = "okay";
@@ -282,14 +362,20 @@
 
 // CAN
 
-&fdcan2 {
-	pinctrl-0 = <&fdcan2_rx_pb5 &fdcan2_tx_pb6>;
+&fdcan1 {
+	pinctrl-0 = <&fdcan1_rx_pb8 &fdcan1_tx_pb9>;
 	pinctrl-names = "default";
 	bus-speed = <500000>;
 	sample-point = <875>;
-	bus-speed-data = <2000000>;
+	bus-speed-data = <500000>;
 	sample-point-data = <875>;
 	status = "okay";
+	transceiver0: can-phy0 {
+		compatible = "ti,tcan334", "can-transceiver-gpio";
+		max-bitrate = <1000000>;
+		standby-gpios = <&gpiob 4 GPIO_ACTIVE_HIGH>;
+		#phy-cells = <0>;
+	};
 };
 
 &pwma {
@@ -305,16 +391,17 @@
 };
 
 &pwme {
-	status = "disabled";
+	status = "okay";
 };
 
 &pwmf {
 	status = "disabled";
 };
 
+
 &hrtim1 {
 	scin: scin {
-		pinctrl-0 = <&hrtim1_scin_pb2>;
+		pinctrl-0 = <&hrtim1_scin_pb6>;
 	};
 	scout: scout {
 		pinctrl-0 = <&hrtim1_scout_pb1>;
