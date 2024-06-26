@@ -28,9 +28,9 @@
  */
 
 //--------------OWNTECH APIs----------------------------------
-#include "DataAPI.h"
 #include "TaskAPI.h"
 #include "TwistAPI.h"
+#include "ShieldAPI.h"
 #include "SpinAPI.h"
 
 //--------------SETUP FUNCTIONS DECLARATION-------------------

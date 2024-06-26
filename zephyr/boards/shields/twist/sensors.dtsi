@@ -1,132 +1,138 @@
 /*
- * Copyright (c) 2022-2023 OwnTech.
+ * Copyright (c) 2022-2024 OwnTech.
  *
  * SPDX-License-Identifier: LGPL-2.1
  */
 
 / {
-	twist-channels {
+	twist-sensors {
 
-		/* Voltage channels */
+		/* Voltage sensors */
 
 		v1low: v1-low {
-			compatible = "adc-channels";
-			channel-name = "V1_LOW";
+			compatible = "shield-sensors";
+			sensor-name = "V1_LOW";
 			default-gain = <0x3d3851ec>;
 			default-offset = <0xc2b867f0>;
-			spin-pin = <29>;
 			v1-low-adc1 {
 				io-channels = <&adc1 1>;
+				spin-pin = <29>;
 			};
 			v1-low-adc2 {
 				io-channels = <&adc2 1>;
+				spin-pin = <29>;
 			};
 		};
 
 		v2low: v2-low {
-			compatible = "adc-channels";
-			channel-name = "V2_LOW";
+			compatible = "shield-sensors";
+			sensor-name = "V2_LOW";
 			default-gain = <0x3d3851ec>;
 			default-offset = <0xc2b867f0>;
-			spin-pin = <24>;
 			v2-low-adc1 {
 				io-channels = <&adc1 6>;
+				spin-pin = <24>;
 			};
 			v2-low-adc2 {
 				io-channels = <&adc2 6>;
+				spin-pin = <24>;
 			};
 		};
 
 		vhigh: v-high {
-			compatible = "adc-channels";
-			channel-name = "V_HIGH";
+			compatible = "shield-sensors";
+			sensor-name = "V_HIGH";
 			default-gain = <0x3cf57710>;
 			default-offset = <0x00000000>;
-			spin-pin = <27>;
 			v-high-adc1 {
 				io-channels = <&adc1 9>;
+				spin-pin = <27>;
 			};
 			v-high-adc2 {
 				io-channels = <&adc2 9>;
+				spin-pin = <27>;
 			};
 		};
 
-		/* Current channels */
+		/* Current sensors */
 
 		i1low: i1-low {
-			compatible = "adc-channels";
-			channel-name = "I1_LOW";
+			compatible = "shield-sensors";
+			sensor-name = "I1_LOW";
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
-			spin-pin = <30>;
 			i1-low-adc1 {
 				io-channels = <&adc1 2>;
+				spin-pin = <30>;
 			};
 			i1-low-adc2 {
 				io-channels = <&adc2 2>;
+				spin-pin = <30>;
 			};
 		};
 
 		i2low: i2-low {
-			compatible = "adc-channels";
-			channel-name = "I2_LOW";
+			compatible = "shield-sensors";
+			sensor-name = "I2_LOW";
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
-			spin-pin = <25>;
 			i2-low-adc1 {
 				io-channels = <&adc1 7>;
+				spin-pin = <25>;
 			};
 			i2-low-adc2 {
 				io-channels = <&adc2 7>;
+				spin-pin = <25>;
 			};
 		};
 
 		ihigh: i-high {
-			compatible = "adc-channels";
-			channel-name = "I_HIGH";
+			compatible = "shield-sensors";
+			sensor-name = "I_HIGH";
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
-			spin-pin = <26>;
 			i-high-adc1 {
 				io-channels = <&adc1 8>;
+				spin-pin = <26>;
 			};
 			i-high-adc2 {
 				io-channels = <&adc2 8>;
+				spin-pin = <26>;
 			};
 		};
 
-		/* Other channels */
+		/* Other sensors */
 
 		temp: temp-sensor {
-			compatible = "adc-channels";
-			channel-name = "TEMP_SENSOR";
+			compatible = "shield-sensors";
+			sensor-name = "TEMP_SENSOR";
 			default-gain = <0x3f800000>;
 			default-offset = <0x00000000>;
-			spin-pin = <31>;
 			temp-sensor-adc3 {
 				io-channels = <&adc3 12>;
+				spin-pin = <31>;
 			};
 		};
 
 		extra: extra-sensor {
-			compatible = "adc-channels";
-			channel-name = "EXTRA_MEAS";
+			compatible = "shield-sensors";
+			sensor-name = "EXTRA_MEAS";
 			default-gain = <0x3f800000>;
 			default-offset = <0x00000000>;
-			spin-pin = <6>;
 			analog-comm-adc4 {
 				io-channels = <&adc4 5>;
+				spin-pin = <6>;
 			};
 		};
 
 		analog: analog-comm {
-			compatible = "adc-channels";
-			channel-name = "ANALOG_COMM";
+			compatible = "shield-sensors";
+			sensor-name = "ANALOG_COMM";
 			default-gain = <0x3f800000>;
 			default-offset = <0x00000000>;
-			spin-pin = <35>;
 			extra-sensor-adc2 {
 				io-channels = <&adc2 5>;
+				spin-pin = <35>;
 			};
 		};
 	};

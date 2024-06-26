@@ -18,26 +18,35 @@
  */
 
 /**
- * @date 2024
+ * @date   2024
  *
- * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
- *
+ * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
-#ifndef SHIELD_SAFETY_H_
-#define SHIELD_SAFETY_H_
 
-/**
- * @brief This function initialize the threshold max/min values with the default value
- *        from the device tree. If there are values stored and found in the NVS they
- *        will be used instead.
- *
- * @param watch_all a boolean value, if true all the sensors will be monitored to detect faults.
- *                   If false, none of the sensors will be monitored and we can set the sensors we desire
- *                   to watch later.
- *        @arg true
- *        @arg false
-*/
-void safety_init_shield(bool watch_all);
+#ifndef SHIELDAPI_H_
+#define SHIELDAPI_H_
 
-#endif // SHIELD_SAFETY_H_
+
+// Other modules public API
+#include "../src/Sensors.h"
+
+
+/////
+// Static class definition
+
+class ShieldAPI
+{
+public:
+	static SensorsAPI sensors;
+
+};
+
+
+/////
+// Public object to interact with the class
+
+extern ShieldAPI shield;
+
+
+#endif // SHIELDAPI_H_

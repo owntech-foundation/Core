@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 LAAS-CNRS
+ * Copyright (c) 2024 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,26 +18,16 @@
  */
 
 /**
- * @date   2023
+ * @date   2024
+ *
  * @author Clément Foucher <clement.foucher@laas.fr>
- *
- * Header to give access to Data Acquisition internal
- * API to other OwnTech modules.
- *
- * Only for use in OwnTech modules.
- * Do not include this header in user code.
  */
 
-#ifndef DATA_API_INTERNAL_H_
-#define DATA_API_INTERNAL_H_
+
+// Current class header
+#include "ShieldAPI.h"
 
 
-/**
- * @brief Force full dispatch.
- *
- * For internal use only, do not call in user code.
- */
-void data_dispatch_do_full_dispatch();
+ShieldAPI shield;
 
-
-#endif // DATA_API_INTERNAL_H_
+SensorsAPI ShieldAPI::sensors;

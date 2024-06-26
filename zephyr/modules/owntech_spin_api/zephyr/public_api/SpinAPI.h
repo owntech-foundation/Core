@@ -40,15 +40,17 @@
 #include "../src/DacHAL.h"
 #include "../src/CompHAL.h"
 #include "../src/PwmHAL.h"
-#include "../src/AdcHAL.h"
 #include "../src/UartHAL.h"
 #include "../src/TimerHAL.h"
 #include "../src/VersionHAL.h"
 #include "../src/GpioHAL.h"
 
+#ifdef CONFIG_OWNTECH_DATA_API
+#include "../src/DataAPI.h"
+#endif
 
 #ifdef CONFIG_SHIELD_TWIST
-	#include "../src/NgndHAL.h"
+#include "../src/NgndHAL.h"
 #endif
 
 
@@ -87,11 +89,6 @@ public:
 	PwmHAL pwm;
 
 	/**
-	 * @brief Contains all the function of the STM32 ADC including configuration and synchronization with the HRTIM.
-	 */
-	AdcHAL adc;
-
-	/**
 	 * @brief Contains all the function of the STM32 Usart1 functions.
 	 */
 	UartHAL uart;
@@ -105,6 +102,13 @@ public:
 	 * @brief Contains all the function related to the versioning of the microcontroller boards.
 	 */
 	VersionHAL version;
+
+#ifdef CONFIG_OWNTECH_DATA_API
+	/**
+	 * @brief Data acquisition from Spin ADCs.
+	 */
+	DataAPI data;
+#endif
 
 #ifdef CONFIG_SHIELD_TWIST
 	/**
