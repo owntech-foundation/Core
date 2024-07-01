@@ -54,18 +54,18 @@
 /** Define a macro LEG_ADC that retrieves the 'adc_trigger'
  * property from the Device Tree node with the given 'node_id'. 
  */
-#define LEG_ADC(node_id)	DT_STRING_TOKEN(node_id, adc_trigger),
+#define LEG_ADC(node_id)	DT_STRING_TOKEN(node_id, default_adc_trigger),
 
 /** Define a macro LEG_ROLLOVER that retrieves the roll_over 
  * (ie. when the adc is triggered) property from the Device Tree node with 
  * the given 'node_id'. 
  */
-#define LEG_EDGE_TRIGGER(node_id)	DT_STRING_TOKEN(node_id, edge_trigger),
+#define LEG_EDGE_TRIGGER(node_id)	DT_STRING_TOKEN(node_id, default_edge_trigger),
 
 /** Define a macro LEG_MODULATION that retrieves the modulation type
  * property from the Device Tree node with the given 'node_id'. 
  */
-#define LEG_MODULATION(node_id)	DT_STRING_TOKEN(node_id, modulation),
+#define LEG_MODULATION(node_id)	DT_STRING_TOKEN(node_id, default_modulation),
 
 /** Define a macro LEG_RISING_DT that retrieves the first element of the 
  * 'dead_time'property (ie. rising dead time) from the Device Tree node with 
