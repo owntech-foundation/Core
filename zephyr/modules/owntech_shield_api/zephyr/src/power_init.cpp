@@ -28,47 +28,47 @@
 
 uint32_t timer_frequency = DT_PROP(POWER_SHIELD_ID, default_frequency);
 
-uint16_t dt_pwm_pin[] = 
+uint16_t dt_pwm_pin[] =
     {DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_PWM_PIN)};
 
-uint16_t dt_pwm_x1_high[] = 
+uint16_t dt_pwm_x1_high[] =
     {DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_PWM_X1_HIGH)};
 
-hrtim_adc_trigger_t dt_adc[] = 
+hrtim_adc_trigger_t dt_adc[] =
     {DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_ADC)};
 
-uint32_t dt_adc_decim[] = 
+uint32_t dt_adc_decim[] =
     {DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_ADC_DECIM)};
 
-hrtim_cnt_t dt_modulation[] =  
+hrtim_cnt_t dt_modulation[] =
     {DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_MODULATION)};
 
-hrtim_adc_edgetrigger_t dt_edge_trigger[] = 
+hrtim_adc_edgetrigger_t dt_edge_trigger[] =
     {DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_EDGE_TRIGGER)};
 
-uint16_t dt_rising_deadtime[] = 
+uint16_t dt_rising_deadtime[] =
     {DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_RISING_DT)};
 
-uint16_t dt_falling_deadtime[] = 
+uint16_t dt_falling_deadtime[] =
     {DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_FALLING_DT)};
 
-int16_t dt_phase_shift[] =  
+int16_t dt_phase_shift[] =
     {DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_PHASE)};
 
-uint8_t dt_leg_count = 
+uint8_t dt_leg_count =
     DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_COUNTER);
 
-uint8_t dt_output1_inactive[] = 
+uint8_t dt_output1_inactive[] =
     {DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_OUTPUT1)};
 
 uint8_t dt_output2_inactive[] =
     {DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_OUTPUT2)};
 
-uint16_t dt_current_pin[] = 
+uint16_t dt_current_pin[] =
     {DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_CURRENT_PIN)};
 
-uint16_t dt_pin_driver[] = 
+uint16_t dt_pin_driver[] =
     {DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_DRIVER_PIN)};
 
-uint16_t dt_pin_capacitor[] = 
+uint16_t dt_pin_capacitor[] =
     {DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_CAPACITOR_PIN)};

@@ -20,7 +20,9 @@
 /**
  * @date   2024
  *
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Jean Alinei <jean.alinei@owntech.org>
  */
 
 
@@ -30,4 +32,5 @@
 
 ShieldAPI shield;
 
+PowerAPI ShieldAPI::power;
 SensorsAPI ShieldAPI::sensors;
