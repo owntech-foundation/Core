@@ -37,7 +37,6 @@
 #include "nvs_storage.h"
 #include "SpinAPI.h"
 #include "ShieldAPI.h"
-#include "TwistAPI.h"
 
 // Zephyr
 #include "zephyr/kernel.h"
@@ -282,7 +281,7 @@ int8_t safety_watch()
  */
 void safety_action()
 {
-    twist.stopAll();
+    shield.power.stopAll();
     if (sensor_reaction == Open_Circuit)
     {
         _open_circuit();

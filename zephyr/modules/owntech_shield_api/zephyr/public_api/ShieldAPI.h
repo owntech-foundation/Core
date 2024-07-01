@@ -20,7 +20,9 @@
 /**
  * @date   2024
  *
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  * @author Clément Foucher <clement.foucher@laas.fr>
+ * @author Jean Alinei <jean.alinei@owntech.org>
  */
 
 
@@ -30,6 +32,7 @@
 
 // Other modules public API
 #include "../src/Sensors.h"
+#include "../src/Power.h"
 
 
 /////
@@ -39,7 +42,7 @@ class ShieldAPI
 {
 public:
 	static SensorsAPI sensors;
-
+	static PowerAPI power;
 };
 
 

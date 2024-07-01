@@ -1,6 +1,0 @@
-config OWNTECH_POWER_API
-	bool "Enable OwnTech power API for the STM32G474RE microcontroller"
-	default y
-	help
-		The Power API module provides functionalities that
-		allow to drive the various modes of a power converter.
