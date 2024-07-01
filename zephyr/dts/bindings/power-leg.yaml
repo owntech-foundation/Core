@@ -5,7 +5,7 @@ compatible : "power-leg"
 
 properties :
 
-  frequency :
+  default-frequency :
     type : int
     required : true
     description : Switching frequency in Hz (this frequency must be same for all the timer !)
@@ -54,11 +54,10 @@ child-binding:
     pwm-x1-high :
       type : int
       required : true 
-      description : This property defines which convention drives the PWM. If pwm-x1-high is 1
-                    PWMx1 will be connected to switch high. Otherwise is pwm-x1-high is 0,
-                    PWMx1 will be connected to switch low.
-                    Choose 1 as default, PWMx1 linked to switch high 
-                                            PWMx2 linked to switch low.
+      description : This property defines how the PWM are connected in hardware
+                    to the power leg.
+                    pwm-x1-high = 1 means PWMx1 is connected to switch high. 
+                    pwm-x1-high = 0 means PWMx1 is connected to switch low.
 
     current-pin-num :
       type : int
@@ -87,7 +86,7 @@ child-binding:
       description : It is the pin driving the optocoupler for the mosfet driver since twist V1.3. 
                     Choose 0 if no pin is required.
 
-    adc-trigger :
+    default-adc-trigger :
       type : string
       required : true
       description : Which adc trigger is used for data acquisition (only two leg can support it), 
@@ -99,7 +98,7 @@ child-binding:
       - "ADCTRIG_3"
       - "ADCTRIG_4"
 
-    edge-trigger :
+    default-edge-trigger :
       type : string
       required : true
       description : Only relevant in Center aligned. Choose when ADC is triggered, 
@@ -125,7 +124,7 @@ child-binding:
                     and falling dead time second.
                     Choose 100 both as default.
 
-    modulation :
+    default-modulation :
       type : string
       required : true
       description : Type of modulation used (left or center aligned). Choose UpDwn as default.
