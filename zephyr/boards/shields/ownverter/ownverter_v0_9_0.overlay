@@ -11,7 +11,7 @@
 
 	power_shield: power-shield{
         compatible = "power-leg";
-        frequency = <200000>;
+        default-frequency = <200000>;
         leg1: leg1{
             leg-name = "LEG1";
 			pwms = <&pwma 1 0>, <&pwma 2 0>;
@@ -20,11 +20,11 @@
             capa-pin-num = <0>;
             driver-pin-num = <19>;
             current-pin-num = <25>;
-            adc-trigger = "ADCTRIG_1";
+            default-adc-trigger = "ADCTRIG_1";
             default-adc-decim = <1>;
-            edge-trigger = "EdgeTrigger_up";
+            default-edge-trigger = "EdgeTrigger_up";
             default-dead-time = <100 100>;
-            modulation = "UpDwn";
+            default-modulation = "UpDwn";
             default-phase-shift = <0>;
 			status = "okay";
         };
@@ -37,11 +37,11 @@
             capa-pin-num = <0>;
             driver-pin-num = <22>;
             current-pin-num = <30>;
-            adc-trigger = "ADCTRIG_3";
+            default-adc-trigger = "ADCTRIG_3";
             default-adc-decim = <1>;
-            edge-trigger = "EdgeTrigger_up";
+            default-edge-trigger = "EdgeTrigger_up";
             default-dead-time = <100 100>;
-            modulation = "UpDwn";
+            default-modulation = "UpDwn";
             default-phase-shift = <0>;
 			status = "okay";
         };
@@ -54,11 +54,11 @@
             capa-pin-num = <0>;
             driver-pin-num = <56>;
             current-pin-num = <1>;
-            adc-trigger = "ADCTRIG_3";
+            default-adc-trigger = "ADCTRIG_3";
             default-adc-decim = <1>;
-            edge-trigger = "EdgeTrigger_up";
+            default-edge-trigger = "EdgeTrigger_up";
             default-dead-time = <100 100>;
-            modulation = "UpDwn";
+            default-modulation = "UpDwn";
             default-phase-shift = <0>;
 			status = "okay";
         };
