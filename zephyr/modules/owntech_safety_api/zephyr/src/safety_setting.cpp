@@ -36,7 +36,7 @@
 // OWNTECH APIs
 #include "nvs_storage.h"
 #include "SpinAPI.h"
-#include "TwistAPI.h"
+#include "ShieldAPI.h"
 
 // Zephyr
 #include "zephyr/kernel.h"
@@ -281,7 +281,7 @@ int8_t safety_watch()
  */
 void safety_action()
 {
-    twist.stopAll();
+    shield.stopAll();
     if (channel_reaction == Open_Circuit)
     {
         _open_circuit();

@@ -122,7 +122,7 @@ public:
 
 	/**
 	 * @brief This function is used to enable acquisition of all voltage/current
-	 *        channels on the Twist shield.
+	 *        channels on the power shield.
 	 *        Channels are attributed as follows:
 	 *        ADC1: - I1_LOW      ADC2: - I2_LOW
 	 *              - V1_LOW            - V2_LOW
@@ -136,7 +136,7 @@ public:
 	 *
 	 * @note  This function must be called *before* ADC is started.
 	 */
-	void enableTwistDefaultChannels();
+	void enableShieldDefaultChannels();
 
 	/**
 	 * @brief Function to access the acquired data for specified channel.
@@ -296,12 +296,12 @@ public:
 	 * @note  This function requires Console to interact with the user.
 	 *        You must first call console_init() before calling this function.
 	 *
-	 * @note  This function can't be called before *all* Twist channels have
-	 *        been enabled (you can use enableTwistDefaultChannels() for that
+	 * @note  This function can't be called before *all* channels have
+	 *        been enabled (you can use enableShieldDefaultChannels() for that
 	 *        purpose). The DataAPI must not have been started, neither
 	 *        explicitly nor by starting the Uninterruptible task.
 	 */
-	void setTwistChannelsUserCalibrationFactors();
+	void setShieldChannelsUserCalibrationFactors();
 
 #endif
 
@@ -338,9 +338,9 @@ public:
 	 *
 	 * @note  Data Acquisition must be started only after ADC module configuration
 	 *        has been fully carried out. No ADC configuration change is allowed
-	 *        after module has been started. If you're using the Twist shield and
+	 *        after module has been started. If you're using a power shield and
 	 *        are not sure how to initialize ADCs, you can use
-	 *        data.enableTwistDefaultChannels() for that purpose.
+	 *        data.enableShieldDefaultChannels() for that purpose.
 	 *
 	 * @note  Data Acquisition must be started before accessing any data.get*()
 	 *        or data.peek*() function. Other Data Acquisition functions
@@ -606,7 +606,7 @@ private:
 	float32_t peekChannel(uint8_t adc_num, uint8_t channel_num);
 	float32_t getChannelLatest(uint8_t adc_num, uint8_t channel_num, uint8_t* dataValid = nullptr);
 	uint8_t getChannelRank(uint8_t adc_num, uint8_t channel_num);
-	uint8_t getChannelNumber(uint8_t adc_num, uint8_t twist_pin);
+	uint8_t getChannelNumber(uint8_t adc_num, uint8_t shield_pin);
 
 private:
 	bool is_started = false;

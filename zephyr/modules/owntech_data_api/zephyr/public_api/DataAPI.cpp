@@ -49,7 +49,7 @@ DataAPI data;
 
 
 /////
-// Public functions accessible only when using Twist
+// Public functions accessible only when using a power shield
 
 #ifdef CONFIG_POWER_SHIELD
 
@@ -60,7 +60,7 @@ int8_t DataAPI::enableShieldChannel(uint8_t adc_num, channel_t channel_name)
 	return this->enableChannel(channel_info.adc_num, channel_info.channel_num);
 }
 
-void DataAPI::enableTwistDefaultChannels()
+void DataAPI::enableShieldDefaultChannels()
 {
 	spin.adc.configureTriggerSource(1, hrtim_ev1);
 	spin.adc.configureTriggerSource(2, hrtim_ev3);
@@ -135,7 +135,7 @@ int8_t DataAPI::storeParametersInMemory(channel_t channel)
 	return data_conversion_store_channel_parameters_in_nvs(channel_info.adc_num, channel_info.channel_num);
 }
 
-void DataAPI::setTwistChannelsUserCalibrationFactors()
+void DataAPI::setShieldChannelsUserCalibrationFactors()
 {
 	shield_channels_set_user_acquisition_parameters();
 }
@@ -463,12 +463,12 @@ uint8_t DataAPI::getChannelRank(uint8_t adc_num, uint8_t channel_num)
 	return this->channels_ranks[adc_index][channel_index];
 }
 
-uint8_t DataAPI::getChannelNumber(uint8_t adc_num, uint8_t twist_pin)
+uint8_t DataAPI::getChannelNumber(uint8_t adc_num, uint8_t shield_pin)
 {
 	switch (adc_num)
 	{
 	case 1:
-		switch (twist_pin)
+		switch (shield_pin)
 		{
 			case 1:
 				return 14;
@@ -515,7 +515,7 @@ uint8_t DataAPI::getChannelNumber(uint8_t adc_num, uint8_t twist_pin)
 		}
 		break;
 	case 2:
-		switch (twist_pin)
+		switch (shield_pin)
 		{
 			case 1:
 				return 14;
@@ -568,7 +568,7 @@ uint8_t DataAPI::getChannelNumber(uint8_t adc_num, uint8_t twist_pin)
 		}
 		break;
 	case 3:
-		switch (twist_pin)
+		switch (shield_pin)
 		{
 			case 4:
 				return 5;
@@ -585,7 +585,7 @@ uint8_t DataAPI::getChannelNumber(uint8_t adc_num, uint8_t twist_pin)
 		}
 		break;
 	case 4:
-		switch (twist_pin)
+		switch (shield_pin)
 		{
 			case 2:
 				return 3;
@@ -602,7 +602,7 @@ uint8_t DataAPI::getChannelNumber(uint8_t adc_num, uint8_t twist_pin)
 		}
 		break;
 	case 5:
-		switch (twist_pin)
+		switch (shield_pin)
 		{
 			case 12:
 				return 1;

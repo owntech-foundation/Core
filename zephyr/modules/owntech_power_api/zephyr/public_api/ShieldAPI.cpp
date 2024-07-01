@@ -24,14 +24,14 @@
  * @author Jean Alinei <jean.alinei@owntech.org>
  */
 
-#include "TwistAPI.h"
+#include "ShieldAPI.h"
 #include "../src/power_init.h"
 
 #include "SpinAPI.h"
 
-TwistAPI twist;
+ShieldAPI shield;
 
-hrtim_tu_number_t TwistAPI::spinNumberToTu(uint16_t spin_number)
+hrtim_tu_number_t ShieldAPI::spinNumberToTu(uint16_t spin_number)
 {
     if(spin_number == 12 || spin_number == 14)
     {
@@ -63,16 +63,16 @@ hrtim_tu_number_t TwistAPI::spinNumberToTu(uint16_t spin_number)
     }
 }
 
-void TwistAPI::setVersion(twist_version_t twist_ver)
+void ShieldAPI::setVersion(shield_version_t shield_ver)
 {
-    if (twist_init == false)
+    if (shield_init == false)
     {
-        twist_version = twist_ver;
-        twist_init = true;
+        shield_version = shield_ver;
+        shield_init = true;
     }
 }
 
-void TwistAPI::initLegMode(leg_t leg,                                        \
+void ShieldAPI::initLegMode(leg_t leg,                                        \
                            hrtim_switch_convention_t leg_convention,         \
                            hrtim_pwm_mode_t leg_mode)
 {
@@ -192,15 +192,15 @@ void TwistAPI::initLegMode(leg_t leg,                                        \
         }
     }
 
-    if (twist_init == false) 
+    if (shield_init == false) 
     {
         /* When a leg has been initialized, 
         shield version should not be modified */
-        twist_init = true; 
+        shield_init = true; 
     }
 }
 
-void TwistAPI::initAllMode(hrtim_switch_convention_t leg_convention,        \
+void ShieldAPI::initAllMode(hrtim_switch_convention_t leg_convention,        \
                            hrtim_pwm_mode_t leg_mode)
 {
     for (int8_t i = 0; i < dt_leg_count; i++)
@@ -209,7 +209,7 @@ void TwistAPI::initAllMode(hrtim_switch_convention_t leg_convention,        \
     }
 }
 
-void TwistAPI::setLegDutyCycle(leg_t leg, float32_t duty_leg)
+void ShieldAPI::setLegDutyCycle(leg_t leg, float32_t duty_leg)
 {
     if (duty_leg > 0.9) 
     {
@@ -227,7 +227,7 @@ void TwistAPI::setLegDutyCycle(leg_t leg, float32_t duty_leg)
     hrtim_duty_cycle_set(spinNumberToTu(dt_pwm_pin[leg]), value);
 }
 
-void TwistAPI::setAllDutyCycle(float32_t duty_all)
+void ShieldAPI::setAllDutyCycle(float32_t duty_all)
 {
     if (duty_all > 0.9)
     {
@@ -244,7 +244,7 @@ void TwistAPI::setAllDutyCycle(float32_t duty_all)
     }
 }
 
-void TwistAPI::startLeg(leg_t leg)
+void ShieldAPI::startLeg(leg_t leg)
 {
     /**
      * Only relevant for twist hardware, to enable optocouplers 
@@ -265,7 +265,7 @@ void TwistAPI::startLeg(leg_t leg)
     }
 }
 
-void TwistAPI::connectLegCapacitor(leg_t leg)
+void ShieldAPI::connectLegCapacitor(leg_t leg)
 {
     if(dt_pin_capacitor[leg] != 0) 
     {
@@ -273,7 +273,7 @@ void TwistAPI::connectLegCapacitor(leg_t leg)
     }
 }
 
-void TwistAPI::startAll()
+void ShieldAPI::startAll()
 {
     for (int8_t i = 0; i < dt_leg_count; i++)
     {
@@ -281,7 +281,7 @@ void TwistAPI::startAll()
     }
 }
 
-void TwistAPI::connectAllCapacitor()
+void ShieldAPI::connectAllCapacitor()
 {
     for (int8_t i = 0; i < dt_leg_count; i++)
     {
@@ -289,7 +289,7 @@ void TwistAPI::connectAllCapacitor()
     }
 }
 
-void TwistAPI::stopLeg(leg_t leg)
+void ShieldAPI::stopLeg(leg_t leg)
 {
     /* Stop PWM */
     spin.pwm.stopDualOutput(spinNumberToTu(dt_pwm_pin[leg]));
@@ -304,7 +304,7 @@ void TwistAPI::stopLeg(leg_t leg)
     }
 }
 
-void TwistAPI::disconnectLegCapacitor(leg_t leg)
+void ShieldAPI::disconnectLegCapacitor(leg_t leg)
 {
     if(dt_pin_capacitor[leg] != 0) 
     {
@@ -312,7 +312,7 @@ void TwistAPI::disconnectLegCapacitor(leg_t leg)
     }
 }
 
-void TwistAPI::stopAll()
+void ShieldAPI::stopAll()
 {
     for (int8_t i = 0; i < dt_leg_count; i++)
     {
@@ -320,7 +320,7 @@ void TwistAPI::stopAll()
     }
 }
 
-void TwistAPI::disconnectAllCapacitor()
+void ShieldAPI::disconnectAllCapacitor()
 {
     for (int8_t i = 0; i < dt_leg_count; i++)
     {
@@ -328,7 +328,7 @@ void TwistAPI::disconnectAllCapacitor()
     }
 }
 
-void TwistAPI::setLegSlopeCompensation(leg_t leg,                           \
+void ShieldAPI::setLegSlopeCompensation(leg_t leg,                           \
                                        float32_t set_voltage,               \
                                        float32_t reset_voltage)
 {
@@ -345,7 +345,7 @@ void TwistAPI::setLegSlopeCompensation(leg_t leg,                           \
     }
 }
 
-void TwistAPI::setAllSlopeCompensation(float32_t set_voltage,               \
+void ShieldAPI::setAllSlopeCompensation(float32_t set_voltage,               \
                                        float32_t reset_voltage)
 {
     for (int8_t i = 0; i < dt_leg_count; i++)
@@ -356,7 +356,7 @@ void TwistAPI::setAllSlopeCompensation(float32_t set_voltage,               \
     }
 }
 
-void TwistAPI::setLegTriggerValue(leg_t leg, float32_t trigger_value)
+void ShieldAPI::setLegTriggerValue(leg_t leg, float32_t trigger_value)
 {
     if (trigger_value > 0.95) 
     {
@@ -372,7 +372,7 @@ void TwistAPI::setLegTriggerValue(leg_t leg, float32_t trigger_value)
 
 }
 
-void TwistAPI::setAllTriggerValue(float32_t trigger_value)
+void ShieldAPI::setAllTriggerValue(float32_t trigger_value)
 {
     if (trigger_value > 0.95)
     {
@@ -388,13 +388,13 @@ void TwistAPI::setAllTriggerValue(float32_t trigger_value)
     }
 }
 
-void TwistAPI::setLegPhaseShift(leg_t leg, int16_t phase_shift)
+void ShieldAPI::setLegPhaseShift(leg_t leg, int16_t phase_shift)
 {
     spin.pwm.setPhaseShift(spinNumberToTu(dt_pwm_pin[leg]), phase_shift);
 
 }
 
-void TwistAPI::setAllPhaseShift(int16_t phase_shift)
+void ShieldAPI::setAllPhaseShift(int16_t phase_shift)
 {
     for (int8_t i = 0; i < dt_leg_count; i++)
     {
@@ -402,7 +402,7 @@ void TwistAPI::setAllPhaseShift(int16_t phase_shift)
     }
 }
 
-void TwistAPI::setLegDeadTime(leg_t leg,                                    \
+void ShieldAPI::setLegDeadTime(leg_t leg,                                    \
                               uint16_t ns_rising_dt,                        \
                               uint16_t ns_falling_dt)
 {
@@ -411,7 +411,7 @@ void TwistAPI::setLegDeadTime(leg_t leg,                                    \
                                         ns_falling_dt);
 }
 
-void TwistAPI::setAllDeadTime(uint16_t ns_rising_dt, uint16_t ns_falling_dt)
+void ShieldAPI::setAllDeadTime(uint16_t ns_rising_dt, uint16_t ns_falling_dt)
 {
     for (int8_t i = 0; i < dt_leg_count; i++)
     {
@@ -419,12 +419,12 @@ void TwistAPI::setAllDeadTime(uint16_t ns_rising_dt, uint16_t ns_falling_dt)
     }
 }
 
-void TwistAPI::setLegAdcDecim(leg_t leg, uint16_t adc_decim)
+void ShieldAPI::setLegAdcDecim(leg_t leg, uint16_t adc_decim)
 {
     spin.pwm.setAdcDecimation(spinNumberToTu(dt_pwm_pin[leg]), adc_decim);
 }
 
-void TwistAPI::setAllAdcDecim(uint16_t adc_decim)
+void ShieldAPI::setAllAdcDecim(uint16_t adc_decim)
 {
     for (int8_t i = 0; i < dt_leg_count; i++)
     {
@@ -432,7 +432,7 @@ void TwistAPI::setAllAdcDecim(uint16_t adc_decim)
     }
 }
 
-void TwistAPI::initLegBuck(leg_t leg, hrtim_pwm_mode_t leg_mode)
+void ShieldAPI::initLegBuck(leg_t leg, hrtim_pwm_mode_t leg_mode)
 {
     if (!dt_pwm_x1_high[leg])                                                
     {
@@ -446,7 +446,7 @@ void TwistAPI::initLegBuck(leg_t leg, hrtim_pwm_mode_t leg_mode)
     }
 }
 
-void TwistAPI::initAllBuck(hrtim_pwm_mode_t leg_mode)
+void ShieldAPI::initAllBuck(hrtim_pwm_mode_t leg_mode)
 {
     for (int8_t i = 0; i < dt_leg_count; i++)
     {
@@ -454,7 +454,7 @@ void TwistAPI::initAllBuck(hrtim_pwm_mode_t leg_mode)
     }
 }
 
-void TwistAPI::initLegBoost(leg_t leg)
+void ShieldAPI::initLegBoost(leg_t leg)
 {
     if (!dt_pwm_x1_high[leg]) 
     {
@@ -468,7 +468,7 @@ void TwistAPI::initLegBoost(leg_t leg)
     }
 }
 
-void TwistAPI::initAllBoost()
+void ShieldAPI::initAllBoost()
 {
     for (int8_t i = 0; i < dt_leg_count; i++)
     {

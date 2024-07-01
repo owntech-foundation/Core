@@ -50,15 +50,15 @@ typedef enum
 	shield_TWIST_V1_4,
 	shield_ownverter,
 	shield_other,
-} twist_version_t;
+} shield_version_t;
 
-class TwistAPI
+class ShieldAPI
 {
 private:
 	/* shield version */
-	twist_version_t twist_version = shield_other; 
+	shield_version_t shield_version = shield_other; 
 	/* check if shield version has been initalized or not */
-	bool twist_init = false;						
+	bool shield_init = false;						
 
 	/* return timing unit from spin pin number */
 	hrtim_tu_number_t spinNumberToTu(uint16_t spin_number); 
@@ -74,7 +74,7 @@ public:
 	 * @warning You need to call this function BEFORE initializing a leg, 
 	 * 			after that it is not possible to change the shield version
 	 */
-	void setVersion(twist_version_t twist_ver);
+	void setVersion(shield_version_t shield_ver);
 
 	/**
 	 * @brief Initialize the power mode for a given leg.
@@ -329,6 +329,6 @@ public:
 
 /////
 // Public object to interact with the class
-extern TwistAPI twist;
+extern ShieldAPI shield;
 
 #endif // TWISTAPI_H_

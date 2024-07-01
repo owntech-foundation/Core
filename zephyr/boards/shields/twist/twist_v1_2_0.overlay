@@ -45,7 +45,7 @@
         };
     };
 
-	twist-channels {
+	shield-channels {
 		/* Voltage channels */
 		v1low: v1-low {
 			compatible = "adc-channels";
@@ -178,7 +178,7 @@
 		};
 	};
 
-	twist-safety-thresholds {
+	shield-safety-thresholds {
 
 		/* Voltage thresholds */
 
