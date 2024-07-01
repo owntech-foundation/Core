@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 LAAS-CNRS
+ * Copyright (c) 2023-2024 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,10 @@
  */
 
 /**
- * @date   2023
+ * @date   2024
  *
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
+ * @author Jean Alinei <jean.alinei@owntech.org>
  */
 
 #include "TwistAPI.h"
@@ -71,13 +72,20 @@ void TwistAPI::setVersion(twist_version_t twist_ver)
     }
 }
 
-void TwistAPI::initLegMode(leg_t leg, hrtim_switch_convention_t leg_convention, hrtim_pwm_mode_t leg_mode)
+void TwistAPI::initLegMode(leg_t leg,                                        \
+                           hrtim_switch_convention_t leg_convention,         \
+                           hrtim_pwm_mode_t leg_mode)
 {
-    spin.pwm.initFrequency(timer_frequency); // Configure PWM frequency
+    /* Configure PWM frequency */
+    spin.pwm.initFrequency(timer_frequency); 
 
-    spin.pwm.setModulation(spinNumberToTu(dt_pwm_pin[leg]), dt_modulation[leg]); // Set modulation
+    /* Set modulation */
+    spin.pwm.setModulation(spinNumberToTu(dt_pwm_pin[leg]),                  \
+                                          dt_modulation[leg]); 
 
-    spin.pwm.setAdcEdgeTrigger(spinNumberToTu(dt_pwm_pin[leg]), dt_edge_trigger[leg]); // Configure ADC rollover in center aligned mode
+    /* Configure ADC rollover in center aligned mode */
+    spin.pwm.setAdcEdgeTrigger(spinNumberToTu(dt_pwm_pin[leg]),              \
+                                dt_edge_trigger[leg]); 
 
     /**
      * Configure which External Event will reset the timer for current mode.
@@ -99,23 +107,34 @@ void TwistAPI::initLegMode(leg_t leg, hrtim_switch_convention_t leg_convention, 
 
     if (leg_mode == CURRENT_MODE)
     {
-        if (dt_current_pin[leg] == CM_DAC3)
+        if (dt_current_pin[leg] == CM_DAC3) 
+        {
             spin.pwm.setEev(spinNumberToTu(dt_pwm_pin[leg]), EEV4);
-        else if (dt_current_pin[leg] == CM_DAC1)
+        }
+        else if (dt_current_pin[leg] == CM_DAC1) 
+        {
             spin.pwm.setEev(spinNumberToTu(dt_pwm_pin[leg]), EEV5);
+        }
 
         /* Configure current mode */
         spin.pwm.setMode(spinNumberToTu(dt_pwm_pin[leg]), CURRENT_MODE);
 
     }
+    /* choose which output of the timer unit to control whith duty cycle */
+    spin.pwm.setSwitchConvention(spinNumberToTu(dt_pwm_pin[leg]),           \
+                                                leg_convention); 
 
-    spin.pwm.setSwitchConvention(spinNumberToTu(dt_pwm_pin[leg]), leg_convention); // choose which output of the timer unit to control whith duty cycle
+    /* Initialize leg unit */
+    spin.pwm.initUnit(spinNumberToTu(dt_pwm_pin[leg])); 
 
-    spin.pwm.initUnit(spinNumberToTu(dt_pwm_pin[leg])); // Initialize leg unit
+    /* Configure PWM initial phase shift */
+    spin.pwm.setPhaseShift(spinNumberToTu(dt_pwm_pin[leg]),                 \
+                                          dt_phase_shift[leg]); 
 
-    spin.pwm.setPhaseShift(spinNumberToTu(dt_pwm_pin[leg]), dt_phase_shift[leg]); // Configure PWM initial phase shift
-
-    spin.pwm.setDeadTime(spinNumberToTu(dt_pwm_pin[leg]), dt_rising_deadtime[leg], dt_falling_deadtime[leg]); // Configure PWM dead time
+    /* Configure PWM dead time */
+    spin.pwm.setDeadTime(spinNumberToTu(dt_pwm_pin[leg]),                   \
+                                        dt_rising_deadtime[leg],            \
+                                        dt_falling_deadtime[leg]); 
 
     /**
      * Configure PWM adc trigger.
@@ -123,9 +142,11 @@ void TwistAPI::initLegMode(leg_t leg, hrtim_switch_convention_t leg_convention, 
      */
     if (dt_adc[leg] != ADCTRIG_NONE)
     {
-        spin.pwm.setAdcDecimation(spinNumberToTu(dt_pwm_pin[leg]), dt_adc_decim[leg]);
+        spin.pwm.setAdcDecimation(spinNumberToTu(dt_pwm_pin[leg]),          \
+                                                 dt_adc_decim[leg]);
 
-        spin.pwm.setAdcTrigger(spinNumberToTu(dt_pwm_pin[leg]), dt_adc[leg]);
+        spin.pwm.setAdcTrigger(spinNumberToTu(dt_pwm_pin[leg]),             \
+                                              dt_adc[leg]);
 
         spin.pwm.enableAdcTrigger(spinNumberToTu(dt_pwm_pin[leg]));
     }
@@ -138,31 +159,49 @@ void TwistAPI::initLegMode(leg_t leg, hrtim_switch_convention_t leg_convention, 
 
         if (dt_current_pin[leg] == CM_DAC1)
         {
-            spin.dac.currentModeInit( 1, tu_channel[spinNumberToTu(dt_pwm_pin[leg])]->pwm_conf.pwm_tu);
+            spin.dac.currentModeInit(                                       \
+                1,                                                          \
+                tu_channel[spinNumberToTu(dt_pwm_pin[leg])]->pwm_conf.pwm_tu);
+
             spin.comp.initialize(3);
         }
 
         else if (dt_current_pin[leg] == CM_DAC3)
         {
-            spin.dac.currentModeInit( 3, tu_channel[spinNumberToTu(dt_pwm_pin[leg])]->pwm_conf.pwm_tu);
+            spin.dac.currentModeInit(                                       \
+                3,                                                          \
+                tu_channel[spinNumberToTu(dt_pwm_pin[leg])]->pwm_conf.pwm_tu);
+
             spin.comp.initialize(1);
         }
     }
 
     /**
-     * Only relevant for twist and ownverter hardware, to enable optocouplers for mosfet driver
-     * and connection to electrolytic capacitor
+     * Only relevant for twist and ownverter hardware, to enable optocouplers 
+     * for mosfet driver and connection to electrolytic capacitor
      */
     for(uint8_t i = 0; i < dt_leg_count; i++)
     {
-        if(dt_pin_driver[i] != 0) spin.gpio.configurePin(dt_pin_driver[i], OUTPUT);
-        if(dt_pin_capacitor[i] != 0) spin.gpio.configurePin(dt_pin_capacitor[i], OUTPUT);
+        if(dt_pin_driver[i] != 0) 
+        {
+            spin.gpio.configurePin(dt_pin_driver[i], OUTPUT);
+        }
+        if(dt_pin_capacitor[i] != 0) 
+        {
+            spin.gpio.configurePin(dt_pin_capacitor[i], OUTPUT);
+        }
     }
 
-    if (twist_init == false) twist_init = true; // When a leg has been initialized, shield version should not be modified
+    if (twist_init == false) 
+    {
+        /* When a leg has been initialized, 
+        shield version should not be modified */
+        twist_init = true; 
+    }
 }
 
-void TwistAPI::initAllMode(hrtim_switch_convention_t leg_convention, hrtim_pwm_mode_t leg_mode)
+void TwistAPI::initAllMode(hrtim_switch_convention_t leg_convention,        \
+                           hrtim_pwm_mode_t leg_mode)
 {
     for (int8_t i = 0; i < dt_leg_count; i++)
     {
@@ -172,20 +211,32 @@ void TwistAPI::initAllMode(hrtim_switch_convention_t leg_convention, hrtim_pwm_m
 
 void TwistAPI::setLegDutyCycle(leg_t leg, float32_t duty_leg)
 {
-    if (duty_leg > 0.9)
+    if (duty_leg > 0.9) 
+    {
         duty_leg = 0.9;
-    else if (duty_leg < 0.1)
+    }
+
+    else if (duty_leg < 0.1) 
+    {
         duty_leg = 0.1;
-    uint16_t value = duty_leg * tu_channel[spinNumberToTu(dt_pwm_pin[leg])]->pwm_conf.period;
+    }
+
+    uint16_t value = 
+        duty_leg * tu_channel[spinNumberToTu(dt_pwm_pin[leg])]->pwm_conf.period;
+    
     hrtim_duty_cycle_set(spinNumberToTu(dt_pwm_pin[leg]), value);
 }
 
 void TwistAPI::setAllDutyCycle(float32_t duty_all)
 {
     if (duty_all > 0.9)
+    {
         duty_all = 0.9;
+    }
     else if (duty_all < 0.1)
+    {
         duty_all = 0.1;
+    }
 
     for (int8_t i = 0; i < dt_leg_count; i++)
     {
@@ -196,20 +247,30 @@ void TwistAPI::setAllDutyCycle(float32_t duty_all)
 void TwistAPI::startLeg(leg_t leg)
 {
     /**
-     * Only relevant for twist hardware, to enable optocouplers for mosfet driver
+     * Only relevant for twist hardware, to enable optocouplers 
+     * for mosfet driver
      */
     if(dt_pin_driver[leg] != 0) spin.gpio.setPin(dt_pin_driver[leg]);
 
     /* start PWM*/
     if (!dt_output1_inactive[leg])
-        spin.pwm.startSingleOutput(spinNumberToTu(dt_pwm_pin[leg]), TIMING_OUTPUT1);
+    {
+        spin.pwm.startSingleOutput(spinNumberToTu(dt_pwm_pin[leg]),          \
+                                                  TIMING_OUTPUT1);
+    }
     if (!dt_output2_inactive[leg])
-        spin.pwm.startSingleOutput(spinNumberToTu(dt_pwm_pin[leg]), TIMING_OUTPUT2);
+    {
+        spin.pwm.startSingleOutput(spinNumberToTu(dt_pwm_pin[leg]),          \
+                                                  TIMING_OUTPUT2);
+    }
 }
 
 void TwistAPI::connectLegCapacitor(leg_t leg)
 {
-    if(dt_pin_capacitor[leg] != 0) spin.gpio.setPin(dt_pin_capacitor[leg]);
+    if(dt_pin_capacitor[leg] != 0) 
+    {
+        spin.gpio.setPin(dt_pin_capacitor[leg]);
+    }
 }
 
 void TwistAPI::startAll()
@@ -234,14 +295,21 @@ void TwistAPI::stopLeg(leg_t leg)
     spin.pwm.stopDualOutput(spinNumberToTu(dt_pwm_pin[leg]));
 
     /**
-     * Only relevant for twist hardware, to disable optocouplers for mosfet driver
+     * Only relevant for twist hardware, to disable optocouplers for mosfet 
+     * driver
      */
-    if(dt_pin_driver[leg] != 0) spin.gpio.resetPin(dt_pin_driver[leg]);
+    if(dt_pin_driver[leg] != 0) 
+    {
+        spin.gpio.resetPin(dt_pin_driver[leg]);
+    }
 }
 
 void TwistAPI::disconnectLegCapacitor(leg_t leg)
 {
-    if(dt_pin_capacitor[leg] != 0) spin.gpio.resetPin(dt_pin_capacitor[leg]);
+    if(dt_pin_capacitor[leg] != 0) 
+    {
+        spin.gpio.resetPin(dt_pin_capacitor[leg]);
+    }
 }
 
 void TwistAPI::stopAll()
@@ -260,7 +328,9 @@ void TwistAPI::disconnectAllCapacitor()
     }
 }
 
-void TwistAPI::setLegSlopeCompensation(leg_t leg, float32_t set_voltage, float32_t reset_voltage)
+void TwistAPI::setLegSlopeCompensation(leg_t leg,                           \
+                                       float32_t set_voltage,               \
+                                       float32_t reset_voltage)
 {
     switch (dt_current_pin[leg])
     {
@@ -275,30 +345,43 @@ void TwistAPI::setLegSlopeCompensation(leg_t leg, float32_t set_voltage, float32
     }
 }
 
-void TwistAPI::setAllSlopeCompensation(float32_t set_voltage, float32_t reset_voltage)
+void TwistAPI::setAllSlopeCompensation(float32_t set_voltage,               \
+                                       float32_t reset_voltage)
 {
     for (int8_t i = 0; i < dt_leg_count; i++)
     {
-        setLegSlopeCompensation(static_cast<leg_t>(i), set_voltage, reset_voltage);
+        setLegSlopeCompensation(static_cast<leg_t>(i),                      \
+                                set_voltage,                                \
+                                reset_voltage);
     }
 }
 
 void TwistAPI::setLegTriggerValue(leg_t leg, float32_t trigger_value)
 {
-    if (trigger_value > 0.95)
+    if (trigger_value > 0.95) 
+    {
         trigger_value = 0.95;
+    }
     else if (trigger_value < 0.05)
+    {
         trigger_value = 0.05;
-    spin.pwm.setAdcTriggerInstant(spinNumberToTu(dt_pwm_pin[leg]), trigger_value);
+    }
+
+    spin.pwm.setAdcTriggerInstant(spinNumberToTu(dt_pwm_pin[leg]),          \
+                                  trigger_value);
 
 }
 
 void TwistAPI::setAllTriggerValue(float32_t trigger_value)
 {
     if (trigger_value > 0.95)
+    {
         trigger_value = 0.95;
+    }
     else if (trigger_value < 0.05)
+    {
         trigger_value = 0.05;
+    }
     for (int8_t i = 0; i < dt_leg_count; i++)
     {
         setLegTriggerValue(static_cast<leg_t>(i), trigger_value);
@@ -319,9 +402,13 @@ void TwistAPI::setAllPhaseShift(int16_t phase_shift)
     }
 }
 
-void TwistAPI::setLegDeadTime(leg_t leg, uint16_t ns_rising_dt, uint16_t ns_falling_dt)
+void TwistAPI::setLegDeadTime(leg_t leg,                                    \
+                              uint16_t ns_rising_dt,                        \
+                              uint16_t ns_falling_dt)
 {
-    spin.pwm.setDeadTime(spinNumberToTu(dt_pwm_pin[leg]), ns_rising_dt, ns_falling_dt);
+    spin.pwm.setDeadTime(spinNumberToTu(dt_pwm_pin[leg]),                   \
+                                        ns_rising_dt,                       \
+                                        ns_falling_dt);
 }
 
 void TwistAPI::setAllDeadTime(uint16_t ns_rising_dt, uint16_t ns_falling_dt)
@@ -347,10 +434,16 @@ void TwistAPI::setAllAdcDecim(uint16_t adc_decim)
 
 void TwistAPI::initLegBuck(leg_t leg, hrtim_pwm_mode_t leg_mode)
 {
-    if (spinNumberToTu(dt_pwm_pin[leg]) == PWMA && twist_version == shield_TWIST_V1_2)
+    if (!dt_pwm_x1_high[leg])                                                
+    {
+        /* PWMx1 is connected in hardware to switch low*/
         initLegMode(leg, PWMx2, leg_mode);
+    }
     else
+    {
+        /* PWMx1 is connected in hardware to switch high*/
         initLegMode(leg, PWMx1, leg_mode);
+    }
 }
 
 void TwistAPI::initAllBuck(hrtim_pwm_mode_t leg_mode)
@@ -363,10 +456,16 @@ void TwistAPI::initAllBuck(hrtim_pwm_mode_t leg_mode)
 
 void TwistAPI::initLegBoost(leg_t leg)
 {
-    if (spinNumberToTu(dt_pwm_pin[leg]) == PWMA && twist_version == shield_TWIST_V1_2)
+    if (!dt_pwm_x1_high[leg]) 
+    {
+        /* PWMx1 is connected in hardware to switch low*/
         initLegMode(leg, PWMx1, VOLTAGE_MODE);
+    }
     else
+    {
+        /* PWMx1 is connected in hardware to switch high*/
         initLegMode(leg, PWMx2, VOLTAGE_MODE);
+    }
 }
 
 void TwistAPI::initAllBoost()
