@@ -1,0 +1,5 @@
+# Copyright (c) 2023 OwnTech
+# SPDX-License-Identifier: LGPL-2.1
+
+config SHIELD_O2
+	def_bool $(shields_list_contains,o2_v1_1_2)

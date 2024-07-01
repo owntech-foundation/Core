@@ -312,7 +312,7 @@ channel_info_t shield_channels_get_enabled_channel_info(channel_t channel_name)
 
 
 /////
-// Calibration for Twist shield
+// Calibration for power shield sensors
 
 static void _get_line_from_console(char* buffer, uint8_t buffer_size)
 {

@@ -14,7 +14,7 @@ if(CONFIG_OWNTECH_DATA_API)
   )
 
   # Conditional source files
-  if (CONFIG_SHIELD_TWIST)
+  if (CONFIG_POWER_SHIELD)
     zephyr_library_sources(
       ./src/shield_channels.cpp
     )

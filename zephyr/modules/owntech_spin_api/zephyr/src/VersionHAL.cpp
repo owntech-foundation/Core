@@ -41,9 +41,13 @@ void VersionHAL::setBoardVersion(board_version_t hardware_version)
 
 	if (hardware_version == O2_v_1_1_2 || hardware_version == O2_v_0_9)
 	{
+#ifdef CONFIG_OWNTECH_UART_API		
 		spin.uart.usart1SwapRxTx();
+#endif
 	}else if(hardware_version == SPIN_v_0_1){
+#ifdef CONFIG_OWNTECH_UART_API		
 		spin.uart.usart1SwapRxTx();
+#endif
 	}else if(hardware_version == SPIN_v_0_9 || hardware_version == TWIST_v_1_1_2){
 	}else if(hardware_version == SPIN_v_1_0){
 	}else if(hardware_version == nucleo_G474RE){
