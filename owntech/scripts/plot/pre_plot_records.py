@@ -49,10 +49,15 @@ def list_records():
     # Define the pattern to match the filenames
     pattern = re.compile(r'^\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}-record\.txt$')
     # List all files in the current directory
-    data_records_path = os.path.join(".", "src", "Data_records")
-    files = os.listdir(data_records_path)
-    # Filter files that match the pattern
-    record_files = [file for file in files if pattern.match(file)]
+    try :
+        data_records_path = os.path.join(".", "src", "Data_records")
+        files = os.listdir(data_records_path)
+        # Filter files that match the pattern
+        record_files = [file for file in files if pattern.match(file)]
+    except :
+        print("No records found, are you sure you have recorded something \
+              using ScopeMimicry ? If so, a Data_records folder should be \
+              present in src/ repository.")
 
     return record_files
 
@@ -133,7 +138,10 @@ if "plot-record" in COMMAND_LINE_TARGETS:
         print("The record number is:", record_number)
     except ValueError:
         print("Invalid input. Please enter a valid integer.")
-    df = to_dataFrame(os.path.join(".", "src", "Data_records",records[record_number]))
+    df = to_dataFrame(os.path.join(".",                                     \
+                                    "src",                                  \
+                                    "Data_records",                         \
+                                    records[record_number]))
     fig = plot_df(df)
     fig.suptitle(records[record_number])
     plt.show()
