@@ -43,33 +43,18 @@ try:
     import pandas as pd
 except ImportError:
     env.Execute("$PYTHONEXE -m pip install pandas")
-try: 
-    import tkinter as tk
-    from tkinter import filedialog
-except ImportError:
-    env.Execute("$PYTHONEXE -m pip install tkinter")
 
-# Function to open file dialog and plot data
-def open_record():
-    # Create a root window and hide it
-    root = tk.Tk()
-    root.withdraw()
-    if os.path.exists("./src/Data_records"):
-        default_path = os.path.join('.', 'src', 'Data_records')
-    else: 
-        default_path = os.path.join('.')
-    # Open file dialog and get the file path
-    file_path = filedialog.askopenfilename(
-        title="Select a file",
-        initialdir=default_path,
-        filetypes=(("txt file", "*.txt"), ("All files", "*.*"))
-    )
-    if file_path:
-        return file_path
-    else:
-        print("No file selected, aborting")
-        return -1
 
+def list_records():
+    # Define the pattern to match the filenames
+    pattern = re.compile(r'^\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}-record\.txt$')
+    # List all files in the current directory
+    data_records_path = os.path.join(".", "src", "Data_records")
+    files = os.listdir(data_records_path)
+    # Filter files that match the pattern
+    record_files = [file for file in files if pattern.match(file)]
+
+    return record_files
 
 def to_dataFrame(filename):
     """ filename is the name of file got datas dump from a ScopeMimicry object 
@@ -139,10 +124,18 @@ env.AddTarget(
 )
 
 if "plot-record" in COMMAND_LINE_TARGETS:
-    record = open_record()
-    if record != -1:
-        df = to_dataFrame(record)
-        fig = plot_df(df)
-        fig.suptitle(record)
-        plt.show()
+    records = list_records()
+    for i,record in enumerate(records):
+        print(f"record n°{i}, name {record}")
+    print("Enter record number to plot")
+    try:
+        record_number = int(input())
+        print("The record number is:", record_number)
+    except ValueError:
+        print("Invalid input. Please enter a valid integer.")
+    df = to_dataFrame(os.path.join(".", "src", "Data_records",records[record_number]))
+    fig = plot_df(df)
+    fig.suptitle(records[record_number])
+    plt.show()
+
     exit(0)
