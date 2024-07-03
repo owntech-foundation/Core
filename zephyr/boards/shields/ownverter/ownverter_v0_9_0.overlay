@@ -71,12 +71,13 @@
 			sensor-name = "V1_LOW";
 			default-gain = <0x3d3851ec>;
 			default-offset = <0xc2b867f0>;
-			spin-pin = <24>;
 			v1-low-adc1 {
 				io-channels = <&adc1 6>;
+				spin-pin = <24>;
 			};
 			v1-low-adc2 {
 				io-channels = <&adc2 6>;
+				spin-pin = <24>;
 			};
 			status = "okay";
 		};
@@ -86,12 +87,13 @@
 			sensor-name = "V2_LOW";
 			default-gain = <0x3d3851ec>;
 			default-offset = <0xc2b867f0>;
-			spin-pin = <29>;
 			v2-low-adc1 {
 				io-channels = <&adc1 1>;
+				spin-pin = <29>;
 			};
 			v2-low-adc2 {
 				io-channels = <&adc2 1>;
+				spin-pin = <29>;
 			};
 			status = "okay";
 		};
@@ -101,12 +103,13 @@
 			sensor-name = "V3_LOW";
 			default-gain = <0x3d3851ec>;
 			default-offset = <0xc2b867f0>;
-			spin-pin = <42>;
 			v3-low-adc1 {
 				io-channels = <&adc1 12>;
+				spin-pin = <42>;
 			};
 			v3-low-adc2 {
 				io-channels = <&adc2 12>;
+				spin-pin = <42>;
 			};
 			status = "okay";
 		};
@@ -116,12 +119,13 @@
 			sensor-name = "V_HIGH";
 			default-gain = <0x3cf57710>;
 			default-offset = <0x00000000>;
-			spin-pin = <27>;
 			v-high-adc1 {
 				io-channels = <&adc1 9>;
+				spin-pin = <27>;
 			};
 			v-high-adc2 {
 				io-channels = <&adc2 9>;
+				spin-pin = <27>;
 			};
 			status = "okay";
 		};
@@ -133,12 +137,13 @@
 			sensor-name = "I1_LOW";
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
-			spin-pin = <25>;
 			i1-low-adc1 {
 				io-channels = <&adc1 7>;
+				spin-pin = <25>;
 			};
 			i1-low-adc2 {
 				io-channels = <&adc2 7>;
+				spin-pin = <25>;
 			};
 			status = "okay";
 		};
@@ -148,12 +153,13 @@
 			sensor-name = "I2_LOW";
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
-			spin-pin = <30>;
 			i2-low-adc1 {
 				io-channels = <&adc1 2>;
+				spin-pin = <30>;
 			};
 			i2-low-adc2 {
 				io-channels = <&adc2 2>;
+				spin-pin = <30>;
 			};
 			status = "okay";
 		};
@@ -163,12 +169,13 @@
 			sensor-name = "I3_LOW";
 			default-gain = <0x3d3851ec>;
 			default-offset = <0xc2b867f0>;
-			spin-pin = <1>;
 			v3-low-adc1 {
 				io-channels = <&adc1 14>;
+				spin-pin = <1>;
 			};
 			v3-low-adc2 {
 				io-channels = <&adc2 14>;
+				spin-pin = <1>;
 			};
 			status = "okay";
 		};
@@ -178,12 +185,13 @@
 			sensor-name = "I_HIGH";
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
-			spin-pin = <27>;
 			i-high-adc1 {
 				io-channels = <&adc1 9>;
+				spin-pin = <27>;
 			};
 			i-high-adc2 {
 				io-channels = <&adc2 9>;
+				spin-pin = <27>;
 			};
 			status = "okay";
 		};
@@ -195,9 +203,9 @@
 			sensor-name = "TEMP_SENSOR";
 			default-gain = <0x3f800000>;
 			default-offset = <0x00000000>;
-			spin-pin = <31>;
 			temp-sensor-adc3 {
 				io-channels = <&adc3 12>;
+				spin-pin = <31>;
 			};
 			status = "disabled";
 		};
@@ -207,9 +215,9 @@
 			sensor-name = "EXTRA_MEAS";
 			default-gain = <0x3f800000>;
 			default-offset = <0x00000000>;
-			spin-pin = <6>;
 			analog-comm-adc4 {
 				io-channels = <&adc4 5>;
+				spin-pin = <6>;
 			};
 			status = "disabled";
 		};
@@ -219,9 +227,9 @@
 			sensor-name = "ANALOG_COMM";
 			default-gain = <0x3f800000>;
 			default-offset = <0x00000000>;
-			spin-pin = <35>;
 			extra-sensor-adc2 {
 				io-channels = <&adc2 5>;
+				spin-pin = <35>;
 			};
 			status = "okay";
 		};
@@ -231,9 +239,9 @@
             sensor-name = "ANALOG_SIN";
             default-gain = <0x3f800000>;
             default-offset = <0x00000000>;
-            spin-pin = <43>;
             analog-sin-adc2 {
                     io-channels = <&adc2 11>;
+					spin-pin = <43>;
             };
 			status = "okay";
 		};
@@ -242,9 +250,9 @@
             sensor-name = "ANALOG_COS";
             default-gain = <0x3f800000>;
             default-offset = <0x00000000>;
-            spin-pin = <45>;
             analog-cos-adc2 {
                     io-channels = <&adc2 17>;
+					spin-pin = <45>;
             };
 			status = "okay";
 		};
