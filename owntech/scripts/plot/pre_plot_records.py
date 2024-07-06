@@ -37,19 +37,15 @@ try:
 except ImportError:
     env.Execute("$PYTHONEXE -m pip install numpy")
 try:
-    import matplotlib.pyplot as plt
-    import matplotlib
-    matplotlib.use('QtAgg')
-
-except ImportError:
-    env.Execute("$PYTHONEXE -m pip install matplotlib")
-    import matplotlib.pyplot as plt
-    import matplotlib
-    matplotlib.use('QtAgg')
-try:
     import PyQt6
 except ImportError:
     env.Execute("$PYTHONEXE -m pip install PyQt6")
+try:
+    import matplotlib.pyplot as plt
+    import matplotlib
+    matplotlib.use('QtAgg')
+except ImportError:
+    env.Execute("$PYTHONEXE -m pip install matplotlib")
 try:
     import pandas as pd
 except ImportError:
