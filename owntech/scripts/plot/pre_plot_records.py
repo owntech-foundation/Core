@@ -1,18 +1,18 @@
 ##  Copyright (c) 2021-2024 LAAS-CNRS
-# 
+#
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Lesser General Public License as published by
 #    the Free Software Foundation, either version 2.1 of the License, or
 #    (at your option) any later version.
-# 
+#
 #    This program is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU Lesser General Public License for more details.
-# 
+#
 #    You should have received a copy of the GNU Lesser General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-# 
+#
 #  SPDX-License-Identifier: LGPL-2.1
 
 ## @brief This file is a python script that permits to plot recorded data from an output txt file.
@@ -22,57 +22,65 @@
 Import("env")
 import os
 import re
+from datetime import datetime
 
 #Retrieves list target names from pio command line in CLI.
 from SCons.Script import COMMAND_LINE_TARGETS  # pylint: disable=import-error
 
 # Import or install python package in platformio python environnement.
-try: 
+try:
     import argparse
 except ImportError:
     env.Execute("$PYTHONEXE -m pip install argparse")
-try: 
+try:
     import numpy as np
 except ImportError:
     env.Execute("$PYTHONEXE -m pip install numpy")
-try: 
+try:
+    import PyQt6
+except ImportError:
+    env.Execute("$PYTHONEXE -m pip install PyQt6")
+try:
     import matplotlib.pyplot as plt
+    import matplotlib
+    matplotlib.use('QtAgg')
 except ImportError:
     env.Execute("$PYTHONEXE -m pip install matplotlib")
-try: 
+try:
     import pandas as pd
 except ImportError:
     env.Execute("$PYTHONEXE -m pip install pandas")
-try: 
-    import tkinter as tk
-    from tkinter import filedialog
-except ImportError:
-    env.Execute("$PYTHONEXE -m pip install tkinter")
 
-# Function to open file dialog and plot data
-def open_record():
-    # Create a root window and hide it
-    root = tk.Tk()
-    root.withdraw()
-    if os.path.exists("./src/Data_records"):
-        default_path = os.path.join('.', 'src', 'Data_records')
-    else: 
-        default_path = os.path.join('.')
-    # Open file dialog and get the file path
-    file_path = filedialog.askopenfilename(
-        title="Select a file",
-        initialdir=default_path,
-        filetypes=(("txt file", "*.txt"), ("All files", "*.*"))
-    )
-    if file_path:
-        return file_path
-    else:
-        print("No file selected, aborting")
-        return -1
 
+def extract_timestamp(filename):
+    # Extract the timestamp part from the filename
+    match = re.match(r'^(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})-record\.txt$', filename)
+    if match:
+        timestamp_str = match.group(1)
+        # Convert the timestamp string to a datetime object
+        return datetime.strptime(timestamp_str, '%Y-%m-%d_%H-%M-%S')
+    return None
+
+def list_records():
+    # Define the pattern to match the filenames
+    pattern = re.compile(r'^\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}-record\.txt$')
+    # List all files in the current directory
+    try :
+        data_records_path = os.path.join(".", "src", "Data_records")
+        files = os.listdir(data_records_path)
+        # Filter files that match the pattern
+        record_files = [file for file in files if pattern.match(file)]
+        record_files.sort(key=extract_timestamp)
+        return record_files
+    except :
+        print("No records found, are you sure you have recorded something \
+              using ScopeMimicry ? If so, a Data_records folder should be \
+              present in src/ repository.")
+
+    return record_files
 
 def to_dataFrame(filename):
-    """ filename is the name of file got datas dump from a ScopeMimicry object 
+    """ filename is the name of file got datas dump from a ScopeMimicry object
     the format is : two first line with # at beginning
     in the first line there's a list of column names
     in the second line a number: the index of the final data recorded
@@ -96,7 +104,7 @@ def to_dataFrame(filename):
 
 
 def plot_df(df):
-    """ plot dataframe in 3 different axes 
+    """ plot dataframe in 3 different axes
     first axes are voltages
     second axe are currents
     third are others...
@@ -123,7 +131,7 @@ def plot_df(df):
         ax.grid()
     return fig
 
-#Dummy function to print a user friendly message using env.VerboseAction() 
+#Dummy function to print a user friendly message using env.VerboseAction()
 #After successfully loading an example.
 def PrintSuccess(target, source, env):
     return
@@ -139,10 +147,21 @@ env.AddTarget(
 )
 
 if "plot-record" in COMMAND_LINE_TARGETS:
-    record = open_record()
-    if record != -1:
-        df = to_dataFrame(record)
-        fig = plot_df(df)
-        fig.suptitle(record)
-        plt.show()
+    records = list_records()
+    for i,record in enumerate(records):
+        print(f"record n°{i}, name {record}")
+    print("Enter record number to plot")
+    try:
+        record_number = int(input())
+        print("The record number is:", record_number)
+    except ValueError:
+        print("Invalid input. Please enter a valid integer.")
+    df = to_dataFrame(os.path.join(".",                                     \
+                                    "src",                                  \
+                                    "Data_records",                         \
+                                    records[record_number]))
+    fig = plot_df(df)
+    fig.suptitle(records[record_number])
+    plt.show()
+
     exit(0)
