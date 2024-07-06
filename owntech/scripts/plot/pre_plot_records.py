@@ -38,13 +38,20 @@ except ImportError:
     env.Execute("$PYTHONEXE -m pip install numpy")
 try:
     import matplotlib.pyplot as plt
+    import matplotlib
+
 except ImportError:
     env.Execute("$PYTHONEXE -m pip install matplotlib")
+try:
+    import PyQt6
+except ImportError:
+    env.Execute("$PYTHONEXE -m pip install PyQt6")
 try:
     import pandas as pd
 except ImportError:
     env.Execute("$PYTHONEXE -m pip install pandas")
 
+matplotlib.use('QtAgg')
 
 def extract_timestamp(filename):
     # Extract the timestamp part from the filename
