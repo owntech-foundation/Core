@@ -39,9 +39,13 @@ except ImportError:
 try:
     import matplotlib.pyplot as plt
     import matplotlib
+    matplotlib.use('QtAgg')
 
 except ImportError:
     env.Execute("$PYTHONEXE -m pip install matplotlib")
+    import matplotlib.pyplot as plt
+    import matplotlib
+    matplotlib.use('QtAgg')
 try:
     import PyQt6
 except ImportError:
@@ -51,7 +55,6 @@ try:
 except ImportError:
     env.Execute("$PYTHONEXE -m pip install pandas")
 
-matplotlib.use('QtAgg')
 
 def extract_timestamp(filename):
     # Extract the timestamp part from the filename
