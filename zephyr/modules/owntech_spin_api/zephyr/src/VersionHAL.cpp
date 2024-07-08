@@ -29,7 +29,6 @@
 #include "SpinAPI.h"
 #include "VersionHAL.h"
 
-SpinAPI spin;
 
 // Static class member
 board_version_t VersionHAL::board_version = nucleo_G474RE;
@@ -41,11 +40,11 @@ void VersionHAL::setBoardVersion(board_version_t hardware_version)
 
 	if (hardware_version == O2_v_1_1_2 || hardware_version == O2_v_0_9)
 	{
-#ifdef CONFIG_OWNTECH_UART_API		
+#ifdef CONFIG_OWNTECH_UART_API
 		spin.uart.usart1SwapRxTx();
 #endif
 	}else if(hardware_version == SPIN_v_0_1){
-#ifdef CONFIG_OWNTECH_UART_API		
+#ifdef CONFIG_OWNTECH_UART_API
 		spin.uart.usart1SwapRxTx();
 #endif
 	}else if(hardware_version == SPIN_v_0_9 || hardware_version == TWIST_v_1_1_2){
