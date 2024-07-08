@@ -66,60 +66,61 @@ class SpinAPI
 
 public:
 
+#ifdef CONFIG_OWNTECH_GPIO_API
 	/**
 	 * @brief Contains all the functions for the spin gpio.
 	 */
-	GpioHAL gpio;
-
+	static GpioHAL gpio;
+#endif
 	/**
 	 * @brief Contains all the function of the embedded LED.
 	 */
-	LedHAL led;
+	static LedHAL led;
 
 	/**
 	 * @brief Contains all the function of the STM32 DAC used to generate signals and handle the current mode.
 	 */
-	DacHAL dac;
+	static DacHAL dac;
 
 	/**
 	 * @brief Contains all the function of the STM32 comparator used with the current mode.
 	 */
-	CompHAL comp;
+	static CompHAL comp;
 
 	/**
 	 * @brief Contains all the function of the STM32 hrtim PWM generator.
 	 */
-	PwmHAL pwm;
+	static PwmHAL pwm;
 
 #ifdef CONFIG_OWNTECH_UART_API
 	/**
 	 * @brief Contains all the function of the STM32 Usart1 functions.
 	 */
-	UartHAL uart;
+	static UartHAL uart;
 #endif
 
 	/**
 	 * @brief Contains all the function of the STM32 Timer4 functions that handle the encoder.
 	 */
-	TimerHAL timer;
+	static TimerHAL timer;
 
 	/**
 	 * @brief Contains all the function related to the versioning of the microcontroller boards.
 	 */
-	VersionHAL version;
+	static VersionHAL version;
 
 #ifdef CONFIG_OWNTECH_DATA_API
 	/**
 	 * @brief Data acquisition from SPIN ADCs
 	 */
-	DataAPI data;
+	static DataAPI data;
 #endif
 
 #ifdef CONFIG_OWNTECH_NGND_DRIVER
 	/**
 	 * @brief Contains all the function of the NGND switch compatible with TWISTs prior to 1.4.
 	 */
-	NgndHAL ngnd;
+	static NgndHAL ngnd;
 #endif
 
 };

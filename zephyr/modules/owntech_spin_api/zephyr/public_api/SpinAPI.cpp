@@ -20,16 +20,40 @@
 /**
  * @date   2024
  *
- * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Jean Alinei <jean.alinei@owntech.org>
  */
 
 
 // Current class header
-#include "ShieldAPI.h"
+#include "SpinAPI.h"
 
 
-ShieldAPI shield;
+SpinAPI spin;
 
-PowerAPI ShieldAPI::power;
-SensorsAPI ShieldAPI::sensors;
+#ifdef CONFIG_OWNTECH_GPIO_API
+GpioHAL SpinAPI::gpio;
+#endif
+
+LedHAL SpinAPI::led;
+
+DacHAL SpinAPI::dac;
+
+CompHAL SpinAPI::comp;
+
+PwmHAL SpinAPI::pwm;
+
+#ifdef CONFIG_OWNTECH_UART_API
+UartHAL SpinAPI::uart;
+#endif
+
+TimerHAL SpinAPI::timer;
+
+VersionHAL SpinAPI::version;
+
+#ifdef CONFIG_OWNTECH_DATA_API
+DataAPI SpinAPI::data;
+#endif
+
+#ifdef CONFIG_OWNTECH_NGND_DRIVER
+NgndHAL SpinAPI::ngnd;
+#endif
