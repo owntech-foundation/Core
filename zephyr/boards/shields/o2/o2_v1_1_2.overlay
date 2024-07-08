@@ -11,7 +11,7 @@
 
 	powershield: power-shield{
         compatible = "power-leg";
-        frequency = <200000>;
+        default-frequency = <200000>;
         leg1: leg1{
             leg-name = "LEG1";
             pwm-pin-num = <12 14>;
