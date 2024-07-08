@@ -23,6 +23,7 @@ Before we start, make sure your machine meets all the requirements below.
 
         - **Git:** If you do not have git installed, get it here [git for Linux](https://git-scm.com/download/linux)
         - **Python3:** If you do not have python3 installed, get it here [Python3 Installers](https://docs.python-guide.org/starting/install3/linux/)
+          - Your Python installation should include the `venv` package which is **required** by PlatformIO. If using the system Python (`/usr/bin/python3`) on a Debian or Ubuntu system, you can install it with `$ sudo apt install python3-venv`.
         - **CMake:** If you do not have CMake installed, get it here [CMake Installer](https://cmake.org/download/)
         - 64 bit linux installation
         - **Internet connection**
@@ -84,13 +85,6 @@ In Visual Studio code, on the left side menu, click on PlatformIO icon ! (1)
 
 !!! tip   "Pro tip"
     if the alien icon does not show up spontaneously, wait for a few more seconds, then press F1 key and type platformio home.
-
-!!! info
-    === "Linux"
-        If you are on linux and PlatformIO do not find the python path, you can launch the following command :
-        ```
-        sudo apt install python3-venv
-        ```
 
 ### Step 5 - Clone our Core repository
 In PlatformIO, select "Clone Git Project ".
