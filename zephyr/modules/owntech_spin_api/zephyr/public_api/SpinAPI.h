@@ -42,7 +42,6 @@
 #include "../src/LedHAL.h"
 #include "../src/PwmHAL.h"
 #include "../src/TimerHAL.h"
-#include "../src/VersionHAL.h"
 
 #ifdef CONFIG_OWNTECH_DATA_API
 #include "../src/DataAPI.h"
@@ -103,11 +102,6 @@ public:
 	 * @brief Contains all the function of the STM32 Timer4 functions that handle the encoder.
 	 */
 	static TimerHAL timer;
-
-	/**
-	 * @brief Contains all the function related to the versioning of the microcontroller boards.
-	 */
-	static VersionHAL version;
 
 #ifdef CONFIG_OWNTECH_DATA_API
 	/**

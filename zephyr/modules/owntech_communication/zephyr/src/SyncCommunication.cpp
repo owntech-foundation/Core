@@ -51,7 +51,7 @@ void SyncCommunication::initMaster()
 	LL_HRTIM_TIM_CounterEnable(HRTIM1, LL_HRTIM_TIMER_A);
 }
 
-void SyncCommunication::initSlave(board_version_t board_version)
+void SyncCommunication::initSlave()
 {
 	LL_HRTIM_TIM_CounterDisable(HRTIM1, LL_HRTIM_TIMER_MASTER);
 
@@ -63,25 +63,20 @@ void SyncCommunication::initSlave(board_version_t board_version)
 
 	// HRTIM_SCIN pin configuration
 	LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOB);
-	
-	if(board_version != TWIST_v_1_1_4)
-	{
+
+#ifdef CONFIG_SHIELD_TWIST_V1_1_4
 	LL_GPIO_SetPinMode      (GPIOB, LL_GPIO_PIN_6, LL_GPIO_MODE_ALTERNATE);
 	LL_GPIO_SetPinSpeed     (GPIOB, LL_GPIO_PIN_6, LL_GPIO_SPEED_FREQ_VERY_HIGH);
 	LL_GPIO_SetPinOutputType(GPIOB, LL_GPIO_PIN_6, LL_GPIO_OUTPUT_PUSHPULL);
 	LL_GPIO_SetPinPull      (GPIOB, LL_GPIO_PIN_6, LL_GPIO_PULL_NO);
 	LL_GPIO_SetAFPin_0_7    (GPIOB, LL_GPIO_PIN_6, LL_GPIO_AF_12);
-	}
-	else
-	{
+#else
 	LL_GPIO_SetPinMode      (GPIOB, LL_GPIO_PIN_2, LL_GPIO_MODE_ALTERNATE);
 	LL_GPIO_SetPinSpeed     (GPIOB, LL_GPIO_PIN_2, LL_GPIO_SPEED_FREQ_VERY_HIGH);
 	LL_GPIO_SetPinOutputType(GPIOB, LL_GPIO_PIN_2, LL_GPIO_OUTPUT_PUSHPULL);
 	LL_GPIO_SetPinPull      (GPIOB, LL_GPIO_PIN_2, LL_GPIO_PULL_NO);
 	LL_GPIO_SetAFPin_0_7    (GPIOB, LL_GPIO_PIN_2, LL_GPIO_AF_13);
-
-	}
+#endif
 
 	LL_HRTIM_TIM_CounterEnable(HRTIM1, LL_HRTIM_TIMER_MASTER);
 }
-

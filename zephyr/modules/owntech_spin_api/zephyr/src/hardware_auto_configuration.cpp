@@ -125,6 +125,19 @@ static int _register_cdc_rate_callback()
 }
 #endif // CONFIG_RETENTION_BOOT_MODE && CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT && CONFIG_USB_CDC_ACM
 
+
+#ifdef CONFIG_SHIELD_O2
+#include <stm32_ll_lpuart.h>
+static int _swap_usart1_tx_rx()
+{
+	LL_LPUART_Disable(LPUART1);
+	LL_LPUART_SetTXRXSwap(LPUART1, LL_LPUART_TXRX_SWAPPED);
+	LL_LPUART_Enable(LPUART1);
+
+	return 0;
+}
+#endif // SHIELD_O2
+
 /////
 // Zephyr macros to automatically run above functions
 
@@ -156,3 +169,10 @@ SYS_INIT(_register_cdc_rate_callback,
          CONFIG_APPLICATION_INIT_PRIORITY
         );
 #endif // CONFIG_RETENTION_BOOT_MODE && CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT && CONFIG_USB_CDC_ACM
+
+#ifdef CONFIG_SHIELD_O2
+SYS_INIT(_swap_usart1_tx_rx,
+         PRE_KERNEL_1, // To be run in the first init phase
+         CONFIG_KERNEL_INIT_PRIORITY_DEVICE
+        );
+#endif // SHIELD_O2

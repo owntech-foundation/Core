@@ -16,7 +16,6 @@ if(CONFIG_OWNTECH_SPIN_API)
     src/LedHAL.cpp
     src/PwmHAL.cpp
     src/TimerHAL.cpp
-    src/VersionHAL.cpp
   )
 
   # Conditional source files
