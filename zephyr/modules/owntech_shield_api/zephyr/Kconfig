@@ -2,6 +2,6 @@ config OWNTECH_SHIELD_API
 	bool "Enable OwnTech Shield API"
 	default y
 	depends on OWNTECH_DATA_API
-	depends on POWER_SHIELD
+	depends on HAS_POWER_SHIELD
 	help
 		This module provides functions to interact with Spin shields.

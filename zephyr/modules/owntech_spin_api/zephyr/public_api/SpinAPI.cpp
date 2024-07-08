@@ -48,8 +48,6 @@ UartHAL SpinAPI::uart;
 
 TimerHAL SpinAPI::timer;
 
-VersionHAL SpinAPI::version;
-
 #ifdef CONFIG_OWNTECH_DATA_API
 DataAPI SpinAPI::data;
 #endif

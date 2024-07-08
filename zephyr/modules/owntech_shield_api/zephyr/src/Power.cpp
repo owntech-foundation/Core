@@ -61,15 +61,6 @@ hrtim_tu_number_t PowerAPI::spinNumberToTu(uint16_t spin_number)
     }
 }
 
-void PowerAPI::setVersion(shield_version_t shield_ver)
-{
-    if (shield_init == false)
-    {
-        shield_version = shield_ver;
-        shield_init = true;
-    }
-}
-
 void PowerAPI::initLegMode(leg_t leg,                                       \
                            hrtim_switch_convention_t leg_convention,         \
                            hrtim_pwm_mode_t leg_mode)
@@ -188,13 +179,6 @@ void PowerAPI::initLegMode(leg_t leg,                                       \
         {
             spin.gpio.configurePin(dt_pin_capacitor[i], OUTPUT);
         }
-    }
-
-    if (shield_init == false)
-    {
-        /* When a leg has been initialized,
-        shield version should not be modified */
-        shield_init = true;
     }
 }
 

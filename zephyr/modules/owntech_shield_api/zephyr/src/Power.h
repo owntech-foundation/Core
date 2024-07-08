@@ -55,27 +55,10 @@ typedef enum
 class PowerAPI
 {
 private:
-	/* shield version */
-	shield_version_t shield_version = shield_other;
-	/* check if shield version has been initalized or not */
-	bool shield_init = false;
-
 	/* return timing unit from spin pin number */
 	hrtim_tu_number_t spinNumberToTu(uint16_t spin_number);
 
 public:
-	/**
-	 * @brief Set the hardware version of the board.
-	 *
-	 * @param shield shield version
-	 * 				 shield_TWIST_V1_2, shield_TWIST_V1_3,
-	 * 				 shield_ownverter or shield_other
-	 *
-	 * @warning You need to call this function BEFORE initializing a leg,
-	 * 			after that it is not possible to change the shield version
-	 */
-	void setVersion(shield_version_t shield_ver);
-
 	/**
 	 * @brief Initialize the power mode for a given leg.
 	 *

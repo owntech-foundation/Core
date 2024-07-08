@@ -12,15 +12,6 @@ if BOARD_SPIN
 config BOARD
 	default "owntech_spin"
 
-menu "Board Options"
-
-config POWER_SHIELD
-	default y
-	bool "Power shield present"
-	depends on SHIELD_TWIST || SHIELD_OWNVERTER
-
-endmenu
-
 config SPI_STM32_INTERRUPT
 	default y
 	depends on SPI
