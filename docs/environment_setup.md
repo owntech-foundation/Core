@@ -61,7 +61,7 @@ Create an empty folder in which you will work throughout the tutorials.
 
 [Download ](https://code.visualstudio.com/#alt-downloads) and install Visual Studio Code (“VS Code” for short).
 
-An overview of VS Code user interface is available in the their official [Get Started / User Interface](https://code.visualstudio.com/docs/getstarted/userinterface) documentation.
+An overview of VS Code user interface is available in their official [Get Started / User Interface](https://code.visualstudio.com/docs/getstarted/userinterface) documentation.
 
 
 ### Step 3 - Install PlatformIO
@@ -93,13 +93,13 @@ Once installed, you should see that PlatformIO has appended its “alien head”
 In VS Code Activity Bar, click on the newly added PlatformIO “alien head” icon
 to open PlatformIO in the Primary Side Bar. It should contain:
 
-- “Project Tasks” view, at the top (without any task list at that stage, since you haven’t yet opened a PlatformIO project at this stage)
+- “Project Tasks” view, at the top (without any task list at that stage, since you haven’t opened a PlatformIO project at this stage)
 - “Quick Access” view, below
 
 
 ### Step 5 - Clone our Core repository
 
-In PlatformIO's “Quick Access” view, select the “Miscellanous / Clone Git Project” action.
+In PlatformIO's “Quick Access” view, select the “Miscelleanous / Clone Git Project” action.
 This will open a field in which you should enter the following Git reposity address:
 
 ```
@@ -108,7 +108,7 @@ https://github.com/owntech-foundation/Core
 
 PlatformIO will then ask you in which folder the project should be cloned.
 Choose the folder you have created previously.
-This will start the cloning process (with a progess popup windows in the bottom right corner).
+This will start the cloning process (with a progress window popping up in the lower right corner).
 
 At the end of the cloning process, VS Code will ask you if you wish to open the cloned repository
 and you should answer yes ("Open" or "Open in New Window").
@@ -125,7 +125,7 @@ as highlighted in the following screenshot:
 
 ![View of the main branch](images/fig3-main_branch.png)
 
-At the end of the clone process, you should see two tabs opened in the Editor area:
+Now the project is successfully opened and you should see two tabs in the Editor area:
 
 - the “PIO Home” tab thay we will not use here
   (remark: PIO Home’s Devices tab can be used to check that your board is well detected once connected)
