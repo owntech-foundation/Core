@@ -16,8 +16,6 @@
             leg-name = "LEG1";
 			pwms = <&pwma 1 0>, <&pwma 2 0>;
             pwm-pin-num = <12 14>;
-			pwm-x1-high = <1>;
-            capa-pin-num = <0>;
             driver-pin-num = <19>;
             current-pin-num = <25>;
             default-adc-trigger = "ADCTRIG_1";
@@ -33,8 +31,6 @@
             leg-name = "LEG2";
 			pwms = <&pwmc 1 0>, <&pwmc 2 0>;
             pwm-pin-num = <2 4>;
-			pwm-x1-high = <1>;
-            capa-pin-num = <0>;
             driver-pin-num = <22>;
             current-pin-num = <30>;
             default-adc-trigger = "ADCTRIG_3";
@@ -50,8 +46,6 @@
             leg-name = "LEG3";
 			pwms = <&pwme 1 0>, <&pwme 2 0>;
             pwm-pin-num = <10 11>;
-			pwm-x1-high = <1>;
-            capa-pin-num = <0>;
             driver-pin-num = <56>;
             current-pin-num = <1>;
             default-adc-trigger = "ADCTRIG_3";

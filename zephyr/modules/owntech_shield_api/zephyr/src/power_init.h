@@ -41,15 +41,17 @@
 
 /** Define a macro LEG_PWM_X1_HIGH that retrieves the way the PWM is connected
  * to the LEG, e.g if PWMx1 is connected to switch high or switch low.
+ * If property is not defined it defaults to 1
  * if the property pwm_x1_high = 1, it means that PWMx1 is tied to switch high.
  * if the property pwm_x1_high = 0, it means that PWMx1 is tied to switch low.
  */
-#define LEG_PWM_X1_HIGH(node_id)	DT_PROP(node_id, pwm_x1_high),
+#define LEG_PWM_X1_HIGH(node_id)	DT_PROP_OR(node_id, pwm_x1_high, 1),
 
 /** Define a macro LEG_CURRENT_PIN that retrieves the pin on which we have
  * current measure property from the Device Tree node with the given 'node_id'.
+ * If property is not defined it defaults to 0 (no current pin)
  */
-#define LEG_CURRENT_PIN(node_id)	DT_PROP(node_id, current_pin_num),
+#define LEG_CURRENT_PIN(node_id)	DT_PROP_OR(node_id, current_pin_num, 0),
 
 /** Define a macro LEG_ADC that retrieves the 'adc_trigger'
  * property from the Device Tree node with the given 'node_id'.
@@ -109,8 +111,9 @@
 /**
  * Define a macro LEG_DRIVER_PIN that retrieves the pin number
  * which enables the optocouplers for MOSFET driver.
+ * If property is not defined it defaults to 0 (no driver pin)
  */
-#define  LEG_DRIVER_PIN(node_id) DT_PROP(node_id, driver_pin_num),
+#define  LEG_DRIVER_PIN(node_id) DT_PROP_OR(node_id, driver_pin_num, 0),
 
 
 /**
@@ -123,8 +126,9 @@
 /**
  * Define a macro LEG_CAPACITOR_PIN that retrieves the pin number
  * which enables the connection to the electrolytic capacitor.
+ * If property is not defined it defaults to 0 (no capacitor pin)
  */
-#define  LEG_CAPACITOR_PIN(node_id) DT_PROP(node_id, capa_pin_num),
+#define LEG_CAPACITOR_PIN(node_id) DT_PROP_OR(node_id, capa_pin_num, 0),
 
 /**
  * This macro counts the number of leg in the device tree.
