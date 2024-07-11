@@ -1,5 +1,6 @@
 
-If you use or wish to use Visual Studio Code, follow this tutorial to set up your work environment.
+If you use or wish to use Visual Studio Code, follow this tutorial to set up your work environment. It will use a “Blinky” (blinking LED) example which requires no other hardware than you OwnTech board.
+
 
 ## Requirements
 
@@ -31,8 +32,6 @@ Before we start, make sure your machine meets all the requirements below.
         - **Internet connection**
 
 
-
-
 ## Setup your work environment
 
 To use OwnTech's system, we will use:
@@ -40,7 +39,7 @@ To use OwnTech's system, we will use:
 * **Visual Studio Code** - The platform or Integrated Development Environment we will use to write code.
 * **PlatformIO** - A Visual Studio Code plugin that is a toolbox for microcontrollers
 
-!!! info "Required Memory Space"
+!!! info "Required Disk Space"
     Make sure that you have more than 2GB on your hard drive so that PlatformIO can download all the required files without issues.
 
 Here is how to setup the work environment:
@@ -58,72 +57,91 @@ Create an empty folder in which you will work throughout the tutorials.
         - You should preferably have your project folder as close as possible to the root
 
 
+### Step 2 - Install Visual Studio Code
 
-### Step 2 - Intall VSCode
+[Download ](https://code.visualstudio.com/#alt-downloads) and install Visual Studio Code (“VS Code” for short).
 
-[Download ](https://code.visualstudio.com/#alt-downloads) and install Visual Studio Code.
+An overview of VS Code user interface is available in the their official [Get Started / User Interface](https://code.visualstudio.com/docs/getstarted/userinterface) documentation.
+
 
 ### Step 3 - Install PlatformIO
 
 Launch Visual Studio Code.
 
-On the left side menu, click on the extension icon !(1)
-{ .annotate }
+In the “Activity Bar”, located on the far left-hand side, click on the Extensions icon (1)
+{ .annotate } to open the VS Code Extensions manager in the Primary Side Bar.
 
 1. The icon looks like this: ![extension_icon](images/icon-extension.png)
 
-In the search engine, type "PlatformIO IDE", and click install.
+Using the search box in the Extensions Marketplace, search for the “PlatformIO IDE” extension and install it.
+
 Finally, restart Visual Studio Code when you are prompted to do so.
 
 ![PlatformIO installation](images/fig1-platformio_installation.png)
 
-
-### Step 4 - Open PlatformIO in VSCode
-
-In Visual Studio code, on the left side menu, click on PlatformIO icon ! (1)
-{ .annotate }
+Once installed, you should see that PlatformIO has appended its “alien head” icon (1)
+{ .annotate } to the Activity Bar.
 
 1. The PlatformIO icon looks like this: ![platformio_icon](images/icon-platformio.png)
 
 !!! tip   "Pro tip"
-    if the alien icon does not show up spontaneously, wait for a few more seconds, then press F1 key and type platformio home.
+    If the alien icon does not show up spontaneously, wait for a few more seconds, then press F1 key and type "platformio home".
+
+
+### Step 4 - Open PlatformIO in VS Code
+
+In VS Code Activity Bar, click on the newly added PlatformIO “alien head” icon
+to open PlatformIO in the Primary Side Bar. It should contain:
+
+- “Project Tasks” view, at the top (without any task list at that stage, since you haven’t yet opened a PlatformIO project at this stage)
+- “Quick Access” view, below
+
 
 ### Step 5 - Clone our Core repository
-In PlatformIO, select "Clone Git Project ".
 
-PlatformIO will automatically open a field in which you can copy and paste the path below :
+In PlatformIO's “Quick Access” view, select the “Miscellanous / Clone Git Project” action.
+This will open a field in which you should enter the following Git reposity address:
 
 ```
 https://github.com/owntech-foundation/Core
 ```
 
-PlatformIO will ask you in which folder to clone the project.
+PlatformIO will then ask you in which folder the project should be cloned.
+Choose the folder you have created previously.
+This will start the cloning process (with a progess popup windows in the bottom right corner).
 
-Choose the folder you have created previously. A pop up will appear asking if you trust the authors.
+At the end of the cloning process, VS Code will ask you if you wish to open the cloned repository
+and you should answer yes ("Open" or "Open in New Window").
 
+Once the project folder is opened, a popup will appear asking if you trust the authors of the files in this folder.
 You can trust us. :smile:
-
 
 ![Clone the git repository](images/fig2-clone_git_repository.png)
 
-
-Make sure you are on the `main` branch of the Git project.
-
-You can see it on the bottom left of the VSCode window as shown in the image to the left.
+Once the repository is cloned successfully,
+make sure you are on the `main` branch of the Git project.
+The name of the current branch is displayed on the left side of the Status Bar, at the bottom of the VS Code window,
+as highlighted in the following screenshot:
 
 ![View of the main branch](images/fig3-main_branch.png)
 
+At the end of the clone process, you should see two tabs opened in the Editor area:
 
-### Step 6 - Build our core code
+- the “PIO Home” tab thay we will not use here
+  (remark: PIO Home’s Devices tab can be used to check that your board is well detected once connected)
+- the `platformio.ini` [Project Configuration File](https://docs.platformio.org/en/latest/projectconf/index.html),
+  which is already well configured for the present example
 
-In the bottom menu, click on the Build icon. (1)
-{ .annotate }
+This first example you have just opened implements a simple “Blinky” (blinking LED) demo.
+If you wish to understand how it is implemented, open and read through the main C++ code which is `main.cpp`,
+located in the `src` folder. VS Code file Explorer can be opened from the first icon at the top of the Activity Bar.
 
-1. The build icon looks like this: ![build_icon](images/icon-build.png).
 
-This will launch the compilation of the code.
+### Step 6 - Build our Core code
 
-If this is the first time that you compile, Visual Studio Code will download several extensions that are required to write the code onto OwnTech’s microprocessor.
+In the Status Bar, at the bottom of the VS Code window, click on the Build (`✓`) icon. This will launch the code compilation process.
+
+![Build button in the Status Bar of VS Code](images/example_platformio_build.png)
 
 !!! tip "Coffee Time"
     During your first build, PlatformIO will download all the necessary dependencies of our code. This may take several minutes depending on your machine and your internet connection.
@@ -134,16 +152,16 @@ When the compilation is completed, you should see:
 
 ![Compilation Complete](images/fig4-compilation_complete.png)
 
-
 !!! note
-    In the unlikely event that you cannot compile, please refer to the troubleshooting section below.
+    If you encounter an error during compilation, please refer to the troubleshooting section below.
+
 
 ### Step 7 - Prepare your hardware
 
-Before we start, make sure that you meet the requirements below
+Before running the code, make sure that you meet the following requirements:
 
-!!! note "Hardware Requirements"
-     - Have your [VSCode Environment](#setup-your-work-environment) already setup
+!!! note "Requirements for running the code on a board"
+     - Have your [VS Code Environment](#setup-your-work-environment) already set up
      - Run your first compilation [successfully](#step-6---build-our-core-code).
      - Have an USB-C cable ready
      - Have a SPIN board ready (stand-alone or embedded on a TWIST)
@@ -156,25 +174,18 @@ Before we start, make sure that you meet the requirements below
     - Here you see the connection of a SPIN board embedded onto a TWIST board.
 
 
+### Step 8 - Upload our Core code in your SPIN board
 
-### Step 8 - Upload our core code in your SPIN board
+Now it is time to run a Blinky (i.e. blinking LED) example on the board.
 
-The code you compiled implements a Blinky example.
+This requires uploading (or flashing) the compiled code to the SPIN controller board.
+To do so, press the Upload icon (`→`, just to the right of the Build icon `✓`).
 
-We will upload this code to the SPIN board. To do so press the flash icon. (1)
-{.annotate}
-
-1. The flash icon looks like this: ![flash icon](images/icon-flash.png)
-
-VSCode and PlatformIO will automatically download all the necessary libraries to flash the SPIN board.
-
-If everything goes well, you will get a success as in the image below.
-
-![Success of your first upload](images/example-fig2-upload.png)
-
+!!! tip   "Pro tip"
+    The Build and Upload action buttons are also available in the top right corner of the Editor area
 
 !!! tip "Coffee time 2"
-    During your first upload PlatformIO will download the necessary depencies to send data to the SPIN board. Depending on your machine and your internet connection, this might take some time.
+    During your first upload, PlatformIO will automatically download the necessary depencies to send data to the SPIN board. Depending on your machine and your internet connection, this might take some time.
 
     Time to pour another coffee.
 
@@ -189,10 +200,19 @@ If everything goes well, you will get a success as in the image below.
 
          ![macOS error](images/example-fig3-macos_mcuboot_error.png)
 
-You will see the LED blink.
+If everything goes well, you will get a success as in the image below.
+
+![Success of your first upload](images/example-fig2-upload.png)
+
+Finally, allowing a few extra seconds for the board to reboot, you will see the `LED` LED blink.
 
 !!! success " :party_popper: Success"
      Congratulations! You have uploaded your first code!
+
+If you want to make sure you really master this first example, you can change the blinking frequency.
+The blinking period is set at the last line of the `loop_background_task()` routine in the `main.cpp` file
+(`1000` by default, expressed in ms).
+After saving the modified code, you will need to redo the Build and Upload steps.
 
 
 ## Troubleshooting
@@ -242,6 +262,7 @@ Check the list below of possible issues
 ??? success "List of contributors"
     Here is a short list of contributors to this page:
 
+    - 2024.07.11: Pierre Haessig
     - 2024.02.24: Ayoub Farah, Luiz Villa
     - 2021.11.04: Loïc Quéval, Romain Delpoux, Adrien Prévost
     - 2021.11.07: Luiz Villa, Antoine Boche
