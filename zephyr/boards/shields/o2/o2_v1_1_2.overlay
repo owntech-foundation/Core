@@ -15,9 +15,6 @@
         leg1: leg1{
             leg-name = "LEG1";
             pwm-pin-num = <12 14>;
-			pwm-x1-high = <1>;
-            capa-pin-num = <0>;
-            driver-pin-num = <0>;
             current-pin-num = <30>;
             default-adc-trigger = "ADCTRIG_1";
             default-adc-decim = <1>;
@@ -31,9 +28,6 @@
         leg2: leg2{
             leg-name = "LEG2";
             pwm-pin-num = <2 4>;
-			pwm-x1-high = <1>;
-            capa-pin-num = <0>;
-            driver-pin-num = <0>;
             current-pin-num = <25>;
             default-adc-trigger = "ADCTRIG_3";
             default-adc-decim = <1>;

@@ -15,7 +15,6 @@
         leg1: leg1{
             leg-name = "LEG1";
             pwm-pin-num = <12 14>;
-			pwm-x1-high = <1>;
             capa-pin-num = <7>;
             driver-pin-num = <19>;
             current-pin-num = <30>;
@@ -31,7 +30,6 @@
         leg2: leg2{
             leg-name = "LEG2";
             pwm-pin-num = <2 4>;
-			pwm-x1-high = <1>;
             capa-pin-num = <56>;
             driver-pin-num = <22>;
             current-pin-num = <25>;

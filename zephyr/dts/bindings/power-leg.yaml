@@ -16,7 +16,7 @@ child-binding:
                 circuit responsible for controlling the flow of electrical power. A leg comprises
                 two semiconductor devices like transistors (e.g., IGBTs or MOSFETs) and diodes.
                 Control of a power leg involves precisely switching the semiconductor
-                devices on and off to regulate voltage or current. In this child node, 
+                devices on and off to regulate voltage or current. In this child node,
                 you can choose the timing unit of the HRTIM to generate the PWM which will control
                 your semiconductor/IGBT/MOSFET.
 
@@ -25,9 +25,9 @@ child-binding:
     leg-name :
       type : string
       required : true
-      description : name of the leg, choose freely but the name must be different between 
+      description : name of the leg, choose freely but the name must be different between
                     each legs.
-    
+
     pwms:
       type: phandle-array
       required: false
@@ -53,19 +53,22 @@ child-binding:
 
     pwm-x1-high :
       type : int
-      required : true 
+      required : false
       description : This property defines how the PWM are connected in hardware
                     to the power leg.
-                    pwm-x1-high = 1 means PWMx1 is connected to switch high. 
+                    Set to 1 if no property defined.
+                    pwm-x1-high = 1 means PWMx1 is connected to switch high.
                     pwm-x1-high = 0 means PWMx1 is connected to switch low.
 
     current-pin-num :
       type : int
-      required : true
-      description : Current mode is used to control the output current. We use a comparator 
+      required : false
+      description : Current mode is used to control the output current. We use a comparator
                     and DAC generation for slope compensation. The availability of the current
-                    mode depends on the pin connected to the current measure. 
-                    Below you can see every possible pin. Choose 0 if no pin is required. 
+                    mode depends on the pin connected to the current measure.
+                    Below you can see every possible pin.
+                    Set to 0 (no pin) if no property defined.
+
 
       # +----------+-----------------+
       # | GPIO PIN | SPIN PIN NUMBER |
@@ -73,23 +76,23 @@ child-binding:
       # | PA1      | 25              |
       # | PC1      | 30              |
       # +----------+-----------------+
-    
+
     capa-pin-num :
       type : int
-      required : true
-      description : It is the pin driving the electrolytic capacitor since twist V1.4.0. 
-                    Choose 0 if no pin is required.
+      required : false
+      description : It is the pin driving the electrolytic capacitor since twist V1.4.0.
+                    Set to 0 (no pin) if no property defined.
 
     driver-pin-num :
       type : int
-      required : true
-      description : It is the pin driving the optocoupler for the mosfet driver since twist V1.3. 
-                    Choose 0 if no pin is required.
+      required : false
+      description : It is the pin driving the optocoupler for the mosfet driver since twist V1.3.
+                    Set to 0 (no pin) if no property defined.
 
     default-adc-trigger :
       type : string
       required : true
-      description : Which adc trigger is used for data acquisition (only two leg can support it), 
+      description : Which adc trigger is used for data acquisition (only two leg can support it),
                     if this leg isn't suposed to trigger the adc choose ADCTRIG_NONE.
       enum :
       - "ADCTRIG_NONE"
@@ -101,8 +104,8 @@ child-binding:
     default-edge-trigger :
       type : string
       required : true
-      description : Only relevant in Center aligned. Choose when ADC is triggered, 
-                    either when the counter is counting up, counting down or both. 
+      description : Only relevant in Center aligned. Choose when ADC is triggered,
+                    either when the counter is counting up, counting down or both.
                     Keep EdgeTrigger_up as a default
       enum :
       - "EdgeTrigger_up"
@@ -112,15 +115,15 @@ child-binding:
     default-adc-decim :
       type : int
       required : true
-      description : The timer unit will trigger the ADC at the switching frequency, 
-                    but you can divide this frequency with the number set by adc-decim 
+      description : The timer unit will trigger the ADC at the switching frequency,
+                    but you can divide this frequency with the number set by adc-decim
                     (between 1 and 32). adc-decim = 2 means that the frequency of
                     the trigger is divided by 2. Keep adc-decim = 1 as default.
 
     default-dead-time :
       type : array
       required : true
-      description : The dead time value in ns, rising dead time first 
+      description : The dead time value in ns, rising dead time first
                     and falling dead time second.
                     Choose 100 both as default.
 
@@ -139,14 +142,14 @@ child-binding:
 
     output1-inactive :
       type : boolean
-      description : Use it to disable the output 1 of the HRTIM timer. 
+      description : Use it to disable the output 1 of the HRTIM timer.
                     It will only stop generating the PWM in the GPIO corresponding to output 1,
                     the GPIO will still be configured in alternate mode.
       required : false
 
     output2-inactive :
       type : boolean
-      description : Use it to disable the output 2 of the HRTIM timer. 
-                    It will only stop generating the PWM in the GPIO corresponding to output 2, 
+      description : Use it to disable the output 2 of the HRTIM timer.
+                    It will only stop generating the PWM in the GPIO corresponding to output 2,
                     the GPIO will still be configured in alternate mode.
       required : false
