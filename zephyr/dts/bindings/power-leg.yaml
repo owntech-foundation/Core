@@ -86,7 +86,7 @@ child-binding:
     driver-pin-num :
       type : int
       required : false
-      description : It is the pin driving the optocoupler for the mosfet driver since twist V1.3.
+      description : It is the pin driving the optocoupler for the mosfet driver since twist V1.3.0
                     Set to 0 (no pin) if no property defined.
 
     default-adc-trigger :
