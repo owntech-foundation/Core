@@ -45,8 +45,6 @@
 
 /**
  * Defines the sensor numbers.
- * For twist we have :
- * V1_LOW, V2_LOW, V_HIGH, I1_LOW, I2_LOW, I_HIGH, TEMP_SENSOR, EXTRA_MEAS, ANALOG_COMM
  */
 #define SENSOR_COUNTER(node_id) +1
 #define DT_SENSORS_NUMBER DT_FOREACH_STATUS_OKAY(shield_sensors, SENSOR_COUNTER)

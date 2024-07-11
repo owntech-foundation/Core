@@ -42,16 +42,6 @@ typedef enum
 	DT_FOREACH_CHILD_STATUS_OKAY(DT_NODELABEL(powershield), LEG_TOKEN)
 } leg_t;
 
-/* Enum to define the hardware version */
-typedef enum
-{
-	shield_TWIST_V1_2 = 0,
-	shield_TWIST_V1_3,
-	shield_TWIST_V1_4,
-	shield_ownverter,
-	shield_other,
-} shield_version_t;
-
 class PowerAPI
 {
 private:
