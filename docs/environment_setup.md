@@ -24,11 +24,11 @@ Before we start, make sure your machine meets all the requirements below.
 
         - **Git:** If you do not have git installed, get it here [git for Linux](https://git-scm.com/download/linux)
         - **Python3:** If you do not have python3 installed, get it here [Python3 Installers](https://docs.python-guide.org/starting/install3/linux/)
-            - The [pip](https://pip.pypa.io/en/stable/) package installer is needed. If using the system Python, `pip` may not be installed by default.
+            - The [pip](https://pip.pypa.io/en/stable/) package installer is needed. If using the system Python (`/usr/bin/python3`), `pip` may not be installed by default.
               See [Installing pip with Linux Package Managers](https://packaging.python.org/en/latest/guides/installing-using-linux-tools/).
-            - Warning: some Linux distributions such as Debian and Ubuntu don't install the [venv](https://docs.python.org/3/library/venv.html) module by default
-              even though it is part of the Python Standard Library.
-              In particular, if using the system Python (`/usr/bin/python3`) on a Debian or Ubuntu system, make sure that the `python3-venv` package is installed.
+            - The [venv](https://docs.python.org/3/library/venv.html) module is needed.
+              Warning if using the system Python: although `venv` is part of the Python Standard Library, some Linux distributions such as Debian and Ubuntu don't install it by default.
+              In that case, make sure that the `python3-venv` package is installed.
         - **CMake:** If you do not have CMake installed, get it here [CMake Installer](https://cmake.org/download/)
         - 64 bit linux installation
         - Write permission for the serial port (`/dev/ttyACM0`): See PlatformIO documentation which provides a [udev rules file](https://docs.platformio.org/en/latest/core/installation/udev-rules.html)
