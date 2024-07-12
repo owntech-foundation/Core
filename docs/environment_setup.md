@@ -1,5 +1,6 @@
 
-If you use or wish to use Visual Studio Code, follow this tutorial to set up your work environment. It will use a “Blinky” (blinking LED) example which requires no other hardware than you OwnTech board.
+If you use or wish to use Visual Studio Code, follow this tutorial to set up your work environment.
+It will use a “Blinky” (blinking LED) example which requires no other hardware than your OwnTech board.
 
 
 ## Requirements
@@ -30,7 +31,7 @@ Before we start, make sure your machine meets all the requirements below.
               Warning if using the system Python: although `venv` is part of the Python Standard Library, some Linux distributions such as Debian and Ubuntu don't install it by default.
               In that case, make sure that the `python3-venv` package is installed.
         - **CMake:** If you do not have CMake installed, get it here [CMake Installer](https://cmake.org/download/)
-        - 64 bit linux installation
+        - 64 bit Linux distribution
         - Write permission for the serial port (`/dev/ttyACM0`): See PlatformIO documentation which provides a [udev rules file](https://docs.platformio.org/en/latest/core/installation/udev-rules.html)
         - **Internet connection**
 
@@ -40,12 +41,12 @@ Before we start, make sure your machine meets all the requirements below.
 To use OwnTech's system, we will use:
 
 * **Visual Studio Code** - The platform or Integrated Development Environment we will use to write code.
-* **PlatformIO** - A Visual Studio Code plugin that is a toolbox for microcontrollers
+* **PlatformIO** - A Visual Studio Code extension that is a toolbox for microcontrollers
 
 !!! info "Required Disk Space"
     Make sure that you have more than 2GB on your hard drive so that PlatformIO can download all the required files without issues.
 
-Here is how to setup the work environment:
+Here is how to setup this environment.
 
 ### Step 1 - Empty folder
 
@@ -72,9 +73,10 @@ An overview of VS Code user interface is available in their official [Get Starte
 Launch Visual Studio Code.
 
 In the “Activity Bar”, located on the far left-hand side, click on the Extensions icon (1)
-{ .annotate } to open the VS Code Extensions manager in the Primary Side Bar.
+to open the VS Code Extensions manager in the Primary Side Bar.
+{ .annotate }
 
-1. The icon looks like this: ![extension_icon](images/icon-extension.png)
+1. The VS Code Extensions manager icon looks like this: ![extension_icon](images/icon-extension.png)
 
 Using the search box in the Extensions Marketplace, search for the “PlatformIO IDE” extension and install it.
 
@@ -82,8 +84,8 @@ Finally, restart Visual Studio Code when you are prompted to do so.
 
 ![PlatformIO installation](images/fig1-platformio_installation.png)
 
-Once installed, you should see that PlatformIO has appended its “alien head” icon (1)
-{ .annotate } to the Activity Bar.
+Once installed, you should see that PlatformIO has appended its “alien head” icon (1) to the Activity Bar.
+{ .annotate }
 
 1. The PlatformIO icon looks like this: ![platformio_icon](images/icon-platformio.png)
 
@@ -103,7 +105,7 @@ to open PlatformIO in the Primary Side Bar. It should contain:
 ### Step 5 - Clone our Core repository
 
 In PlatformIO's “Quick Access” view, select the “Miscelleanous / Clone Git Project” action.
-This will open a field in which you should enter the following Git reposity address:
+This will open a field in which you should enter the following Git repository address:
 
 ```
 https://github.com/owntech-foundation/Core
