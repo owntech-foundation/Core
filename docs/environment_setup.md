@@ -29,6 +29,7 @@ Before we start, make sure your machine meets all the requirements below.
             In particular, if using the system Python (`/usr/bin/python3`) on a Debian or Ubuntu system, make sure that the `python3-venv` package is installed.
         - **CMake:** If you do not have CMake installed, get it here [CMake Installer](https://cmake.org/download/)
         - 64 bit linux installation
+        - Write permission for the serial port (`/dev/ttyACM0`): See PlatformIO documentation which provides a [udev rules file](https://docs.platformio.org/en/latest/core/installation/udev-rules.html)
         - **Internet connection**
 
 
