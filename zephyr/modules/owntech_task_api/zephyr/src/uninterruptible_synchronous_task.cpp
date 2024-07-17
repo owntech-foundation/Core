@@ -139,9 +139,10 @@ int8_t scheduling_define_uninterruptible_synchronous_task(task_function_t period
 
 		// Everything OK, go on with timer configuration
 		struct timer_config_t timer_cfg = {0};
-		timer_cfg.timer_enable_irq   = 1;
-		timer_cfg.timer_irq_callback = user_task_proxy;
-		timer_cfg.timer_irq_t_usec   = task_period_us;
+		timer_cfg.timer_enable_irq       = 1;
+		timer_cfg.timer_irq_callback     = user_task_proxy;
+		timer_cfg.timer_irq_t_usec       = task_period_us;
+		timer_cfg.timer_use_zero_latency = 1;
 
 		timer_config(timer6, &timer_cfg);
 

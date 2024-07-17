@@ -69,15 +69,17 @@ typedef enum
 } pin_mode_t;
 
 /**
- * timer_enable_irq     : set to 1 to enable interrupt on timer overflow.
- * timer_enable_encoder : set to 1 for timer to act as an incremental coder counter.
+ * timer_enable_irq    : set to 1 to enable interrupt on timer overflow.
+ * timer_enable_encoder: set to 1 for timer to act as an incremental coder counter.
  *
  * *** IRQ mode (ignored if timer_enable_irq=0) ***
- * - timer_irq_callback : pointer to a void(void) function that will be
- *                        called on timer overflow.
- * - timer_irq_t_usec : period of the interrupt in microsecond (2 to 6553 µs)
+ * - timer_irq_callback    : pointer to a void(void) function that will be
+ *                           called on timer overflow.
+ * - timer_irq_t_usec      : period of the interrupt in microsecond (2 to 6553 µs)
+ * - timer_use_zero_latency: for tasks, use zero-latency interrupts.
+ *                           Only used by Task API, end-user should set this one to false.
  *
- * *** Incremental code mode (ignored if timer_enable_encoder=0) ***
+ * *** Incremental encoder mode (ignored if timer_enable_encoder=0) ***
  * - timer_pin_mode : Pin mode for incremental coder interface.
  *
  * NOTE: At this time, only irq mode is supported on TIM6/TIM7, and
@@ -88,10 +90,14 @@ typedef enum
  */
 struct timer_config_t
 {
+	// Mode
 	uint32_t         timer_enable_irq     : 1;
 	uint32_t         timer_enable_encoder : 1;
+	// IRQ options
 	timer_callback_t timer_irq_callback;
 	uint32_t         timer_irq_t_usec;
+	uint32_t         timer_use_zero_latency : 1;
+	// Incremental encoder option
 	pin_mode_t       timer_enc_pin_mode;
 };
 
