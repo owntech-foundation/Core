@@ -1,5 +1,5 @@
 config OWNTECH_SPIN_API
-	bool "Enable OwnTech Hardware Configuration module"
+	bool "Enable OwnTech Spin API"
 	default y
 	depends on OWNTECH_ADC_DRIVER
 	depends on OWNTECH_DAC_DRIVER
@@ -15,7 +15,7 @@ config OWNTECH_SPIN_API
 if OWNTECH_SPIN_API
 
 	config OWNTECH_GPIO_API
-		bool "Enables the OwnTech GPIO API integrated with the SPIN Board"
+		bool "Enables the OwnTech GPIO API integrated with the Spin Board"
 		default y
 		depends on OWNTECH_SPIN_API
 		help
