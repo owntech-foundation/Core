@@ -46,61 +46,61 @@ static hrtim_callback_t user_callback = NULL;
 /* Default values to initialize all the timer */
 
 /* listing all timing unit */
-static hrtim_tu_t list_tu[HRTIM_STU_NUMOF] = 
+static hrtim_tu_t list_tu[HRTIM_STU_NUMOF] =
     {TIMA, TIMB, TIMC, TIMD, TIME, TIMF};
 
-/* All timing units phase shift are referenced to the master, 
+/* All timing units phase shift are referenced to the master,
    with the exception of TIMF */
-static hrtim_tu_t phase_shift_compare_units[HRTIM_STU_NUMOF] = 
-    {MSTR, MSTR, MSTR, MSTR, MSTR, TIMA};  
+static hrtim_tu_t phase_shift_compare_units[HRTIM_STU_NUMOF] =
+    {MSTR, MSTR, MSTR, MSTR, MSTR, TIMA};
 
 /* phase shift trigger source */
-static hrtim_reset_trig_t phase_shift_reset_trig[HRTIM_STU_NUMOF] = 
-    {MSTR_PER, PWMA_CMP2, MSTR_CMP2, MSTR_CMP3, MSTR_CMP4, MSTR_CMP1}; 
+static hrtim_reset_trig_t phase_shift_reset_trig[HRTIM_STU_NUMOF] =
+    {MSTR_PER, PWMA_CMP2, MSTR_CMP2, MSTR_CMP3, MSTR_CMP4, MSTR_CMP1};
 
-/* PWM output high side */        
-static hrtim_output_units_t tu_output_high[HRTIM_STU_NUMOF] = 
-    {PWMA1, PWMB1, PWMC1, PWMD1, PWME1, PWMF1}; 
+/* PWM output high side */
+static hrtim_output_units_t tu_output_high[HRTIM_STU_NUMOF] =
+    {PWMA1, PWMB1, PWMC1, PWMD1, PWME1, PWMF1};
 
-/* PWM output low side */                                    
-static hrtim_output_units_t tu_output_low[HRTIM_STU_NUMOF] = 
-    {PWMA2, PWMB2, PWMC2, PWMD2, PWME2, PWMF2};   
+/* PWM output low side */
+static hrtim_output_units_t tu_output_low[HRTIM_STU_NUMOF] =
+    {PWMA2, PWMB2, PWMC2, PWMD2, PWME2, PWMF2};
 
-/* The GPIO structure to which the TU pins belong */                                     
-static GPIO_TypeDef *unit[HRTIM_STU_NUMOF] = 
-    {GPIOA, GPIOA, GPIOB, GPIOB, GPIOC, GPIOC};  
+/* The GPIO structure to which the TU pins belong */
+static GPIO_TypeDef *unit[HRTIM_STU_NUMOF] =
+    {GPIOA, GPIOA, GPIOB, GPIOB, GPIOC, GPIOC};
 
-/* gpio clock */                                                    
-static hrtim_gpio_clock_number_t clk_gpio[HRTIM_STU_NUMOF] = 
-    {CLK_GPIOA, CLK_GPIOA, CLK_GPIOB, CLK_GPIOB, CLK_GPIOC, CLK_GPIOC};  
+/* gpio clock */
+static hrtim_gpio_clock_number_t clk_gpio[HRTIM_STU_NUMOF] =
+    {CLK_GPIOA, CLK_GPIOA, CLK_GPIOB, CLK_GPIOB, CLK_GPIOC, CLK_GPIOC};
 
-/* gpio pin high side */   
-static uint32_t switch_H_pin[HRTIM_STU_NUMOF] = 
+/* gpio pin high side */
+static uint32_t switch_H_pin[HRTIM_STU_NUMOF] =
     {LL_GPIO_PIN_8, LL_GPIO_PIN_10, LL_GPIO_PIN_12, \
      LL_GPIO_PIN_14, LL_GPIO_PIN_8, LL_GPIO_PIN_6};
 
 /* gpio pin low side */
-static uint32_t switch_L_pin[HRTIM_STU_NUMOF] = 
+static uint32_t switch_L_pin[HRTIM_STU_NUMOF] =
     {LL_GPIO_PIN_9, LL_GPIO_PIN_11, LL_GPIO_PIN_13, \
-     LL_GPIO_PIN_15, LL_GPIO_PIN_9, LL_GPIO_PIN_7};  
+     LL_GPIO_PIN_15, LL_GPIO_PIN_9, LL_GPIO_PIN_7};
 
-/* alternate functions */ 
-static uint32_t alternate_function[HRTIM_STU_NUMOF] = 
+/* alternate functions */
+static uint32_t alternate_function[HRTIM_STU_NUMOF] =
     {LL_GPIO_AF_13, LL_GPIO_AF_13, LL_GPIO_AF_13,   \
      LL_GPIO_AF_13, LL_GPIO_AF_3, LL_GPIO_AF_13};
 
-/* ADC trigger update source */                 
-static hrtim_adc_trigger_t tu_adc_trigger[HRTIM_STU_NUMOF] = 
+/* ADC trigger update source */
+static hrtim_adc_trigger_t tu_adc_trigger[HRTIM_STU_NUMOF] =
     {ADCTRIG_3, ADCTRIG_2, ADCTRIG_1, ADCTRIG_2, ADCTRIG_2, ADCTRIG_2};
 
-static hrtim_adc_event_t tu_adc_events[HRTIM_STU_NUMOF] = 
-    {PWMA_UPDT, PWMB_UPDT, PWMC_UPDT, PWMD_UPDT, PWME_UPDT, PWMF_UPDT}; 
+static hrtim_adc_event_t tu_adc_events[HRTIM_STU_NUMOF] =
+    {PWMA_UPDT, PWMB_UPDT, PWMC_UPDT, PWMD_UPDT, PWME_UPDT, PWMF_UPDT};
 
-/* ADC trigger source */                  
-static hrtim_adc_source_t tu_adc_source[HRTIM_STU_NUMOF] = 
+/* ADC trigger source */
+static hrtim_adc_source_t tu_adc_source[HRTIM_STU_NUMOF] =
     {TIMA_CMP3, TIMB_CMP3, TIMC_CMP3, TIMD_CMP3, TIME_CMP3, TIMF_CMP3};
 
-static hrtim_external_trigger_t tu_external_trig[HRTIM_STU_NUMOF] = 
+static hrtim_external_trigger_t tu_external_trig[HRTIM_STU_NUMOF] =
     {EEV4, EEV1, EEV5, EEV1, EEV1, EEV1};
 
 /**
@@ -135,7 +135,7 @@ timer_hrtim_t timerD;
 timer_hrtim_t timerE;
 timer_hrtim_t timerF;
 
-timer_hrtim_t *tu_channel[HRTIM_STU_NUMOF] = 
+timer_hrtim_t *tu_channel[HRTIM_STU_NUMOF] =
     {&timerA, &timerB, &timerC, &timerD, &timerE, &timerF};
 
 /////////////////////////////
@@ -191,9 +191,9 @@ static inline uint32_t _period_ckpsc(uint32_t freq, timer_hrtim_t *tu)
      * the modulo to preserve accuracy. */
     uint32_t period = (f_hrtim / freq) * 32 + (f_hrtim % freq) * 32 / freq;
 
-    /* The period_max is the desired maximum period (or minimum frequency) 
+    /* The period_max is the desired maximum period (or minimum frequency)
        to reach */
-    uint32_t period_max = 
+    uint32_t period_max =
         (f_hrtim / HRTIM_MINIM_FREQUENCY) * 32                  \
         + (f_hrtim % HRTIM_MINIM_FREQUENCY) * 32 / HRTIM_MINIM_FREQUENCY;
 
@@ -240,7 +240,7 @@ static inline uint32_t _period_ckpsc(uint32_t freq, timer_hrtim_t *tu)
     tu->pwm_conf.period = (uint16_t)period;
 
     /* Compute and return the effective frequency */
-    uint32_t frequency = 
+    uint32_t frequency =
         ((f_hrtim / period) * 32                                              \
         + (f_hrtim % period) * 32 / period) / (1 << tu->pwm_conf.ckpsc);
     return frequency;
@@ -261,7 +261,7 @@ void _hrtim_callback()
 
     if (LL_HRTIM_GetSyncOutConfig(HRTIM1) == LL_HRTIM_SYNCOUT_POSITIVE_PULSE)
     {
-        /* In case of master communication mode, the master will send a 
+        /* In case of master communication mode, the master will send a
         synchronization pulse every control period allowing the slave to
         synchronize its control task execution to master control task execution */
         LL_GPIO_SetPinMode(GPIOB, LL_GPIO_PIN_1, LL_GPIO_MODE_ALTERNATE);
@@ -319,7 +319,7 @@ void _init_master()
 
     /* At start-up, it is mandatory to initialize first the prescaler
      * bitfields before writing the compare and period registers. */
-    timerMaster.pwm_conf.frequency = 
+    timerMaster.pwm_conf.frequency =
         _period_ckpsc(timerMaster.pwm_conf.frequency, &timerMaster);
 
     /* master timer prescaler init */
@@ -390,7 +390,7 @@ void hrtim_init_default_all()
             tu_channel[tu_count]->pwm_conf.pwm_tu = list_tu[tu_count];
             tu_channel[tu_count]->pwm_conf.duty_cycle = 0;
 
-            tu_channel[tu_count]->pwm_conf.frequency = 
+            tu_channel[tu_count]->pwm_conf.frequency =
                 timerMaster.pwm_conf.frequency;
 
             tu_channel[tu_count]->pwm_conf.fall_dead_time = TU_DEFAULT_DT;
@@ -399,45 +399,45 @@ void hrtim_init_default_all()
             tu_channel[tu_count]->pwm_conf.ckpsc = 0;
             tu_channel[tu_count]->pwm_conf.pwm_mode = VOLTAGE_MODE;
 
-            tu_channel[tu_count]->pwm_conf.external_trigger = 
+            tu_channel[tu_count]->pwm_conf.external_trigger =
                 tu_external_trig[tu_count];
 
             /* sets up the phase shift variables of the timing units */
-            tu_channel[tu_count]->phase_shift.value = 0;                                        
-            tu_channel[tu_count]->phase_shift.compare_tu = 
-                phase_shift_compare_units[tu_count]; 
-            tu_channel[tu_count]->phase_shift.reset_trig = 
-                phase_shift_reset_trig[tu_count];    
+            tu_channel[tu_count]->phase_shift.value = 0;
+            tu_channel[tu_count]->phase_shift.compare_tu =
+                phase_shift_compare_units[tu_count];
+            tu_channel[tu_count]->phase_shift.reset_trig =
+                phase_shift_reset_trig[tu_count];
 
             /* sets up the gpio variables of the timing units */
-            tu_channel[tu_count]->gpio_conf.OUT_H = 
+            tu_channel[tu_count]->gpio_conf.OUT_H =
                 tu_output_high[tu_count];
-            tu_channel[tu_count]->gpio_conf.switch_H.Pin = 
+            tu_channel[tu_count]->gpio_conf.switch_H.Pin =
                 switch_H_pin[tu_count];
-            tu_channel[tu_count]->gpio_conf.switch_H.Mode = 
+            tu_channel[tu_count]->gpio_conf.switch_H.Mode =
                 LL_GPIO_MODE_ALTERNATE;
-            tu_channel[tu_count]->gpio_conf.switch_H.Speed = 
+            tu_channel[tu_count]->gpio_conf.switch_H.Speed =
                 LL_GPIO_SPEED_FREQ_VERY_HIGH;
-            tu_channel[tu_count]->gpio_conf.switch_H.OutputType = 
+            tu_channel[tu_count]->gpio_conf.switch_H.OutputType =
                 LL_GPIO_OUTPUT_PUSHPULL;
-            tu_channel[tu_count]->gpio_conf.switch_H.Pull = 
+            tu_channel[tu_count]->gpio_conf.switch_H.Pull =
                 LL_GPIO_PULL_NO;
-            tu_channel[tu_count]->gpio_conf.switch_H.Alternate = 
+            tu_channel[tu_count]->gpio_conf.switch_H.Alternate =
                 alternate_function[tu_count];
 
-            tu_channel[tu_count]->gpio_conf.OUT_L = 
+            tu_channel[tu_count]->gpio_conf.OUT_L =
                 tu_output_low[tu_count];
-            tu_channel[tu_count]->gpio_conf.switch_L.Pin = 
+            tu_channel[tu_count]->gpio_conf.switch_L.Pin =
                 switch_L_pin[tu_count];
-            tu_channel[tu_count]->gpio_conf.switch_L.Mode = 
+            tu_channel[tu_count]->gpio_conf.switch_L.Mode =
                 LL_GPIO_MODE_ALTERNATE;
-            tu_channel[tu_count]->gpio_conf.switch_L.Speed = 
+            tu_channel[tu_count]->gpio_conf.switch_L.Speed =
                 LL_GPIO_SPEED_FREQ_VERY_HIGH;
-            tu_channel[tu_count]->gpio_conf.switch_L.OutputType = 
+            tu_channel[tu_count]->gpio_conf.switch_L.OutputType =
                 LL_GPIO_OUTPUT_PUSHPULL;
-            tu_channel[tu_count]->gpio_conf.switch_L.Pull = 
+            tu_channel[tu_count]->gpio_conf.switch_L.Pull =
                 LL_GPIO_PULL_NO;
-            tu_channel[tu_count]->gpio_conf.switch_L.Alternate = 
+            tu_channel[tu_count]->gpio_conf.switch_L.Alternate =
                 alternate_function[tu_count];
 
             tu_channel[tu_count]->gpio_conf.tu_gpio_CLK = clk_gpio[tu_count];
@@ -467,40 +467,40 @@ void hrtim_init_default_all()
             tu_channel[tu_count]->comp_usage.cmp4_value = 0;
 
             /* sets up the adc events variables of the timing units */
-            tu_channel[tu_count]->adc_hrtim.adc_event = 
+            tu_channel[tu_count]->adc_hrtim.adc_event =
                 tu_adc_events[tu_count];
-            tu_channel[tu_count]->adc_hrtim.adc_source = 
+            tu_channel[tu_count]->adc_hrtim.adc_source =
                 tu_adc_source[tu_count];
-            tu_channel[tu_count]->adc_hrtim.adc_trigger = 
+            tu_channel[tu_count]->adc_hrtim.adc_trigger =
                 tu_adc_trigger[tu_count];
             tu_channel[tu_count]->adc_hrtim.adc_rollover = EdgeTrigger_up;
 
             /* timer initialized */
-            tu_channel[tu_count]->pwm_conf.unit_on = true; 
+            tu_channel[tu_count]->pwm_conf.unit_on = true;
         }
     }
 }
 
 uint16_t hrtim_tu_init(hrtim_tu_number_t tu_number)
 {
-    if (tu_channel[tu_number]->pwm_conf.unit_on == false) 
+    if (tu_channel[tu_number]->pwm_conf.unit_on == false)
     {
         /* default initialization for all timing unit */
-        hrtim_init_default_all(); 
+        hrtim_init_default_all();
     }
 
     if (timerMaster.pwm_conf.unit_on == UNIT_OFF)
     {
         /* if master timer not initialized, we initialize it */
-        _init_master(); 
+        _init_master();
     }
 
     if (tu_channel[tu_number]->pwm_conf.pwm_mode == CURRENT_MODE)
-    { 
+    {
         /* If we are in current mode, only lft_aligned is supported */
-        tu_channel[tu_number]->pwm_conf.modulation = Lft_aligned; 
+        tu_channel[tu_number]->pwm_conf.modulation = Lft_aligned;
     }
-    /* setting the adc roll-over mode on period event 
+    /* setting the adc roll-over mode on period event
        in center-aligned modulation */
     if (tu_channel[tu_number]->pwm_conf.modulation == UpDwn)
     {
@@ -512,16 +512,16 @@ uint16_t hrtim_tu_init(hrtim_tu_number_t tu_number)
 
     /* Timer initialization for leg 1 */
     /* initialize timing unit */
-    hrtim_tu_gpio_init(tu_number);  
+    hrtim_tu_gpio_init(tu_number);
     /* Set the dead time. Note: this must be done before enable counter */
     hrtim_dt_init(tu_number);
-    /* Enable counter   */                  
-    hrtim_cnt_en(tu_number);    
-    /* Set the timer reset trigger event  */                                              
-    hrtim_rst_evt_en(tu_number, tu_channel[tu_number]->phase_shift.reset_trig); 
-    /* We initialize the phase shift to 0, 
+    /* Enable counter   */
+    hrtim_cnt_en(tu_number);
+    /* Set the timer reset trigger event  */
+    hrtim_rst_evt_en(tu_number, tu_channel[tu_number]->phase_shift.reset_trig);
+    /* We initialize the phase shift to 0,
        all the timer will reset on master timer reset event */
-    hrtim_phase_shift_set(tu_number, 0);                                        
+    hrtim_phase_shift_set(tu_number, 0);
 
     if (tu_channel[tu_number]->pwm_conf.modulation == \
             UpDwn &&                                  \
@@ -570,7 +570,7 @@ uint16_t hrtim_tu_init(hrtim_tu_number_t tu_number)
 
         /* Compare 4 is used to set the PWM. A small delay is required from
         the beginning of the switching period as if the comparator trip event
-        must be cleared before the output can be set HIGH by one of the set 
+        must be cleared before the output can be set HIGH by one of the set
         sources. a raw value of 1088 represents 200ns when resolution is 184ps.
         see AN5497. */
         LL_HRTIM_TIM_SetCompare4(HRTIM1,                                 \
@@ -579,23 +579,23 @@ uint16_t hrtim_tu_init(hrtim_tu_number_t tu_number)
         tu_channel[tu_number]->comp_usage.cmp4 = USED;
 
         tu_channel[tu_number]->switch_conv.set_H[conv_PWMx1] = SET_CMP4;
-        tu_channel[tu_number]->switch_conv.reset_H[conv_PWMx1] = 
+        tu_channel[tu_number]->switch_conv.reset_H[conv_PWMx1] =
             (RST_CMP1 | tu_channel[tu_number]->pwm_conf.external_trigger);
-        tu_channel[tu_number]->switch_conv.set_L[conv_PWMx1] = 
+        tu_channel[tu_number]->switch_conv.set_L[conv_PWMx1] =
             (SET_CMP1 | tu_channel[tu_number]->pwm_conf.external_trigger);
         tu_channel[tu_number]->switch_conv.reset_L[conv_PWMx1] = RST_CMP4;
 
-        tu_channel[tu_number]->switch_conv.set_H[conv_PWMx2] = 
+        tu_channel[tu_number]->switch_conv.set_H[conv_PWMx2] =
             (SET_CMP1 | tu_channel[tu_number]->pwm_conf.external_trigger);
         tu_channel[tu_number]->switch_conv.reset_H[conv_PWMx2] = RST_CMP4;
         tu_channel[tu_number]->switch_conv.set_L[conv_PWMx2] = SET_CMP4;
-        tu_channel[tu_number]->switch_conv.reset_L[conv_PWMx2] = 
+        tu_channel[tu_number]->switch_conv.reset_L[conv_PWMx2] =
             (RST_CMP1 | tu_channel[tu_number]->pwm_conf.external_trigger);
     }
 
     hrtim_cmpl_pwm_out1(tu_number);
     /* returns the period of the timing unit */
-    return tu_channel[tu_number]->pwm_conf.period; 
+    return tu_channel[tu_number]->pwm_conf.period;
 }
 
 hrtim_tu_ON_OFF_t hrtim_get_status(hrtim_tu_number_t tu_number)
@@ -628,7 +628,7 @@ void hrtim_tu_gpio_init(hrtim_tu_number_t tu_number)
             freq_mult = 2;
         }
 
-    tu_channel[tu_number]->pwm_conf.frequency = 
+    tu_channel[tu_number]->pwm_conf.frequency =
         _period_ckpsc(freq_mult * tu_channel[tu_number]->pwm_conf.frequency,\
                       tu_channel[tu_number]);
 
@@ -644,7 +644,7 @@ void hrtim_tu_gpio_init(hrtim_tu_number_t tu_number)
                                 LL_HRTIM_MODE_CONTINUOUS);
 
     LL_HRTIM_TIM_EnablePreload(HRTIM1,                                      \
-                               tu_channel[tu_number]->pwm_conf.pwm_tu);     
+                               tu_channel[tu_number]->pwm_conf.pwm_tu);
 
     LL_HRTIM_TIM_SetUpdateTrig(HRTIM1,                                      \
                                tu_channel[tu_number]->pwm_conf.pwm_tu,      \
@@ -744,7 +744,7 @@ inline uint16_t hrtim_period_Master_get()
 
 inline uint16_t hrtim_period_get(hrtim_tu_number_t tu_number)
 {
-    return tu_channel[tu_number]->pwm_conf.period; 
+    return tu_channel[tu_number]->pwm_conf.period;
 }
 
 uint32_t hrtim_period_Master_get_us()
@@ -866,9 +866,9 @@ hrtim_external_trigger_t hrtim_eev_get(hrtim_tu_number_t tu_number)
 
 /**
  * The difference between hrtim_dt_set and hrtim_dt_init, is that the latter
- * is called only once for computing the dead prescaler, after that it is not 
- * possible to change the prescaler and there is maximum value for the rising 
- * and falling dead time. hrtim_set_dt can change dynamically the dead time 
+ * is called only once for computing the dead prescaler, after that it is not
+ * possible to change the prescaler and there is maximum value for the rising
+ * and falling dead time. hrtim_set_dt can change dynamically the dead time
  * without stopping the PWM.
 */
 void hrtim_dt_set(hrtim_tu_number_t tu_number, uint16_t rise_ns, uint16_t fall_ns)
@@ -881,27 +881,27 @@ void hrtim_dt_set(hrtim_tu_number_t tu_number, uint16_t rise_ns, uint16_t fall_n
     #warning "unsupported stm32XX family"
     #endif
     /* updates the rise dead time on the structure */
-    tu_channel[tu_number]->pwm_conf.rise_dead_time = rise_ns; 
+    tu_channel[tu_number]->pwm_conf.rise_dead_time = rise_ns;
     /* updates the fall dead time on the structure */
-    tu_channel[tu_number]->pwm_conf.fall_dead_time = fall_ns; 
+    tu_channel[tu_number]->pwm_conf.fall_dead_time = fall_ns;
 
     uint16_t rise_dt = 0;
     uint16_t fall_dt = 0;
     uint32_t rise_ps = rise_ns * 1000;
     uint32_t fall_ps = fall_ns * 1000;
     /* Dead time prescaler */
-    uint8_t dtpsc = (HRTIM1->sTimerxRegs[tu_number].DTxR>>10U)&(0x7);  
+    uint8_t dtpsc = (HRTIM1->sTimerxRegs[tu_number].DTxR>>10U)&(0x7);
     /* Dead time resolution (see table 222 of RM0440) */
-    uint32_t t_dtg_ps = (1 << dtpsc) * 1000000 / ((f_hrtim * 8) / 1000000); 
+    uint32_t t_dtg_ps = (1 << dtpsc) * 1000000 / ((f_hrtim * 8) / 1000000);
     /* calculate the register value based on desired deadtime in picoseconds */
-    rise_dt = rise_ps / t_dtg_ps; 
+    rise_dt = rise_ps / t_dtg_ps;
 
     if (rise_dt > 511)
     {
         rise_dt = 511;
     }
     /* calculate the register value based on desired deadtime in picoseconds */
-    fall_dt = fall_ps / t_dtg_ps; 
+    fall_dt = fall_ps / t_dtg_ps;
 
     if (fall_dt > 511)
     {
@@ -910,12 +910,12 @@ void hrtim_dt_set(hrtim_tu_number_t tu_number, uint16_t rise_ns, uint16_t fall_n
     /* Deadtime falling edge value */
     LL_HRTIM_DT_SetFallingValue(HRTIM1,                                      \
                                 tu_channel[tu_number]->pwm_conf.pwm_tu,      \
-                                fall_dt); 
+                                fall_dt);
 
     /* Deadtime rising edge value */
     LL_HRTIM_DT_SetRisingValue(HRTIM1,                                       \
                                tu_channel[tu_number]->pwm_conf.pwm_tu,       \
-                               rise_dt); 
+                               rise_dt);
 }
 
 /* Duty_cycle should not be set if we are in current mode */
@@ -942,7 +942,7 @@ void hrtim_phase_shift_set(hrtim_tu_number_t tu_number, uint16_t shift)
                                   LL_HRTIM_TIM_GetResetTrig(HRTIM1,            \
                                         tu_channel[tu_number]->pwm_conf.pwm_tu)\
                                   & ~timerMaster.phase_shift.reset_trig);
-        
+
         switch (tu_channel[tu_number]->pwm_conf.pwm_tu)
         {
         /* Timer A is the phase shift reference so it can't be phase
@@ -954,20 +954,20 @@ void hrtim_phase_shift_set(hrtim_tu_number_t tu_number, uint16_t shift)
                 LL_HRTIM_TIM_SetCompare2(HRTIM1,                               \
                                          LL_HRTIM_TIMER_A,                     \
                                          shift);
-                /* if timA comp2 is used (e.g. in current mode) 
-                   and timA is not left-aligned we can't phaseshift timB */ 
+                /* if timA comp2 is used (e.g. in current mode)
+                   and timA is not left-aligned we can't phaseshift timB */
                 LL_HRTIM_TIM_SetResetTrig(                                     \
                                 HRTIM1,                                        \
                                 tu_channel[tu_number]->pwm_conf.pwm_tu,        \
                                 tu_channel[tu_number]->phase_shift.reset_trig);
             }
-            else 
+            else
             {
                 /* the reset of timerB is on master PER event */
                 LL_HRTIM_TIM_SetResetTrig(                                     \
                                 HRTIM1,                                        \
                                 tu_channel[tu_number]->pwm_conf.pwm_tu,        \
-                                timerMaster.phase_shift.reset_trig); 
+                                timerMaster.phase_shift.reset_trig);
             }
             break;
         case TIMC: /* Timer C reset on master cmp2 */
@@ -1006,7 +1006,7 @@ void hrtim_phase_shift_set(hrtim_tu_number_t tu_number, uint16_t shift)
                timerMaster.pwm_conf.ckpsc == tu_channel[tu_number]->pwm_conf.ckpsc)          \
             ||                                                                               \
               (timerMaster.pwm_conf.period/2u == (tu_channel[tu_number]->pwm_conf.period) && \
-               timerMaster.pwm_conf.ckpsc == tu_channel[tu_number]->pwm_conf.ckpsc)) 
+               timerMaster.pwm_conf.ckpsc == tu_channel[tu_number]->pwm_conf.ckpsc))
             &&                                                                               \
             tu_channel[tu_number]->pwm_conf.pwm_tu != TIMA)
     {
@@ -1017,7 +1017,7 @@ void hrtim_phase_shift_set(hrtim_tu_number_t tu_number, uint16_t shift)
             LL_HRTIM_TIM_GetResetTrig(                                        \
                 HRTIM1,                                                       \
                 tu_channel[tu_number]->pwm_conf.pwm_tu) &                     \
-                    ~tu_channel[tu_number]->phase_shift.reset_trig);      
+                    ~tu_channel[tu_number]->phase_shift.reset_trig);
         LL_HRTIM_TIM_SetResetTrig(HRTIM1,                                     \
                                     tu_channel[tu_number]->pwm_conf.pwm_tu,   \
                                     timerMaster.phase_shift.reset_trig);
@@ -1053,16 +1053,16 @@ void hrtim_dt_init(hrtim_tu_number_t tu_number)
 #endif
 
     /* Deadtime clock prescaler */
-    uint8_t dtpsc = 0; 
+    uint8_t dtpsc = 0;
     uint16_t rise_dt = 0;
     uint16_t fall_dt = 0;
     /* intermediate gain for dead time calculation */
-    uint32_t t_dtg_ps = (1 << dtpsc) * 1000000 / ((f_hrtim * 8) / 1000000); 
+    uint32_t t_dtg_ps = (1 << dtpsc) * 1000000 / ((f_hrtim * 8) / 1000000);
 
     if(rise_ps >= fall_ps)
     {
         /* calculate the register value based on desired deadtime in picoseconds */
-        rise_dt = rise_ps / t_dtg_ps; 
+        rise_dt = rise_ps / t_dtg_ps;
         while (rise_dt > 511 && dtpsc < 7)
         {
             dtpsc++;
@@ -1072,9 +1072,9 @@ void hrtim_dt_init(hrtim_tu_number_t tu_number)
         if (rise_dt > 511)
         {
             rise_dt = 511;
-        } 
+        }
         /* calculate the register value based on desired deadtime in picoseconds */
-        fall_dt = fall_ps / t_dtg_ps; 
+        fall_dt = fall_ps / t_dtg_ps;
 
         while (fall_dt > 511 && dtpsc < 7)
         {
@@ -1089,7 +1089,7 @@ void hrtim_dt_init(hrtim_tu_number_t tu_number)
     }
     else if(rise_ps < fall_ps){
         /* calculate the register value based on desired deadtime in picoseconds */
-        fall_dt = fall_ps / t_dtg_ps; 
+        fall_dt = fall_ps / t_dtg_ps;
 
         while (fall_dt > 511 && dtpsc < 7)
         {
@@ -1102,7 +1102,7 @@ void hrtim_dt_init(hrtim_tu_number_t tu_number)
             fall_dt = 511;
         }
         /* calculate the register value based on desired deadtime in picoseconds */
-        rise_dt = rise_ps / t_dtg_ps; 
+        rise_dt = rise_ps / t_dtg_ps;
 
         while (rise_dt > 511 && dtpsc < 7)
         {
@@ -1121,21 +1121,75 @@ void hrtim_dt_init(hrtim_tu_number_t tu_number)
     /* Deadtime clock prescaler */
     LL_HRTIM_DT_SetPrescaler(HRTIM1,                                        \
                              tu_channel[tu_number]->pwm_conf.pwm_tu,        \
-                             dtpsc << 10U); 
+                             dtpsc << 10U);
 
     /* Deadtime falling edge value */
     LL_HRTIM_DT_SetFallingValue(HRTIM1,                                     \
                                 tu_channel[tu_number]->pwm_conf.pwm_tu,     \
-                                fall_dt); 
+                                fall_dt);
 
     /* Deadtime rising edge value */
     LL_HRTIM_DT_SetRisingValue(HRTIM1,                                      \
                                tu_channel[tu_number]->pwm_conf.pwm_tu,      \
-                               rise_dt); 
+                               rise_dt);
 
-    /* Note: This parameter cannot be changed once the timer is operating 
+    /* Note: This parameter cannot be changed once the timer is operating
     (TxEN bit set) or if its outputs are enabled and set/reset by another timer. */
-    LL_HRTIM_TIM_EnableDeadTime(HRTIM1, tu_channel[tu_number]->pwm_conf.pwm_tu); 
+    LL_HRTIM_TIM_EnableDeadTime(HRTIM1, tu_channel[tu_number]->pwm_conf.pwm_tu);
+}
+
+void hrtim_burst_mode_init(void){
+    /* Burst mode clock source is synchronized with master timer */
+    LL_HRTIM_BM_SetClockSrc(HRTIM1, LL_HRTIM_BM_CLKSRC_MASTER);
+    /* No prescaler applied */
+    LL_HRTIM_BM_SetPrescaler(HRTIM1, LL_HRTIM_BM_PRESCALER_DIV1);
+    /* Burst mode is triggered in software and runs continuously
+    until stopped by software. */
+    LL_HRTIM_BM_SetTrig(HRTIM1, LL_HRTIM_BM_TRIG_NONE);
+    /* Burst mode operate continuously when software triggered */
+    LL_HRTIM_BM_SetMode(HRTIM1, LL_HRTIM_BM_MODE_CONTINOUS);
+
+    for (uint8_t tu_count = 0; tu_count < HRTIM_CHANNELS; tu_count++){
+        /* For each PWM channel, set output inactive as idle mode*/
+        LL_HRTIM_OUT_SetIdleMode(HRTIM1,                                    \
+                                 tu_channel[tu_count]->gpio_conf.OUT_H,     \
+                                 LL_HRTIM_OUT_IDLE_WHEN_BURST);
+        LL_HRTIM_OUT_SetIdleMode(HRTIM1,                                    \
+                                 tu_channel[tu_count]->gpio_conf.OUT_L,     \
+                                 LL_HRTIM_OUT_IDLE_WHEN_BURST);
+
+        /* Set burst mode "polarity" e.g means if active or inactive during
+        idle times*/
+        LL_HRTIM_OUT_SetIdleLevel(HRTIM1,                                   \
+                                  tu_channel[tu_count],                     \
+                                  LL_HRTIM_OUT_IDLELEVEL_INACTIVE);
+        /* Enable Burst mode */
+        LL_HRTIM_BM_Enable(HRTIM1);
+    }
+}
+
+void hrtim_burst_set(int bm_cmp, int bm_per){
+        /* Set the number of period active in burst mode*/
+    LL_HRTIM_BM_SetCompare(HRTIM1, bm_cmp);
+    /* Set the number of period of the burst pattern
+    (active + inactive periods)*/
+    LL_HRTIM_BM_SetPeriod(HRTIM1, bm_per);
+}
+
+void hrtim_burst_start(void){
+    /* Software trigger starting burst mode*/
+    LL_HRTIM_BM_Start(HRTIM1);
+}
+
+void hrtim_burst_stop(void){
+    /* Software trigger stopping burst mode*/
+    LL_HRTIM_BM_Stop(HRTIM1);
+}
+
+void hrtim_burst_dis(void){
+    /* making sure burst is stopped*/
+    LL_HRTIM_BM_Stop(HRTIM1);
+    LL_HRTIM_BM_Disable(HRTIM1);
 }
 
 void hrtim_cnt_en(hrtim_tu_number_t tu_number)
@@ -1191,7 +1245,7 @@ void hrtim_adc_trigger_dis(hrtim_tu_number_t tu_number)
                 tu_channel[tu_number]->adc_hrtim.adc_trigger,                 \
                     LL_HRTIM_GetADCTrigSrc(                                   \
                             HRTIM1,                                           \
-                            tu_channel[tu_number]->adc_hrtim.adc_trigger) 
+                            tu_channel[tu_number]->adc_hrtim.adc_trigger)
                     & ~tu_channel[tu_number]->adc_hrtim.adc_source);
 }
 
@@ -1234,14 +1288,14 @@ void hrtim_PeriodicEvent_en(hrtim_tu_t tu)
     if (LL_HRTIM_GetSyncInSrc(HRTIM1) == LL_HRTIM_SYNCIN_SRC_NONE)
     {
         /* Enabling the interrupt on repetition counter event*/
-        LL_HRTIM_EnableIT_REP(HRTIM1, tu); 
+        LL_HRTIM_EnableIT_REP(HRTIM1, tu);
     }
 
     if (LL_HRTIM_GetSyncInSrc(HRTIM1) == LL_HRTIM_SYNCIN_SRC_EXTERNAL_EVENT)
     {
-        /* Enabling interruption on synch pulse 
+        /* Enabling interruption on synch pulse
         in case of slave communication mode*/
-        LL_HRTIM_EnableIT_SYNC(HRTIM1); 
+        LL_HRTIM_EnableIT_SYNC(HRTIM1);
     }
 
     IRQ_CONNECT(HRTIM_IRQ_NUMBER,                                             \
@@ -1257,7 +1311,7 @@ void hrtim_PeriodicEvent_dis(hrtim_tu_t tu)
 {
     irq_disable(HRTIM_IRQ_NUMBER);
     /* Disabling the interrupt on repetition counter event*/
-    LL_HRTIM_DisableIT_REP(HRTIM1, tu); 
+    LL_HRTIM_DisableIT_REP(HRTIM1, tu);
 }
 
 void hrtim_PeriodicEvent_SetRep(hrtim_tu_t tu, uint32_t repetition)
@@ -1299,7 +1353,7 @@ void hrtim_change_frequency(uint32_t new_frequency)
 
     float32_t duty_cycle;
     float32_t phase_shift;
-    uint32_t period = 
+    uint32_t period =
         ((f_hrtim / new_frequency) * 32 + \
          (f_hrtim % new_frequency) * (32 / new_frequency)) /                   \
         (1 << timerMaster.pwm_conf.ckpsc);
@@ -1317,7 +1371,7 @@ void hrtim_change_frequency(uint32_t new_frequency)
         LL_HRTIM_TIM_SetPeriod(HRTIM1, LL_HRTIM_TIMER_MASTER, period);
         timerMaster.pwm_conf.period = period;
 
-        duty_cycle = 
+        duty_cycle =
             (float32_t)LL_HRTIM_TIM_GetCompare1(                              \
                                         HRTIM1,                               \
                                         LL_HRTIM_TIMER_A)
@@ -1325,7 +1379,7 @@ void hrtim_change_frequency(uint32_t new_frequency)
             (float32_t)LL_HRTIM_TIM_GetPeriod(                                \
                                         HRTIM1,                               \
                                         LL_HRTIM_TIMER_A);
-        
+
         if(timerA.pwm_conf.modulation == UpDwn)
         {
             LL_HRTIM_TIM_SetPeriod(HRTIM1, LL_HRTIM_TIMER_A, period/2);
@@ -1335,7 +1389,7 @@ void hrtim_change_frequency(uint32_t new_frequency)
 
             tu_channel[PWMA]->pwm_conf.period = period/2;
         }
-        else 
+        else
         {
             LL_HRTIM_TIM_SetPeriod(HRTIM1, LL_HRTIM_TIMER_A, period);
             LL_HRTIM_TIM_SetCompare1(HRTIM1,                                  \
@@ -1344,16 +1398,16 @@ void hrtim_change_frequency(uint32_t new_frequency)
             tu_channel[PWMA]->pwm_conf.period = period;
         }
 
-        duty_cycle = 
+        duty_cycle =
             (float32_t)LL_HRTIM_TIM_GetCompare1(                              \
                                     HRTIM1,                                   \
                                     LL_HRTIM_TIMER_B)
             /                                                                 \
             (float32_t)LL_HRTIM_TIM_GetPeriod(                                \
-                                    HRTIM1, 
+                                    HRTIM1,
                                     LL_HRTIM_TIMER_B);
 
-        phase_shift = 
+        phase_shift =
             (float32_t)LL_HRTIM_TIM_GetCompare2(                              \
                                     HRTIM1,                                   \
                                     LL_HRTIM_TIMER_A)
@@ -1371,7 +1425,7 @@ void hrtim_change_frequency(uint32_t new_frequency)
             hrtim_phase_shift_set(PWMB, phase_shift*period/2);
             tu_channel[PWMB]->pwm_conf.period = period/2;
         }
-        else 
+        else
         {
             LL_HRTIM_TIM_SetPeriod(HRTIM1, LL_HRTIM_TIMER_B, period);
             LL_HRTIM_TIM_SetCompare1(HRTIM1,                                  \
@@ -1382,7 +1436,7 @@ void hrtim_change_frequency(uint32_t new_frequency)
             tu_channel[PWMB]->pwm_conf.period = period;
         }
 
-        duty_cycle = 
+        duty_cycle =
             (float32_t)LL_HRTIM_TIM_GetCompare1(                              \
                                     HRTIM1,                                   \
                                     LL_HRTIM_TIMER_C)                         \
@@ -1391,7 +1445,7 @@ void hrtim_change_frequency(uint32_t new_frequency)
                                     HRTIM1,                                   \
                                     LL_HRTIM_TIMER_C);
 
-        phase_shift = 
+        phase_shift =
             (float32_t)LL_HRTIM_TIM_GetCompare2(                              \
                                     HRTIM1,                                   \
                                     LL_HRTIM_TIMER_MASTER)
@@ -1410,7 +1464,7 @@ void hrtim_change_frequency(uint32_t new_frequency)
             hrtim_phase_shift_set(PWMC, phase_shift*period/2);
             tu_channel[PWMC]->pwm_conf.period = period/2;
         }
-        else 
+        else
         {
             LL_HRTIM_TIM_SetPeriod(HRTIM1, LL_HRTIM_TIMER_C, period);
             LL_HRTIM_TIM_SetCompare1(HRTIM1,                                  \
@@ -1420,7 +1474,7 @@ void hrtim_change_frequency(uint32_t new_frequency)
             tu_channel[PWMC]->pwm_conf.period = period;
         }
 
-        duty_cycle = 
+        duty_cycle =
             (float32_t)LL_HRTIM_TIM_GetCompare1(                              \
                                 HRTIM1,                                       \
                                 LL_HRTIM_TIMER_D)                             \
@@ -1429,7 +1483,7 @@ void hrtim_change_frequency(uint32_t new_frequency)
                                 HRTIM1,                                       \
                                 LL_HRTIM_TIMER_D);
 
-        phase_shift = 
+        phase_shift =
             (float32_t)LL_HRTIM_TIM_GetCompare3(                              \
                                 HRTIM1,                                       \
                                 LL_HRTIM_TIMER_MASTER)                        \
@@ -1448,7 +1502,7 @@ void hrtim_change_frequency(uint32_t new_frequency)
             hrtim_phase_shift_set(PWMD, phase_shift*period/2);
             tu_channel[PWMD]->pwm_conf.period = period/2;
         }
-        else 
+        else
         {
             LL_HRTIM_TIM_SetPeriod(HRTIM1, LL_HRTIM_TIMER_D, period);
             LL_HRTIM_TIM_SetCompare1(HRTIM1,                                \
@@ -1459,7 +1513,7 @@ void hrtim_change_frequency(uint32_t new_frequency)
             tu_channel[PWMD]->pwm_conf.period = period;
         }
 
-        duty_cycle = 
+        duty_cycle =
             (float32_t)LL_HRTIM_TIM_GetCompare1(                            \
                                     HRTIM1,                                 \
                                     LL_HRTIM_TIMER_E)                       \
@@ -1468,7 +1522,7 @@ void hrtim_change_frequency(uint32_t new_frequency)
                                     HRTIM1,                                 \
                                     LL_HRTIM_TIMER_E);
 
-        phase_shift = 
+        phase_shift =
             (float32_t)LL_HRTIM_TIM_GetCompare4(                            \
                                     HRTIM1,                                 \
                                     LL_HRTIM_TIMER_MASTER)                  \
@@ -1486,7 +1540,7 @@ void hrtim_change_frequency(uint32_t new_frequency)
             hrtim_phase_shift_set(PWME, phase_shift*period/2);
             tu_channel[PWME]->pwm_conf.period = period/2;
         }
-        else 
+        else
         {
             LL_HRTIM_TIM_SetPeriod(HRTIM1, LL_HRTIM_TIMER_E, period);
             LL_HRTIM_TIM_SetCompare1(HRTIM1,                                \
@@ -1497,7 +1551,7 @@ void hrtim_change_frequency(uint32_t new_frequency)
             tu_channel[PWME]->pwm_conf.period = period;
         }
 
-        duty_cycle = 
+        duty_cycle =
             (float32_t)LL_HRTIM_TIM_GetCompare1(                            \
                             HRTIM1,                                         \
                             LL_HRTIM_TIMER_F)                               \
@@ -1524,7 +1578,7 @@ void hrtim_change_frequency(uint32_t new_frequency)
             hrtim_phase_shift_set(PWMF, phase_shift*period/2);
             tu_channel[PWMF]->pwm_conf.period = period/2;
         }
-        else 
+        else
         {
             LL_HRTIM_TIM_SetPeriod(HRTIM1, LL_HRTIM_TIMER_F, period);
             LL_HRTIM_TIM_SetCompare1(HRTIM1,                                \

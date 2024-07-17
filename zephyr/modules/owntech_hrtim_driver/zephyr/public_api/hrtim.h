@@ -411,6 +411,39 @@ void hrtim_phase_shift_set(hrtim_tu_number_t tu_number, uint16_t shift);
  */
 void hrtim_dt_init(hrtim_tu_number_t tu_number);
 
+
+/**
+ * @brief   Initialize burst mode
+ *          This mode permits to skip one or multiple PWM periods by
+ *          idling the output on a low state. It is used in light load
+ *          conditions to minimize switching losses.
+ */
+void hrtim_burst_mode_init(void);
+
+/**
+ * @brief   Set burst mode parameters
+ *
+ * @param[in] bm_cmp        number of periods idle:
+ * @param[in] bm_per        total number of period during a cycle (idle and active)
+ */
+void hrtim_burst_set(int bm_cmp, int bm_per);
+
+/**
+ * @brief   Starts burst mode. Burst mode won't stop until hrtim_burst_stop is
+ * called
+ */
+void hrtim_burst_start(void);
+
+/**
+ * @brief   Stops burst mode
+ */
+void hrtim_burst_stop(void);
+
+/**
+ * @brief   Disable burst mode
+ */
+void hrtim_burst_dis(void);
+
 /**
  * @brief   Enables a timing unit counter
  *
