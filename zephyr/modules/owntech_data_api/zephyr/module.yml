@@ -1,4 +1,0 @@
-name: owntech_data_api
-build:
-  cmake: zephyr
-  kconfig: zephyr/Kconfig

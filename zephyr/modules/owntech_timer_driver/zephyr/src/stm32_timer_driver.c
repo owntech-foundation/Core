@@ -92,7 +92,12 @@ void timer_stm32_config(const struct device* dev, const struct timer_config_t* c
 			data->timer_mode = periodic_interrupt;
 			data->timer_irq_callback = config->timer_irq_callback;
 			data->timer_irq_period_usec = config->timer_irq_t_usec;
-			irq_connect_dynamic(data->interrupt_line, data->interrupt_prio, timer_stm32_callback, dev, 0);
+			uint32_t flags = 0;
+			if (config->timer_use_zero_latency == 1)
+			{
+				flags = IRQ_ZERO_LATENCY;
+			}
+			irq_connect_dynamic(data->interrupt_line, data->interrupt_prio, timer_stm32_callback, dev, flags);
 			irq_enable(data->interrupt_line);
 		}
 	}
@@ -245,8 +250,6 @@ void init_timer_6()
 	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM6);
 
 	// TIM6 interrupt Init
-	NVIC_SetPriority(TIM6_DAC_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),0, 0));
-
 	TIM_InitStruct.Prescaler = (CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC/1e7) - 1; // Set prescaler to tick to 0.1µs
 	TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
 	LL_TIM_Init(TIM6, &TIM_InitStruct);
@@ -263,8 +266,6 @@ void init_timer_7()
 	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM7);
 
 	// TIM7 interrupt Init
-	NVIC_SetPriority(TIM7_DAC_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),0, 0));
-
 	TIM_InitStruct.Prescaler = (CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC/1e7) - 1; // Set prescaler to tick to 0.1µs
 	TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
 	LL_TIM_Init(TIM7, &TIM_InitStruct);

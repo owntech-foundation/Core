@@ -1,4 +1,4 @@
-name: owntech_spin_API
+name: owntech_spin_api
 build:
   cmake: zephyr
   kconfig: zephyr/Kconfig
