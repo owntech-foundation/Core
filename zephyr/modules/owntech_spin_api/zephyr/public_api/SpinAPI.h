@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 LAAS-CNRS
+ * Copyright (c) 2022-2024 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2023
+ * @date   2024
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
@@ -29,13 +29,6 @@
 #ifndef SPINAPI_H_
 #define SPINAPI_H_
 
-// Stdlib
-#include <stdint.h>
-
-// ARM lib
-#include <arm_math.h>
-
-// Private sources include
 #include "../src/CompHAL.h"
 #include "../src/DacHAL.h"
 #include "../src/GpioHAL.h"
@@ -62,7 +55,6 @@
  */
 class SpinAPI
 {
-
 public:
 
 #ifdef CONFIG_OWNTECH_GPIO_API
@@ -108,13 +100,6 @@ public:
 	 * @brief Data acquisition from SPIN ADCs
 	 */
 	static DataAPI data;
-#endif
-
-#ifdef CONFIG_OWNTECH_NGND_DRIVER
-	/**
-	 * @brief Contains all the function of the NGND switch compatible with TWISTs prior to 1.4.
-	 */
-	static NgndHAL ngnd;
 #endif
 
 };
