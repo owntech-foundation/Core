@@ -30,13 +30,6 @@ if(CONFIG_OWNTECH_SPIN_API)
     )
   endif()
 
-  # NGND driver
-  if (CONFIG_OWNTECH_NGND_DRIVER)
-    zephyr_library_sources(
-      src/NgndHAL.cpp
-  )
-  endif()
-
   # GPIO API
   if (CONFIG_OWNTECH_GPIO_API)
     zephyr_library_sources(

@@ -33,3 +33,7 @@ ShieldAPI shield;
 
 PowerAPI ShieldAPI::power;
 SensorsAPI ShieldAPI::sensors;
+
+#ifdef CONFIG_OWNTECH_NGND_DRIVER
+NgndHAL ShieldAPI::ngnd;
+#endif

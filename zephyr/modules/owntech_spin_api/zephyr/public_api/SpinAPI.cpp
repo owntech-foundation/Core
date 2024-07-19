@@ -51,7 +51,3 @@ TimerHAL SpinAPI::timer;
 #ifdef CONFIG_OWNTECH_DATA_API
 DataAPI SpinAPI::data;
 #endif
-
-#ifdef CONFIG_OWNTECH_NGND_DRIVER
-NgndHAL SpinAPI::ngnd;
-#endif

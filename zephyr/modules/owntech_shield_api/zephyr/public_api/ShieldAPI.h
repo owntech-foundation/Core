@@ -29,7 +29,6 @@
 #define SHIELDAPI_H_
 
 
-// Other modules public API
 #include "../src/Sensors.h"
 #include "../src/Power.h"
 
@@ -40,8 +39,24 @@
 class ShieldAPI
 {
 public:
+
+	/**
+	 * @brief Contains all the functions to interact with shield sensors
+	 */
 	static SensorsAPI sensors;
+
+	/**
+	 * @brief Contains all the functions to drive shield power capabilities
+	 */
 	static PowerAPI power;
+
+#ifdef CONFIG_OWNTECH_NGND_DRIVER
+	/**
+	 * @brief Contains all the function of the NGND switch compatible with TWISTs prior to 1.4.
+	 */
+	static NgndHAL ngnd;
+#endif
+
 };
 
 
