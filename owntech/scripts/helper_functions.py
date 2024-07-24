@@ -1,6 +1,8 @@
 import os
 import platform
 import zipfile
+import certifi
+import shutil
 from stat import *
 
 def unzip_file(zip_file_path, extract_to_path):
@@ -27,7 +29,9 @@ def check_file_and_download(what, folder_path, file_name, file_url, make_exec = 
 		print(f"{what} is not available locally, downloading.")
 		try:
 			# Download file
-			urllib.request.urlretrieve(file_url, file_path)
+			ssl_context = urllib.request.ssl.create_default_context(cafile=certifi.where())
+			with urllib.request.urlopen(file_url, context=ssl_context) as response, open(file_path, 'wb') as out_file:
+				shutil.copyfileobj(response, out_file)
 			print("Download complete.")
 		except URLError:
 			print(f"Error! Unable to download {what}.")
