@@ -33,11 +33,11 @@
 #include "SpinAPI.h"
 
 //--------------SETUP FUNCTIONS DECLARATION-------------------
-void setup_routine(); // Setups the hardware and software of the system
+void setup_routine();           /* Setups the hardware and software of the system */
 
 //--------------LOOP FUNCTIONS DECLARATION--------------------
-void loop_background_task();   // Code to be executed in the background task
-void loop_critical_task();     // Code to be executed in real time in the critical task
+void loop_background_task();    /* Code to be executed in the background task */
+void loop_critical_task();      /* Code to be executed in real time in the critical task */
 
 //--------------USER VARIABLES DECLARATIONS-------------------
 
@@ -47,19 +47,23 @@ void loop_critical_task();     // Code to be executed in real time in the critic
 
 /**
  * This is the setup routine.
- * It is used to call functions that will initialize your spin, twist, data and/or tasks.
- * In this example, we setup the version of the spin board and a background task.
- * The critical task is defined but not started.
+ * It is used to call functions that will initialize your hardware and tasks.
+ * In this example, we setup the version of the spin board and a 
+ * background task. The critical task is defined but not started.
+ * NOTE: It is important to follow the steps and initialize the hardware first 
+ * and the tasks second. 
  */
 void setup_routine()
 {
-    // Then declare tasks
-    uint32_t background_task_number = task.createBackground(loop_background_task);
-    //task.createCritical(loop_critical_task, 500); // Uncomment if you use the critical task
+    /* STEP 1 - SETUP THE HARDWARE */
 
-    // Finally, start tasks
+    /* STEP 2 - SETUP THE TASKS */
+    uint32_t background_task_number = task.createBackground(loop_background_task);
+    //task.createCritical(loop_critical_task, 500); /* Uncomment if you use the critical task */
+
+    /* STEP 3 - LAUNCH THE TASKS */
     task.startBackground(background_task_number);
-    //task.startCritical(); // Uncomment if you use the critical task
+    //task.startCritical(); /* Uncomment if you use the critical task */
 }
 
 //--------------LOOP FUNCTIONS--------------------------------
@@ -71,23 +75,21 @@ void setup_routine()
  */
 void loop_background_task()
 {
-    // Task content
     printk("Hello World! \n");
     spin.led.toggle();
 
-    // Pause between two runs of the task
-    task.suspendBackgroundMs(1000);
+    task.suspendBackgroundMs(1000);  /* This pauses the task for 1000 mili seconds */
 }
 
 /**
  * This is the code loop of the critical task
  * It is executed every 500 micro-seconds defined in the setup_software function.
- * You can use it to execute an ultra-fast code with the highest priority which cannot be interruped.
- * It is from it that you will control your power flow.
+ * You can use it to execute an ultra-fast code with the highest priority which 
+ * cannot be interruped. It is from it that you will control your power flow.
  */
 void loop_critical_task()
 {
-
+    /* This task is left empty in this example */
 }
 
 /**
