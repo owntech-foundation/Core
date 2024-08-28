@@ -34,7 +34,7 @@
 /* LL drivers */
 #include "stm32_ll_gpio.h"
 
-#define ADC_NUM 2
+#define ADC_NUM ADC_2
 #define DAC_NUM 2
 #define DAC_CHAN 1
 
