@@ -207,8 +207,11 @@
 		temp: temp-sensor {
 			compatible = "shield-sensors";
 			sensor-name = "TEMP_SENSOR";
-			default-gain = <0x3f800000>;
-			default-offset = <0x00000000>;
+			default-R0 = <0x461c4000>;
+			default-B = <0x4557a000>;
+			default-RDIV = <0x469c4000>;
+			default-T0 = <0x43951333>;
+			sensor-conv-type = "THERMISTANCE";
 			mux-spin-pin-1 = <15>;
 			mux-spin-pin-2 = <9>;
 			temp-sensor-adc2 {
@@ -329,8 +332,8 @@
 			compatible = "safety-thresholds";
 			sensor-name = "TEMP_SENSOR";
 			threshold-name = "TEMP_SENSOR_TD";
-			threshold-high = <0x00000000>;
-			threshold-low = <0x00000000>;
+			threshold-high = <0x428c0000>;  /*  70C */
+			threshold-low = <0xc1a00000>;	/* -20C */
 			status = "disabled";
 		};
 
