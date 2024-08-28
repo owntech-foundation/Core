@@ -42,10 +42,23 @@ properties:
     description: Value of the offset (to be added after the raw value has been multiplied by the gain).
                  The value represents a float32_t, thus is stored in IEEE754 format.
 
+
+  mux-spin-pin-1:
+    type: int
+    required: false
+    description: PIN IN 1 used in the mux for temperature sensor on the Ownverter. 
+
+  mux-spin-pin-2:
+    type: int
+    required: false
+    description: PIN IN 1 used in the mux for temperature sensor on the Ownverter. 
+
+
   sensor-conv-type:
     type: string
     required: false
     description: Type of conversion performed by the sensor. Typically LINEAR or LOG. 
+
 
 child-binding:
 

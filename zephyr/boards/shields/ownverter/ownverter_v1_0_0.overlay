@@ -6,7 +6,7 @@
 
 / {
 	choosen{
-		zephyr,can-primary = &fdcan1;
+		zephyr,can-primary = &fdcan2;
 	};
 
 	powershield: power-shield{
@@ -58,7 +58,7 @@
         };
     };
 
-	shield-sensors {
+	shieldsensors: shield-sensors {
 		/* Voltage channels */
 		v1low: v1-low {
 			compatible = "shield-sensors";
@@ -209,6 +209,8 @@
 			sensor-name = "TEMP_SENSOR";
 			default-gain = <0x3f800000>;
 			default-offset = <0x00000000>;
+			mux-spin-pin-1 = <15>;
+			mux-spin-pin-2 = <9>;
 			temp-sensor-adc2 {
 				io-channels = <&adc2 15>;
 				spin-pin = <6>;
@@ -354,8 +356,8 @@
 
 // CAN
 
-&fdcan1 {
-	pinctrl-0 = <&fdcan1_rx_pb5 &fdcan1_tx_pb6>;
+&fdcan2 {
+	pinctrl-0 = <&fdcan2_rx_pb5 &fdcan2_tx_pb6>;
 	pinctrl-names = "default";
 	bus-speed = <500000>;
 	sample-point = <875>;
