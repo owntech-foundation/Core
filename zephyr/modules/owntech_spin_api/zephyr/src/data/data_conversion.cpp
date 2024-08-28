@@ -59,6 +59,12 @@ static uint8_t _data_conversion_get_parameters_count(conversion_type_t type)
 			// Param 1 = offset
 			parameters_count = 2;
 			break;
+		case conversion_therm:
+			// Param 0 = R0
+			// Param 1 = B
+			// Param 2 = RDIV
+			// Param 3 = T0
+			parameters_count = 4;
 		case no_channel_error:
 			break;
 	}
@@ -87,6 +93,13 @@ void data_conversion_init()
 						conversion_parameters[adc_index][channel_index][0]= 1;
 						conversion_parameters[adc_index][channel_index][1]= 0;
 						break;
+					case conversion_therm:
+						// For therm conversion, set all parameters to 1 by default
+						conversion_parameters[adc_index][channel_index][0]= 1;
+						conversion_parameters[adc_index][channel_index][1]= 1;
+						conversion_parameters[adc_index][channel_index][2]= 1;
+						conversion_parameters[adc_index][channel_index][3]= 1;
+						break;
 					case no_channel_error:
 						break;
 				}
@@ -104,6 +117,9 @@ float32_t data_conversion_convert_raw_value(uint8_t adc_num, uint8_t channel_num
 	{
 		case conversion_linear:
 			return (raw_value*conversion_parameters[adc_index][channel_index][0]) + conversion_parameters[adc_index][channel_index][1];
+			break;
+		case conversion_therm:
+			return 0; // TODO Luiz
 			break;
 		case no_channel_error:
 			return ERROR_CHANNEL_NOT_FOUND;
@@ -129,6 +145,25 @@ void data_conversion_set_conversion_parameters_linear(uint8_t adc_num, uint8_t c
 
 	conversion_parameters[adc_index][channel_index][0] = gain;
 	conversion_parameters[adc_index][channel_index][1] = offset;
+}
+
+void data_conversion_set_conversion_parameters_therm(uint8_t adc_num, uint8_t channel_num, float32_t r0, float32_t b, float32_t rdiv, float32_t t0)
+{
+	uint8_t adc_index     = adc_num - 1;
+	uint8_t channel_index = channel_num - 1;
+
+	conversion_types[adc_index][channel_index] = conversion_therm;
+	if (conversion_parameters[adc_index][channel_index] != nullptr)
+	{
+		k_free(conversion_parameters[adc_index][channel_index]);
+	}
+
+	conversion_parameters[adc_index][channel_index] = (float32_t*)k_malloc(4*sizeof(float32_t));
+
+	conversion_parameters[adc_index][channel_index][0] = r0;
+	conversion_parameters[adc_index][channel_index][1] = b;
+	conversion_parameters[adc_index][channel_index][2] = rdiv;
+	conversion_parameters[adc_index][channel_index][3] = t0;
 }
 
 conversion_type_t data_conversion_get_conversion_type(uint8_t adc_num, uint8_t channel_num)
