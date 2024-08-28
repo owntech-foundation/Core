@@ -116,6 +116,7 @@ private:
 		int2float default_t0;
 	} sensor_dt_data_t;
 
+
 public:
 
 	/**
@@ -321,6 +322,27 @@ public:
 	 */
 	int8_t retrieveParametersFromMemory(sensor_t sensor_name);
 
+#ifdef CONFIG_SHIELD_OWNVERTER
+
+	/**
+	 * @brief This function is used to enable acquisition of all voltage/current
+	 *        sensors on the Twist shield.
+	 *        Sensors are attributed as follows:
+	 *        ADC1: - I1_LOW      ADC2: - I2_LOW
+	 *              - V1_LOW            - V2_LOW
+	 *              - V_HIGH            - I_HIGH
+	 *
+	 * @note  This function will configure ADC 1 and 2 to be automatically
+	 *        triggered by the HRTIM, so the board must be configured as
+	 *        a power converted to enable HRTIM events.
+	 *        All other ADCs remain software triggered, thus will only be
+	 *        acquired when triggerAcquisition() is called.
+	 *
+	 * @note  This function must be called *before* ADC is started.
+	 */
+	void enableDefaultOwnverterSensors();
+#endif
+
 #ifdef CONFIG_SHIELD_TWIST
 
 	/**
@@ -395,6 +417,12 @@ private:
 	static sensor_dt_data_t** available_sensors_props[ADC_COUNT];
 	static sensor_dt_data_t* enabled_sensors[];
 	static bool initialized;
+
+	#ifdef CONFIG_SHIELD_OWNVERTER
+	static uint8_t   temp_mux_in_1;
+	static uint8_t   temp_mux_in_2;
+
+	#endif
 
 };
 
