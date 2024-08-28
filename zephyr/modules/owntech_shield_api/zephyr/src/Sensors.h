@@ -129,11 +129,11 @@ public:
 	 * @note  This function must be called *before* ADC is started.
 	 *
 	 * @param[in] sensor_name Name of the sensor using enumeration sensor_t.
-	 * @param[in] adc_number Number of the ADC which should be used for acquisition.
+	 * @param[in] adc_number The ADC which should be used for acquisition.
 	 *
 	 * @return 0 if the sensor was correctly enabled, negative value if there was an error.
 	 */
-	int8_t enableSensor(sensor_t sensor_name, uint8_t adc_number);
+	int8_t enableSensor(sensor_t sensor_name, adc_t adc_number);
 
 	/**
 	 * @brief Function to access the acquired data for specified sensor.
@@ -378,6 +378,19 @@ public:
 	 *        explicitly nor by starting the Uninterruptible task.
 	 */
 	void setTwistSensorsUserCalibrationFactors();
+
+	/**
+	 * @brief Manually triggers the temperature measurement of the Twist board.
+	 *
+	 * @param[in] temperature_sensor Name of the temperature sensor to trigger.
+	 * 							     Can be either TEMP_SENSOR_1 or TEMP_SENSOR_2.
+	 *
+	 * @note  This function must be called to trigger a conversion of the ADC
+	 * 		  to which the sensor is linked. It must be called BEFORE reading
+	 *        a new measurement. Account for delays in the measurement.
+	 */
+	void triggerTwistTempMeas(sensor_t temperature_sensor);
+
 #endif
 
 private:
