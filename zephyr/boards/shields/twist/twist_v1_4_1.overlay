@@ -156,31 +156,31 @@
 		temp1: temp-sensor-1 {
 			compatible = "shield-sensors";
 			sensor-name = "TEMP_SENSOR_1";
-			default-R0 = <0x3f800000>;
-			default-B = <0x00000000>;
-			default-RDIV = <0x3f800000>;
-			default-T0 = <0x3f800000>;
-			sensor-conv-type = "THERMISTOR";
+			default-R0 = <0x461c4000>;
+			default-B = <0x4557a000>;
+			default-RDIV = <0x469c4000>;
+			default-T0 = <0x43951333>;
+			sensor-conv-type = "THERMISTANCE";
 			analog-comm-adc4 {
 				io-channels = <&adc4 5>;
 				spin-pin = <6>;
 			};
-			status = "disabled";
+			status = "okay";
 		};
 
 		temp2: temp-sensor-2 {
 			compatible = "shield-sensors";
 			sensor-name = "TEMP_SENSOR_2";
-			default-R0 = <0x3f800000>;
-			default-B = <0x00000000>;
-			default-RDIV = <0x3f800000>;
-			default-T0 = <0x3f800000>;
-			sensor-conv-type = "THERMISTOR";
+			default-R0 = <0x461c4000>;
+			default-B = <0x4557a000>;
+			default-RDIV = <0x469c4000>;
+			default-T0 = <0x43951333>;
+			sensor-conv-type = "THERMISTANCE";
 			temp-sensor-adc3 {
 				io-channels = <&adc3 12>;
 				spin-pin = <37>;
 			};
-			status = "disabled";
+			status = "okay";
 		};
 
 		analog: analog-comm {
@@ -259,23 +259,24 @@
 
 		/* Other channels thresholds */
 
-		temptd: temp-sensor-td {
+		temptd1: temp-sensor-1-td {
 			compatible = "safety-thresholds";
-			sensor-name = "TEMP_SENSOR";
-			threshold-name = "TEMP_SENSOR_TD";
-			threshold-high = <0x00000000>;
-			threshold-low = <0x00000000>;
+			sensor-name = "TEMP_SENSOR_1";
+			threshold-name = "TEMP_SENSOR_1_TD";
+			threshold-high = <0x428c0000>;  /*  70C */
+			threshold-low = <0xc1a00000>;	/* -20C */
 			status = "disabled";
 		};
 
-		extratd: extra-sensor-td {
+		temptd2: temp-sensor-2-td {
 			compatible = "safety-thresholds";
-			sensor-name = "EXTRA_MEAS";
-			threshold-name = "EXTRA_MEAS_TD";
-			threshold-high = <0x00000000>;
-			threshold-low = <0x00000000>;
+			sensor-name = "TEMP_SENSOR_2";
+			threshold-name = "TEMP_SENSOR_2_TD";
+			threshold-high = <0x428c0000>;	/*  70C */
+			threshold-low = <0xc1a00000>;	/* -20C */
 			status = "disabled";
 		};
+
 
 		analogtd: analog-comm-td {
 			compatible = "safety-thresholds";
