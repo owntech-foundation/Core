@@ -58,13 +58,14 @@
         };
     };
 
-	shieldsensors: shield-sensors {
+	shield-sensors {
 		/* Voltage channels */
 		v1low: v1-low {
 			compatible = "shield-sensors";
 			sensor-name = "V1_LOW";
 			default-gain = <0x3d3851ec>;
 			default-offset = <0xc2b867f0>;
+			sensor-conv-type = "LINEAR";
 			v1-low-adc1 {
 				io-channels = <&adc1 6>;
 				spin-pin = <24>;
@@ -81,6 +82,7 @@
 			sensor-name = "V2_LOW";
 			default-gain = <0x3d3851ec>;
 			default-offset = <0xc2b867f0>;
+			sensor-conv-type = "LINEAR";
 			v2-low-adc1 {
 				io-channels = <&adc1 1>;
 				spin-pin = <29>;
@@ -97,6 +99,7 @@
 			sensor-name = "V3_LOW";
 			default-gain = <0x3d3851ec>;
 			default-offset = <0xc2b867f0>;
+			sensor-conv-type = "LINEAR";
 			v3-low-adc1 {
 				io-channels = <&adc1 12>;
 				spin-pin = <42>;
@@ -113,6 +116,7 @@
 			sensor-name = "V_HIGH";
 			default-gain = <0x3cf57710>;
 			default-offset = <0x00000000>;
+			sensor-conv-type = "LINEAR";
 			v-high-adc1 {
 				io-channels = <&adc1 9>;
 				spin-pin = <27>;
@@ -129,6 +133,7 @@
 			sensor-name = "V_NEUTR";
 			default-gain = <0x3f800000>;
 			default-offset = <0x00000000>;
+			sensor-conv-type = "LINEAR";
 			vneutr-adc1 {
 				io-channels = <&adc1 15>;
 				spin-pin = <31>;
@@ -143,6 +148,7 @@
 			sensor-name = "I1_LOW";
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
+			sensor-conv-type = "LINEAR";
 			i1-low-adc1 {
 				io-channels = <&adc1 7>;
 				spin-pin = <25>;
@@ -159,6 +165,7 @@
 			sensor-name = "I2_LOW";
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
+			sensor-conv-type = "LINEAR";
 			i2-low-adc1 {
 				io-channels = <&adc1 2>;
 				spin-pin = <30>;
@@ -175,6 +182,7 @@
 			sensor-name = "I3_LOW";
 			default-gain = <0x3d3851ec>;
 			default-offset = <0xc2b867f0>;
+			sensor-conv-type = "LINEAR";
 			v3-low-adc1 {
 				io-channels = <&adc1 14>;
 				spin-pin = <1>;
@@ -191,6 +199,7 @@
 			sensor-name = "I_HIGH";
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
+			sensor-conv-type = "LINEAR";
 			i-high-adc1 {
 				io-channels = <&adc1 9>;
 				spin-pin = <27>;
@@ -207,10 +216,10 @@
 		temp: temp-sensor {
 			compatible = "shield-sensors";
 			sensor-name = "TEMP_SENSOR";
-			default-R0 = <0x461c4000>;
-			default-B = <0x4557a000>;
-			default-RDIV = <0x469c4000>;
-			default-T0 = <0x43951333>;
+			default-r0 = <0x461c4000>;
+			default-b = <0x4557a000>;
+			default-rdiv = <0x469c4000>;
+			default-t0 = <0x43951333>;
 			sensor-conv-type = "THERMISTANCE";
 			mux-spin-pin-1 = <15>;
 			mux-spin-pin-2 = <9>;
@@ -226,6 +235,7 @@
 			sensor-name = "ANALOG_COMM";
 			default-gain = <0x3f800000>;
 			default-offset = <0x00000000>;
+			sensor-conv-type = "LINEAR";
 			extra-sensor-adc2 {
 				io-channels = <&adc2 5>;
 				spin-pin = <35>;
@@ -238,6 +248,7 @@
             sensor-name = "ANALOG_SIN";
             default-gain = <0x3f800000>;
             default-offset = <0x00000000>;
+			sensor-conv-type = "LINEAR";
             analog-sin-adc2 {
                     io-channels = <&adc2 11>;
 					spin-pin = <43>;
@@ -249,6 +260,7 @@
             sensor-name = "ANALOG_COS";
             default-gain = <0x3f800000>;
             default-offset = <0x00000000>;
+			sensor-conv-type = "LINEAR";
             analog-cos-adc2 {
                     io-channels = <&adc2 17>;
 					spin-pin = <45>;
