@@ -328,7 +328,7 @@ Trigger timing can be defined or changed dynamically.
 !!! example
     see the following example for an application :
 
-    - [PWM trigerred ADC](https://owntech-foundation.github.io/Documentation/examples/SPIN/ADC/adc_hrtim_trigger/)
+    - [PWM trigerred ADC](https://owntech-foundation.github.io/Documentation/examples/SPIN/ADC/adc_hrtim_trigger/) 
 
 ## API Reference
 
