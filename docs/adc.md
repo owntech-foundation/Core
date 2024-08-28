@@ -333,4 +333,4 @@ Trigger timing can be defined or changed dynamically.
 ## API Reference
 
 ::: doxy.powerAPI.class
-name: AdcHAL
+name: AdcHAL 
