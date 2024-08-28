@@ -49,8 +49,9 @@ class TaskAPI
 public:
 	/**
 	 * @brief Creates a time critial task.
-	 * 		  A critical task is an Uninterruptible Synchronous Task that uses a precise timer to
-	 *        execute a periodic, non-interruptible user task.
+	 *        A critical task is an Uninterruptible Synchronous Task
+	 *        that uses a precise timer to execute a periodic,
+	 *        non-interruptible user task.
 	 *        Use this function to define such a task.
 	 *        Only one task of this kind can be defined.
 	 *        This function can be used to redefine (replace) a
@@ -58,12 +59,15 @@ public:
 	 *        but the previously defined task must have been suspended
 	 *        (or never started). An error will be returned if the
 	 *        previously defined task is still running.
+	 * @note  If the HRTIM is used to trigger the task (which is the
+	 *        default behavior), then the HRTIM must have been
+	 *        configured *before* calling this function.
 	 *
 	 * @param periodic_task Pointer to the void(void) function
 	 *        to be executed periodically.
 	 * @param task_period_us Period of the function in µs.
 	 *        Allowed range: 1 to 6553 µs.
-	 *        If interrupt source is HRTIM, this value MUST be an
+	 *        If interrupt source is HRTIM, this value *must* be an
 	 *        integer multiple of the HRTIM period.
 	 * @param int_source Interrupt source that triggers the task.
 	 *        By default, the HRTIM is the source, but this optional

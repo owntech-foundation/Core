@@ -1,0 +1,41 @@
+description: List of a shield sensors that can be acquired by Spin ADCs
+
+compatible: "shield-sensors"
+
+properties:
+  sensor-name:
+    type: string
+    required: true
+    description: Name under which the sensor will be referred to in user code.
+
+  default-gain:
+    type: int
+    required: false
+    description: Value of the gain (multiplication to be applied on the raw measured value).
+                 The value represents a float32_t, thus is stored in IEEE754 format.
+
+  default-offset:
+    type: int
+    required: false
+    description: Value of the offset (to be added after the raw value has been multiplied by the gain).
+                 The value represents a float32_t, thus is stored in IEEE754 format.
+
+child-binding:
+
+  description: Sensor node ADC info
+
+  properties:
+
+    io-channels:
+      type: phandle-array
+      required: true
+      description: ADC number and channel description.
+
+    spin-pin:
+      type: int
+      required: true
+
+    differential:
+      type: boolean
+      required: false
+      description: Set the channel to differential mode. Default is Single Ended.

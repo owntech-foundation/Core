@@ -51,10 +51,9 @@ public:
 	/**
 	 * @brief initialization synchronization as SLAVE, the slave receive the synchronization pulsle.
 	*/
-	static void initSlave(board_version_t board_version);
+	static void initSlave();
 };
 
 #endif // CONFIG_OWNTECH_COMMUNICATION_ENABLE_SYNC
 
 #endif // SYNCCOMMUNICATION_H_
-

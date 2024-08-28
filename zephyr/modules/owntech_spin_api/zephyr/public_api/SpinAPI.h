@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 LAAS-CNRS
+ * Copyright (c) 2022-2024 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2023
+ * @date   2024
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
@@ -29,26 +29,23 @@
 #ifndef SPINAPI_H_
 #define SPINAPI_H_
 
-// Stdlib
-#include <stdint.h>
-
-// ARM lib
-#include <arm_math.h>
-
-// Private sources include
-#include "../src/LedHAL.h"
-#include "../src/DacHAL.h"
 #include "../src/CompHAL.h"
-#include "../src/PwmHAL.h"
-#include "../src/AdcHAL.h"
-#include "../src/UartHAL.h"
-#include "../src/TimerHAL.h"
-#include "../src/VersionHAL.h"
+#include "../src/DacHAL.h"
 #include "../src/GpioHAL.h"
+#include "../src/LedHAL.h"
+#include "../src/PwmHAL.h"
+#include "../src/TimerHAL.h"
 
+#ifdef CONFIG_OWNTECH_DATA_API
+#include "../src/DataAPI.h"
+#endif
 
-#ifdef CONFIG_SHIELD_TWIST
-	#include "../src/NgndHAL.h"
+#ifdef CONFIG_OWNTECH_UART_API
+#include "../src/UartHAL.h"
+#endif
+
+#ifdef CONFIG_OWNTECH_NGND_DRIVER
+#include "../src/NgndHAL.h"
 #endif
 
 
@@ -58,59 +55,51 @@
  */
 class SpinAPI
 {
-
 public:
 
+#ifdef CONFIG_OWNTECH_GPIO_API
 	/**
 	 * @brief Contains all the functions for the spin gpio.
 	 */
-	GpioHAL gpio;
-
+	static GpioHAL gpio;
+#endif
 	/**
 	 * @brief Contains all the function of the embedded LED.
 	 */
-	LedHAL led;
+	static LedHAL led;
 
 	/**
 	 * @brief Contains all the function of the STM32 DAC used to generate signals and handle the current mode.
 	 */
-	DacHAL dac;
+	static DacHAL dac;
 
 	/**
 	 * @brief Contains all the function of the STM32 comparator used with the current mode.
 	 */
-	CompHAL comp;
+	static CompHAL comp;
 
 	/**
 	 * @brief Contains all the function of the STM32 hrtim PWM generator.
 	 */
-	PwmHAL pwm;
+	static PwmHAL pwm;
 
-	/**
-	 * @brief Contains all the function of the STM32 ADC including configuration and synchronization with the HRTIM.
-	 */
-	AdcHAL adc;
-
+#ifdef CONFIG_OWNTECH_UART_API
 	/**
 	 * @brief Contains all the function of the STM32 Usart1 functions.
 	 */
-	UartHAL uart;
+	static UartHAL uart;
+#endif
 
 	/**
 	 * @brief Contains all the function of the STM32 Timer4 functions that handle the encoder.
 	 */
-	TimerHAL timer;
+	static TimerHAL timer;
 
+#ifdef CONFIG_OWNTECH_DATA_API
 	/**
-	 * @brief Contains all the function related to the versioning of the microcontroller boards.
+	 * @brief Data acquisition from SPIN ADCs
 	 */
-	VersionHAL version;
-
-#ifdef CONFIG_SHIELD_TWIST
-	/**
-	 * @brief Contains all the function of the NGND switch compatible with TWISTs prior to 1.4.
-	 */
-	NgndHAL ngnd;
+	static DataAPI data;
 #endif
 
 };

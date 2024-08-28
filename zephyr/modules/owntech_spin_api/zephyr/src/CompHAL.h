@@ -26,6 +26,9 @@
 #ifndef COMPHAL_H_
 #define COMPHAL_H_
 
+// Stdlib
+#include <stdint.h>
+
 /**
  * @brief  Handles comparator 1 and 3 of the SPIN board
  *
