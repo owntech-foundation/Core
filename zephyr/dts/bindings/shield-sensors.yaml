@@ -20,23 +20,23 @@ properties:
     description: Value of the offset (to be added after the raw value has been multiplied by the gain).
                  The value represents a float32_t, thus is stored in IEEE754 format.
 
-  default-R0:
+  default-r0:
     type: int
     required: false
     description: Value of the resistance of the thermistor at a reference temperature.
 
-  default-B:
+  default-b:
     type: int
     required: false
     description: Value of the coefficient of resistance change with temperature of the thermistor
                  material.
 
-  default-RDIV:
+  default-rdiv:
     type: int
     required: false
     description: Value of the resistance used in the bridge to condition the temperature measurement.
 
-  default-T0:
+  default-t0:
     type: int
     required: false
     description: Value of the offset (to be added after the raw value has been multiplied by the gain).
