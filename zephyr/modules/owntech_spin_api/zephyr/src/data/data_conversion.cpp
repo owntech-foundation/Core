@@ -44,6 +44,9 @@ static const uint8_t max_parameters_count = 2;
 static conversion_type_t conversion_types[ADC_COUNT][CHANNELS_PER_ADC];
 static float32_t* conversion_parameters[ADC_COUNT][CHANNELS_PER_ADC];
 
+#define VREF 2.048f // voltage reference from ADC
+#define QUANTUM_MAX 4096.0f // ADC resolution 
+#define Vin_dividor 3.3f // Input voltage in the voltage divider
 
 /////
 // Private functions
@@ -119,8 +122,19 @@ float32_t data_conversion_convert_raw_value(uint8_t adc_num, uint8_t channel_num
 			return (raw_value*conversion_parameters[adc_index][channel_index][0]) + conversion_parameters[adc_index][channel_index][1];
 			break;
 		case conversion_therm:
-			return 0; // TODO Luiz
+		{
+			/* Retrieves the parameters for the thermo resistor */
+			float32_t local_r0 = conversion_parameters[adc_index][channel_index][0]; 
+			float32_t local_b = conversion_parameters[adc_index][channel_index][1];
+			float32_t local_rdiv = conversion_parameters[adc_index][channel_index][2];
+			float32_t local_t0 = conversion_parameters[adc_index][channel_index][3];
+
+			float32_t V_adc = (raw_value/QUANTUM_MAX)*VREF;							/* converts raw values into voltage */
+			float32_t R_t = (V_adc/(Vin_dividor - V_adc))*local_rdiv;				/* uses a bridge divider equation to estimate the sensor resistance */
+			float32_t T = local_t0/( 1 + log(R_t/local_r0) * (local_t0/local_b));	/* original equation R = exp(B*(1/T - 1/T0)) */
+			return (T - 273.15f); 													/* returns value in degree Celsius */
 			break;
+		}			break;
 		case no_channel_error:
 			return ERROR_CHANNEL_NOT_FOUND;
 			break;
