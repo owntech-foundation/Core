@@ -44,24 +44,31 @@
 /////
 // Device-tree related macros
 
-#define SENSOR_NAME(node_id)     DT_STRING_TOKEN(node_id, sensor_name)
-#define CHANNEL_IS_DIFF(node_id) DT_PROP(node_id, differential)
-#define CHANNEL_NUMBER(node_id)  DT_PHA_BY_IDX(node_id, io_channels, 0, input)
-#define PIN_NUMBER(node_id)      DT_PROP(node_id, spin_pin)
-#define ADC_REG_ADDR(node_id)    DT_REG_ADDR(DT_PHANDLE(node_id, io_channels))
-#define SENSOR_GAIN(node_id)     DT_PROP(node_id, default_gain)
-#define SENSOR_OFFSET(node_id)   DT_PROP(node_id, default_offset)
+
+
+#define SENSOR_NAME(node_id)                      DT_STRING_TOKEN(DT_PARENT(node_id), sensor_name)
+#define CHANNEL_IS_DIFF(node_id)                  DT_PROP(node_id, differential)
+#define CHANNEL_NUMBER(node_id)                   DT_PHA_BY_IDX(node_id, io_channels, 0, input)
+#define PIN_NUMBER(node_id)                       DT_PROP(node_id, spin_pin)
+#define ADC_REG_ADDR(node_id)                     DT_REG_ADDR(DT_PHANDLE(node_id, io_channels))
+#define CONVERSION_TYPE(node_id)                  DT_STRING_TOKEN(DT_PARENT(node_id), sensor_conv_type)
+#define SENSOR_DEFAULT_PARAM(node_id, param_name) DT_PROP_OR(DT_PARENT(node_id), default_##param_name, 0)
 
 // Sensor properties
-#define SENSOR_WRITE_PROP(node_id)                                       \
-	{                                                                    \
-		.name=SENSOR_NAME(DT_PARENT(node_id)),                           \
-		.channel_number=CHANNEL_NUMBER(node_id),                         \
-		.pin_number=PIN_NUMBER(node_id),                                 \
-		.is_differential=CHANNEL_IS_DIFF(node_id),                       \
-		.adc_reg_addr=ADC_REG_ADDR(node_id),                             \
-		.default_gain={.raw_value = SENSOR_GAIN(DT_PARENT(node_id))},    \
-		.default_offset={.raw_value = SENSOR_OFFSET(DT_PARENT(node_id))} \
+#define SENSOR_WRITE_PROP(node_id)                                            \
+	{                                                                         \
+		.name=SENSOR_NAME(node_id),                                           \
+		.channel_number=CHANNEL_NUMBER(node_id),                              \
+		.pin_number=PIN_NUMBER(node_id),                                      \
+		.is_differential=CHANNEL_IS_DIFF(node_id),                            \
+		.adc_reg_addr=ADC_REG_ADDR(node_id),                                  \
+		.conversion_type=CONVERSION_TYPE(node_id),                            \
+		.default_gain={.raw_value = SENSOR_DEFAULT_PARAM(node_id, gain)},     \
+		.default_offset={.raw_value = SENSOR_DEFAULT_PARAM(node_id, offset)}, \
+		.default_r0={.raw_value = SENSOR_DEFAULT_PARAM(node_id, r0)},         \
+		.default_b={.raw_value = SENSOR_DEFAULT_PARAM(node_id, b)},           \
+		.default_rdiv={.raw_value = SENSOR_DEFAULT_PARAM(node_id, rdiv)},     \
+		.default_t0={.raw_value = SENSOR_DEFAULT_PARAM(node_id, t0)}          \
 	},
 
 #define SUBSENSOR_WRITE_PROP(node_id) DT_FOREACH_CHILD(node_id, SENSOR_WRITE_PROP)
@@ -80,7 +87,7 @@
 
 // Auto-populated array containing available sensors
 // extracted from the device tree.
-SensorsAPI::sensor_prop_t SensorsAPI::dt_sensors_props[] =
+SensorsAPI::sensor_dt_data_t SensorsAPI::dt_sensors_props[] =
 {
 	DT_FOREACH_STATUS_OKAY(shield_sensors, SUBSENSOR_WRITE_PROP)
 };
@@ -93,13 +100,13 @@ uint8_t SensorsAPI::available_sensors_count[ADC_COUNT] = {0};
 // available_sensors_props array.
 // For each ADC, the array size will match the value of
 // available_sensors_count for the ADC.
-SensorsAPI::sensor_prop_t** SensorsAPI::available_sensors_props[ADC_COUNT] = {0};
+SensorsAPI::sensor_dt_data_t** SensorsAPI::available_sensors_props[ADC_COUNT] = {0};
 
 // List of sensors enabled by user configuration.
 // For each sensor, a nullptr indicates it has not been
 // enabled, and a valid pointer will point to the structure
 // containing relevant information for this sensor.
-SensorsAPI::sensor_prop_t* SensorsAPI::enabled_sensors[DT_SENSORS_COUNT] = {0};
+SensorsAPI::sensor_dt_data_t* SensorsAPI::enabled_sensors[DT_SENSORS_COUNT] = {0};
 
 bool SensorsAPI::initialized = false;
 
@@ -122,10 +129,10 @@ int8_t SensorsAPI::enableSensor(sensor_t sensor_name, uint8_t adc_num)
 
 	// Find sensor property
 	uint8_t adc_index = adc_num-1;
-	sensor_prop_t* sensor_prop = nullptr;
+	sensor_dt_data_t* sensor_prop = nullptr;
 	for (uint8_t sensor = 0 ; sensor < available_sensors_count[adc_index] ; sensor++)
 	{
-		sensor_prop_t* current_sensor = available_sensors_props[adc_index][sensor];
+		sensor_dt_data_t* current_sensor = available_sensors_props[adc_index][sensor];
 		if (current_sensor->name == sensor_name)
 		{
 			sensor_prop = current_sensor;
@@ -320,7 +327,7 @@ sensor_info_t SensorsAPI::getEnabledSensorInfo(sensor_t sensor_name)
 	}
 
 	int sensor_index = ((int)sensor_name) - 1;
-	sensor_prop_t* sensor_prop = enabled_sensors[sensor_index];
+	sensor_dt_data_t* sensor_prop = enabled_sensors[sensor_index];
 	if (sensor_prop != nullptr)
 	{
 		return sensor_info_t((adc_t)sensor_prop->adc_number, sensor_prop->channel_number, sensor_prop->pin_number);
@@ -383,6 +390,16 @@ void SensorsAPI::buildSensorListFromDeviceTree()
 						printk("    Conversion type is linear, with gain=%f and offset=%f\n", (double)gain, (double)offset);
 					}
 					break;
+					case conversion_therm:
+					{
+						float32_t r0   = data_conversion_get_parameter(dt_sensors_props[dt_sensor_index].adc_number, dt_sensors_props[dt_sensor_index].channel_number, 1);
+						float32_t b    = data_conversion_get_parameter(dt_sensors_props[dt_sensor_index].adc_number, dt_sensors_props[dt_sensor_index].channel_number, 2);
+						float32_t rdiv = data_conversion_get_parameter(dt_sensors_props[dt_sensor_index].adc_number, dt_sensors_props[dt_sensor_index].channel_number, 3);
+						float32_t t0   = data_conversion_get_parameter(dt_sensors_props[dt_sensor_index].adc_number, dt_sensors_props[dt_sensor_index].channel_number, 4);
+
+						printk("    Conversion type is therm, with r0=%f, b=%f, rdiv=%f and t0=%f\n", (double)r0, (double)b, (double)rdiv, (double)t0);
+					}
+					break;
 					case no_channel_error:
 						continue;
 				}
@@ -417,11 +434,28 @@ void SensorsAPI::buildSensorListFromDeviceTree()
 		if (nvsRetrieved == false)
 		{
 			// In case parameters were not found in NVS, get default vaules from device tree
-			data_conversion_set_conversion_parameters_linear(dt_sensors_props[dt_sensor_index].adc_number,
-		                                                     dt_sensors_props[dt_sensor_index].channel_number,
-		                                                     dt_sensors_props[dt_sensor_index].default_gain.float_value,
-		                                                     dt_sensors_props[dt_sensor_index].default_offset.float_value
-		                                                    );
+			switch (dt_sensors_props[dt_sensor_index].conversion_type)
+			{
+			case LINEAR:
+				data_conversion_set_conversion_parameters_linear(dt_sensors_props[dt_sensor_index].adc_number,
+				                                                 dt_sensors_props[dt_sensor_index].channel_number,
+				                                                 dt_sensors_props[dt_sensor_index].default_gain.float_value,
+				                                                 dt_sensors_props[dt_sensor_index].default_offset.float_value
+				                                                );
+				break;
+			case THERMISTANCE:
+				data_conversion_set_conversion_parameters_therm(dt_sensors_props[dt_sensor_index].adc_number,
+				                                                dt_sensors_props[dt_sensor_index].channel_number,
+				                                                dt_sensors_props[dt_sensor_index].default_r0.float_value,
+				                                                dt_sensors_props[dt_sensor_index].default_b.float_value,
+				                                                dt_sensors_props[dt_sensor_index].default_rdiv.float_value,
+				                                                dt_sensors_props[dt_sensor_index].default_t0.float_value
+				                                               );
+				break;
+			default:
+				break;
+			}
+
 		}
 
 		// Count sensor for ADC
@@ -432,7 +466,7 @@ void SensorsAPI::buildSensorListFromDeviceTree()
 	// Create the channels list for each ADC
 	for (uint8_t adc_index = 0 ; adc_index < ADC_COUNT ; adc_index++)
 	{
-		available_sensors_props[adc_index] = (sensor_prop_t**)k_malloc(sizeof(sensor_prop_t*) * available_sensors_count[adc_index]);
+		available_sensors_props[adc_index] = (sensor_dt_data_t**)k_malloc(sizeof(sensor_dt_data_t*) * available_sensors_count[adc_index]);
 	}
 
 	// Populate the channels list for each ADC

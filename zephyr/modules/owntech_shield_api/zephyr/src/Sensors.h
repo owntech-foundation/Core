@@ -92,17 +92,29 @@ private:
 		float32_t float_value;
 	} int2float;
 
+	enum conv_type_string_t
+	{
+		LINEAR,
+		THERMISTANCE
+	};
+
 	typedef struct
 	{
-		sensor_t  name;
-		uint8_t   adc_number;
-		uint8_t   channel_number;
-		uint8_t   pin_number;
-		bool      is_differential;
-		uint32_t  adc_reg_addr; // ADC addr is used to identify ADC
+		sensor_t           name;
+		uint8_t            adc_number;
+		uint8_t            channel_number;
+		uint8_t            pin_number;
+		bool               is_differential;
+		uint32_t           adc_reg_addr; // ADC addr is used to identify ADC
+		conv_type_string_t conversion_type;
+		// Default calibration parameters
 		int2float default_gain;
 		int2float default_offset;
-	} sensor_prop_t;
+		int2float default_r0;
+		int2float default_b;
+		int2float default_rdiv;
+		int2float default_t0;
+	} sensor_dt_data_t;
 
 public:
 
@@ -378,10 +390,10 @@ private:
 	float32_t getCalibrationCoefficients(const char* physicalParameter, const char* gainOrOffset);
 
 private:
-	static sensor_prop_t dt_sensors_props[];
+	static sensor_dt_data_t dt_sensors_props[];
 	static uint8_t available_sensors_count[ADC_COUNT];
-	static sensor_prop_t** available_sensors_props[ADC_COUNT];
-	static sensor_prop_t* enabled_sensors[];
+	static sensor_dt_data_t** available_sensors_props[ADC_COUNT];
+	static sensor_dt_data_t* enabled_sensors[];
 	static bool initialized;
 
 };

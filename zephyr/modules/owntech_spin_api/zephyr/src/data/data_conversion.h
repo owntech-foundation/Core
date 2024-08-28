@@ -37,7 +37,8 @@
 typedef enum : int8_t
 {
 	conversion_linear = 0,
-	no_channel_error = -5
+	conversion_therm  = 1,
+	no_channel_error  = -5
 
 } conversion_type_t;
 
@@ -62,7 +63,8 @@ void data_conversion_init();
 float32_t data_conversion_convert_raw_value(uint8_t adc_num, uint8_t channel_num, uint16_t raw_value);
 
 /**
- * @brief    Change the parameters for the data conversion of a given channel.
+ * @brief    Set the conversion type for a given channel to linear
+ *           and set parameters values.
  *
  * @param[in] adc_num     ADC number
  * @param[in] channel_num Channel number
@@ -70,6 +72,19 @@ float32_t data_conversion_convert_raw_value(uint8_t adc_num, uint8_t channel_num
  * @param[in] offset      Offset of the channel
  */
 void data_conversion_set_conversion_parameters_linear(uint8_t adc_num, uint8_t channel_num, float32_t gain, float32_t offset);
+
+/**
+ * @brief    Set the conversion type for a given channel to therm
+ *           and set parameters values.
+ *
+ * @param[in] adc_num     ADC number
+ * @param[in] channel_num Channel number
+ * @param[in] r0          Parameter R0 for the channel
+ * @param[in] b           Parameter B for the channel
+ * @param[in] rdiv        Parameter RDIV for the channel
+ * @param[in] t0          Parameter T0 for the channel
+ */
+void data_conversion_set_conversion_parameters_therm(uint8_t adc_num, uint8_t channel_num, float32_t r0, float32_t b, float32_t rdiv, float32_t t0);
 
 /**
  * @brief Get the conversion type for a given channel
