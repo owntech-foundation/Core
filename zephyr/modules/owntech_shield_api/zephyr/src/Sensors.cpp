@@ -81,6 +81,11 @@
 
 
 
+#ifdef CONFIG_SHIELD_OWNVERTER
+	uint8_t SensorsAPI::temp_mux_in_1 = DT_PROP(DT_NODELABEL(temp), mux_spin_pin_1);
+	uint8_t SensorsAPI::temp_mux_in_2 = DT_PROP(DT_NODELABEL(temp), mux_spin_pin_2);
+#endif
+
 
 /////
 // Variables
@@ -212,6 +217,36 @@ int8_t SensorsAPI::storeParametersInMemory(sensor_t sensor_name)
 	return data_conversion_store_channel_parameters_in_nvs(sensor_info.adc_num, sensor_info.channel_num);
 }
 
+#ifdef CONFIG_SHIELD_OWNVERTER
+
+void SensorsAPI::enableDefaultOwnverterSensors()
+{
+	spin.data.configureTriggerSource(ADC_1, hrtim_ev1);
+	spin.data.configureTriggerSource(ADC_2, hrtim_ev3);
+	spin.data.configureTriggerSource(ADC_3, software);
+	spin.data.configureTriggerSource(ADC_4, software);
+	spin.data.configureTriggerSource(ADC_5, software);
+
+	spin.data.configureDiscontinuousMode(ADC_1, 1);
+	spin.data.configureDiscontinuousMode(ADC_2, 1);
+	spin.data.configureDiscontinuousMode(ADC_3, 0);   
+
+	this->enableSensor(V1_LOW, ADC_1);
+	this->enableSensor(V2_LOW, ADC_1);
+	this->enableSensor(V3_LOW, ADC_1);
+	this->enableSensor(V_HIGH, ADC_1);
+
+	this->enableSensor(I1_LOW, ADC_2);
+	this->enableSensor(I2_LOW, ADC_2);
+	this->enableSensor(I3_LOW, ADC_2);
+	this->enableSensor(I_HIGH, ADC_2);
+
+	this->enableSensor(V_NEUTR, ADC_1);
+	this->enableSensor(TEMP_SENSOR, ADC_2);
+}
+
+
+#endif
 
 #ifdef CONFIG_SHIELD_TWIST
 
