@@ -24,6 +24,13 @@ import os
 import re
 from datetime import datetime
 
+# ERROR codes for printing in the terminal
+class style():
+    ERROR = '\033[31m'       #ERROR is printed in RED
+    SUCCESS = '\033[32m'     #SUCCESS is printed in GREEN
+    WARNING = '\033[33m'     #WARNING is printed in YELLOR
+    MESSAGE = '\033[34m'     #MESSAGES are printed in BLUE
+
 #Retrieves list target names from pio command line in CLI.
 from SCons.Script import COMMAND_LINE_TARGETS  # pylint: disable=import-error
 
@@ -73,11 +80,8 @@ def list_records():
         record_files.sort(key=extract_timestamp)
         return record_files
     except :
-        print("No records found, are you sure you have recorded something \
-              using ScopeMimicry ? If so, a Data_records folder should be \
-              present in src/ repository.")
-
-    return record_files
+        print(style.ERROR + 'No records found. Check your Data_records folder in src/.')
+        return -1
 
 def to_dataFrame(filename):
     """ filename is the name of file got datas dump from a ScopeMimicry object
@@ -148,20 +152,23 @@ env.AddTarget(
 
 if "plot-record" in COMMAND_LINE_TARGETS:
     records = list_records()
-    for i,record in enumerate(records):
-        print(f"record n°{i}, name {record}")
-    print("Enter record number to plot")
-    try:
-        record_number = int(input())
-        print("The record number is:", record_number)
-    except ValueError:
-        print("Invalid input. Please enter a valid integer.")
-    df = to_dataFrame(os.path.join(".",                                     \
-                                    "src",                                  \
-                                    "Data_records",                         \
-                                    records[record_number]))
-    fig = plot_df(df)
-    fig.suptitle(records[record_number])
-    plt.show()
+    if records != -1 :
+        for i,record in enumerate(records):
+            print(style.MESSAGE + f"record n°{i}, name {record}")
+        print("Enter record number to plot")
+        try:
+            record_number = int(input())
+            print("The record number is:", record_number)
+        except ValueError:
+            print(style.ERROR + "Invalid input. Please enter a valid integer.")
+        df = to_dataFrame(os.path.join(".",                                     \
+                                        "src",                                  \
+                                        "Data_records",                         \
+                                        records[record_number]))
+        fig = plot_df(df)
+        fig.suptitle(records[record_number])
+        plt.show()
 
-    exit(0)
+        exit(0)
+    else :
+        exit(-1)        
