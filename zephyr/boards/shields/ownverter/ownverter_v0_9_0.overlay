@@ -128,6 +128,19 @@
 			status = "okay";
 		};
 
+		vneutr: vneutr {
+			compatible = "shield-sensors";
+			sensor-name = "V_NEUTR";
+			default-gain = <0x3f800000>;
+			default-offset = <0x00000000>;
+			sensor-conv-type = "LINEAR";
+			vneutr-adc1 {
+				io-channels = <&adc1 15>;
+				spin-pin = <31>;
+			};
+			status = "okay";
+		};
+
 		/* Current channels */
 
 		i1low: i1-low {
@@ -210,24 +223,11 @@
 			sensor-conv-type = "THERMISTANCE";
 			mux-spin-pin-1 = <15>;
 			mux-spin-pin-2 = <9>;
-			temp-sensor-adc3 {
-				io-channels = <&adc3 12>;
-				spin-pin = <31>;
-			};
-			status = "disabled";
-		};
-
-		extra: extra-sensor {
-			compatible = "shield-sensors";
-			sensor-name = "EXTRA_MEAS";
-			default-gain = <0x3f800000>;
-			default-offset = <0x00000000>;
-			sensor-conv-type = "LINEAR";
-			analog-comm-adc4 {
-				io-channels = <&adc4 5>;
+			temp-sensor-adc2 {
+				io-channels = <&adc2 15>;
 				spin-pin = <6>;
 			};
-			status = "disabled";
+			status = "okay";
 		};
 
 		analog: analog-comm {

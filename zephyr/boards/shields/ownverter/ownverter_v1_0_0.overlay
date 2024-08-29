@@ -222,7 +222,7 @@
 			default-t0 = <0x43951333>;
 			sensor-conv-type = "THERMISTANCE";
 			mux-spin-pin-1 = <15>;
-			mux-spin-pin-2 = <9>;
+			mux-spin-pin-2 = <21>;
 			temp-sensor-adc2 {
 				io-channels = <&adc2 15>;
 				spin-pin = <6>;
