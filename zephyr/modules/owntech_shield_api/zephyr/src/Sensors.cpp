@@ -186,17 +186,36 @@ float32_t SensorsAPI::convertRawValue(sensor_t sensor_name, uint16_t raw_value)
 	return data_conversion_convert_raw_value(sensor_info.adc_num, sensor_info.channel_num, raw_value);
 }
 
-void SensorsAPI::setConversionParameters(sensor_t sensor_name, float32_t gain, float32_t offset)
+void SensorsAPI::setConversionParametersLinear(sensor_t sensor_name, float32_t gain, float32_t offset)
 {
 	sensor_info_t sensor_info = getEnabledSensorInfo(sensor_name);
-	data_conversion_set_conversion_parameters_linear(sensor_info.adc_num, sensor_info.channel_num, gain, offset);
+	conversion_type_t sensor_conv_type = retrieveStoredConversionType(sensor_name);	
+	
+	/* Verifies the conversion is of type linear */
+	if(sensor_conv_type == conversion_linear){
+		data_conversion_set_conversion_parameters_linear(sensor_info.adc_num,   \
+														sensor_info.channel_num,\ 
+														gain, offset);
+	}
 }
+
+void SensorsAPI::setConversionParametersNtcThermistor(sensor_t sensor_name, float32_t r0, float32_t b, float32_t rdiv, float32_t t0)
+{
+	sensor_info_t sensor_info = getEnabledSensorInfo(sensor_name);	
+	conversion_type_t sensor_conv_type = retrieveStoredConversionType(sensor_name);	
+
+	if(sensor_conv_type == conversion_therm){
+		data_conversion_set_conversion_parameters_therm(sensor_info.adc_num, 	 \
+														 sensor_info.channel_num,\ 
+														 r0, b, rdiv, t0);
+	}
+}
+
 
 float32_t SensorsAPI::retrieveStoredParameterValue(sensor_t sensor_name, parameter_t parameter_name)
 {
 	sensor_info_t sensor_info = getEnabledSensorInfo(sensor_name);
 	return data_conversion_get_parameter(sensor_info.adc_num, sensor_info.channel_num, parameter_name);
-
 }
 
 conversion_type_t SensorsAPI::retrieveStoredConversionType(sensor_t sensor_name)
