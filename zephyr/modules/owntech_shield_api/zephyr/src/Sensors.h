@@ -390,12 +390,15 @@ public:
 	void enableDefaultTwistSensors();
 
 	/**
-	 * @brief Manually set parameters values using console. After the parameters
-	 *        have been inputed, they will be stored in Spin memory so that they
-	 *        are automatically applied on subsequent boots.
+	 * @brief Manually set parameters values using console. You will be directed
+	 * 		  via console to input the parameters of each sensor of the Twist 
+	 * 		  board.  
+	 * 		  After the parameters have been inputed, they will be stored in 
+	 *        Spin Non-Volatile memory so that they are automatically applied on
+	 *        subsequent boots.
 	 *
 	 * @note  This function requires a console to interact with the user.
-	 *        The board must be connected to a comuter using USB to display
+	 *        The board must be connected to a computer using USB to display
 	 *        the console.
 	 *
 	 * @note  This function can't be called before *all* Twist sensors have

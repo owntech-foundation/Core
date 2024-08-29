@@ -333,18 +333,40 @@ void SensorsAPI::setTwistSensorsUserCalibrationFactors()
 	float32_t gains[6];   // VH, V1, V2, IH, I1, I2
 	float32_t offsets[6]; // VH, V1, V2, IH, I1, I2
 
+	float32_t r0[2];   		// T1 and T2 R0 - sensor resistance at reference temperature
+	float32_t b[2];   		// T1 and T2 B - sensor temperature negavie coefficient  
+	float32_t rdiv[2];   	// T1 and T2 R_DIV - bridge dividor resistance
+	float32_t t0[2];   		// T1 and T2 T0 - Reference temperature
+
+
 	gains[0]   = getCalibrationCoefficients("VHigh", "gain");
 	offsets[0] = getCalibrationCoefficients("VHigh", "offset");
+
 	gains[1]   = getCalibrationCoefficients("V1Low", "gain");
 	offsets[1] = getCalibrationCoefficients("V1Low", "offset");
+
 	gains[2]   = getCalibrationCoefficients("V2Low", "gain");
 	offsets[2] = getCalibrationCoefficients("V2Low", "offset");
+
 	gains[3]   = getCalibrationCoefficients("IHigh", "gain");
 	offsets[3] = getCalibrationCoefficients("IHigh", "offset");
+
 	gains[4]   = getCalibrationCoefficients("I1Low", "gain");
 	offsets[4] = getCalibrationCoefficients("I1Low", "offset");
+
 	gains[5]   = getCalibrationCoefficients("I2Low", "gain");
 	offsets[5] = getCalibrationCoefficients("I2Low", "offset");
+
+	r0[0]   = getCalibrationCoefficients("Temp1", "r0");
+	b[0]    = getCalibrationCoefficients("Temp1", "b");
+	rdiv[0] = getCalibrationCoefficients("Temp1", "rdiv");
+	t0[0]   = getCalibrationCoefficients("Temp1", "t0");
+
+	r0[1]   = getCalibrationCoefficients("Temp2", "r0");
+	b[1]    = getCalibrationCoefficients("Temp2", "b");
+	rdiv[1] = getCalibrationCoefficients("Temp2", "rdiv");
+	t0[1]   = getCalibrationCoefficients("Temp2", "t0");
+
 
 	sensor_info_t sensor_info = getEnabledSensorInfo(V_HIGH);
 	data_conversion_set_conversion_parameters_linear(sensor_info.adc_num, sensor_info.channel_num, gains[0], offsets[0]);
@@ -363,6 +385,12 @@ void SensorsAPI::setTwistSensorsUserCalibrationFactors()
 
 	sensor_info = getEnabledSensorInfo(I2_LOW);
 	data_conversion_set_conversion_parameters_linear(sensor_info.adc_num, sensor_info.channel_num, gains[5], offsets[5]);
+
+	sensor_info = getEnabledSensorInfo(TEMP_SENSOR_1);
+	data_conversion_set_conversion_parameters_therm(sensor_info.adc_num, sensor_info.channel_num, r0[0], b[0], rdiv[0], t0[0]);
+
+	sensor_info = getEnabledSensorInfo(TEMP_SENSOR_2);
+	data_conversion_set_conversion_parameters_therm(sensor_info.adc_num, sensor_info.channel_num, r0[1], b[1], rdiv[1], t0[1]);
 
 	printk("Calibration coefficients successfully updated!\n");
 
@@ -391,6 +419,12 @@ void SensorsAPI::setTwistSensorsUserCalibrationFactors()
 		err |= data_conversion_store_channel_parameters_in_nvs(sensor_info.adc_num, sensor_info.channel_num);
 
 		sensor_info = getEnabledSensorInfo(I2_LOW);
+		err |= data_conversion_store_channel_parameters_in_nvs(sensor_info.adc_num, sensor_info.channel_num);
+
+		sensor_info = getEnabledSensorInfo(TEMP_SENSOR_1);
+		err |= data_conversion_store_channel_parameters_in_nvs(sensor_info.adc_num, sensor_info.channel_num);
+
+		sensor_info = getEnabledSensorInfo(TEMP_SENSOR_2);
 		err |= data_conversion_store_channel_parameters_in_nvs(sensor_info.adc_num, sensor_info.channel_num);
 
 		if (err == 0)
