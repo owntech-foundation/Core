@@ -279,7 +279,8 @@ int8_t safety_watch()
  */
 void safety_action()
 {
-    shield.power.stopAll();
+    // shield.power.stopAll();
+    shield.power.stop(ALL);
     if (sensor_reaction == Open_Circuit)
     {
         _open_circuit();

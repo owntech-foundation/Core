@@ -61,285 +61,342 @@ hrtim_tu_number_t PowerAPI::spinNumberToTu(uint16_t spin_number)
     }
 }
 
-void PowerAPI::initLegMode(leg_t leg,                                       \
-                           hrtim_switch_convention_t leg_convention,         \
+void PowerAPI::initMode(leg_t leg,                                             \
+                           hrtim_switch_convention_t leg_convention,           \
                            hrtim_pwm_mode_t leg_mode)
 {
-    /* Configure PWM frequency */
-    spin.pwm.initFrequency(timer_frequency);
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
 
-    /* Set modulation */
-    spin.pwm.setModulation(spinNumberToTu(dt_pwm_pin[leg]),                  \
-                                          dt_modulation[leg]);
-
-    /* Configure ADC rollover in center aligned mode */
-    spin.pwm.setAdcEdgeTrigger(spinNumberToTu(dt_pwm_pin[leg]),              \
-                                dt_edge_trigger[leg]);
-
-    /**
-     * Configure which External Event will reset the timer for current mode.
-     *
-     *   COMPARATOR1_INP/PA1 ----------> + - <----------   DAC3 ch1
-     *                                    |
-     *                                    |
-     *                                    v
-     *	                                EEV4
-     *
-     *   COMPARATOR3_INP/PC1 ----------> + - <----------   DAC1 ch1
-     *                                    |
-     *                                    |
-     *                                    v
-     *	                                EEV5
-     *
-     * /!\ WARNING : Current mode is currently only supported for BUCK /!\
-     */
-
-    if (leg_mode == CURRENT_MODE)
+   /*  If ALL is selected, loop through all legs */
+    if (leg == ALL)
     {
-        if (dt_current_pin[leg] == CM_DAC3)
-        {
-            spin.pwm.setEev(spinNumberToTu(dt_pwm_pin[leg]), EEV4);
-        }
-        else if (dt_current_pin[leg] == CM_DAC1)
-        {
-            spin.pwm.setEev(spinNumberToTu(dt_pwm_pin[leg]), EEV5);
-        }
-
-        /* Configure current mode */
-        spin.pwm.setMode(spinNumberToTu(dt_pwm_pin[leg]), CURRENT_MODE);
-
+        startIndex = 0;
+        endIndex = dt_leg_count; /* retrives the total number of legs */
     }
-    /* choose which output of the timer unit to control whith duty cycle */
-    spin.pwm.setSwitchConvention(spinNumberToTu(dt_pwm_pin[leg]),           \
+    else
+    {
+        startIndex = leg; /* Treat `leg` as the specific leg index */
+        endIndex = leg + 1; /* Only iterate for this specific leg */
+    }
+
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        /* Configure PWM frequency */
+        spin.pwm.initFrequency(timer_frequency);
+
+        /* Set modulation */
+        spin.pwm.setModulation(spinNumberToTu(dt_pwm_pin[i]),                  \
+                                          dt_modulation[i]);
+
+        /* Configure ADC rollover in center aligned mode */
+        spin.pwm.setAdcEdgeTrigger(spinNumberToTu(dt_pwm_pin[i]),              \
+                                dt_edge_trigger[i]);
+
+        /**
+         * Configure which External Event will reset the timer for current mode.
+         *
+         *   COMPARATOR1_INP/PA1 ----------> + - <----------   DAC3 ch1
+         *                                    |
+         *                                    |
+         *                                    v
+         *	                                EEV4
+         *
+         *   COMPARATOR3_INP/PC1 ----------> + - <----------   DAC1 ch1
+         *                                    |
+         *                                    |
+         *                                    v
+         *	                                EEV5
+         *
+         * /!\ WARNING : Current mode is currently only supported for BUCK /!\
+         */         
+        if (leg_mode == CURRENT_MODE)
+        {
+            if (dt_current_pin[i] == CM_DAC3)
+            {
+                spin.pwm.setEev(spinNumberToTu(dt_pwm_pin[i]), EEV4);
+            }
+            else if (dt_current_pin[i] == CM_DAC1)
+            {
+                spin.pwm.setEev(spinNumberToTu(dt_pwm_pin[i]), EEV5);
+            }
+
+            /* Configure current mode */
+            spin.pwm.setMode(spinNumberToTu(dt_pwm_pin[i]), CURRENT_MODE);
+        }
+
+        /* Choose which output of the timer unit to control with duty cycle */
+        spin.pwm.setSwitchConvention(spinNumberToTu(dt_pwm_pin[i]),           \
                                                 leg_convention);
 
-    /* Initialize leg unit */
-    spin.pwm.initUnit(spinNumberToTu(dt_pwm_pin[leg]));
+        /* Initialize leg unit */
+        spin.pwm.initUnit(spinNumberToTu(dt_pwm_pin[i]));
 
-    /* Configure PWM initial phase shift */
-    spin.pwm.setPhaseShift(spinNumberToTu(dt_pwm_pin[leg]),                 \
-                                          dt_phase_shift[leg]);
+        /* Configure PWM initial phase shift */
+        spin.pwm.setPhaseShift(spinNumberToTu(dt_pwm_pin[i]),                 \
+                                          dt_phase_shift[i]);
 
-    /* Configure PWM dead time */
-    spin.pwm.setDeadTime(spinNumberToTu(dt_pwm_pin[leg]),                   \
-                                        dt_rising_deadtime[leg],            \
-                                        dt_falling_deadtime[leg]);
+        /* Configure PWM dead time */
+        spin.pwm.setDeadTime(spinNumberToTu(dt_pwm_pin[i]),                   \
+                                        dt_rising_deadtime[i],                \
+                                        dt_falling_deadtime[i]);
 
-    /**
-     * Configure PWM adc trigger.
-     * ADC_TRIG1 trigger ADC1, and ADC_TRIG3 trigger ADC2
-     */
-    if (dt_adc[leg] != ADCTRIG_NONE)
-    {
-        spin.pwm.setAdcDecimation(spinNumberToTu(dt_pwm_pin[leg]),          \
-                                                 dt_adc_decim[leg]);
-
-        spin.pwm.setAdcTrigger(spinNumberToTu(dt_pwm_pin[leg]),             \
-                                              dt_adc[leg]);
-
-        spin.pwm.enableAdcTrigger(spinNumberToTu(dt_pwm_pin[leg]));
-    }
-
-    /**
-     * Choose which dac control the leg in current mode
-     */
-    if (leg_mode == CURRENT_MODE)
-    {
-
-        if (dt_current_pin[leg] == CM_DAC1)
+        /**
+         * Configure PWM ADC trigger.
+         */
+        if (dt_adc[i] != ADCTRIG_NONE)
         {
-            spin.dac.currentModeInit(                                       \
-                1,                                                          \
-                tu_channel[spinNumberToTu(dt_pwm_pin[leg])]->pwm_conf.pwm_tu);
+            spin.pwm.setAdcDecimation(spinNumberToTu(dt_pwm_pin[i]),          \
+                                                 dt_adc_decim[i]);
 
-            spin.comp.initialize(3);
+            spin.pwm.setAdcTrigger(spinNumberToTu(dt_pwm_pin[i]),             \
+                                              dt_adc[i]);
+
+            spin.pwm.enableAdcTrigger(spinNumberToTu(dt_pwm_pin[i]));
         }
 
-        else if (dt_current_pin[leg] == CM_DAC3)
+        /**
+         * Choose which DAC controls the leg in current mode
+         */
+        if (leg_mode == CURRENT_MODE)
         {
-            spin.dac.currentModeInit(                                       \
-                3,                                                          \
-                tu_channel[spinNumberToTu(dt_pwm_pin[leg])]->pwm_conf.pwm_tu);
+            if (dt_current_pin[i] == CM_DAC1)
+            {
+                spin.dac.currentModeInit(                                       \
+                    1,                                                          \
+                    tu_channel[spinNumberToTu(dt_pwm_pin[i])]->pwm_conf.pwm_tu);
 
-            spin.comp.initialize(1);
+                spin.comp.initialize(3);
+            }
+            else if (dt_current_pin[i] == CM_DAC3)
+            {
+                spin.dac.currentModeInit(                                       \
+                    3,                                                          \
+                    tu_channel[spinNumberToTu(dt_pwm_pin[i])]->pwm_conf.pwm_tu);
+
+                spin.comp.initialize(1);
+            }
         }
-    }
 
-    /**
-     * Only relevant for twist and ownverter hardware, to enable optocouplers
-     * for mosfet driver and connection to electrolytic capacitor
-     */
-    for(uint8_t i = 0; i < dt_leg_count; i++)
-    {
-        if(dt_pin_driver[i] != 0)
+        /**
+         * Only relevant for twist and ownverter hardware, to enable optocouplers
+         * for MOSFET driver and connection to electrolytic capacitor
+         */
+        if (dt_pin_driver[i] != 0)
         {
             spin.gpio.configurePin(dt_pin_driver[i], OUTPUT);
         }
-        if(dt_pin_capacitor[i] != 0)
+        if (dt_pin_capacitor[i] != 0)
         {
             spin.gpio.configurePin(dt_pin_capacitor[i], OUTPUT);
         }
     }
 }
 
-void PowerAPI::initAllMode(hrtim_switch_convention_t leg_convention,        \
-                           hrtim_pwm_mode_t leg_mode)
-{
-    for (int8_t i = 0; i < dt_leg_count; i++)
-    {
-        initLegMode(static_cast<leg_t>(i), leg_convention, leg_mode);
-    }
-}
 
-void PowerAPI::setLegDutyCycle(leg_t leg, float32_t duty_leg)
+void PowerAPI::setDutyCycle(leg_t leg, float32_t duty_leg)
 {
+    // Clamp the duty cycle to be within the range 0.1 to 0.9
     if (duty_leg > 0.9)
     {
         duty_leg = 0.9;
     }
-
     else if (duty_leg < 0.1)
     {
         duty_leg = 0.1;
     }
 
-    uint16_t value =
-        duty_leg * tu_channel[spinNumberToTu(dt_pwm_pin[leg])]->pwm_conf.period;
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
 
-    hrtim_duty_cycle_set(spinNumberToTu(dt_pwm_pin[leg]), value);
+    /*  If ALL is selected, loop through all legs */
+    if (leg == ALL)
+    {
+        startIndex = 0;
+        endIndex = dt_leg_count; /* retrives the total number of legs */
+    }
+    else
+    {
+        startIndex = leg; /* Treat `leg` as the specific leg index */
+        endIndex = leg + 1; /* Only iterate for this specific leg */
+    }
+
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        uint16_t value =                                                           \
+            duty_leg * tu_channel[spinNumberToTu(dt_pwm_pin[i])]->pwm_conf.period;
+
+        hrtim_duty_cycle_set(spinNumberToTu(dt_pwm_pin[i]), value);
+    }
 }
 
-void PowerAPI::setAllDutyCycle(float32_t duty_all)
+void PowerAPI::start(leg_t leg)
 {
-    if (duty_all > 0.9)
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
+
+    /* If ALL is selected, loop through all legs */
+    if(leg == ALL)
     {
-        duty_all = 0.9;
+        startIndex = 0;
+        endIndex = dt_leg_count;
     }
-    else if (duty_all < 0.1)
+    else
     {
-        duty_all = 0.1;
+        startIndex = leg;   /* Treat `leg` as the specific leg index */
+        endIndex = leg + 1; /* Only iterates for this specific leg */
     }
 
-    for (int8_t i = 0; i < dt_leg_count; i++)
+    for (int8_t leg_index = startIndex; leg_index < endIndex; leg_index++)
     {
-        setLegDutyCycle(static_cast<leg_t>(i), duty_all);
+        /**
+         * Only relevant for twist hardware, to enable optocouplers
+         * for mosfet driver
+         */
+        if(dt_pin_driver[leg_index] != 0) {
+            spin.gpio.setPin(dt_pin_driver[leg_index]);
+        }
+
+        if (!dt_output1_inactive[leg_index])
+        {
+            spin.pwm.startSingleOutput(spinNumberToTu(dt_pwm_pin[leg_index]),          \
+                                                    TIMING_OUTPUT1);
+        }
+        if (!dt_output2_inactive[leg_index])
+        {
+            spin.pwm.startSingleOutput(spinNumberToTu(dt_pwm_pin[leg_index]),          \
+                                                    TIMING_OUTPUT2);
+        }
     }
 }
 
-void PowerAPI::startLeg(leg_t leg)
+
+void PowerAPI::connectCapacitor(leg_t leg)
 {
-    /**
-     * Only relevant for twist hardware, to enable optocouplers
-     * for mosfet driver
-     */
-    if(dt_pin_driver[leg] != 0) spin.gpio.setPin(dt_pin_driver[leg]);
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
 
-    /* start PWM*/
-    if (!dt_output1_inactive[leg])
+    /*  If ALL is selected, loop through all legs */
+    if(leg == ALL)
     {
-        spin.pwm.startSingleOutput(spinNumberToTu(dt_pwm_pin[leg]),          \
-                                                  TIMING_OUTPUT1);
+        startIndex = 0;
+        endIndex = dt_leg_count; /* retrives the total number of legs */
     }
-    if (!dt_output2_inactive[leg])
+    else
     {
-        spin.pwm.startSingleOutput(spinNumberToTu(dt_pwm_pin[leg]),          \
-                                                  TIMING_OUTPUT2);
+        startIndex = leg; /* Treat `leg` as the specific leg index */
+        endIndex = leg + 1; /* Only iterate for this specific leg */
+    }
+
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        if(dt_pin_capacitor[i] != 0)
+        {
+            spin.gpio.setPin(dt_pin_capacitor[i]);
+        }
     }
 }
 
-void PowerAPI::connectLegCapacitor(leg_t leg)
+void PowerAPI::stop(leg_t leg)
 {
-    if(dt_pin_capacitor[leg] != 0)
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
+
+    /*  If ALL is selected, loop through all legs */
+    if(leg == ALL)
     {
-        spin.gpio.setPin(dt_pin_capacitor[leg]);
+        startIndex = 0;
+        endIndex = dt_leg_count; /* retrives the total number of legs */
+    }
+    else
+    {
+        startIndex = leg; /* Treat `leg` as the specific leg index */
+        endIndex = leg + 1; /* Only iterate for this specific leg */
+    }
+
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        /* Stop PWM */
+        spin.pwm.stopDualOutput(spinNumberToTu(dt_pwm_pin[i]));
+
+        /**
+         * Only relevant for twist hardware, to disable optocouplers for mosfet
+         * driver
+         */
+        if(dt_pin_driver[i] != 0)
+        {
+            spin.gpio.resetPin(dt_pin_driver[i]);
+        }
     }
 }
 
-void PowerAPI::startAll()
+void PowerAPI::disconnectCapacitor(leg_t leg)
 {
-    for (int8_t i = 0; i < dt_leg_count; i++)
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
+
+    /*  If ALL is selected, loop through all legs */
+    if(leg == ALL)
     {
-        startLeg(static_cast<leg_t>(i));
+        startIndex = 0;
+        endIndex = dt_leg_count; /* retrives the total number of legs */
+    }
+    else
+    {
+        startIndex = leg; /* Treat `leg` as the specific leg index */
+        endIndex = leg + 1; /* Only iterate for this specific leg */
+    }
+
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        if(dt_pin_capacitor[i] != 0)
+        {
+            spin.gpio.resetPin(dt_pin_capacitor[i]);
+        }
     }
 }
 
-void PowerAPI::connectAllCapacitor()
-{
-    for (int8_t i = 0; i < dt_leg_count; i++)
-    {
-        connectLegCapacitor(static_cast<leg_t>(i));
-    }
-}
-
-void PowerAPI::stopLeg(leg_t leg)
-{
-    /* Stop PWM */
-    spin.pwm.stopDualOutput(spinNumberToTu(dt_pwm_pin[leg]));
-
-    /**
-     * Only relevant for twist hardware, to disable optocouplers for mosfet
-     * driver
-     */
-    if(dt_pin_driver[leg] != 0)
-    {
-        spin.gpio.resetPin(dt_pin_driver[leg]);
-    }
-}
-
-void PowerAPI::disconnectLegCapacitor(leg_t leg)
-{
-    if(dt_pin_capacitor[leg] != 0)
-    {
-        spin.gpio.resetPin(dt_pin_capacitor[leg]);
-    }
-}
-
-void PowerAPI::stopAll()
-{
-    for (int8_t i = 0; i < dt_leg_count; i++)
-    {
-        stopLeg(static_cast<leg_t>(i));
-    }
-}
-
-void PowerAPI::disconnectAllCapacitor()
-{
-    for (int8_t i = 0; i < dt_leg_count; i++)
-    {
-        disconnectLegCapacitor(static_cast<leg_t>(i));
-    }
-}
-
-void PowerAPI::setLegSlopeCompensation(leg_t leg,                           \
+void PowerAPI::setSlopeCompensation(leg_t leg,                              \
                                        float32_t set_voltage,               \
                                        float32_t reset_voltage)
 {
-    switch (dt_current_pin[leg])
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
+
+    /*  If ALL is selected, loop through all legs */
+    if(leg == ALL)
     {
-    case CM_DAC1:
-        spin.dac.slopeCompensation(1, set_voltage, reset_voltage);
-        break;
-    case CM_DAC3:
-        spin.dac.slopeCompensation(3, set_voltage, reset_voltage);
-        break;
-    default:
-        break;
+        startIndex = 0;
+        endIndex = dt_leg_count; /* retrives the total number of legs */
+    }
+    else
+    {
+        startIndex = leg; /* Treat `leg` as the specific leg index */
+        endIndex = leg + 1; /* Only iterate for this specific leg */
+    }
+
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        switch (dt_current_pin[i])
+        {
+        case CM_DAC1:
+            spin.dac.slopeCompensation(1, set_voltage, reset_voltage);
+            break;
+        case CM_DAC3:
+            spin.dac.slopeCompensation(3, set_voltage, reset_voltage);
+            break;
+        default:
+            break;
+        }
     }
 }
 
-void PowerAPI::setAllSlopeCompensation(float32_t set_voltage,               \
-                                       float32_t reset_voltage)
+void PowerAPI::setTriggerValue(leg_t leg, float32_t trigger_value)
 {
-    for (int8_t i = 0; i < dt_leg_count; i++)
-    {
-        setLegSlopeCompensation(static_cast<leg_t>(i),                      \
-                                set_voltage,                                \
-                                reset_voltage);
-    }
-}
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
 
-void PowerAPI::setLegTriggerValue(leg_t leg, float32_t trigger_value)
-{
+    // Clamp the trigger value within the acceptable range
     if (trigger_value > 0.95)
     {
         trigger_value = 0.95;
@@ -349,111 +406,160 @@ void PowerAPI::setLegTriggerValue(leg_t leg, float32_t trigger_value)
         trigger_value = 0.05;
     }
 
-    spin.pwm.setAdcTriggerInstant(spinNumberToTu(dt_pwm_pin[leg]),          \
-                                  trigger_value);
+    /*  If ALL is selected, loop through all legs */
+    if(leg == ALL)
+    {
+        startIndex = 0;
+        endIndex = dt_leg_count; /* retrives the total number of legs */
+    }
+    else
+    {
+        startIndex = leg; /* Treat `leg` as the specific leg index */
+        endIndex = leg + 1; /* Only iterate for this specific leg */
+    }
 
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        spin.pwm.setAdcTriggerInstant(spinNumberToTu(dt_pwm_pin[i]),         \
+                                                     trigger_value);
+    }
 }
 
-void PowerAPI::setAllTriggerValue(float32_t trigger_value)
+void PowerAPI::setPhaseShift(leg_t leg, int16_t phase_shift)
 {
-    if (trigger_value > 0.95)
-    {
-        trigger_value = 0.95;
-    }
-    else if (trigger_value < 0.05)
-    {
-        trigger_value = 0.05;
-    }
-    for (int8_t i = 0; i < dt_leg_count; i++)
-    {
-        setLegTriggerValue(static_cast<leg_t>(i), trigger_value);
-    }
-}
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
 
-void PowerAPI::setLegPhaseShift(leg_t leg, int16_t phase_shift)
-{
-    spin.pwm.setPhaseShift(spinNumberToTu(dt_pwm_pin[leg]), phase_shift);
-
-}
-
-void PowerAPI::setAllPhaseShift(int16_t phase_shift)
-{
-    for (int8_t i = 0; i < dt_leg_count; i++)
+    /*  If ALL is selected, loop through all legs */
+    if(leg == ALL)
     {
-        setLegPhaseShift(static_cast<leg_t>(i), phase_shift);
+        startIndex = 0;
+        endIndex = dt_leg_count; /* retrives the total number of legs */
+    }
+    else
+    {
+        startIndex = leg; /* Treat `leg` as the specific leg index */
+        endIndex = leg + 1; /* Only iterate for this specific leg */
+    }
+
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        spin.pwm.setPhaseShift(spinNumberToTu(dt_pwm_pin[i]), phase_shift);
     }
 }
 
-void PowerAPI::setLegDeadTime(leg_t leg,                                    \
+void PowerAPI::setDeadTime(leg_t leg,                                       \
                               uint16_t ns_rising_dt,                        \
                               uint16_t ns_falling_dt)
 {
-    spin.pwm.setDeadTime(spinNumberToTu(dt_pwm_pin[leg]),                   \
-                                        ns_rising_dt,                       \
-                                        ns_falling_dt);
-}
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
 
-void PowerAPI::setAllDeadTime(uint16_t ns_rising_dt, uint16_t ns_falling_dt)
-{
-    for (int8_t i = 0; i < dt_leg_count; i++)
+    /*  If ALL is selected, loop through all legs */
+    if(leg == ALL)
     {
-        setLegDeadTime(static_cast<leg_t>(i), ns_rising_dt, ns_falling_dt);
-    }
-}
-
-void PowerAPI::setLegAdcDecim(leg_t leg, uint16_t adc_decim)
-{
-    spin.pwm.setAdcDecimation(spinNumberToTu(dt_pwm_pin[leg]), adc_decim);
-}
-
-void PowerAPI::setAllAdcDecim(uint16_t adc_decim)
-{
-    for (int8_t i = 0; i < dt_leg_count; i++)
-    {
-        setLegAdcDecim(static_cast<leg_t>(i), adc_decim);
-    }
-}
-
-void PowerAPI::initLegBuck(leg_t leg, hrtim_pwm_mode_t leg_mode)
-{
-    if (!dt_pwm_x1_high[leg])
-    {
-        /* PWMx1 is connected in hardware to switch low*/
-        initLegMode(leg, PWMx2, leg_mode);
+        startIndex = 0;
+        endIndex = dt_leg_count; /* retrives the total number of legs */
     }
     else
     {
-        /* PWMx1 is connected in hardware to switch high*/
-        initLegMode(leg, PWMx1, leg_mode);
+        startIndex = leg; /* Treat `leg` as the specific leg index */
+        endIndex = leg + 1; /* Only iterate for this specific leg */
+    }
+
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        spin.pwm.setDeadTime(spinNumberToTu(dt_pwm_pin[i]),                 \
+                                            ns_rising_dt, ns_falling_dt);
     }
 }
 
-void PowerAPI::initAllBuck(hrtim_pwm_mode_t leg_mode)
-{
-    for (int8_t i = 0; i < dt_leg_count; i++)
-    {
-        initLegBuck(static_cast<leg_t>(i), leg_mode);
-    }
-}
 
-void PowerAPI::initLegBoost(leg_t leg)
+void PowerAPI::setAdcDecim(leg_t leg, uint16_t adc_decim)
 {
-    if (!dt_pwm_x1_high[leg])
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
+
+    /*  If ALL is selected, loop through all legs */
+    if(leg == ALL)
     {
-        /* PWMx1 is connected in hardware to switch low*/
-        initLegMode(leg, PWMx1, VOLTAGE_MODE);
+        startIndex = 0;
+        endIndex = dt_leg_count; /* retrives the total number of legs */
     }
     else
     {
-        /* PWMx1 is connected in hardware to switch high*/
-        initLegMode(leg, PWMx2, VOLTAGE_MODE);
+        startIndex = leg; /* Treat `leg` as the specific leg index */
+        endIndex = leg + 1; /* Only iterate for this specific leg */
+    }
+
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        spin.pwm.setAdcDecimation(spinNumberToTu(dt_pwm_pin[i]), adc_decim);
     }
 }
 
-void PowerAPI::initAllBoost()
+
+void PowerAPI::initBuck(leg_t leg, hrtim_pwm_mode_t leg_mode)
 {
-    for (int8_t i = 0; i < dt_leg_count; i++)
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
+
+    /*  If ALL is selected, loop through all legs */
+    if(leg == ALL)
     {
-        initLegBoost(static_cast<leg_t>(i));
+        startIndex = 0;
+        endIndex = dt_leg_count; /* retrives the total number of legs */
+    }
+    else
+    {
+        startIndex = leg; /* Treat `leg` as the specific leg index */
+        endIndex = leg + 1; /* Only iterate for this specific leg */
+    }
+
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        if (!dt_pwm_x1_high[i])
+        {
+            /* PWMx1 is connected in hardware to switch low */
+            initMode((leg_t)i, PWMx2, leg_mode);
+        }
+        else
+        {
+            /* PWMx1 is connected in hardware to switch high */
+            initMode((leg_t)i, PWMx1, leg_mode);
+        }
     }
 }
+
+void PowerAPI::initBoost(leg_t leg)
+{
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
+
+    /*  If ALL is selected, loop through all legs */
+    if(leg == ALL)
+    {
+        startIndex = 0;
+        endIndex = dt_leg_count; /* retrives the total number of legs */
+    }
+    else
+    {
+        startIndex = leg; /* Treat `leg` as the specific leg index */
+        endIndex = leg + 1; /* Only iterate for this specific leg */
+    }
+
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        if (!dt_pwm_x1_high[i])
+        {
+            /* PWMx1 is connected in hardware to switch low */
+            initMode((leg_t)i, PWMx1, VOLTAGE_MODE);
+        }
+        else
+        {
+            /* PWMx1 is connected in hardware to switch high */
+            initMode((leg_t)i, PWMx2, VOLTAGE_MODE);
+        }
+    }
+}
+
