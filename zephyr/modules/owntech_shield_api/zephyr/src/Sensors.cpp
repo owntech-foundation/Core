@@ -673,7 +673,8 @@ float32_t SensorsAPI::getCalibrationCoefficients(const char* physicalParameter, 
 	const uint8_t MaxCharInOneLine = 20;
 
 	char received_char;
-	char line[MaxCharInOneLine]; // Number of character in one line
+	char line[MaxCharInOneLine]; 	// Number of character in one line
+	float32_t confirm; 				//confirmation
 	float32_t parameterCoefficient;
 
 	do
@@ -686,10 +687,17 @@ float32_t SensorsAPI::getCalibrationCoefficients(const char* physicalParameter, 
 
 		// Get confirmation
 		printk("%s %s applied will be : %f\n", physicalParameter, gainOrOffset, (double)parameterCoefficient);
-		printk("Press y to validate, any other character to retype the %s \n", gainOrOffset);
-		received_char = console_getchar();
+		printk("Press enter to validate, any other character to retype the %s \n", gainOrOffset);
+		getLineFromConsole(line, MaxCharInOneLine);
 
-	} while(received_char != 'y');
+        // Check if Enter was pressed (empty input)
+        if (strlen(line) == 0) {
+            confirm = 0; // Confirmed
+        } else {
+            confirm = 1; // Re-type required
+        }
+
+	} while(confirm);
 
 	return parameterCoefficient;
 }
