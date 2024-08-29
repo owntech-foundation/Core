@@ -281,7 +281,7 @@ public:
 	float32_t convertRawValue(sensor_t sensor_name, uint16_t raw_value);
 
 	/**
-	 * @brief Use this function to tweak the conversion values for the
+	 * @brief Use this function to tweak the conversion values for any linear
 	 *        sensor if default values are not accurate enough.
 	 *
 	 * @note  This function can't be called before the sensor is enabled.
@@ -293,7 +293,23 @@ public:
 	 * @param[in] offset Offset to be applied (added) to the sensor value
 	 *            after gain has been applied.
 	 */
-	void setConversionParameters(sensor_t sensor_name, float32_t gain, float32_t offset);
+	void setConversionParametersLinear(sensor_t sensor_name, float32_t gain, float32_t offset);
+
+	/**
+	 * @brief Use this function to set the conversion values for any NTC 
+	 * 		  thermistor sensor if default values are not accurate enough.
+	 *
+	 * @note  This function can't be called before the sensor is enabled.
+	 *        The DataAPI must not have been started, neither explicitly
+	 *        nor by starting the Uninterruptible task.
+	 *
+	 * @param[in] sensor_name Name of the shield sensor to set conversion values.
+	 * @param[in] r0 The NTC resistance at a reference temperature.
+	 * @param[in] b The sensibility coefficient of the resistance to temperature.
+	 * @param[in] rdiv The bridge dividor resistance used to condition the NTC.
+	 * @param[in] t0 The reference temperature of the thermistor.
+	 */
+	void setConversionParametersNtcThermistor(sensor_t sensor_name, float32_t r0, float32_t b, float32_t rdiv, float32_t t0);
 
 	/**
 	 * @brief Use this function to get the current conversion parameteres for the chosen sensor.
