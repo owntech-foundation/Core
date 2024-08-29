@@ -273,7 +273,7 @@ float32_t DataAPI::convertValue(uint8_t pin_num, uint16_t raw_value)
 	return data_conversion_convert_raw_value(adc_num, channel_num, raw_value);
 }
 
-void DataAPI::setConversionParameters(uint8_t pin_num, float32_t gain, float32_t offset)
+void DataAPI::setConversionParametersLinear(uint8_t pin_num, float32_t gain, float32_t offset)
 {
 	adc_t adc_num = DataAPI::getCurrentAdcForPin(pin_num);
 	if (adc_num == UNKNOWN_ADC)
@@ -289,6 +289,24 @@ void DataAPI::setConversionParameters(uint8_t pin_num, float32_t gain, float32_t
 
 	data_conversion_set_conversion_parameters_linear(adc_num, channel_num, gain, offset);
 }
+
+void DataAPI::setConversionParametersNtcThermistor(uint8_t pin_num, float32_t r0, float32_t b, float32_t rdiv, float32_t t0)
+{
+	adc_t adc_num = DataAPI::getCurrentAdcForPin(pin_num);
+	if (adc_num == UNKNOWN_ADC)
+	{
+		return;
+	}
+
+	uint8_t channel_num = this->getChannelNumber(adc_num, pin_num);
+	if (channel_num == 0)
+	{
+		return;
+	}
+
+	data_conversion_set_conversion_parameters_therm(adc_num, channel_num, r0, b, rdiv, t0);
+}
+
 
 float32_t DataAPI::getConversionParameterValue(uint8_t pin_num, parameter_t parameter_name)
 {
