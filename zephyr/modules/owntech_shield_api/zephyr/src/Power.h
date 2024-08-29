@@ -184,14 +184,14 @@ public:
 	 * @brief Set the phase shift value for a specific leg's power control.
 	 *
 	 * @param leg The leg for which to set the phase shift value.
-	 * @param phase_shift The phase shift value to set.
+     * @param[in] phase_shift	phase shift value in degrees between -360 and 360
 	 */
 	void setLegPhaseShift(leg_t leg, int16_t phase_shift);
 
 	/**
 	 * @brief Set the phase shift value for all the legs.
 	 *
-	 * @param phase_shift The phase shift value to set.
+     * @param[in] phase_shift	phase shift value in degrees between -360 and 360
 	 */
 	void setAllPhaseShift(int16_t phase_shift);
 
