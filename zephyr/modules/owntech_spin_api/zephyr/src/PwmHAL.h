@@ -122,25 +122,32 @@ public:
      void setSwitchConvention(hrtim_tu_number_t pwmX, hrtim_switch_convention_t convention);
 
      /**
-      * @brief     This function initialize the frequency
+      * @brief   This function initialize the PWM for fixed frequency
+      * applications
       *
-      * @param[in] init_frequency frequency in Hz
+      * @param[in] fixed_frequency frequency to be fixed in Hz
       *
-      * @warning this function must be called BEFORE initialiazing any timing unit. 
-      *          the frequency initialized becomes the MINIMUM possible. 
-      *          use it BEFORE initialization of the timing unit.
+      * @warning This function must be called BEFORE initialiazing any timing
+      *          unit. The frequency will not vary during the operation of the
+      *          power device. Use it for fixed frequencies only.
       */
-     void initFrequency(uint32_t init_frequency);
+     void initFixedFrequency(uint32_t fixed_frequency);
 
      /**
-      * @brief This functions initialize the frequency and also sets the minimal reachable frequency.
+      * @brief This functions initializes the PWM for variable frequency
+      * applications.
       *
-      * @param[in] init_frequency frequency in Hz
-      * @param[in] minimal_frequency desired minimal frequency in Hz
+      * @param[in] initial_frequency The initial value of the frequency in Hz
+      * @param[in] minimal_frequency The minimal value of the frequency in Hz
       *
-      * @warning this function must be called BEFORE initialiazing any timing unit
-     */
-     void initFrequency(uint32_t init_frequency, uint32_t minimal_frequency);
+      * @warning This function must be called BEFORE initialiazing any timing
+      *          unit. The user can vary the frequency during the operation of
+      *          the power device. This may compromise the resolution of the 
+      *          PWM. you can check your resolution with the getResolutionPS 
+      *          function.
+      */
+     void initVariableFrequency(uint32_t initial_frequency,
+                                uint32_t minimal_frequency);
 
      /**
       * @brief     This function sets the dead time for the selected timing unit
@@ -229,9 +236,25 @@ public:
       * @brief     This function returns the period of the selected timing unit
       *
       * @param[in] pwmX    		PWM Unit - PWMA, PWMB, PWMC, PWMD, PWME or PWMF
-      * @return 					the period value in uint16
+      * @return 					the period value in number of clock cycles
       */
      uint16_t getPeriod(hrtim_tu_number_t pwmX);
+
+     /**
+      * @brief     This function returns the maximum period of the selected timing unit
+      *
+      * @param[in] pwmX    		PWM Unit - PWMA, PWMB, PWMC, PWMD, PWME or PWMF
+      * @return 					the period value in number of clock cycles
+      */
+     uint16_t getPeriodMax(hrtim_tu_number_t pwmX);
+
+     /**
+      * @brief     This function returns the period of the selected timing unit
+      *
+      * @param[in] pwmX    		PWM Unit - PWMA, PWMB, PWMC, PWMD, PWME or PWMF
+      * @return 					the period value in number of clock cycles
+      */
+     uint16_t getPeriodMin(hrtim_tu_number_t pwmX);
 
      /**
       * @brief     This function sets the PostScaler value for the selected timing unit
@@ -367,8 +390,46 @@ public:
       * @param[in] frequency_update The new frequency in Hz
       * @warning The new frequency can't be inferior to the the one set in the initialization step
       *          Use it AFTER the initialization of the timing unit.
-     */
+      */
      void setFrequency(uint32_t frequency_update);
+
+     /**
+      * @brief     	          This function returns the minimum frequency
+      *                       of the selected timer in Hz
+      *
+      * @param[in] pwmX    	PWM Unit - PWMA, PWMB, PWMC, PWMD, PWME or PWMF
+      */
+     uint32_t getFrequencyMin(hrtim_tu_number_t pwmX);
+
+     /**
+      * @brief     	          This function returns the maximum frequency
+      *                       of the selected timer in Hz
+      *
+      * @param[in] pwmX    	PWM Unit - PWMA, PWMB, PWMC, PWMD, PWME or PWMF
+      */
+     uint32_t getFrequencyMax(hrtim_tu_number_t pwmX);
+
+     /**
+      * @brief     	          This function returns the resolution of the
+      *                       timing unit in picoseconds
+      *
+      * @param[in] pwmX    	PWM Unit - PWMA, PWMB, PWMC, PWMD, PWME or PWMF
+      * 
+      * @note                 The resolution of the PWM depends on the prescaler
+      *                       that is automatically calculated when the master
+      *                       unit is initialized.
+      *                       For an HRTIM frequency of =170MHz:
+      * PRSCL = 0 : fHRTIM x 32 = 4.608 GHz - Res:  184 ps - Min PWM f: 83.0 kHz 
+      * PRSCL = 1 : fHRTIM x 16 = 2.304 GHz - Res:  368 ps - Min PWM f: 41.5 kHz 
+      * PRSCL = 2 : fHRTIM x  8 = 1.152 GHz - Res:  735 ps - Min PWM f: 20.8 kHz 
+      * PRSCL = 3 : fHRTIM x  4 =   576 MHz - Res: 1470 ps - Min PWM f: 10.4 kHz 
+      * PRSCL = 4 : fHRTIM x  2 =   288 MHz - Res: 2940 ps - Min PWM f:  5.2 kHz 
+      * PRSCL = 5 : fHRTIM X  1 =   144 MHz - Res: 5880 ps - Min PWM f:  2.6 kHz       
+      * PRSCL = 6 : fHRTIM /  2 =    72 MHz - Res:11760 ps - Min PWM f:  1.3 kHz 
+      * PRSCL = 7 : fHRTIM /  4 =    36 MHz - Res:23530 ps - Min PWM f: 0.65 kHz       
+      *                       
+      */
+     uint32_t getResolutionPs(hrtim_tu_number_t pwmX);
 };
 
 #endif // PWMHAL_H_
