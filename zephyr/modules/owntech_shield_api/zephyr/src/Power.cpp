@@ -83,7 +83,7 @@ void PowerAPI::initMode(leg_t leg,                                             \
     for (int8_t i = startIndex; i < endIndex; i++)
     {
         /* Configure PWM frequency */
-        spin.pwm.initFrequency(timer_frequency);
+        spin.pwm.initFixedFrequency(timer_frequency);
 
         /* Set modulation */
         spin.pwm.setModulation(spinNumberToTu(dt_pwm_pin[i]),                  \
