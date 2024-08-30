@@ -10,13 +10,13 @@
     ![HRTIM pin](images/SPIN_1.1.0_main_hrtim.svg){ align=left }
 
     - Up to 5 pairs of PWMs possible (PWMA, PWC, PWMD, PWME, PWMF)
-    - Each PWM unit has a resolution of 184ps.
+    - Each PWM unit has a miminum resolution of 184ps.
     !!! note
-        The resolution of a PWM signal defines the maximum number of steps that can be present in a single PWM period. In other words, it determines how finely you can adjust the pulse width of the        signal. A higher resolution means you can make smaller and more precise adjustments to the pulse width.
+        The resolution of a PWM signal defines the maximum number of steps that can be present in a single PWM period. In other words, it determines how finely you can adjust the pulse width of the signal. A higher resolution means you can make smaller and more precise adjustments to the pulse width.
 
-    - Frequencies in the range of 650Hz to 1Ghz theorically possible
+    - Frequencies in the range of 650Hz to 1Ghz theorically possible. Tests were made from 2kHz up to 10MHz.
     !!! warning
-        Only 200Khz was tested with SPIN and TWIST
+        Only 200Khz was tested with TWIST
     - Two different modulation mode possible : left aligned, and center aligned
     - Two ADC linkable to two differents PWM unit for precise measurement instant
     - Compatible for peak current control with the internal analog comparator
@@ -72,6 +72,7 @@
     
     === "Software triggered"
         ```cpp 
+        spin.pwm.initFixedFrequency(frequency); 
         spin.pwm.setModulation(PWMA, UpDwn);
         spin.pwm.setSwitchConvention(PWMA, PWMx1);
         spin.pwm.setMode(PWMA, VOLTAGE_MODE);
@@ -82,6 +83,7 @@
         ```
     === "Hardware triggered"
         ```cpp
+        spin.pwm.initFixedFrequency(frequency); 
         spin.pwm.setModulation(PWMA, UpDwn);
         spin.pwm.setAdcEdgeTrigger(PWMA, EdgeTrigger_up);
         spin.pwm.setSwitchConvention(PWMA, PWMx1);
@@ -116,7 +118,7 @@ The duty cycle is a constant value compared to the carrier.
 
 ![Duty cycle](images/changing_duty_cycle.gif)
 
-When the carrier is superior to the duty cycle, the logic output is at high level. On the contrary, when the carrier is inferior to the duty cycle the the output logic is low level. A PWM signal is thus a sqarewave signal with a frequency (the **switching frequency**) is fixed by the carrier.
+When the carrier is superior to the duty cycle, the logic output is at high level. On the contrary, when the carrier is inferior to the duty cycle the the output logic is low level. A PWM signal is thus a sqarewave signal with a frequency (the **switching frequency**) being fixed by the carrier.
 
 Varying the duty cycle is how to vary the output of the PWM.
 
@@ -130,7 +132,7 @@ Varying the duty cycle is how to vary the output of the PWM.
     ![frequency 200 kHz](images/frequency_200.svg){ width=800 }
 
     ```c++
-        spin.pwm.setFrequency(PWMA, 200000);
+        spin.pwm.setFixedFrequency(200000);
 
     ```
 
@@ -139,7 +141,7 @@ Varying the duty cycle is how to vary the output of the PWM.
     ![frequency 400 kHz](images/frequency_400.svg){ width=800 }
 
     ```c++
-        spin.pwm.setFrequency(PWMA, 400000);
+        spin.pwm.setFixedFrequency(400000);
 
     ```
 
