@@ -164,25 +164,25 @@ void PwmHAL::setModulation(hrtim_tu_number_t pwmX, hrtim_cnt_t modulation)
 	hrtim_set_modulation(pwmX, modulation);
 }
 
-void PwmHAL::setSwitchConvention(hrtim_tu_number_t pwmX, hrtim_switch_convention_t convention)
-{
-	if (!hrtim_get_status(pwmX))
-		hrtim_init_default_all(); // initialize default parameters before
-	hrtim_set_switch_convention(pwmX, convention);
+void PwmHAL::setSwitchConvention(hrtim_tu_number_t pwmX,
+                                 hrtim_switch_convention_t convention) {
+  if (!hrtim_get_status(pwmX))
+    hrtim_init_default_all(); // initialize default parameters before
+  hrtim_set_switch_convention(pwmX, convention);
 }
 
-void PwmHAL::initFrequency(uint32_t init_frequency, uint32_t minimal_frequency)
+void PwmHAL::initVariableFrequency(uint32_t initial_frequency, uint32_t minimal_frequency)
 {
 	if (!hrtim_get_status(PWMA))
 		hrtim_init_default_all(); // initialize default parameters before
-	hrtim_frequency_set(init_frequency, minimal_frequency);
+	hrtim_frequency_set(initial_frequency, minimal_frequency);
 }
 
-void PwmHAL::initFrequency(uint32_t init_frequency)
+void PwmHAL::initFixedFrequency(uint32_t fixed_frequency)
 {
 	if (!hrtim_get_status(PWMA))
 		hrtim_init_default_all(); // initialize default parameters before
-	hrtim_frequency_set(init_frequency, init_frequency);
+	hrtim_frequency_set(fixed_frequency, fixed_frequency);
 }
 
 void PwmHAL::setDeadTime(hrtim_tu_number_t pwmX, uint16_t rise_ns, uint16_t fall_ns)
@@ -218,9 +218,8 @@ void PwmHAL::setPhaseShift(hrtim_tu_number_t pwmX, int16_t shift)
 	hrtim_phase_shift_set(pwmX, phase_shift_int);
 }
 
-hrtim_cnt_t PwmHAL::getModulation(hrtim_tu_number_t pwmX)
-{
-	return hrtim_get_modulation(pwmX);
+hrtim_cnt_t PwmHAL::getModulation(hrtim_tu_number_t pwmX) {
+  return hrtim_get_modulation(pwmX);
 }
 
 hrtim_switch_convention_t PwmHAL::getSwitchConvention(hrtim_tu_number_t pwmX)
@@ -231,6 +230,16 @@ hrtim_switch_convention_t PwmHAL::getSwitchConvention(hrtim_tu_number_t pwmX)
 uint16_t PwmHAL::getPeriod(hrtim_tu_number_t pwmX)
 {
 	return hrtim_period_get(pwmX);
+}
+
+uint16_t PwmHAL::getPeriodMax(hrtim_tu_number_t pwmX)
+{
+	return hrtim_get_max_period(pwmX);
+}
+
+uint16_t PwmHAL::getPeriodMin(hrtim_tu_number_t pwmX)
+{
+	return hrtim_get_min_period(pwmX);
 }
 
 void PwmHAL::setAdcTriggerPostScaler(hrtim_tu_number_t pwmX, uint32_t ps_ratio)
@@ -355,4 +364,19 @@ void PwmHAL::setAdcDecimation(hrtim_tu_number_t pwmX, uint32_t decimation)
 void PwmHAL::setFrequency(uint32_t frequency_update)
 {
 	hrtim_change_frequency(frequency_update);
+}
+
+uint32_t PwmHAL::getFrequencyMax(hrtim_tu_number_t pwmX)
+{
+	return hrtim_get_max_frequency(pwmX);
+}
+
+uint32_t PwmHAL::getFrequencyMin(hrtim_tu_number_t pwmX)
+{
+	return hrtim_get_min_frequency(pwmX);
+}
+
+uint32_t PwmHAL::getResolutionPs(hrtim_tu_number_t pwmX)
+{
+	return hrtim_get_resolution_ps(pwmX);
 }
