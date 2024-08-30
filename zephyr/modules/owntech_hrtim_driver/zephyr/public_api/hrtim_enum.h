@@ -41,6 +41,15 @@ extern "C"
 
     static const uint8_t HRTIM_CHANNELS = 6;
 
+    static const uint32_t HRTIM_PRESCALER_RESOLUTION_PS[8] = {184, 
+                                                              368,
+                                                              735,
+                                                              1470,
+                                                              2940,
+                                                              5880,
+                                                              11760,
+                                                              23530};
+
     /////////////////////////////
     ////// ENUM
 
@@ -305,10 +314,15 @@ extern "C"
         uint16_t fall_dead_time;                   /* Falling Edge Dead time */
         uint16_t duty_cycle;                       /* Current value of its duty cycle */
         uint16_t period;                           /* Period used by the unit */
+        uint16_t max_period;                       /* Max Period used by the unit */
+        uint16_t min_period;                       /* Min Period used by the unit */
         uint32_t frequency;                        /* Frequency used by the unit */
+        uint32_t max_frequency;                    /* Max frequency used by the unit */
+        uint32_t min_frequency;                    /* Min frequency used by the unit */
         hrtim_cnt_t modulation;                    /* Type of modulation used for this unit */
         hrtim_tu_ON_OFF_t unit_on;                 /* State of the time unit (ON/OFF) */
         uint8_t ckpsc;                             /* Holds the clock pre-scaler of the timing unit */
+        uint32_t resolution;                       /* Holds the resolution of the timing unit  */
         hrtim_pwm_mode_t pwm_mode;                 /* pwm mode for voltage mode or current mode */
         hrtim_external_trigger_t external_trigger; /* external trigger event for current mode */
     } pwm_conf_t;
