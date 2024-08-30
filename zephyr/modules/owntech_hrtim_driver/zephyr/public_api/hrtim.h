@@ -217,6 +217,79 @@ void hrtim_set_modulation(hrtim_tu_number_t tu_number, hrtim_cnt_t modulation);
 hrtim_cnt_t hrtim_get_modulation(hrtim_tu_number_t tu_number);
 
 /**
+ * @brief   Gets the time resolution for a given timing unit
+ *
+ * @param[in] tu_number        Timing unit number:
+ *            @arg @ref PWMA
+ *            @arg @ref PWMB
+ *            @arg @ref PWMC
+ *            @arg @ref PWMD
+ *            @arg @ref PWME
+ *            @arg @ref PWMF
+ * @return    resolution in picoseconds
+ */
+uint32_t hrtim_get_resolution_ps(hrtim_tu_number_t tu_number);
+
+/**
+ * @brief   Gets the maximum period of the timing unit in number of clock cycles
+ *
+ * @param[in] tu_number        Timing unit number:
+ *            @arg @ref PWMA
+ *            @arg @ref PWMB
+ *            @arg @ref PWMC
+ *            @arg @ref PWMD
+ *            @arg @ref PWME
+ *            @arg @ref PWMF
+ * @return    period in number of clock cycles
+ */
+uint16_t hrtim_get_max_period(hrtim_tu_number_t tu_number);
+
+/**
+ * @brief   Gets the minimum period of the timing unit in number of clock cycles
+ *
+ * @param[in] tu_number        Timing unit number:
+ *            @arg @ref PWMA
+ *            @arg @ref PWMB
+ *            @arg @ref PWMC
+ *            @arg @ref PWMD
+ *            @arg @ref PWME
+ *            @arg @ref PWMF
+ * @return    period in number of clock cycles
+ */
+uint16_t hrtim_get_min_period(hrtim_tu_number_t tu_number);
+
+
+/**
+ * @brief   Gets the minimum frequency of the timing unit in Hertz
+ *
+ * @param[in] tu_number        Timing unit number:
+ *            @arg @ref PWMA
+ *            @arg @ref PWMB
+ *            @arg @ref PWMC
+ *            @arg @ref PWMD
+ *            @arg @ref PWME
+ *            @arg @ref PWMF
+ * @return    frequency in Hertz
+ */
+uint32_t hrtim_get_max_frequency(hrtim_tu_number_t tu_number);
+
+/**
+ * @brief   Gets the minimum frequency of the timing unit in Hertz
+ *
+ * @param[in] tu_number        Timing unit number:
+ *            @arg @ref PWMA
+ *            @arg @ref PWMB
+ *            @arg @ref PWMC
+ *            @arg @ref PWMD
+ *            @arg @ref PWME
+ *            @arg @ref PWMF
+ * @return    frequency in Hertz
+ */
+uint32_t hrtim_get_min_frequency(hrtim_tu_number_t tu_number);
+
+
+
+/**
  * @brief   Sets the switching convention of a given timing unit
  *
  * @param[in] tu_number        Timing unit number:
@@ -275,7 +348,7 @@ void hrtim_cmpl_pwm_out1(hrtim_tu_number_t tu_number);
 void hrtim_cmpl_pwm_out2(hrtim_tu_number_t tu_number);
 
 /**
- * @brief   Sets the period of a given timing unit
+ * @brief   Sets the frequency of a given timing unit in Hz
  *
  * @param[in] tu_number        Timing unit number:
  *            @arg @ref PWMA
@@ -289,7 +362,7 @@ void hrtim_cmpl_pwm_out2(hrtim_tu_number_t tu_number);
 void hrtim_frequency_set(uint32_t frequency_set, uint32_t frequency_min);
 
 /**
- * @brief   Returns the period of a given timing unit
+ * @brief   Returns the period of a given timing unit in number of clock cycles
  *
  * @param[in] tu_number        Timing unit number:
  *            @arg @ref PWMA
@@ -303,7 +376,7 @@ void hrtim_frequency_set(uint32_t frequency_set, uint32_t frequency_min);
 uint16_t hrtim_period_get(hrtim_tu_number_t tu_number);
 
 /**
- * @brief   Returns the period of a master timer
+ * @brief   Returns the period of a master timer in number of clock cycles
  *
  * @return    Period of the master timer
  */

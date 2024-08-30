@@ -237,12 +237,29 @@ static inline uint32_t _period_ckpsc(uint32_t freq, timer_hrtim_t *tu)
      * workaround this limitation and manage a duty cycle using the
      * dead-time generator which have a 868ps resolution... */
 
-    tu->pwm_conf.period = (uint16_t)period;
+    tu->pwm_conf.period =     (uint16_t)period;
+    tu->pwm_conf.min_period = (uint16_t)min_period;
+    tu->pwm_conf.max_period = period_max;
+    tu->pwm_conf.resolution = (uint32_t)HRTIM_PRESCALER_RESOLUTION_PS[          \
+                                                            tu->pwm_conf.ckpsc];
+
+    /* Compute and save the minimum allowed frequency */
+    tu->pwm_conf.min_frequency = HRTIM_MINIM_FREQUENCY;
+
+    /* Compute and save the maximum allowed frequency */
+    tu->pwm_conf.max_frequency = (
+                                      (f_hrtim / (uint32_t)min_period) * 32     \
+                                    + (f_hrtim % (uint32_t)min_period) * 32     \
+                                    / (uint32_t)min_period                      \
+                                  )                                             \
+                                    / (1 << tu->pwm_conf.ckpsc);                \
 
     /* Compute and return the effective frequency */
-    uint32_t frequency = 
-        ((f_hrtim / period) * 32                                              \
-        + (f_hrtim % period) * 32 / period) / (1 << tu->pwm_conf.ckpsc);
+    uint32_t frequency = (
+                              (f_hrtim / period) * 32                           \
+                            + (f_hrtim % period) * 32 / period                  \
+                         )                                                      \
+                            / (1 << tu->pwm_conf.ckpsc);                        \
     return frequency;
 }
 
@@ -602,6 +619,33 @@ hrtim_tu_ON_OFF_t hrtim_get_status(hrtim_tu_number_t tu_number)
 {
     return tu_channel[tu_number]->pwm_conf.unit_on;
 }
+
+uint32_t hrtim_get_resolution_ps(hrtim_tu_number_t tu_number)
+{
+    return tu_channel[tu_number]->pwm_conf.resolution;
+}
+
+uint16_t hrtim_get_max_period(hrtim_tu_number_t tu_number)
+{
+    return tu_channel[tu_number]->pwm_conf.max_period;
+}
+
+uint16_t hrtim_get_min_period(hrtim_tu_number_t tu_number)
+{
+    return tu_channel[tu_number]->pwm_conf.min_period;
+}
+
+uint32_t hrtim_get_max_frequency(hrtim_tu_number_t tu_number)
+{
+    return tu_channel[tu_number]->pwm_conf.max_frequency;
+}
+
+uint32_t hrtim_get_min_frequency(hrtim_tu_number_t tu_number)
+{
+    return tu_channel[tu_number]->pwm_conf.min_frequency;
+}
+
+
 
 void hrtim_tu_gpio_init(hrtim_tu_number_t tu_number)
 {
