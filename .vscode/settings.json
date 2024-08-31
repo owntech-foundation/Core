@@ -5,6 +5,7 @@
     "owntech": true,
     "zephyr": true,
     ".gitignore": true,
+    "docs": true,
     ".github": true
   }
 }
