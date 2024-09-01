@@ -107,9 +107,11 @@ public:
 	void stop(leg_t leg);
 
 	/**
-	 * @brief Disonnect the electrolytic capacitor.
-	 *
+	 * @brief Disconnect the electrolytic capacitor.
+	 * 
 	 * @param leg The selected leg for which to disonnect the capacitor.
+	 * 
+	 * @warning This function can only be called AFTER initializing the LEG.
 	*/
 	void disconnectCapacitor(leg_t leg);
 
