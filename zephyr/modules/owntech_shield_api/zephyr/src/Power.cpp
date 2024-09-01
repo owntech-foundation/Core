@@ -521,12 +521,12 @@ void PowerAPI::initBuck(leg_t leg, hrtim_pwm_mode_t leg_mode)
         if (!dt_pwm_x1_high[i])
         {
             /* PWMx1 is connected in hardware to switch low */
-            initMode((leg_t)i, PWMx2, leg_mode);
+            initMode(static_cast<leg_t>(i), PWMx2, leg_mode);
         }
         else
         {
             /* PWMx1 is connected in hardware to switch high */
-            initMode((leg_t)i, PWMx1, leg_mode);
+            initMode(static_cast<leg_t>(i), PWMx1, leg_mode);
         }
     }
 }
@@ -553,12 +553,12 @@ void PowerAPI::initBoost(leg_t leg)
         if (!dt_pwm_x1_high[i])
         {
             /* PWMx1 is connected in hardware to switch low */
-            initMode((leg_t)i, PWMx1, VOLTAGE_MODE);
+            initMode(static_cast<leg_t>(i), PWMx1, VOLTAGE_MODE);
         }
         else
         {
             /* PWMx1 is connected in hardware to switch high */
-            initMode((leg_t)i, PWMx2, VOLTAGE_MODE);
+            initMode(static_cast<leg_t>(i), PWMx2, VOLTAGE_MODE);
         }
     }
 }
