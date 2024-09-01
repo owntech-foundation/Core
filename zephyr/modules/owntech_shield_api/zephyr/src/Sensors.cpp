@@ -194,7 +194,7 @@ void SensorsAPI::setConversionParametersLinear(sensor_t sensor_name, float32_t g
 	/* Verifies the conversion is of type linear */
 	if(sensor_conv_type == conversion_linear){
 		data_conversion_set_conversion_parameters_linear(sensor_info.adc_num,   \
-														sensor_info.channel_num,\ 
+														sensor_info.channel_num,\
 														gain, offset);
 	}
 }
@@ -206,7 +206,7 @@ void SensorsAPI::setConversionParametersNtcThermistor(sensor_t sensor_name, floa
 
 	if(sensor_conv_type == conversion_therm){
 		data_conversion_set_conversion_parameters_therm(sensor_info.adc_num, 	 \
-														 sensor_info.channel_num,\ 
+														 sensor_info.channel_num,\
 														 r0, b, rdiv, t0);
 	}
 }
@@ -672,7 +672,6 @@ float32_t SensorsAPI::getCalibrationCoefficients(const char* physicalParameter, 
 	// Maximum number of number for gain and offset value
 	const uint8_t MaxCharInOneLine = 20;
 
-	char received_char;
 	char line[MaxCharInOneLine]; 	// Number of character in one line
 	float32_t confirm; 				//confirmation
 	float32_t parameterCoefficient;
