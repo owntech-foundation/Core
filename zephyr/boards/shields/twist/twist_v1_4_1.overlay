@@ -178,7 +178,7 @@
 			sensor-conv-type = "THERMISTANCE";
 			temp-sensor-adc3 {
 				io-channels = <&adc3 12>;
-				spin-pin = <37>;
+				spin-pin = <31>;
 			};
 			status = "okay";
 		};
