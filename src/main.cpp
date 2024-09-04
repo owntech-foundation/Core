@@ -25,71 +25,208 @@
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
+//--------------Zephyr----------------------------------------
+#include <zephyr/console/console.h>
+
 //--------------OWNTECH APIs----------------------------------
-#include "TaskAPI.h"
-#include "ShieldAPI.h"
 #include "SpinAPI.h"
+#include "ShieldAPI.h"
+#include "TaskAPI.h"
+#include "SafetyAPI.h"
+
+//--------------OWNTECH Libraries-----------------------------
+#include "pid.h"
 
 //--------------SETUP FUNCTIONS DECLARATION-------------------
-void setup_routine();           /* Setups the hardware and software of the system */
+void setup_routine(); // Setups the hardware and software of the system
 
 //--------------LOOP FUNCTIONS DECLARATION--------------------
-void loop_background_task();    /* Code to be executed in the background task */
-void loop_critical_task();      /* Code to be executed in real time in the critical task */
+void loop_communication_task(); // code to be executed in the slow communication task
+void loop_application_task();   // Code to be executed in the background task
+void loop_critical_task();     // Code to be executed in real time in the critical task
 
 //--------------USER VARIABLES DECLARATIONS-------------------
 
+static uint32_t control_task_period = 100; //[us] period of the control task
+static bool pwm_enable = false;            //[bool] state of the PWM (ctrl task)
 
+uint8_t received_serial_char;
+
+/* Measure variables */
+
+static float32_t VIN_value;
+static float32_t VOUT_value;
+static float32_t IL_value;
+
+static float meas_data; // temp storage meas value (ctrl task)
+
+float32_t duty_cycle = 0.3;
+
+static float32_t voltage_reference = 15; //voltage reference
+
+/* PID coefficient for a 8.6ms step response*/
+
+static float32_t kp = 0.000215;
+static float32_t Ti = 7.5175e-5;
+static float32_t Td = 0.0;
+static float32_t N = 0.0;
+static float32_t upper_bound = 1.0F;
+static float32_t lower_bound = 0.0F;
+static float32_t Ts = control_task_period * 1e-6;
+static PidParams pid_params(Ts, kp, Ti, Td, N, lower_bound, upper_bound);
+static Pid pid;
+
+//---------------------------------------------------------------
+
+enum serial_interface_menu_mode // LIST OF POSSIBLE MODES FOR THE OWNTECH CONVERTER
+{
+    IDLEMODE = 0,
+    POWERMODE
+};
+
+uint8_t mode = IDLEMODE;
 
 //--------------SETUP FUNCTIONS-------------------------------
 
 /**
  * This is the setup routine.
- * It is used to call functions that will initialize your hardware and tasks.
- * In this example, we setup the version of the spin board and a 
- * background task. The critical task is defined but not started.
- * NOTE: It is important to follow the steps and initialize the hardware first 
- * and the tasks second. 
+ * It is used to call functions that will initialize your spin, twist, data and/or tasks.
+ * In this example, we setup the version of the spin board and a background task.
+ * The critical task is defined but not started.
  */
 void setup_routine()
 {
-    /* STEP 1 - SETUP THE HARDWARE */
+    /* buck voltage mode */
+    shield.power.initBuck(LEG1);
 
-    /* STEP 2 - SETUP THE TASKS */
-    uint32_t background_task_number = task.createBackground(loop_background_task);
-    //task.createCritical(loop_critical_task, 500); /* Uncomment if you use the critical task */
+	spin.data.configureTriggerSource(ADC_1, hrtim_ev1);
+	spin.data.configureTriggerSource(ADC_2, hrtim_ev3);
 
-    /* STEP 3 - LAUNCH THE TASKS */
-    task.startBackground(background_task_number);
-    //task.startCritical(); /* Uncomment if you use the critical task */
+	uint32_t num_discontinuous_meas = 1;
+	spin.data.configureDiscontinuousMode(ADC_1, num_discontinuous_meas);
+	spin.data.configureDiscontinuousMode(ADC_2, num_discontinuous_meas);
+
+    shield.sensors.enableSensor(V_OUT,ADC_1);
+    shield.sensors.enableSensor(V_IN,ADC_1);
+    shield.sensors.enableSensor(I_L,ADC_2);
+
+        
+
+    pid.init(pid_params);
+
+    // Then declare tasks
+    uint32_t app_task_number = task.createBackground(loop_application_task);
+    uint32_t com_task_number = task.createBackground(loop_communication_task);
+    task.createCritical(loop_critical_task, 100); // Uncomment if you use the critical task
+
+    // Finally, start tasks
+    task.startBackground(app_task_number);
+    task.startBackground(com_task_number);
+    task.startCritical(); // Uncomment if you use the critical task
 }
 
 //--------------LOOP FUNCTIONS--------------------------------
+
+void loop_communication_task()
+{
+    received_serial_char = console_getchar();
+    switch (received_serial_char)
+    {
+    case 'h':
+        //----------SERIAL INTERFACE MENU-----------------------
+        printk(" ________________________________________\n");
+        printk("|     ---- MENU buck voltage mode ----   |\n");
+        printk("|     press i : idle mode                |\n");
+        printk("|     press p : power mode               |\n");
+        printk("|     press u : voltage reference UP     |\n");
+        printk("|     press d : voltage reference DOWN   |\n");
+        printk("|________________________________________|\n\n");
+        //------------------------------------------------------
+        break;
+    case 'i':
+        printk("idle mode\n");
+        mode = IDLEMODE;
+        break;
+    case 'p':
+        printk("power mode\n");
+        mode = POWERMODE;
+        break;
+    case 'u':
+        voltage_reference += 0.5;
+        break;
+    case 'd':
+        voltage_reference -= 0.5;
+        break;
+    default:
+        break;
+    }
+}
 
 /**
  * This is the code loop of the background task
  * It is executed second as defined by it suspend task in its last line.
  * You can use it to execute slow code such as state-machines.
  */
-void loop_background_task()
+void loop_application_task()
 {
-    printk("Hello World! \n");
-    spin.led.toggle();
+    if (mode == IDLEMODE)
+    {
+        spin.led.turnOff();
+    }
+    else if (mode == POWERMODE)
+    {
+        spin.led.turnOn();
 
-    task.suspendBackgroundMs(1000);  /* This pauses the task for 1000 mili seconds */
+        printk("%.3f:", (double)IL_value);
+        printk("%.3f:", (double)VOUT_value);
+        printk("%.3f:", (double)VIN_value);
+        printk("%.3f:", (double)duty_cycle);
+        printk("\n");
+    }
+    task.suspendBackgroundMs(100);
 }
 
 /**
  * This is the code loop of the critical task
  * It is executed every 500 micro-seconds defined in the setup_software function.
- * You can use it to execute an ultra-fast code with the highest priority which 
- * cannot be interruped. It is from it that you will control your power flow.
+ * You can use it to execute an ultra-fast code with the highest priority which cannot be interruped.
+ * It is from it that you will control your power flow.
  */
 void loop_critical_task()
 {
-    /* This task is left empty in this example */
+    meas_data = shield.sensors.getLatestValue(I_L);
+    if (meas_data != NO_VALUE) IL_value = meas_data;
+
+    meas_data = shield.sensors.getLatestValue(V_OUT);
+    if (meas_data != NO_VALUE) VOUT_value = meas_data;
+
+    meas_data = shield.sensors.getLatestValue(V_IN);
+    if (meas_data != NO_VALUE) VIN_value = meas_data;
+
+    if (mode == IDLEMODE)
+    {
+        if (pwm_enable == true)
+        {
+            shield.power.stop(LEG1);
+        }
+        pwm_enable = false;
+    }
+    else if (mode == POWERMODE)
+    {
+        duty_cycle = pid.calculateWithReturn(voltage_reference, VOUT_value);
+        shield.power.setDutyCycle(LEG1,duty_cycle);
+
+        /* Set POWER ON */
+        if (!pwm_enable)
+        {
+            pwm_enable = true;
+            shield.power.start(LEG1);
+        }
+    }
+
 }
 
 /**
