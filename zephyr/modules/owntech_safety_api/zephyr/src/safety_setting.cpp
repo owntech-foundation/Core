@@ -332,50 +332,14 @@ int8_t safety_task()
     return status;
 }
 
+
 /**
  * @brief Stores threshold value in the NVS
 */
 int8_t safety_store_threshold_in_nvs(sensor_t sensor)
 {
-	// The data structure is as follows:
-	// - 1 byte indicating the sensor descriptor string size
-	// - The sensor descriptor string (should be max. 23 bytes in current version)
-    // - 1 byte to store the sensor number (in the order in the device tree)
-	// - 4 byte to store the sensor threshold min
-	// - 4 byte to store the sensor threshold max
 
 	uint8_t* buffer = (uint8_t*)k_malloc(1 + 23 + 4 + 4);
-
-    switch(sensor)
-    {
-        case I1_LOW:
-            snprintk((char*)(&buffer[1]), 23, "I1_LOW_THRESHOLD");
-            break;
-
-        case I2_LOW:
-            snprintk((char*)(&buffer[1]), 23, "I2_LOW_THRESHOLD");
-            break;
-
-        case V1_LOW:
-            snprintk((char*)(&buffer[1]), 23, "V1_LOW_THRESHOLD");
-            break;
-
-        case V2_LOW:
-            snprintk((char*)(&buffer[1]), 23, "V2_LOW_THRESHOLD");
-            break;
-
-        case V_HIGH:
-            snprintk((char*)(&buffer[1]), 23, "V_HIGH_THRESHOLD");
-            break;
-
-        case I_HIGH:
-            snprintk((char*)(&buffer[1]), 23, "I_HIGH_THRESHOLD");
-            break;
-
-        default:
-            snprintk((char*)(&buffer[1]), 23, "OTHER_THRESHOLD");
-            break;
-    }
 
 	uint8_t string_len = strlen((char*)(&buffer[1]));
 
