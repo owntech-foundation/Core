@@ -46,16 +46,16 @@
 		il: i-l {
 			compatible     = "shield-sensors";
 			sensor-name    = "I_L";
-			default-gain   = <0x3aaa64c3>;
+			default-gain = <0x3aaa64c3>;
 			default-offset = <0xbffeb852>;
 			sensor-conv-type = "LINEAR";
 			i-l-adc1 {
-				io-channels = <&adc1 6>;
-				spin-pin    = <24>;
+				io-channels = <&adc1 2>;
+				spin-pin = <30>;
 			};
 			i-l-adc2 {
-				io-channels = <&adc2 6>;
-				spin-pin    = <24>;
+				io-channels = <&adc2 2>;
+				spin-pin = <30>;
 			};
 		};
 

@@ -71,12 +71,12 @@
 			default-offset = <0xbffeb852>;
 			sensor-conv-type = "LINEAR";
 			i-l-adc1 {
-				io-channels = <&adc1 6>;
-				spin-pin = <24>;
+				io-channels = <&adc1 2>;
+				spin-pin = <30>;
 			};
 			i-l-adc2 {
-				io-channels = <&adc2 6>;
-				spin-pin = <24>;
+				io-channels = <&adc2 2>;
+				spin-pin = <30>;
 			};
 			status = "okay";
 		};
@@ -105,12 +105,12 @@
 			status = "okay";
 		};
 
-		iltd: i-td-td {
+		iltd: i-l-td {
 			compatible = "safety-thresholds";
 			sensor-name = "I_L";
 			threshold-name = "I_L_TD";
 			threshold-high = <0x40000000>; /* 2.0 */
-			threshold-low  = <0xbdcccccd>; /* -0.1 */
+			threshold-low  = <0xc0a00000>; /* -5 */
 			status = "okay";
 		};
 
