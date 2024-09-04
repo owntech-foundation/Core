@@ -1,0 +1,64 @@
+/*
+ * Copyright (c) 2022-2024 OwnTech.
+ *
+ * SPDX-License-Identifier: LGPL-2.1
+ */
+
+/ {
+	/* Voltage sensors */
+
+	shield-sensors {
+		/* Voltage channels */
+		vout: v-out {
+			compatible      = "shield-sensors";
+			sensor-name     = "V_OUT";
+			default-gain    = <0x3c45197a>;
+			default-offset  = <0x00000000>;
+			sensor-conv-type = "LINEAR";
+			v-out-adc1 {
+				io-channels = <&adc1 1>;
+				spin-pin    = <29>;
+			};
+			v-out-adc2 {
+				io-channels = <&adc2 1>;
+				spin-pin    = <29>;
+			};
+		};
+
+		vin: v-in {
+			compatible      = "shield-sensors";
+			sensor-name     = "V_IN";
+			default-gain    = <0x3c4aff6d>;
+			default-offset  = <0x00000000>;
+			sensor-conv-type = "LINEAR";
+			v-in-adc1 {
+				io-channels = <&adc1 9>;
+				spin-pin    = <27>;
+			};
+			v-in-adc2 {
+				io-channels = <&adc2 9>;
+				spin-pin    = <27>;
+			};
+		};
+
+		/* Current sensors */
+
+		il: i-l {
+			compatible     = "shield-sensors";
+			sensor-name    = "I_L";
+			default-gain   = <0x3aaa64c3>;
+			default-offset = <0xbffeb852>;
+			sensor-conv-type = "LINEAR";
+			i-l-adc1 {
+				io-channels = <&adc1 6>;
+				spin-pin    = <24>;
+			};
+			i-l-adc2 {
+				io-channels = <&adc2 6>;
+				spin-pin    = <24>;
+			};
+		};
+
+	};
+
+};

@@ -1,0 +1,13 @@
+# Copyright (c) 2023 OwnTech
+# SPDX-License-Identifier: LGPL-2.1
+
+config SHIELD_LFE_DEMO
+	def_bool $(shields_list_contains,lfe_demo_v0_0_1) || \
+			 $(shields_list_contains,lfe_demo)
+
+config SHIELD_LFE_DEMO_V0_0_1
+	def_bool $(shields_list_contains,lfe_demo_v0_0_1)
+
+config HAS_POWER_SHIELD
+	default y
+	bool "Our protoboard shield for LFE Conference 2024"
