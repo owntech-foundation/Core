@@ -61,6 +61,13 @@ static float32_t VIN_value;
 static float32_t VOUT_value;
 static float32_t IL_value;
 
+static int8_t test_V_OUT;
+static int8_t test_V_IN; 
+static int8_t test_I_L;  
+
+static uint8_t dataValid;
+
+
 static float meas_data; // temp storage meas value (ctrl task)
 
 float32_t duty_cycle = 0.3;
@@ -103,17 +110,19 @@ void setup_routine()
     shield.power.initBuck(LEG1);
 
 	spin.data.configureTriggerSource(ADC_1, hrtim_ev1);
-	spin.data.configureTriggerSource(ADC_2, hrtim_ev3);
 
 	uint32_t num_discontinuous_meas = 1;
 	spin.data.configureDiscontinuousMode(ADC_1, num_discontinuous_meas);
-	spin.data.configureDiscontinuousMode(ADC_2, num_discontinuous_meas);
 
-    shield.sensors.enableSensor(V_OUT,ADC_1);
-    shield.sensors.enableSensor(V_IN,ADC_1);
-    shield.sensors.enableSensor(I_L,ADC_2);
+    test_V_OUT = shield.sensors.enableSensor(V_OUT,ADC_1);
+    test_V_IN  = shield.sensors.enableSensor(V_IN,ADC_1);
+    test_I_L   = shield.sensors.enableSensor(I_L,ADC_1);
 
-        
+    // safety.init_shield();
+    // safety.setChannelReaction(Open_Circuit);
+    // safety.enableSafetyApi();    
+
+    // shield.sensors.setConversionParametersLinear(I_L,1.0,0.0);
 
     pid.init(pid_params);
 
@@ -179,13 +188,19 @@ void loop_application_task()
     else if (mode == POWERMODE)
     {
         spin.led.turnOn();
-
-        printk("%.3f:", (double)IL_value);
-        printk("%.3f:", (double)VOUT_value);
-        printk("%.3f:", (double)VIN_value);
-        printk("%.3f:", (double)duty_cycle);
-        printk("\n");
     }
+
+    printk("%.3f:", (double)IL_value);
+    printk("%d:", dataValid);
+    printk("%d:", test_V_OUT);
+    printk("%d:", test_V_IN);
+    printk("%d:", test_I_L);
+    printk("%.3f:", (double)VOUT_value);
+    printk("%.3f:", (double)voltage_reference);
+    printk("%.3f:", (double)VIN_value);
+    printk("%.3f:", (double)duty_cycle);
+    printk("\n");
+
     task.suspendBackgroundMs(100);
 }
 
@@ -197,7 +212,7 @@ void loop_application_task()
  */
 void loop_critical_task()
 {
-    meas_data = shield.sensors.getLatestValue(I_L);
+    meas_data = shield.sensors.getLatestValue(I_L,&dataValid);
     if (meas_data != NO_VALUE) IL_value = meas_data;
 
     meas_data = shield.sensors.getLatestValue(V_OUT);
