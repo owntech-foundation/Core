@@ -47,7 +47,7 @@
 			compatible     = "shield-sensors";
 			sensor-name    = "I_L";
 			default-gain = <0x3aaa64c3>;
-			default-offset = <0xbffeb852>;
+			default-offset = <0xbff0a3d7>;
 			sensor-conv-type = "LINEAR";
 			i-l-adc1 {
 				io-channels = <&adc1 2>;
