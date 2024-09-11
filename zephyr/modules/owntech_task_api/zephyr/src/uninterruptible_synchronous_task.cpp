@@ -31,6 +31,7 @@
 #include "timer.h"
 #include "hrtim.h"
 #include "SpinAPI.h"
+
 #include "safety_internal.h"
 #include "SafetyAPI.h"
 
@@ -74,19 +75,23 @@ void thread_error(void *, void *, void *)
 	{
 		if (safety_alert)
 		{
-			printk("SAFETY ERROR : reset the MCU \n"
-					"problem with I1 : %s \n"
-					"problem with V1 : %s \n"
-					"problem with I2 : %s \n"
-					"problem with V2 : %s \n"
-					"problem with Ihigh : %s \n"
-					"problem with Vhigh : %s \n"
-					, Safety.getChannelError(I1_LOW) ? "true" : "false"
-					, Safety.getChannelError(V1_LOW) ? "true" : "false"
-					, Safety.getChannelError(I2_LOW) ? "true" : "false"
-					, Safety.getChannelError(I2_LOW) ? "true" : "false"
-					, Safety.getChannelError(I_HIGH) ? "true" : "false"
-					, Safety.getChannelError(V_HIGH) ? "true" : "false");
+			printk("SAFETY ERROR : reset the MCU \n");
+
+			#ifdef CONFIG_SHIELD_TWIST
+				printk(	"problem with I1 : %s \n"
+						"problem with V1 : %s \n"
+						"problem with I2 : %s \n"
+						"problem with V2 : %s \n"
+						"problem with Ihigh : %s \n"
+						"problem with Vhigh : %s \n"
+						, Safety.getChannelError(I1_LOW) ? "true" : "false"
+						, Safety.getChannelError(V1_LOW) ? "true" : "false"
+						, Safety.getChannelError(I2_LOW) ? "true" : "false"
+						, Safety.getChannelError(I2_LOW) ? "true" : "false"
+						, Safety.getChannelError(I_HIGH) ? "true" : "false"
+						, Safety.getChannelError(V_HIGH) ? "true" : "false"
+						);
+			#endif
 
 		}
 
