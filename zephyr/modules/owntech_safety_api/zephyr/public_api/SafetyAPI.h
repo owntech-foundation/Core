@@ -26,15 +26,15 @@
  *
  */
 
-#ifndef SAFETY_H_
-#define SAFETY_H_
+#ifndef SAFETYAPI_H_
+#define SAFETYAPI_H_
 
 #include "arm_math.h"
 #include "ShieldAPI.h"
 #include "../src/safety_enum.h"
 
 
-class safety{
+class SafetyAPI{
 
     public:
 
@@ -212,39 +212,19 @@ class safety{
      * @return none
     */
     void disableSafetyApi();
-
     /**
      * @brief store the current minimum and maximum threshold in the flash (non volatile memory)
      *
      * @param sensor_threshold_store the sensor for which we store the threshold in the NVS
-     *        @arg V1_LOW
-     *        @arg V2_LOW
-     *        @arg V_HIGH
-     *        @arg I1_LOW
-     *        @arg I2_LOW
-     *        @arg I_HIGH
-     *        @arg TEMP_SENSOR
-     *        @arg EXTRA_MEAS
-     *        @arg ANALOG_COMM
      *
      * @return 0 if parameters were correcly stored, -1 if there was an error.
      *
     */
     int8_t storeThreshold(sensor_t sensor_threshold_store);
-
     /**
      * @brief store the current minimum and maximum threshold in the flash (non volatile memory)
      *
      * @param sensor_threshold_retrieve the sensor for which we store the threshold in the NVS
-     *        @arg V1_LOW
-     *        @arg V2_LOW
-     *        @arg V_HIGH
-     *        @arg I1_LOW
-     *        @arg I2_LOW
-     *        @arg I_HIGH
-     *        @arg TEMP_SENSOR
-     *        @arg EXTRA_MEAS
-     *        @arg ANALOG_COMM
      *
      * @return 0 if parameters were correcly retreived, negative value if there was an error:
      *         -1: NVS is empty
@@ -254,8 +234,10 @@ class safety{
      *
     */
     int8_t retrieveThreshold(sensor_t sensor_threshold_retrieve);
+
+
 };
 
-extern safety Safety;
+extern SafetyAPI safety;
 
-#endif // SAFETY_H_
+#endif // SAFETYAPI_H_
