@@ -84,12 +84,12 @@ void thread_error(void *, void *, void *)
 						"problem with V2 : %s \n"
 						"problem with Ihigh : %s \n"
 						"problem with Vhigh : %s \n"
-						, Safety.getChannelError(I1_LOW) ? "true" : "false"
-						, Safety.getChannelError(V1_LOW) ? "true" : "false"
-						, Safety.getChannelError(I2_LOW) ? "true" : "false"
-						, Safety.getChannelError(I2_LOW) ? "true" : "false"
-						, Safety.getChannelError(I_HIGH) ? "true" : "false"
-						, Safety.getChannelError(V_HIGH) ? "true" : "false"
+						, safety.getChannelError(I1_LOW) ? "true" : "false"
+						, safety.getChannelError(V1_LOW) ? "true" : "false"
+						, safety.getChannelError(I2_LOW) ? "true" : "false"
+						, safety.getChannelError(I2_LOW) ? "true" : "false"
+						, safety.getChannelError(I_HIGH) ? "true" : "false"
+						, safety.getChannelError(V_HIGH) ? "true" : "false"
 						);
 			#endif
 
