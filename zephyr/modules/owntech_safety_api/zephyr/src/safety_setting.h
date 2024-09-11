@@ -57,15 +57,6 @@ int8_t safety_unset_sensor_watch(sensor_t * safety_sensors, uint8_t sensors_numb
  * @brief Checks if a sensor is being monitored or not.
  *
  * @param safety_sensors the sensor to check
- *        @arg V1_LOW
- *        @arg V2_LOW
- *        @arg V_HIGH
- *        @arg I1_LOW
- *        @arg I2_LOW
- *        @arg I_HIGH
- *        @arg TEMP_SENSOR
- *        @arg EXTRA_MEAS
- *        @arg ANALOG_COMM
  *
  * @return true if the sensor is being monitored, false if not
 */
@@ -120,15 +111,6 @@ int8_t safety_set_sensor_threshold_min(sensor_t *safety_sensors, float32_t *thre
  * @brief Gets the maximum threshold of the selected sensor
  *
  * @param safety_sensors the sensor to check
- *        @arg V1_LOW
- *        @arg V2_LOW
- *        @arg V_HIGH
- *        @arg I1_LOW
- *        @arg I2_LOW
- *        @arg I_HIGH
- *        @arg TEMP_SENSOR
- *        @arg EXTRA_MEAS
- *        @arg ANALOG_COMM
  *
  * @return The maximum threshold
 */
@@ -138,15 +120,6 @@ float32_t safety_get_sensor_threshold_max(sensor_t safety_sensor);
  * @brief Gets the minimum threshold of the selected sensor
  *
  * @param safety_sensors the sensor to check
- *        @arg V1_LOW
- *        @arg V2_LOW
- *        @arg V_HIGH
- *        @arg I1_LOW
- *        @arg I2_LOW
- *        @arg I_HIGH
- *        @arg TEMP_SENSOR
- *        @arg EXTRA_MEAS
- *        @arg ANALOG_COMM
  *
  * @return the minimum threshold
 */
@@ -155,16 +128,7 @@ float32_t safety_get_sensor_threshold_min(sensor_t safety_sensor);
 /**
  * @brief Checks if the sensor faced an error (went over/under threshold)
  *
- * @param safety_sensors the sensor to check
- *        @arg V1_LOW
- *        @arg V2_LOW
- *        @arg V_HIGH
- *        @arg I1_LOW
- *        @arg I2_LOW
- *        @arg I_HIGH
- *        @arg TEMP_SENSOR
- *        @arg EXTRA_MEAS
- *        @arg ANALOG_COMM
+ * @param safety_sensors name of the sensor to check
  *
  * @return true if the sensor faced an error, false if not
 */
@@ -202,34 +166,17 @@ void safety_disable_task();
  * @brief Stores the current minimum and maximum threshold in the flash (non volatile memory)
  *
  * @param safety_sensors the sensor for which we store the threshold in the NVS
- *        @arg V1_LOW
- *        @arg V2_LOW
- *        @arg V_HIGH
- *        @arg I1_LOW
- *        @arg I2_LOW
- *        @arg I_HIGH
- *        @arg TEMP_SENSOR
- *        @arg EXTRA_MEAS
- *        @arg ANALOG_COMM
  *
  * @return 0 if parameters were correcly stored, -1 if there was an error.
  *
 */
 int8_t safety_store_threshold_in_nvs(sensor_t sensor);
 
+
 /**
  * @brief Stores the current minimum and maximum threshold in the flash (non volatile memory)
  *
  * @param safety_sensors the sensor for which we store the threshold in the NVS
- *        @arg V1_LOW
- *        @arg V2_LOW
- *        @arg V_HIGH
- *        @arg I1_LOW
- *        @arg I2_LOW
- *        @arg I_HIGH
- *        @arg TEMP_SENSOR
- *        @arg EXTRA_MEAS
- *        @arg ANALOG_COMM
  *
  * @return  0: if parameters were correcly retreived, negative value if there was an error:
  *         -1: NVS is empty
@@ -237,6 +184,13 @@ int8_t safety_store_threshold_in_nvs(sensor_t sensor);
  *         -3: NVS data is corrupted
  *         -4: NVS contains data, but not for the requested sensor
  *
+ * @note 	 The data structure saved to the NVS is as follows:
+ *	        - 1 byte indicating the sensor descriptor string size
+ *	        - The sensor descriptor string (should be max. 23 bytes in current version)
+ *          - 1 byte to store the sensor number (in the order in the device tree)
+ *	        - 4 byte to store the sensor threshold min
+ *	        - 4 byte to store the sensor threshold max
+
 */
 int8_t  safety_retrieve_threshold_in_nvs(sensor_t sensor);
 
