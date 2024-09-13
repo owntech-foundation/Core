@@ -14,88 +14,282 @@
  *   You should have received a copy of the GNU Lesser General Public License
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
- * SPDX-License-Identifier: LGPL-2.1
+ * SPDX-License-Identifier: LGLPV2.1
  */
 
 /**
- * @brief  This file it the main entry point of the
- *         OwnTech Power API. Please check the OwnTech
- *         documentation for detailed information on
- *         how to use Power API: https://docs.owntech.org/
+ * @brief  This file deploys the code for discussing with a python script for
+ *         hardware in teh loop applications. Please check its documentation on the
+ *         readme file or at: https://docs.owntech.org/
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
  */
 
 //--------------OWNTECH APIs----------------------------------
+#include "SpinAPI.h"
 #include "TaskAPI.h"
 #include "ShieldAPI.h"
-#include "SpinAPI.h"
+#include "pid.h"
+#include "comm_protocol.h"
+
+#define RECORD_SIZE 128 // Number of point to record
+
 
 //--------------SETUP FUNCTIONS DECLARATION-------------------
-void setup_routine();           /* Setups the hardware and software of the system */
+void setup_routine(); // Setups the hardware and software of the system
 
 //--------------LOOP FUNCTIONS DECLARATION--------------------
-void loop_background_task();    /* Code to be executed in the background task */
-void loop_critical_task();      /* Code to be executed in real time in the critical task */
-
-//--------------USER VARIABLES DECLARATIONS-------------------
-
+void loop_application_task();   // Code to be executed in the background task
+void loop_communication_task();   // Code to be executed in the background task
+void loop_control_task();     // Code to be executed in real time in the critical task
 
 
-//--------------SETUP FUNCTIONS-------------------------------
+//--------------USER VARIABLES DECLARATIONS----------------------
 
-/**
- * This is the setup routine.
- * It is used to call functions that will initialize your hardware and tasks.
- * In this example, we setup the version of the spin board and a 
- * background task. The critical task is defined but not started.
- * NOTE: It is important to follow the steps and initialize the hardware first 
- * and the tasks second. 
- */
+
+static uint32_t control_task_period = 100; //[us] period of the control task
+static bool pwm_enable_leg_1 = false;            //[bool] state of the PWM (ctrl task)
+static bool pwm_enable_leg_2 = false;            //[bool] state of the PWM (ctrl task)
+static bool pwm_enable_leg_3 = false;            //[bool] state of the PWM (ctrl task)
+
+/* Measurement  variables */
+
+float32_t V1_low_value;
+float32_t V2_low_value;
+float32_t V3_low_value;
+float32_t I1_low_value;
+float32_t I2_low_value;
+float32_t I3_low_value;
+float32_t I_high_value;
+float32_t V_high_value;
+
+float32_t T1_value;
+float32_t T2_value;
+float32_t T3_value;
+
+
+float32_t delta_V1;
+float32_t V1_max = 0.0;
+float32_t V1_min = 0.0;
+
+float32_t delta_V2;
+float32_t V2_max = 0.0;
+float32_t V2_min = 0.0;
+
+float32_t delta_V3;
+float32_t V3_max = 0.0;
+float32_t V3_min = 0.0;
+
+int8_t AppTask_num, CommTask_num;
+
+static float32_t acquisition_moment = 0.06;
+
+static float meas_data; // temp storage meas value (ctrl task)
+
+float32_t starting_duty_cycle = 0.1;
+
+static float32_t kp = 0.000215;
+static float32_t Ti = 7.5175e-5;
+static float32_t Td = 0.0;
+static float32_t N = 0.0;
+static float32_t upper_bound = 1.0F;
+static float32_t lower_bound = 0.0F;
+static float32_t Ts = control_task_period * 1e-6;
+static PidParams pid_params(Ts, kp, Ti, Td, N, lower_bound, upper_bound);
+
+static Pid pid1;
+static Pid pid2;
+static Pid pid3;
+
+static uint32_t counter = 0;
+static uint32_t print_counter = 0;
+
+static float32_t local_analog_value=0;
+
+//---------------SETUP FUNCTIONS----------------------------------
+
 void setup_routine()
 {
-    /* STEP 1 - SETUP THE HARDWARE */
+    shield.sensors.enableDefaultOwnverterSensors();
 
-    /* STEP 2 - SETUP THE TASKS */
-    uint32_t background_task_number = task.createBackground(loop_background_task);
-    //task.createCritical(loop_critical_task, 500); /* Uncomment if you use the critical task */
+    shield.power.initBuck(LEG1);
+    shield.power.initBuck(LEG2);
+    shield.power.initBuck(LEG3);
 
-    /* STEP 3 - LAUNCH THE TASKS */
-    task.startBackground(background_task_number);
-    //task.startCritical(); /* Uncomment if you use the critical task */
+    AppTask_num = task.createBackground(loop_application_task);
+    CommTask_num = task.createBackground(loop_communication_task);
+    task.createCritical(&loop_control_task, control_task_period);
+
+    pid1.init(pid_params);
+    pid2.init(pid_params);
+    pid3.init(pid_params);
+
+    task.startBackground(AppTask_num);
+    task.startBackground(CommTask_num);
+    task.startCritical();
+
 }
 
-//--------------LOOP FUNCTIONS--------------------------------
+//---------------LOOP FUNCTIONS----------------------------------
 
-/**
- * This is the code loop of the background task
- * It is executed second as defined by it suspend task in its last line.
- * You can use it to execute slow code such as state-machines.
- */
-void loop_background_task()
+void loop_communication_task()
 {
-    printk("Hello World! \n");
-    spin.led.toggle();
-
-    task.suspendBackgroundMs(1000);  /* This pauses the task for 1000 mili seconds */
+    received_char = console_getchar();
+    initial_handle(received_char);
 }
 
-/**
- * This is the code loop of the critical task
- * It is executed every 500 micro-seconds defined in the setup_software function.
- * You can use it to execute an ultra-fast code with the highest priority which 
- * cannot be interruped. It is from it that you will control your power flow.
- */
-void loop_critical_task()
+void loop_application_task()
 {
-    /* This task is left empty in this example */
+    switch(mode)
+    {
+        case IDLE:    // IDLE MODE - turns data emission off
+            spin.led.turnOff();
+            if(!print_done) {
+                printk("IDLE \n");
+                print_done = true;
+            }
+            break;
+        case POWER_OFF:  // POWER_OFF MODE - turns the power off but broadcasts the system state data
+            spin.led.toggle();
+            if(!print_done) {
+                printk("POWER OFF \n");
+                print_done = true;
+            }
+            frame_POWER_OFF();
+            break;
+        case POWER_ON:   // POWER_ON MODE - turns the system on and broadcasts measurement from the physical variables
+            spin.led.turnOn();
+            if(!print_done) {
+                printk("POWER ON \n");
+                print_done = true;
+            }
+            frame_POWER_ON();
+            break;
+        default:
+            break;
+    }
+
+     task.suspendBackgroundMs(100);
+}
+
+
+void loop_control_task()
+{
+    // ------------- GET SENSOR MEASUREMENTS ---------------------
+    meas_data = shield.sensors.getLatestValue(V1_LOW);
+    if (meas_data != NO_VALUE)
+        V1_low_value = meas_data;
+
+    meas_data = shield.sensors.getLatestValue(V2_LOW);
+    if (meas_data != NO_VALUE)
+        V2_low_value = meas_data;
+
+    meas_data = shield.sensors.getLatestValue(V3_LOW);
+    if (meas_data != NO_VALUE)
+        V3_low_value = meas_data;
+
+    meas_data = shield.sensors.getLatestValue(V_HIGH);
+    if (meas_data != NO_VALUE)
+        V_high_value = meas_data;
+
+    meas_data = shield.sensors.getLatestValue(I1_LOW);
+    if (meas_data != NO_VALUE)
+        I1_low_value = meas_data;
+
+    meas_data = shield.sensors.getLatestValue(I2_LOW);
+    if (meas_data != NO_VALUE)
+        I2_low_value = meas_data;
+
+    meas_data = shield.sensors.getLatestValue(I3_LOW);
+    if (meas_data != NO_VALUE)
+        I3_low_value = meas_data;
+
+    meas_data = shield.sensors.getLatestValue(I_HIGH);
+    if (meas_data != NO_VALUE)
+        I_high_value = meas_data;
+
+    //----------- DEPLOYS MODES----------------
+    switch(mode){
+        case IDLE:         // IDLE and POWER_OFF modes turn the power off
+        case POWER_OFF:
+            shield.power.stop(LEG1);
+            shield.power.stop(LEG2);
+            shield.power.stop(LEG3);
+            pwm_enable_leg_1 = false;
+            pwm_enable_leg_2 = false;
+            pwm_enable_leg_3 = false;
+            V1_max  = 0;
+            V2_max  = 0;
+            V3_max  = 0;
+            break;
+
+        case POWER_ON:     // POWER_ON mode turns the power ON
+
+            //Tests if the legs were turned off and does it only once ]
+            if(!pwm_enable_leg_1 && power_leg_settings[LEG1].settings[BOOL_LEG]) {shield.power.start(LEG1); pwm_enable_leg_1 = true;}
+            if(!pwm_enable_leg_2 && power_leg_settings[LEG2].settings[BOOL_LEG]) {shield.power.start(LEG2); pwm_enable_leg_2 = true;}
+            if(!pwm_enable_leg_3 && power_leg_settings[LEG3].settings[BOOL_LEG]) {shield.power.start(LEG3); pwm_enable_leg_3 = true;}
+
+            //Tests if the legs were turned on and does it only once ]
+            if(pwm_enable_leg_1 && !power_leg_settings[LEG1].settings[BOOL_LEG]) {shield.power.stop(LEG1); pwm_enable_leg_1 = false;}
+            if(pwm_enable_leg_2 && !power_leg_settings[LEG2].settings[BOOL_LEG]) {shield.power.stop(LEG2); pwm_enable_leg_2 = false;}
+            if(pwm_enable_leg_3 && !power_leg_settings[LEG3].settings[BOOL_LEG]) {shield.power.stop(LEG3); pwm_enable_leg_3 = false;}
+
+            //calls the pid calculation if the converter in either in mode buck or boost for a given dynamically set reference value
+            if(power_leg_settings[LEG1].settings[BOOL_BUCK] || power_leg_settings[LEG1].settings[BOOL_BOOST]){
+                power_leg_settings[LEG1].duty_cycle = pid1.calculateWithReturn(power_leg_settings[LEG1].reference_value , *power_leg_settings[LEG1].tracking_variable);
+            }
+
+            if(power_leg_settings[LEG2].settings[BOOL_BUCK] || power_leg_settings[LEG2].settings[BOOL_BOOST]){
+                power_leg_settings[LEG2].duty_cycle = pid2.calculateWithReturn(power_leg_settings[LEG2].reference_value , *power_leg_settings[LEG2].tracking_variable);
+            }
+
+            if(power_leg_settings[LEG3].settings[BOOL_BUCK] || power_leg_settings[LEG3].settings[BOOL_BOOST]){
+                power_leg_settings[LEG3].duty_cycle = pid2.calculateWithReturn(power_leg_settings[LEG3].reference_value , *power_leg_settings[LEG3].tracking_variable);
+            }
+
+
+            if(power_leg_settings[LEG1].settings[BOOL_LEG]){
+                if(power_leg_settings[LEG1].settings[BOOL_BOOST]){
+                    shield.power.setDutyCycle(LEG1, (1-power_leg_settings[LEG1].duty_cycle) ); //inverses the convention of the leg in case of changing from buck to boost
+                } else {
+                    shield.power.setDutyCycle(LEG1, power_leg_settings[LEG1].duty_cycle ); //uses the normal convention by default
+                }
+            }
+
+            if(power_leg_settings[LEG2].settings[BOOL_LEG]){
+                if(power_leg_settings[LEG2].settings[BOOL_BOOST]){
+                    shield.power.setDutyCycle(LEG2, (1-power_leg_settings[LEG2].duty_cycle) ); //inverses the convention of the leg in case of changing from buck to boost
+                }else{
+                    shield.power.setDutyCycle(LEG2, power_leg_settings[LEG2].duty_cycle); //uses the normal convention by default
+                }
+            }
+
+            if(power_leg_settings[LEG3].settings[BOOL_LEG]){
+                if(power_leg_settings[LEG3].settings[BOOL_BOOST]){
+                    shield.power.setDutyCycle(LEG3, (1-power_leg_settings[LEG3].duty_cycle) ); //inverses the convention of the leg in case of changing from buck to boost
+                }else{
+                    shield.power.setDutyCycle(LEG3, power_leg_settings[LEG3].duty_cycle); //uses the normal convention by default
+                }
+            }
+
+
+            if(V1_low_value>V1_max) V1_max = V1_low_value;  //gets the maximum V1 voltage value. This is used for the capacitor test
+            if(V2_low_value>V2_max) V2_max = V2_low_value;  //gets the maximum V2 voltage value. This is used for the capacitor test
+            if(V3_low_value>V3_max) V3_max = V3_low_value;  //gets the maximum V2 voltage value. This is used for the capacitor test
+
+            break;
+        default:
+            break;
+    }
 }
 
 /**
  * This is the main function of this example
  * This function is generic and does not need editing.
  */
+
 int main(void)
 {
     setup_routine();
