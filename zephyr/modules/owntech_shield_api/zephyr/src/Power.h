@@ -93,13 +93,6 @@ public:
 	void start(leg_t leg);
 
 	/**
-	 * @brief Connect the electrolytic capacitor.
-	 *
-	 * @param leg The selected leg for which to connect the capacitor.
-	*/
-	void connectCapacitor(leg_t leg);
-
-	/**
 	 * @brief Stop power output for a specific leg.
 	 *
 	 * @param leg The leg for which to stop the power output.
@@ -107,13 +100,42 @@ public:
 	void stop(leg_t leg);
 
 	/**
+	 * @brief Connect the electrolytic capacitor.
+	 *
+	 * @param leg The selected leg for which the capacitor will be connected.
+	 * 
+	 * @warning This function can only be called AFTER initializing the LEG.
+	*/
+	void connectCapacitor(leg_t leg);
+
+	/**
 	 * @brief Disconnect the electrolytic capacitor.
 	 * 
-	 * @param leg The selected leg for which to disonnect the capacitor.
+	 * @param leg The selected leg for which the capacitor will be disconnected.
 	 * 
 	 * @warning This function can only be called AFTER initializing the LEG.
 	*/
 	void disconnectCapacitor(leg_t leg);
+
+	/**
+	 * @brief Turns the driver of the leg ON. This enables control over the 
+	 * 		  power switches.
+	 *
+	 * @param leg The leg for which the driver will be turned on.
+	 * 
+	 * @warning This function can only be called AFTER initializing the LEG.
+	*/
+	void connectDriver(leg_t leg);
+
+	/**
+	 * @brief Turns the driver of the leg ON. This disenables control over the 
+	 * 		  power switches.
+	 * 
+	 * @param leg The leg for which the driver will be turned off. 
+	 * 
+	 * @warning This function can only be called AFTER initializing the LEG.
+	*/
+	void disconnectDriver(leg_t leg);
 
 	/**
 	 * @brief Set the trigger value for a specific leg's ADC trigger.

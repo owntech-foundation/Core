@@ -270,33 +270,6 @@ void PowerAPI::start(leg_t leg)
     }
 }
 
-
-void PowerAPI::connectCapacitor(leg_t leg)
-{
-    int8_t startIndex = 0;
-    int8_t endIndex = 0;
-
-    /*  If ALL is selected, loop through all legs */
-    if(leg == ALL)
-    {
-        startIndex = 0;
-        endIndex = dt_leg_count; /* retrives the total number of legs */
-    }
-    else
-    {
-        startIndex = leg; /* Treat `leg` as the specific leg index */
-        endIndex = leg + 1; /* Only iterate for this specific leg */
-    }
-
-    for (int8_t i = startIndex; i < endIndex; i++)
-    {
-        if(dt_pin_capacitor[i] != 0)
-        {
-            spin.gpio.setPin(dt_pin_capacitor[i]);
-        }
-    }
-}
-
 void PowerAPI::stop(leg_t leg)
 {
     int8_t startIndex = 0;
@@ -330,6 +303,34 @@ void PowerAPI::stop(leg_t leg)
     }
 }
 
+#ifdef CONFIG_SHIELD_TWIST
+
+void PowerAPI::connectCapacitor(leg_t leg)
+{
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
+
+    /*  If ALL is selected, loop through all legs */
+    if(leg == ALL)
+    {
+        startIndex = 0;
+        endIndex = dt_leg_count; /* retrives the total number of legs */
+    }
+    else
+    {
+        startIndex = leg; /* Treat `leg` as the specific leg index */
+        endIndex = leg + 1; /* Only iterate for this specific leg */
+    }
+
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        if(dt_pin_capacitor[i] != 0)
+        {
+            spin.gpio.setPin(dt_pin_capacitor[i]);
+        }
+    }
+}
+
 void PowerAPI::disconnectCapacitor(leg_t leg)
 {
     int8_t startIndex = 0;
@@ -355,6 +356,62 @@ void PowerAPI::disconnectCapacitor(leg_t leg)
         }
     }
 }
+
+#endif
+
+#ifndef CONFIG_SHIELD_O2
+
+void PowerAPI::connectDriver(leg_t leg)
+{
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
+
+    /*  If ALL is selected, loop through all legs */
+    if(leg == ALL)
+    {
+        startIndex = 0;
+        endIndex = dt_leg_count; /* retrives the total number of legs */
+    }
+    else
+    {
+        startIndex = leg; /* Treat `leg` as the specific leg index */
+        endIndex = leg + 1; /* Only iterate for this specific leg */
+    }
+
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        if(dt_pin_driver[leg] != 0) {
+            spin.gpio.setPin(dt_pin_driver[leg]);
+        }
+    }
+}
+
+void PowerAPI::disconnectDriver(leg_t leg)
+{
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
+
+    /*  If ALL is selected, loop through all legs */
+    if(leg == ALL)
+    {
+        startIndex = 0;
+        endIndex = dt_leg_count; /* retrives the total number of legs */
+    }
+    else
+    {
+        startIndex = leg; /* Treat `leg` as the specific leg index */
+        endIndex = leg + 1; /* Only iterate for this specific leg */
+    }
+
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        if(dt_pin_driver[leg] != 0) {
+            spin.gpio.setPin(dt_pin_driver[leg]);
+        }
+    }
+}
+
+#endif
 
 void PowerAPI::setSlopeCompensation(leg_t leg,                              \
                                        float32_t set_voltage,               \
