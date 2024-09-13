@@ -103,7 +103,7 @@
 
 /**
  * Define a macro LEG_HAS_DRIVER that retrieves whether or nor
- * the device tree has the proproety driver_pin_num which means
+ * the device tree has the property driver_pin_num which means
  * that the LEG need to enable optocoupler for MOSFET driver.
  */
 #define  LEG_HAS_DRIVER(node_id) DT_NODE_HAS_PROP(node_id, driver_pin_num),
@@ -118,7 +118,7 @@
 
 /**
  * Define a macro LEG_HAS_DRIVER that retrieves whether or nor
- * the device tree has the proproety driver_pin_num which means
+ * the device tree has the property capa_pin_num which means
  * that the LEG need to enable optocoupler for MOSFET driver.
  */
 #define  LEG_HAS_CAPACITOR(node_id) DT_NODE_HAS_PROP(node_id, capa_pin_num),
