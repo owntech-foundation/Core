@@ -51,22 +51,18 @@ void loop_control_task();     // Code to be executed in real time in the critica
 static uint32_t control_task_period = 100; //[us] period of the control task
 static bool pwm_enable_leg_1 = false;            //[bool] state of the PWM (ctrl task)
 static bool pwm_enable_leg_2 = false;            //[bool] state of the PWM (ctrl task)
-static bool pwm_enable_leg_3 = false;            //[bool] state of the PWM (ctrl task)
 
 /* Measurement  variables */
 
 float32_t V1_low_value;
 float32_t V2_low_value;
-float32_t V3_low_value;
 float32_t I1_low_value;
 float32_t I2_low_value;
-float32_t I3_low_value;
 float32_t I_high_value;
 float32_t V_high_value;
 
 float32_t T1_value;
 float32_t T2_value;
-float32_t T3_value;
 
 
 float32_t delta_V1;
@@ -76,10 +72,6 @@ float32_t V1_min = 0.0;
 float32_t delta_V2;
 float32_t V2_max = 0.0;
 float32_t V2_min = 0.0;
-
-float32_t delta_V3;
-float32_t V3_max = 0.0;
-float32_t V3_min = 0.0;
 
 int8_t AppTask_num, CommTask_num;
 
@@ -100,10 +92,21 @@ static PidParams pid_params(Ts, kp, Ti, Td, N, lower_bound, upper_bound);
 
 static Pid pid1;
 static Pid pid2;
+
+#ifdef CONFIG_SHIELD_OWNVERTER
+static bool pwm_enable_leg_3 = false;            //[bool] state of the PWM (ctrl task)
+float32_t V3_low_value;
+float32_t I3_low_value;
+float32_t T3_value;
+
+float32_t delta_V3;
+float32_t V3_max = 0.0;
+float32_t V3_min = 0.0;
 static Pid pid3;
+#endif
 
 static uint32_t counter = 0;
-static uint32_t print_counter = 0;
+static uint32_t temp_meas_internal = 10;
 
 static float32_t local_analog_value=0;
 
@@ -111,11 +114,21 @@ static float32_t local_analog_value=0;
 
 void setup_routine()
 {
+
+#ifdef CONFIG_SHIELD_OWNVERTER
     shield.sensors.enableDefaultOwnverterSensors();
+#endif
+
+#ifdef CONFIG_SHIELD_TWIST
+    shield.sensors.enableDefaultTwistSensors();
+#endif
 
     shield.power.initBuck(LEG1);
     shield.power.initBuck(LEG2);
+
+#ifdef CONFIG_SHIELD_OWNVERTER
     shield.power.initBuck(LEG3);
+#endif
 
     AppTask_num = task.createBackground(loop_application_task);
     CommTask_num = task.createBackground(loop_communication_task);
@@ -123,7 +136,9 @@ void setup_routine()
 
     pid1.init(pid_params);
     pid2.init(pid_params);
+#ifdef CONFIG_SHIELD_OWNVERTER
     pid3.init(pid_params);
+#endif
 
     task.startBackground(AppTask_num);
     task.startBackground(CommTask_num);
@@ -164,6 +179,38 @@ void loop_application_task()
                 printk("POWER ON \n");
                 print_done = true;
             }
+
+#ifdef CONFIG_SHIELD_OWNVERTER
+            meas_data = shield.sensors.getLatestValue(TEMP_SENSOR);
+
+            counter++;
+            if(counter == temp_meas_internal){
+                shield.sensors.setOwnverterTempMeas(TEMP_1);
+                if (meas_data != NO_VALUE) T3_value = meas_data;
+            } else if(counter == 2*temp_meas_internal){
+                shield.sensors.setOwnverterTempMeas(TEMP_2);
+                if (meas_data != NO_VALUE) T1_value = meas_data;
+            } else if(counter == 3*temp_meas_internal){
+                shield.sensors.setOwnverterTempMeas(TEMP_3);
+                if (meas_data != NO_VALUE) T2_value = meas_data;
+                counter = 0;
+            }
+#endif
+
+#ifdef CONFIG_SHIELD_TWIST
+
+            counter++;
+            if(counter == temp_meas_internal){
+                shield.sensor.triggerTwistTempMeas(TEMP_SENSOR_1)
+                meas_data = shield.sensors.getLatestValue(TEMP_SENSOR_2);
+                if (meas_data != NO_VALUE) T2_value = meas_data;
+            } else if(counter == 2*temp_meas_internal){
+                shield.sensor.triggerTwistTempMeas(TEMP_SENSOR_2)
+                meas_data = shield.sensors.getLatestValue(TEMP_SENSOR_1);
+                if (meas_data != NO_VALUE) T1_value = meas_data;
+                counter = 0;
+            }
+#endif
             frame_POWER_ON();
             break;
         default:
@@ -185,10 +232,6 @@ void loop_control_task()
     if (meas_data != NO_VALUE)
         V2_low_value = meas_data;
 
-    meas_data = shield.sensors.getLatestValue(V3_LOW);
-    if (meas_data != NO_VALUE)
-        V3_low_value = meas_data;
-
     meas_data = shield.sensors.getLatestValue(V_HIGH);
     if (meas_data != NO_VALUE)
         V_high_value = meas_data;
@@ -201,27 +244,38 @@ void loop_control_task()
     if (meas_data != NO_VALUE)
         I2_low_value = meas_data;
 
-    meas_data = shield.sensors.getLatestValue(I3_LOW);
-    if (meas_data != NO_VALUE)
-        I3_low_value = meas_data;
-
     meas_data = shield.sensors.getLatestValue(I_HIGH);
     if (meas_data != NO_VALUE)
         I_high_value = meas_data;
+
+#ifdef CONFIG_SHIELD_OWNVERTER
+    meas_data = shield.sensors.getLatestValue(V3_LOW);
+    if (meas_data != NO_VALUE)
+        V3_low_value = meas_data;
+
+    meas_data = shield.sensors.getLatestValue(I3_LOW);
+    if (meas_data != NO_VALUE)
+        I3_low_value = meas_data;
+#endif
+
 
     //----------- DEPLOYS MODES----------------
     switch(mode){
         case IDLE:         // IDLE and POWER_OFF modes turn the power off
         case POWER_OFF:
             shield.power.stop(LEG1);
-            shield.power.stop(LEG2);
-            shield.power.stop(LEG3);
             pwm_enable_leg_1 = false;
-            pwm_enable_leg_2 = false;
-            pwm_enable_leg_3 = false;
             V1_max  = 0;
+
+            shield.power.stop(LEG2);
+            pwm_enable_leg_2 = false;
             V2_max  = 0;
+
+#ifdef CONFIG_SHIELD_OWNVERTER
+            shield.power.stop(LEG3);
+            pwm_enable_leg_3 = false;
             V3_max  = 0;
+#endif
             break;
 
         case POWER_ON:     // POWER_ON mode turns the power ON
@@ -229,12 +283,18 @@ void loop_control_task()
             //Tests if the legs were turned off and does it only once ]
             if(!pwm_enable_leg_1 && power_leg_settings[LEG1].settings[BOOL_LEG]) {shield.power.start(LEG1); pwm_enable_leg_1 = true;}
             if(!pwm_enable_leg_2 && power_leg_settings[LEG2].settings[BOOL_LEG]) {shield.power.start(LEG2); pwm_enable_leg_2 = true;}
+
+#ifdef CONFIG_SHIELD_OWNVERTER
             if(!pwm_enable_leg_3 && power_leg_settings[LEG3].settings[BOOL_LEG]) {shield.power.start(LEG3); pwm_enable_leg_3 = true;}
+#endif
 
             //Tests if the legs were turned on and does it only once ]
             if(pwm_enable_leg_1 && !power_leg_settings[LEG1].settings[BOOL_LEG]) {shield.power.stop(LEG1); pwm_enable_leg_1 = false;}
             if(pwm_enable_leg_2 && !power_leg_settings[LEG2].settings[BOOL_LEG]) {shield.power.stop(LEG2); pwm_enable_leg_2 = false;}
+
+#ifdef CONFIG_SHIELD_OWNVERTER
             if(pwm_enable_leg_3 && !power_leg_settings[LEG3].settings[BOOL_LEG]) {shield.power.stop(LEG3); pwm_enable_leg_3 = false;}
+#endif
 
             //calls the pid calculation if the converter in either in mode buck or boost for a given dynamically set reference value
             if(power_leg_settings[LEG1].settings[BOOL_BUCK] || power_leg_settings[LEG1].settings[BOOL_BOOST]){
@@ -245,9 +305,11 @@ void loop_control_task()
                 power_leg_settings[LEG2].duty_cycle = pid2.calculateWithReturn(power_leg_settings[LEG2].reference_value , *power_leg_settings[LEG2].tracking_variable);
             }
 
+#ifdef CONFIG_SHIELD_OWNVERTER
             if(power_leg_settings[LEG3].settings[BOOL_BUCK] || power_leg_settings[LEG3].settings[BOOL_BOOST]){
                 power_leg_settings[LEG3].duty_cycle = pid2.calculateWithReturn(power_leg_settings[LEG3].reference_value , *power_leg_settings[LEG3].tracking_variable);
             }
+#endif
 
 
             if(power_leg_settings[LEG1].settings[BOOL_LEG]){
@@ -266,6 +328,7 @@ void loop_control_task()
                 }
             }
 
+#ifdef CONFIG_SHIELD_OWNVERTER
             if(power_leg_settings[LEG3].settings[BOOL_LEG]){
                 if(power_leg_settings[LEG3].settings[BOOL_BOOST]){
                     shield.power.setDutyCycle(LEG3, (1-power_leg_settings[LEG3].duty_cycle) ); //inverses the convention of the leg in case of changing from buck to boost
@@ -273,11 +336,15 @@ void loop_control_task()
                     shield.power.setDutyCycle(LEG3, power_leg_settings[LEG3].duty_cycle); //uses the normal convention by default
                 }
             }
+#endif
 
 
             if(V1_low_value>V1_max) V1_max = V1_low_value;  //gets the maximum V1 voltage value. This is used for the capacitor test
             if(V2_low_value>V2_max) V2_max = V2_low_value;  //gets the maximum V2 voltage value. This is used for the capacitor test
+
+#ifdef CONFIG_SHIELD_OWNVERTER
             if(V3_low_value>V3_max) V3_max = V3_low_value;  //gets the maximum V2 voltage value. This is used for the capacitor test
+#endif
 
             break;
         default:
