@@ -32,6 +32,7 @@
 #include "ShieldAPI.h"
 #include "pid.h"
 #include "comm_protocol.h"
+#include "CommunicationAPI.h"
 
 #define RECORD_SIZE 128 // Number of point to record
 
@@ -139,6 +140,15 @@ void setup_routine()
 #ifdef CONFIG_SHIELD_OWNVERTER
     pid3.init(pid_params);
 #endif
+
+    communication.analog.init();
+    communication.sync.initSlave();
+    communication.rs485.configure(buffer_tx, buffer_rx, sizeof(ConsigneStruct_t), slave_reception_function); // custom configuration for RS485
+    // communication.can.setCanNodeAddr(CAN_SLAVE_ADDR);
+    // communication.can.setCanNodeAddr
+    // communication.can.setBroadcastPeriod(10);
+    // communication.can.setControlPeriod(10);
+
 
     task.startBackground(AppTask_num);
     task.startBackground(CommTask_num);
@@ -257,6 +267,15 @@ void loop_control_task()
     if (meas_data != NO_VALUE)
         I3_low_value = meas_data;
 #endif
+
+
+    local_analog_value = communication.analog.getAnalogCommValue();
+
+    ctrl_slave_counter++; //counter for the slave function
+
+    // can_test_ctrl_enable = communication.can.getCtrlEnable();
+    // can_test_reference_value = communication.can.getCtrlReference();
+
 
 
     //----------- DEPLOYS MODES----------------
