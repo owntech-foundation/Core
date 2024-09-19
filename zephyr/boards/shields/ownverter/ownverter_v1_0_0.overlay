@@ -100,13 +100,9 @@
 			default-gain = <0x3d3851ec>;
 			default-offset = <0xc2b867f0>;
 			sensor-conv-type = "LINEAR";
-			v3-low-adc1 {
-				io-channels = <&adc1 12>;
-				spin-pin = <42>;
-			};
 			v3-low-adc2 {
-				io-channels = <&adc2 12>;
-				spin-pin = <42>;
+				io-channels = <&adc2 4>;
+				spin-pin = <44>;
 			};
 			status = "okay";
 		};
