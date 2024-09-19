@@ -343,6 +343,11 @@ public:
 	 * @brief Use this function to read the gain and offset parameters of the board to is non-volatile memory.
 	 *
 	 * @param[in] sensor_name Name of the shield sensor to save the values.
+     * @return 0 if parameters were correcly retreived, negative value if there was an error:
+     *         -1: NVS is empty
+     *         -2: NVS contains data, but their version doesn't match current version
+     *         -3: NVS data is corrupted
+     *         -4: NVS contains data, but not for the requested channel
 	 */
 	int8_t retrieveParametersFromMemory(sensor_t sensor_name);
 
