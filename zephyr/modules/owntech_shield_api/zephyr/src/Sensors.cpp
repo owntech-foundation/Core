@@ -261,14 +261,14 @@ void SensorsAPI::enableDefaultOwnverterSensors()
 	/* Creates the list of measurements of the ADC 1 */
 	this->enableSensor(V1_LOW, ADC_1);
 	this->enableSensor(V2_LOW, ADC_1);
-	this->enableSensor(V3_LOW, ADC_1);
+	this->enableSensor(I3_LOW, ADC_1);
 	this->enableSensor(V_HIGH, ADC_1);
 	this->enableSensor(V_NEUTR, ADC_1);
 
 	/* Creates the list of measurements of the ADC 2 */
 	this->enableSensor(I1_LOW, ADC_2);
 	this->enableSensor(I2_LOW, ADC_2);
-	this->enableSensor(I3_LOW, ADC_2);
+	this->enableSensor(V3_LOW, ADC_2);
 	this->enableSensor(I_HIGH, ADC_2);
 	this->enableSensor(TEMP_SENSOR, ADC_2);
 
