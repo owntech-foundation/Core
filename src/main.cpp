@@ -116,6 +116,14 @@ static float32_t local_analog_value=0;
 void setup_routine()
 {
 
+    shield.power.initBuck(LEG1);
+    shield.power.initBuck(LEG2);
+
+#ifdef CONFIG_SHIELD_OWNVERTER
+    shield.power.initBuck(LEG3);
+#endif
+
+
 #ifdef CONFIG_SHIELD_OWNVERTER
     shield.sensors.enableDefaultOwnverterSensors();
 #endif
@@ -124,12 +132,6 @@ void setup_routine()
     shield.sensors.enableDefaultTwistSensors();
 #endif
 
-    shield.power.initBuck(LEG1);
-    shield.power.initBuck(LEG2);
-
-#ifdef CONFIG_SHIELD_OWNVERTER
-    shield.power.initBuck(LEG3);
-#endif
 
     AppTask_num = task.createBackground(loop_application_task);
     CommTask_num = task.createBackground(loop_communication_task);
@@ -141,9 +143,9 @@ void setup_routine()
     pid3.init(pid_params);
 #endif
 
-    communication.analog.init();
-    communication.sync.initSlave();
-    communication.rs485.configure(buffer_tx, buffer_rx, sizeof(ConsigneStruct_t), slave_reception_function); // custom configuration for RS485
+    // communication.analog.init();
+    // communication.sync.initSlave();
+    // communication.rs485.configure(buffer_tx, buffer_rx, sizeof(ConsigneStruct_t), slave_reception_function); // custom configuration for RS485
     // communication.can.setCanNodeAddr(CAN_SLAVE_ADDR);
     // communication.can.setCanNodeAddr
     // communication.can.setBroadcastPeriod(10);
@@ -269,9 +271,10 @@ void loop_control_task()
 #endif
 
 
-    local_analog_value = communication.analog.getAnalogCommValue();
+    // local_analog_value = communication.analog.getAnalogCommValue();
+    // analog_value = (uint16_t)local_analog_value;
 
-    ctrl_slave_counter++; //counter for the slave function
+    // ctrl_slave_counter++; //counter for the slave function
 
     // can_test_ctrl_enable = communication.can.getCtrlEnable();
     // can_test_reference_value = communication.can.getCtrlReference();
