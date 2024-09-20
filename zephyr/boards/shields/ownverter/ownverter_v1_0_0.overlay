@@ -118,12 +118,12 @@
 			default-offset = <0x00000000>;
 			sensor-conv-type = "LINEAR";
 			v-high-adc1 {
-				io-channels = <&adc1 9>;
-				spin-pin = <27>;
+				io-channels = <&adc1 8>;
+				spin-pin = <26>;
 			};
 			v-high-adc2 {
-				io-channels = <&adc2 9>;
-				spin-pin = <27>;
+				io-channels = <&adc2 8>;
+				spin-pin = <26>;
 			};
 			status = "okay";
 		};
