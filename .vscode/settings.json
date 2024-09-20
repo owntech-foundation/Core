@@ -1,11 +1,11 @@
 {
   "files.exclude": {
-    ".pio": true,
-    ".vscode": true,
-    "owntech": true,
-    "zephyr": true,
-    ".gitignore": true,
-    "docs": true,
-    ".github": true
+    ".pio": false,
+    ".vscode": false,
+    "owntech": false,
+    "zephyr": false,
+    ".gitignore": false,
+    "docs": false,
+    ".github": false
   }
 }
