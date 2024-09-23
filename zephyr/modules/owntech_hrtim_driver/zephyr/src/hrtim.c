@@ -1002,25 +1002,26 @@ void hrtim_phase_shift_set(hrtim_tu_number_t tu_number, uint16_t shift)
             break;
         }
     }
-    else if (((timerMaster.pwm_conf.period == tu_channel[tu_number]->pwm_conf.period &&
-               timerMaster.pwm_conf.ckpsc == tu_channel[tu_number]->pwm_conf.ckpsc)
+    else if ((timerMaster.pwm_conf.period == tu_channel[tu_number]->pwm_conf.period
+            && timerMaster.pwm_conf.ckpsc == tu_channel[tu_number]->pwm_conf.ckpsc)
             ||
-              (timerMaster.pwm_conf.period/2u == (tu_channel[tu_number]->pwm_conf.period) &&
-               timerMaster.pwm_conf.ckpsc == tu_channel[tu_number]->pwm_conf.ckpsc))
-            &&
-            tu_channel[tu_number]->pwm_conf.pwm_tu != TIMA)
+            (timerMaster.pwm_conf.period/2u == (tu_channel[tu_number]->pwm_conf.period)
+            && timerMaster.pwm_conf.ckpsc == tu_channel[tu_number]->pwm_conf.ckpsc))
     {
-        /* shift == 0 and timing unit run at the same frequency as master */
-        LL_HRTIM_TIM_SetResetTrig(
-            HRTIM1,
-            tu_channel[tu_number]->pwm_conf.pwm_tu,
-            LL_HRTIM_TIM_GetResetTrig(
-                HRTIM1,
-                tu_channel[tu_number]->pwm_conf.pwm_tu) &
-                    ~tu_channel[tu_number]->phase_shift.reset_trig);
-        LL_HRTIM_TIM_SetResetTrig(HRTIM1,
-                                    tu_channel[tu_number]->pwm_conf.pwm_tu,
-                                    timerMaster.phase_shift.reset_trig);
+            /* shift == 0 and timing unit run at the same frequency as master */
+        if (tu_channel[tu_number]->pwm_conf.pwm_tu != TIMA)
+        {
+            LL_HRTIM_TIM_SetResetTrig(
+                    HRTIM1,
+                    tu_channel[tu_number]->pwm_conf.pwm_tu,
+                    LL_HRTIM_TIM_GetResetTrig(HRTIM1,
+                                tu_channel[tu_number]->pwm_conf.pwm_tu)
+                                & ~tu_channel[tu_number]->phase_shift.reset_trig);
+            LL_HRTIM_TIM_SetResetTrig(
+                    HRTIM1,
+                    tu_channel[tu_number]->pwm_conf.pwm_tu,
+                    timerMaster.phase_shift.reset_trig);
+        }
     }
 
     else
