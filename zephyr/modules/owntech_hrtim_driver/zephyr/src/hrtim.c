@@ -1164,11 +1164,12 @@ void hrtim_burst_mode_init(void){
         /* Set burst mode "polarity" e.g means if active or inactive during
         idle times*/
         LL_HRTIM_OUT_SetIdleLevel(HRTIM1,                                   \
-                                  tu_channel[tu_count],                     \
+                                  tu_channel[tu_count]->pwm_conf.pwm_tu,    \
                                   LL_HRTIM_OUT_IDLELEVEL_INACTIVE);
-        /* Enable Burst mode */
-        LL_HRTIM_BM_Enable(HRTIM1);
     }
+
+    /* Enable Burst mode */
+    LL_HRTIM_BM_Enable(HRTIM1);
 }
 
 void hrtim_burst_set(int bm_cmp, int bm_per){
