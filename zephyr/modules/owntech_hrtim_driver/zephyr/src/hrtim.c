@@ -1139,8 +1139,7 @@ void hrtim_dt_init(hrtim_tu_number_t tu_number)
 }
 
 void hrtim_burst_mode_init(void){
-    /* Burst mode clock source is synchronized with master timer */
-    LL_HRTIM_BM_SetClockSrc(HRTIM1, LL_HRTIM_BM_CLKSRC_MASTER);
+
     /* No prescaler applied */
     LL_HRTIM_BM_SetPrescaler(HRTIM1, LL_HRTIM_BM_PRESCALER_DIV1);
     /* Burst mode is triggered in software and runs continuously
@@ -1150,6 +1149,10 @@ void hrtim_burst_mode_init(void){
     LL_HRTIM_BM_SetMode(HRTIM1, LL_HRTIM_BM_MODE_CONTINOUS);
 
     for (uint8_t tu_count = 0; tu_count < HRTIM_CHANNELS; tu_count++){
+        /* Burst mode clock source is synchronized with each individual timer
+           to handle phase shift correctly */
+        LL_HRTIM_BM_SetClockSrc(HRTIM1,                                     \
+                                tu_channel[tu_count]->pwm_conf.burst_clk);
         /* For each PWM channel, set output inactive as idle mode*/
         LL_HRTIM_OUT_SetIdleMode(HRTIM1,                                    \
                                  tu_channel[tu_count]->gpio_conf.OUT_H,     \
