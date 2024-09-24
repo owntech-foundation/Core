@@ -65,7 +65,6 @@ float32_t V_high_value;
 float32_t T1_value;
 float32_t T2_value;
 
-
 float32_t delta_V1;
 float32_t V1_max = 0.0;
 float32_t V1_min = 0.0;
@@ -73,6 +72,14 @@ float32_t V1_min = 0.0;
 float32_t delta_V2;
 float32_t V2_max = 0.0;
 float32_t V2_min = 0.0;
+
+int16_t phase_shift_max = 180;
+int16_t phase_shift_min = 0;
+
+uint16_t dead_time_max = 2000;
+uint16_t dead_time_min = 100;
+
+
 
 int8_t AppTask_num, CommTask_num;
 
@@ -213,11 +220,11 @@ void loop_application_task()
 
             counter++;
             if(counter == temp_meas_internal){
-                shield.sensor.triggerTwistTempMeas(TEMP_SENSOR_1)
+                shield.sensors.triggerTwistTempMeas(TEMP_SENSOR_1);
                 meas_data = shield.sensors.getLatestValue(TEMP_SENSOR_2);
                 if (meas_data != NO_VALUE) T2_value = meas_data;
             } else if(counter == 2*temp_meas_internal){
-                shield.sensor.triggerTwistTempMeas(TEMP_SENSOR_2)
+                shield.sensors.triggerTwistTempMeas(TEMP_SENSOR_2);
                 meas_data = shield.sensors.getLatestValue(TEMP_SENSOR_1);
                 if (meas_data != NO_VALUE) T1_value = meas_data;
                 counter = 0;
