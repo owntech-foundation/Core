@@ -1,21 +1,68 @@
 !!! note ""
     Data acquisition is the process of sampling signals that measure real-world physical conditions and converting the resulting samples into digital numeric values that can be manipulated by a computer.
 
-    In the powerAPI context, the DataAPI helps the user retrieve the values sampled by the [ADC](adc.md).
+    In the PowerAPI context, the DataAPI helps the user to easily configure the ADC and retrieve the acquired values.
 
     The Data API configures the DMAs to store the ADCs acquisitions for the Spin board, and dispatches them in per-channel buffers that can be read by the user. The module also provides functions to convert the raw values acquired by the sensors into values in the adequate unit.
 
-    If using a shield such as Twist, channels are automatically made available for configuration and conversions functions are automatically calibrated using the device tree.
+    If using a shield such as Twist, a dedicated interface for sensors configuration is made available by the [Shield sensors API](twistAPI.md).
 
-## Include
+## Quick start with Spin Data API
+
+### Include
+
+Data API is part of Spin API: it is made available by including the `SpinAPI.h` header. From there, a `spin.data` object is available to interact with the API.
+!!! note
+    ```
+    #include <SpinAPI.h>
+    ```
+
+### Setup phase
+
+To use Data API, the first stage is to indicate on which pin of the Spin board you want to acquire data. Not all pins can be used for that purpose: the pin must be linked to an ADC. Here is the list of pins that provide ADC capabilities:
+
+=== "SPIN v1.1.0"
+    ![SPIN_1_1_0_ADC_pinout_main](images/SPIN_1.1.0_main_adc.png){ width=451 align=left }
+    ![SPIN_1_1_0_ADC_pinout_inner](images/SPIN_1.1.0_inner_adc.ppng){ width=243 }
+
+=== "SPIN v1.0.0"
+    ![SPIN_1_0_0_ADC_pinout_main](images/SPIN_1.0.0_main_adc.png){ width=451 align=left }
+    ![SPIN_1_0_0_ADC_pinout_inner](images/SPIN_1.0.0_inner_adc.png){ width=243 }
+
+To indicate that the value of a pin should be acquired, the acquisition must be enabled on this pin in the setup phase. This can be done using the `enableAcquisition()` function:
 
 !!! note
     ```
-    #include <DataAPI.h>
+    // Pins connected to a single ADC:
+    spin.data.enableAcquisition(35); // Enable acquisition on pin 35 (will use ADC 2)
+    spin.data.enableAcquisition(12); // Enable acquisition on pin 12 (will use ADC 5)
+    // Pins connected to multiple ADCs:
+    spin.data.enableAcquisition(5, ADC_4); // Acquisition on pin 5 using ADC 4
+    spin.data.enableAcquisition(31); // Acquisition on pin 31 (will use ADC 1 by default)
     ```
 
-To use the Data API, include `DataAPI.h` in your source file. From there, a `data` object is available to interact with the API.
+Note that providing the ADC number is not required. For pins connected to multiples ADC, the ADC with the lowest number will be used if no ADC is specified. Specifying an ADC number that is not available on the pin will result in an error.
 
+By default, the acquisitions are software-triggered, which means that when your program will want to acquire a measure, you'll have to trigger the acquisition. Other means of triggering the measure exists, notably periodic acquisitions, see [detailed information](adc.md#synchronous-with-pwms). If you need to change the trigger source, this must be done at this point.
+
+At the end of all the hardware configuration (including other modules), the Data API must be started using the `start()` function. Note that in case you use an [uninterruptible task](scheduling.md), you do not need to start the Data API manually, this will be done automatically when the uninterruptible task is started.
+
+### Obtaining data
+
+After the Data API has been started, it becomes possible to get data obtained from the enabled pins. Depending on the trigger source, you'll have to trigger the acquisition then read the value, or directly read the value.
+
+If software-trigged is used for an ADC (default configuration), the acquisition must first be triggered, then the value read. If the acquisition is configured to be periodic for ann ADC, directly read the value.
+
+=== "Sofware-triggered acquisition"
+    ```
+    spin.data.triggerAcquisition(ADC_2); // Trigger acquisitions of all pins linked to ADC 2
+    spin.data.getLatestValue(35); // Get value read on pin 35
+    ```
+
+=== "Periodic acquisition"
+    ```
+    spin.data.getLatestValue(35); // Get value read on pin 35
+    ```
 
 ## Data dispatching
 
