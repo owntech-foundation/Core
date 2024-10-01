@@ -22,12 +22,12 @@ Data API is part of Spin API: it is made available by including the `SpinAPI.h` 
 To use Data API, the first stage is to indicate on which pin of the Spin board you want to acquire data. Not all pins can be used for that purpose: the pin must be linked to an ADC. Here is the list of pins that provide ADC capabilities:
 
 === "SPIN v1.1.0"
-    ![SPIN_1_1_0_ADC_pinout_main](images/SPIN_1.1.0_main_adc.png){ width=451 align=left }
-    ![SPIN_1_1_0_ADC_pinout_inner](images/SPIN_1.1.0_inner_adc.ppng){ width=243 }
+    ![SPIN_1.1.0_main_ADC_only](images/SPIN_1.1.0_main_ADC_only.svg){ width=451 align=left }
+    ![SPIN_1.1.0_inner_ADC_only](images/SPIN_1.1.0_inner_ADC_only.svg){ width=243 }
 
 === "SPIN v1.0.0"
-    ![SPIN_1_0_0_ADC_pinout_main](images/SPIN_1.0.0_main_adc.png){ width=451 align=left }
-    ![SPIN_1_0_0_ADC_pinout_inner](images/SPIN_1.0.0_inner_adc.png){ width=243 }
+    ![SPIN_1.0.0_main_ADC_only](images/SPIN_1.0.0_main_ADC_only.svg){ width=451 align=left }
+    ![SPIN_1.0.0_inner_ADC_only](images/SPIN_1.0.0_inner_ADC_only.svg){ width=243 }
 
 To indicate that the value of a pin should be acquired, the acquisition must be enabled on this pin in the setup phase. This can be done using the `enableAcquisition()` function:
 
