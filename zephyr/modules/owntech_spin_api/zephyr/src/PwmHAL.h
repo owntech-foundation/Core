@@ -126,8 +126,8 @@ public:
       *
       * @param[in] init_frequency frequency in Hz
       *
-      * @warning this function must be called BEFORE initialiazing any timing unit. 
-      *          the frequency initialized becomes the MINIMUM possible. 
+      * @warning this function must be called BEFORE initialiazing any timing unit.
+      *          the frequency initialized becomes the MINIMUM possible.
       *          use it BEFORE initialization of the timing unit.
       */
      void initFrequency(uint32_t init_frequency);
@@ -356,7 +356,7 @@ public:
      void enablePeriodEvnt(hrtim_tu_t PWM_tu);
 
      /**
-      * @brief     				This function returns the period in µs of the selected timer
+      * @brief     This function returns the period in µs of the selected timer
       *
       * @param[in] pwmX    	PWM Unit - PWMA, PWMB, PWMC, PWMD, PWME or PWMF
       */
@@ -369,6 +369,39 @@ public:
       *          Use it AFTER the initialization of the timing unit.
      */
      void setFrequency(uint32_t frequency_update);
+
+     /**
+      * @brief   This function initialize burst mode.
+      *
+     */
+     void initBurstMode();
+
+     /**
+      * @brief   This function sets burst mode parameters
+      *
+      * @param[in]  bm_cmp Number of period of PWM off
+      * @param[in]  bm_per Total number of PWM period
+      */
+     void setBurstMode(int bm_cmp, int bm_per);
+
+     /**
+      * @brief   This function starts burst mode
+      *
+      */
+     void startBurstMode();
+
+     /**
+      * @brief   This function stops burst mode
+      *
+      */
+     void stopBurstMode();
+
+     /**
+      * @brief   This function deinit burst mode.
+      *
+     */
+     void deInitBurstMode();
+
 };
 
 #endif // PWMHAL_H_

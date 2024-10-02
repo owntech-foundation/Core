@@ -356,3 +356,28 @@ void PwmHAL::setFrequency(uint32_t frequency_update)
 {
 	hrtim_change_frequency(frequency_update);
 }
+
+void PwmHAL::initBurstMode()
+{
+	hrtim_burst_mode_init();
+}
+
+void PwmHAL::setBurstMode(int bm_cmp, int bm_per)
+{
+	hrtim_burst_set(bm_cmp, bm_per);
+}
+
+void PwmHAL::startBurstMode()
+{
+	hrtim_burst_start();
+}
+
+void PwmHAL::stopBurstMode()
+{
+	hrtim_burst_stop();
+}
+
+void PwmHAL::deInitBurstMode()
+{
+	hrtim_burst_dis();
+}
