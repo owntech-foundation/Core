@@ -10,8 +10,9 @@ from SCons.Script import COMMAND_LINE_TARGETS  # pylint: disable=import-error
 
 Import("env")
 
+env_name = env['PIOENV']
 #Build path to library.json using the right environement.
-lib_path = os.path.join(".", "owntech", "lib", env.Dump("PIOENV").strip("''"), "owntech_examples")
+lib_path = os.path.join(".", "owntech", "lib", env_name, "owntech_examples")
 json_dir = os.path.join(lib_path, "library.json")
 
 # Execute this script only if owntech_examples library.json exist
