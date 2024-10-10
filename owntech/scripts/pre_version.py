@@ -2,8 +2,6 @@ import os
 Import("env")
 
 # Retrieve project options
-# version default is empty
-# shield default is empty
 board = env.GetProjectOption("board")
 version = env.GetProjectOption("board_version", "")
 shield = env.GetProjectOption("board_shield", "")
@@ -16,10 +14,10 @@ def modify_cmake_file(file_path, board_name, bversion, shield_name, sversion):
     full_board_name = f"{board_name}@{bversion}" if bversion else board_name
     full_shield_name = f"{shield_name}_v{sversion}" if sversion else shield_name
 
+    # Read the CMakeLists.txt file
     try:
-        # Read the CMakeLists.txt file
         with open(file_path, 'r') as file:
-            lines = file.readlines()
+            original_lines = file.readlines()
     except FileNotFoundError:
         print(f"Error: The file {file_path} was not found.")
         return
@@ -27,45 +25,61 @@ def modify_cmake_file(file_path, board_name, bversion, shield_name, sversion):
         print(f"Error: An IOError occurred while trying to read the file {file_path}.")
         return
 
-    # Flags to check if the directives were found
-    board_set = False
-    shield_set = False
-    board_index = -1
+    # Flags to check if the current values match
+    board_needs_update = True
+    shield_needs_update = True
 
-    # Modify the lines accordingly
+    # Modify the lines accordingly, placing BOARD and SHIELD before CMAKE_VERBOSE_MAKEFILE
     new_lines = []
-    for i, line in enumerate(lines):
+    board_set = False
+    cmake_verbose_index = None
+
+    for i, line in enumerate(original_lines):
+        # Locate CMAKE_VERBOSE_MAKEFILE position
+        if line.strip().startswith('set(CMAKE_VERBOSE_MAKEFILE '):
+            cmake_verbose_index = i  # Track where CMAKE_VERBOSE_MAKEFILE is set
+            break
+
+    # Insert BOARD and SHIELD before CMAKE_VERBOSE_MAKEFILE if it exists
+    for line in original_lines:
         if line.strip().startswith('set(BOARD '):
-            new_lines.append(f'set(BOARD {full_board_name})\n')
+            # Update the BOARD line if necessary
+            if full_board_name not in line:
+                new_lines.append(f'set(BOARD {full_board_name})\n')
+            else:
+                new_lines.append(line)  # Retain existing BOARD if it's already correct
             board_set = True
-            board_index = i
         elif line.strip().startswith('set(SHIELD '):
-            if shield_name:  # Only add the shield line if shield_name is not empty
-                new_lines.append(f'set(SHIELD {full_shield_name})\n')
-                shield_set = True
-            # Do not add the existing shield line if shield_name is empty
+            # Skip the existing SHIELD line to replace it with the new one
+            continue
         else:
             new_lines.append(line)
 
-    # Add the directives if they were not found
+    # Add the BOARD directive if it was not found
     if not board_set:
         new_lines.append(f'set(BOARD {full_board_name})\n')
-        print(f"Added 'set(BOARD {full_board_name})' to {file_path}.")
-        board_index = len(new_lines) - 1
 
-    if shield_name and not shield_set:
-        # Insert shield line right after the board line
-        if board_index != -1:
-            new_lines.insert(board_index + 1, f'set(SHIELD {full_shield_name})\n')
+    # Add the SHIELD directive (only once, and right after BOARD if present)
+    if shield_name:
+        # Insert the SHIELD right after BOARD if possible
+        for idx, line in enumerate(new_lines):
+            if 'set(BOARD ' in line:
+                new_lines.insert(idx + 1, f'set(SHIELD {full_shield_name})\n')
+                break
         else:
+            # If no BOARD is present, just append SHIELD at the end
             new_lines.append(f'set(SHIELD {full_shield_name})\n')
-        print(f"Added 'set(SHIELD {full_shield_name})' to {file_path}.")
 
-    try:
-        # Write the modified lines back to the file
-        with open(file_path, 'w') as file:
-            file.writelines(new_lines)
-    except IOError:
-        print(f"Error: An IOError occurred while trying to write to the file {file_path}.")
+    # Write the modified lines back to the file only if changes were made
+    if original_lines != new_lines:
+        try:
+            with open(file_path, 'w') as file:
+                file.writelines(new_lines)
+            print(f"Updated {file_path} with new board and shield values.")
+        except IOError:
+            print(f"Error: An IOError occurred while trying to write to the file {file_path}.")
+    else:
+        print("No changes made to CMakeLists.txt, skipping update.")
 
+# Run the modify_cmake_file function with the board and shield info
 modify_cmake_file(cmake_file_path, board, version, shield, shield_version)
