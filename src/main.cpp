@@ -26,12 +26,17 @@
  * @author Luiz Villa <luiz.villa@laas.fr>
  */
 
+//--------------Zephyr----------------------------------------
+#include <zephyr/console/console.h>
+
 //--------------OWNTECH APIs----------------------------------
 #include "SpinAPI.h"
 #include "TaskAPI.h"
 #include "ShieldAPI.h"
 #include "pid.h"
 #include "comm_protocol.h"
+#include "arm_math_types.h"
+#include <ScopeMimicry.h>
 #include "CommunicationAPI.h"
 
 #define RECORD_SIZE 128 // Number of point to record
@@ -65,14 +70,12 @@ float32_t V_high_value;
 float32_t T1_value;
 float32_t T2_value;
 
-
-float32_t delta_V1;
-float32_t V1_max = 0.0;
-float32_t V1_min = 0.0;
-
-float32_t delta_V2;
-float32_t V2_max = 0.0;
-float32_t V2_min = 0.0;
+ float32_t delta_V1;
+ float32_t V1_max = 0.0;
+ float32_t V1_min = 0.0;
+ float32_t delta_V2;
+ float32_t V2_max = 0.0;
+ float32_t V2_min = 0.0;
 
 int8_t AppTask_num, CommTask_num;
 
@@ -81,6 +84,14 @@ static float32_t acquisition_moment = 0.06;
 static float meas_data; // temp storage meas value (ctrl task)
 
 float32_t starting_duty_cycle = 0.1;
+
+float32_t duty_cycle = 0.3;
+extern bool enable_acq;
+static float32_t trig_ratio;
+static float32_t begin_trig_ratio = 0.05;
+static float32_t end_trig_ratio = 0.95;
+ uint32_t num_trig_ratio_point = 1024;
+//static float32_t voltage_reference = 5.0; //voltage reference
 
 static float32_t kp = 0.000215;
 static float32_t Ti = 7.5175e-5;
@@ -94,43 +105,78 @@ static PidParams pid_params(Ts, kp, Ti, Td, N, lower_bound, upper_bound);
 static Pid pid1;
 static Pid pid2;
 
-#ifdef CONFIG_SHIELD_OWNVERTER
-static bool pwm_enable_leg_3 = false;            //[bool] state of the PWM (ctrl task)
-float32_t V3_low_value;
-float32_t I3_low_value;
-float32_t T3_value;
-
-float32_t delta_V3;
-float32_t V3_max = 0.0;
-float32_t V3_min = 0.0;
-static Pid pid3;
-#endif
+const uint16_t NB_DATAS = 2048;
+const float32_t minimal_step = 1.0F / (float32_t) NB_DATAS;
+static uint16_t number_of_cycle = 2;
+static ScopeMimicry scope(NB_DATAS, 7);
+extern bool is_downloading;
 
 static uint32_t counter = 0;
-static uint32_t temp_meas_internal = 10;
+static uint32_t print_counter = 0;
 
 static float32_t local_analog_value=0;
+
+//---------------------------------------------------------------
+
+enum serial_interface_menu_mode // LIST OF POSSIBLE MODES FOR THE OWNTECH CONVERTER
+{
+    IDLEMODE = 0,
+    POWERMODE
+};
+
+uint8_t mode_scope = IDLEMODE;
+
+// trigger function for scope manager
+bool a_trigger() {
+    return enable_acq;
+}
+
+void dump_scope_datas(ScopeMimicry &scope)  {
+    uint8_t *buffer_scope = scope.get_buffer();
+    uint16_t buffer_size = scope.get_buffer_size() >> 2; // we divide by 4 (4 bytes per float data)
+    printk("begin record\n");
+    printk("#");
+    for (uint16_t k=0;k < scope.get_nb_channel(); k++) {
+        printk("%s,", scope.get_channel_name(k));
+    }
+    printk("\n");
+    printk("# %d\n", scope.get_final_idx());
+    for (uint16_t k=0;k < buffer_size; k++) {
+        printk("%08x\n", *((uint32_t *)buffer_scope + k));
+        task.suspendBackgroundUs(100);
+    }
+    printk("end record\n");
+}
 
 //---------------SETUP FUNCTIONS----------------------------------
 
 void setup_routine()
 {
+    shield.sensors.enableDefaultTwistSensors();
 
     shield.power.initBuck(LEG1);
     shield.power.initBuck(LEG2);
 
-#ifdef CONFIG_SHIELD_OWNVERTER
-    shield.power.initBuck(LEG3);
-#endif
+    // communication.sync.initSlave(); // start the synchronisation
+    // // data.enableAcquisition(2, 35); // enable the analog measurement
+    // // data.triggerAcquisition(2);     // starts the analog measurement
+    // communication.can.setCanNodeAddr(CAN_SLAVE_ADDR);
+    // communication.can.setBroadcastPeriod(10);
+    // communication.can.setControlPeriod(10);
 
+    scope.connectChannel(I1_low_value, "I1_low");
+    scope.connectChannel(V1_low_value, "V1_low");
+    scope.connectChannel(I2_low_value, "I2_low");
+    scope.connectChannel(V2_low_value, "V2_low");
+    scope.connectChannel(duty_cycle, "duty_cycle");
+    scope.connectChannel(V_high_value, "V_high");
+    scope.connectChannel(trig_ratio, "trig_ratio");
+    scope.set_trigger(&a_trigger);
+    scope.set_delay(0.0F);
+    scope.start();
 
-#ifdef CONFIG_SHIELD_OWNVERTER
-    shield.sensors.enableDefaultOwnverterSensors();
-#endif
+    trig_ratio = 0.05;
 
-#ifdef CONFIG_SHIELD_TWIST
-    shield.sensors.enableDefaultTwistSensors();
-#endif
 
 
     AppTask_num = task.createBackground(loop_application_task);
@@ -139,22 +185,12 @@ void setup_routine()
 
     pid1.init(pid_params);
     pid2.init(pid_params);
-#ifdef CONFIG_SHIELD_OWNVERTER
-    pid3.init(pid_params);
-#endif
-
-    // communication.analog.init();
-    // communication.sync.initSlave();
-    // communication.rs485.configure(buffer_tx, buffer_rx, sizeof(ConsigneStruct_t), slave_reception_function); // custom configuration for RS485
-    // communication.can.setCanNodeAddr(CAN_SLAVE_ADDR);
-    // communication.can.setCanNodeAddr
-    // communication.can.setBroadcastPeriod(10);
-    // communication.can.setControlPeriod(10);
-
 
     task.startBackground(AppTask_num);
     task.startBackground(CommTask_num);
     task.startCritical();
+
+    communication.rs485.configureCustom(buffer_tx, buffer_rx, sizeof(ConsigneStruct_t), slave_reception_function, 10625000, true); // custom configuration for RS485
 
 }
 
@@ -171,6 +207,17 @@ void loop_application_task()
     switch(mode)
     {
         case IDLE:    // IDLE MODE - turns data emission off
+            if (is_downloading) {
+                dump_scope_datas(scope);
+                is_downloading = false;
+            } else {
+            scope.has_trigged();
+            // printk("% 7d:", scope.has_trigged());
+            // printk("% 7.2f:", (double)duty_cycle);
+            // printk("% 7d:", num_trig_ratio_point);
+            // printk("% 7.2f:", (double)V_high_value);
+            // printk("% 7.2f\n", (double)V1_low_value);
+            }
             spin.led.turnOff();
             if(!print_done) {
                 printk("IDLE \n");
@@ -191,38 +238,6 @@ void loop_application_task()
                 printk("POWER ON \n");
                 print_done = true;
             }
-
-#ifdef CONFIG_SHIELD_OWNVERTER
-            meas_data = shield.sensors.getLatestValue(TEMP_SENSOR);
-
-            counter++;
-            if(counter == temp_meas_internal){
-                shield.sensors.setOwnverterTempMeas(TEMP_1);
-                if (meas_data != NO_VALUE) T3_value = meas_data;
-            } else if(counter == 2*temp_meas_internal){
-                shield.sensors.setOwnverterTempMeas(TEMP_2);
-                if (meas_data != NO_VALUE) T1_value = meas_data;
-            } else if(counter == 3*temp_meas_internal){
-                shield.sensors.setOwnverterTempMeas(TEMP_3);
-                if (meas_data != NO_VALUE) T2_value = meas_data;
-                counter = 0;
-            }
-#endif
-
-#ifdef CONFIG_SHIELD_TWIST
-
-            counter++;
-            if(counter == temp_meas_internal){
-                shield.sensors.triggerTwistTempMeas(TEMP_SENSOR_1);
-                meas_data = shield.sensors.getLatestValue(TEMP_SENSOR_2);
-                if (meas_data != NO_VALUE) T2_value = meas_data;
-            } else if(counter == 2*temp_meas_internal){
-                shield.sensors.triggerTwistTempMeas(TEMP_SENSOR_2);
-                meas_data = shield.sensors.getLatestValue(TEMP_SENSOR_1);
-                if (meas_data != NO_VALUE) T1_value = meas_data;
-                counter = 0;
-            }
-#endif
             frame_POWER_ON();
             break;
         default:
@@ -260,63 +275,29 @@ void loop_control_task()
     if (meas_data != NO_VALUE)
         I_high_value = meas_data;
 
-#ifdef CONFIG_SHIELD_OWNVERTER
-    meas_data = shield.sensors.getLatestValue(V3_LOW);
-    if (meas_data != NO_VALUE)
-        V3_low_value = meas_data;
-
-    meas_data = shield.sensors.getLatestValue(I3_LOW);
-    if (meas_data != NO_VALUE)
-        I3_low_value = meas_data;
-#endif
-
-
-    // local_analog_value = communication.analog.getAnalogCommValue();
-    // analog_value = (uint16_t)local_analog_value;
-
-    // ctrl_slave_counter++; //counter for the slave function
-
-    // can_test_ctrl_enable = communication.can.getCtrlEnable();
-    // can_test_reference_value = communication.can.getCtrlReference();
-
-
-
     //----------- DEPLOYS MODES----------------
     switch(mode){
         case IDLE:         // IDLE and POWER_OFF modes turn the power off
         case POWER_OFF:
             shield.power.stop(LEG1);
-            pwm_enable_leg_1 = false;
-            V1_max  = 0;
-
             shield.power.stop(LEG2);
+            pwm_enable_leg_1 = false;
             pwm_enable_leg_2 = false;
+            V1_max  = 0;
             V2_max  = 0;
-
-#ifdef CONFIG_SHIELD_OWNVERTER
-            shield.power.stop(LEG3);
-            pwm_enable_leg_3 = false;
-            V3_max  = 0;
-#endif
             break;
 
         case POWER_ON:     // POWER_ON mode turns the power ON
+
+            scope.acquire();
 
             //Tests if the legs were turned off and does it only once ]
             if(!pwm_enable_leg_1 && power_leg_settings[LEG1].settings[BOOL_LEG]) {shield.power.start(LEG1); pwm_enable_leg_1 = true;}
             if(!pwm_enable_leg_2 && power_leg_settings[LEG2].settings[BOOL_LEG]) {shield.power.start(LEG2); pwm_enable_leg_2 = true;}
 
-#ifdef CONFIG_SHIELD_OWNVERTER
-            if(!pwm_enable_leg_3 && power_leg_settings[LEG3].settings[BOOL_LEG]) {shield.power.start(LEG3); pwm_enable_leg_3 = true;}
-#endif
-
             //Tests if the legs were turned on and does it only once ]
             if(pwm_enable_leg_1 && !power_leg_settings[LEG1].settings[BOOL_LEG]) {shield.power.stop(LEG1); pwm_enable_leg_1 = false;}
             if(pwm_enable_leg_2 && !power_leg_settings[LEG2].settings[BOOL_LEG]) {shield.power.stop(LEG2); pwm_enable_leg_2 = false;}
-
-#ifdef CONFIG_SHIELD_OWNVERTER
-            if(pwm_enable_leg_3 && !power_leg_settings[LEG3].settings[BOOL_LEG]) {shield.power.stop(LEG3); pwm_enable_leg_3 = false;}
-#endif
 
             //calls the pid calculation if the converter in either in mode buck or boost for a given dynamically set reference value
             if(power_leg_settings[LEG1].settings[BOOL_BUCK] || power_leg_settings[LEG1].settings[BOOL_BOOST]){
@@ -326,13 +307,6 @@ void loop_control_task()
             if(power_leg_settings[LEG2].settings[BOOL_BUCK] || power_leg_settings[LEG2].settings[BOOL_BOOST]){
                 power_leg_settings[LEG2].duty_cycle = pid2.calculateWithReturn(power_leg_settings[LEG2].reference_value , *power_leg_settings[LEG2].tracking_variable);
             }
-
-#ifdef CONFIG_SHIELD_OWNVERTER
-            if(power_leg_settings[LEG3].settings[BOOL_BUCK] || power_leg_settings[LEG3].settings[BOOL_BOOST]){
-                power_leg_settings[LEG3].duty_cycle = pid2.calculateWithReturn(power_leg_settings[LEG3].reference_value , *power_leg_settings[LEG3].tracking_variable);
-            }
-#endif
-
 
             if(power_leg_settings[LEG1].settings[BOOL_LEG]){
                 if(power_leg_settings[LEG1].settings[BOOL_BOOST]){
@@ -350,23 +324,8 @@ void loop_control_task()
                 }
             }
 
-#ifdef CONFIG_SHIELD_OWNVERTER
-            if(power_leg_settings[LEG3].settings[BOOL_LEG]){
-                if(power_leg_settings[LEG3].settings[BOOL_BOOST]){
-                    shield.power.setDutyCycle(LEG3, (1-power_leg_settings[LEG3].duty_cycle) ); //inverses the convention of the leg in case of changing from buck to boost
-                }else{
-                    shield.power.setDutyCycle(LEG3, power_leg_settings[LEG3].duty_cycle); //uses the normal convention by default
-                }
-            }
-#endif
-
-
             if(V1_low_value>V1_max) V1_max = V1_low_value;  //gets the maximum V1 voltage value. This is used for the capacitor test
             if(V2_low_value>V2_max) V2_max = V2_low_value;  //gets the maximum V2 voltage value. This is used for the capacitor test
-
-#ifdef CONFIG_SHIELD_OWNVERTER
-            if(V3_low_value>V3_max) V3_max = V3_low_value;  //gets the maximum V2 voltage value. This is used for the capacitor test
-#endif
 
             break;
         default:

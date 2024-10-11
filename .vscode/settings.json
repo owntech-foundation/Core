@@ -7,5 +7,8 @@
     ".gitignore": false,
     "docs": false,
     ".github": false
+  },
+  "files.associations": {
+    "*.tcc": "cpp"
   }
 }
