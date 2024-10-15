@@ -49,12 +49,12 @@ leg_to_test = "LEG1"                               #leg to be tested in this scr
 reference_names = ["V1","V2","VH","I1","I2","IH"]  #names of the sensors of the board
 
 shield_vid = 0x2fe3
-shield_pid = 0x0101
+shield_pid = 0x0100
 
 Shield_ports = find_devices.find_shield_device_ports(shield_vid, shield_pid)
 print(Shield_ports)
 
-Shield = Shield_Device(shield_port= Shield_ports[0], shield_type='OWNVERTER')
+Shield = Shield_Device(shield_port= Shield_ports[0], shield_type='TWIST')
 
 
 #Reference

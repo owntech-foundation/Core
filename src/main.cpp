@@ -79,8 +79,6 @@ int16_t phase_shift_min = 0;
 uint16_t dead_time_max = 2000;
 uint16_t dead_time_min = 100;
 
-
-
 int8_t AppTask_num, CommTask_num;
 
 static float32_t acquisition_moment = 0.06;
@@ -122,7 +120,6 @@ static float32_t local_analog_value=0;
 
 void setup_routine()
 {
-
     shield.power.initBuck(LEG1);
     shield.power.initBuck(LEG2);
 
