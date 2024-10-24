@@ -326,7 +326,7 @@ void PowerAPI::connectCapacitor(leg_t leg)
     {
         if(dt_pin_capacitor[i] != 0)
         {
-            spin.gpio.setPin(dt_pin_capacitor[i]);
+            spin.gpio.resetPin(dt_pin_capacitor[i]);
         }
     }
 }
@@ -352,7 +352,7 @@ void PowerAPI::disconnectCapacitor(leg_t leg)
     {
         if(dt_pin_capacitor[i] != 0)
         {
-            spin.gpio.resetPin(dt_pin_capacitor[i]);
+            spin.gpio.setPin(dt_pin_capacitor[i]);
         }
     }
 }
