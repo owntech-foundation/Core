@@ -9,6 +9,10 @@
 
 ## Quick start with Spin Data API
 
+Note that if you use a shield on the Spin board, you can use the functions provided by the shield API : ``shield.sensors``, which provides the an API similar as this one, but with also more specialized functions that take into consideration shield specificities: sensors accessible by name rather than by using the pin number, initial conversions factors for raw values adapted depending on the sensors, etc.
+
+The Data API is for use only if you do not use a shield, or want to access to a pin that is not connected to a sensor of the shield.
+
 ### Include
 
 Data API is part of Spin API: it is made available by including the `SpinAPI.h` header. From there, a `spin.data` object is available to interact with the API.
@@ -64,11 +68,175 @@ If software-trigged is used for an ADC (default configuration), the acquisition 
     spin.data.getLatestValue(35); // Get value read on pin 35
     ```
 
-## Data dispatching
+## Advanced usage
 
-When using the control task (critical task) data are dispatched at the start, which means there are ready to be retrieved.
+The above procedure is only for basic usage. Data API has other capabilities that can be configured.
+
+### Controlling the conversion
+
+By default, the acquired values are converted using generic conversion parameters, except if the board was calibrated.
+You can edit the conversion factors by calling one of the ``spin.data.setConversionParameters***()`` functions.
+E.g. ``setConversionParametersLinear(35, 2, -0.1);`` will set the conversion parameters for pin 35 to ``Linear``, with a gain of ``2`` and an offset of ``-0.1``.
+
+
+### Obtaining all the acquired data
+
+When using ``getLatestValue()``, only the latest acquired value for the pin is returned, already converted using conversion parameters set for the pin (if any has been configured).
+
+If you need more precision, you can get all values acquired on a pin since the previous call to a ``get`` function.
+To do so, use ``getRawValues()``, to obtain all values without any conversion or ``getValues()`` to obtain values after conversion.
+Warning: using the ``getValues()`` function will convert values on-the-fly. This can be long depending on the number of values to be converted and the type of conversion.
+
+These function act similarly, except for the conversion part: they are called with two parameters, the first one is an input parameter indicating which pin you want data from, and the second is an output parameter, a uint32_t whose value will be updated by the function to indicate how many values are available. The function returns an array that has to be stored in a pointer variable.
+
+!!! note
+    === Using the converted values
+        ```
+        // Declare a variable for the output parameter:
+        uint32_t valuesCount;
+        // Get the values: array of float32_t for converted values
+        float32_t* array = spin.data.getValues(35, valuesCount);
+
+        // Access the values:
+        for (int i = 0 ; i < valuesCount ; i++)
+        {
+            // Do something with array[i]
+        }
+        ```
+
+    === Using the raw values
+        ```
+        // Declare a variable for the output parameter:
+        uint32_t valuesCount;
+        // Get the values: array of float32_t for converted values
+        uint16_t* array = spin.data.getRawValues(35, valuesCount);
+
+        // Access the values:
+        for (int i = 0 ; i < valuesCount ; i++)
+        {
+            // Do something with array[i]
+            // E.g. you can use the conversion function
+            float32_t convertedValue = spin.data.convertValue(35, array[i]);
+        }
+        ```
+
+### Channel sequence
+
+Each ADC unit can measure multiple analog signal. This works by defining an acquisition sequence.
+
+!!! tip
+    By default the aquisition sequence is in continuous mode. It means than one trigger will trigger all the sequence of acquisition.
+    This can be changed using [Discontinuous Mode](#continuous-discontinuous-sequence)
+
+!!! example
+    === "3 channels on ADC1"
+    ```c++
+    spin.adc.enableAcquisition(2, ADC_1)
+    spin.adc.enableAcquisition(3, ADC_1)
+    spin.adc.enableAcquisition(1, ADC_1)
+    ```
+    In this example, for each trigger action, the ADC1 will measure channel 2, then channel 3, then channel 1.
+
+    === "Single channel"
+    ```spin.adc.enableChannel(1, ADC_1)```
+
+    In this example, for each trigger, the ADC1 will measure channel 1.
+
+!!! note
+    Sequence order is given by `spin.adc.enableChannel()` order.
+
+
+### The different event and trigger of ADC/HRTIM
+
+You might have seen that there are differents variables referencing adc trigger :
+
+```cpp
+spin.data.configureTriggerSource(ADC_1, hrtim_eev1);
+spin.pwm.setAdcTrigger(PWMA, ADCTRIG_1);
+```
+There is `hrtim_eevx` or `ADCTRIG_x`, let's see the role of each of them.
+
+#### ADCTRIG_x
+
+In the PWM API, four signals can serve as ADC triggers, initiating ADC conversions: ADC_TRIG1, ADC_TRIG2, ADC_TRIG3, and ADC_TRIG4.
+
+The PWM is produced by a carrier (see [here](https://owntech-foundation.github.io/Documentation/core/docs/pwm/)) by using a comparator to compare a specific constant value with the carrier, we can generate an event when enabling a trigger on the PWM. For instance :
+
+```c++
+spin.pwm.setAdcTrigger(PWMA, ADCTRIG_1);
+spin.pwm.enableAdcTrigger(PWMA);
+```
+
+We are enabling and linking ADCTRIG_1 to PWMA. That means that when the comparator value and the carrier value of the PWMA we can generate an event from ADCTRIG_1 that can be used to start an ADC conversion :
+
+![ADC trigger](images/hrtim_adc_trigger_schema.svg)
+
+The comparator value can be adjusted using the function `spin.pwm.setAdcTriggerInstant(PWMA, 0.5)`. For example, setting it to 0.5 means triggering an event halfway through the switching period, initiating an ADC conversion.
+
+#### hrtim_eevx
+
+An acquisition can be initiated either by software (via a function) or hardware through an external event. Numerous external events exist, but some are specifically related to PWM: `hrtim_eev1`, `hrtim_eev2`, `hrtim_eev3`, and `hrtim_eev4`.
+
+Each of these external events is associated with events generated by ADCTRIG_x. For instance, hrtim_eev1 is linked to ADCTRIG_1, and so on.
+
+```cpp
+spin.pwm.setAdcTrigger(PWMA, ADCTRIG_1);
+spin.pwm.enableAdcTrigger(PWMA);
+spin.data.configureTriggerSource(ADC_1, hrtim_eev1);
+```
+The above code indicates that we've connected ADC**1** to the external event **hrtim_eev1**, which, in turn, is connected to the event generated by **ADCTRIG1** when the comparator (set by the trigger value) matches the carrier of **PWMA**.
+
+### Continuous / Discontinuous sequence
+
+!!! note
+    This is relevant if more than one measurement is taken with the same ADC.
+
+=== "Continuous sequence"
+    ![left_aligned_continuous_sampling](images/left_aligned_continuous_sampling.svg){ width=800 }
+    All enabled pins for the ADC are acquired at each trigger
+
+    ```c++
+        spin.data.configureDiscontinuousMode(ADC_1, 0);
+    ```
+
+=== "Discontinuous sequence "
+    ![left_aligned_ADC_50](images/left_aligned_ADC_50.svg){ width=800 }
+    Only acquire one pin in the sequence at each trigger. The next trigger will acquire the next pin in the sequence, etc.
+
+    ```c++
+        spin.data.configureDiscontinuousMode(ADC_1, 1);
+    ```
+
+
+## Deeper understanding of Data API
+
+### Data dispatching
+
+When using the control task (critical task) data are dispatched at the start, which means there are ready to be retrieved by the ``get***()`` functions.
 
 ![data dispatch](images/data_dispatch.svg)
+
+Data dispatching is an internal mechanism of Data API, that transfers Data from the internal buffers controlled by the DMA to user-level buffers that can be retreived by the ``get***()`` functions. If dispatching is not done, the user will not be able to retrive values, and the ``get***()`` functions will return no value.
+
+The dispatch is done automatically and the in most cases, the user does not have to worry about it. However, in some cases, the user may want to know when this is done.
+
+If you use an [uninterruptible task](scheduling.md) to manage the converter on a fast loop, the dispatch is automatically done just before each call of the task.
+
+If you do not have an uninterruptible task however, then the dispatch will be done once all enabled acquisitions for an ADC have been done.
+This means that if you configure ADC 1 with one acquisition and ADC 3 with two acquisitions, the data for a pin controlled by the ADC 1 will be available at each acquisition, while the data for a pin controlled by the ADC 3 will only be available every time it has acquired two values.
+
+### API start
+
+The Data API must be started after all configuration has been carried out. However, in most common cases, this will happen automatically.
+If you use an [uninterruptible task](scheduling.md) to manage the converter on a fast loop, the Data API is automatically started when the task is started.
+
+The cases where you have to manually start the Data API are the following:
+* No uninterruptible task defined in the program,
+* An uninterruptible task is defined, but its start function is called with a value ``false`` for its parameter.
+
+The second case is only used in advanced scenarios where the user want full control over Data API.
+
+If you use Data API in one of these cases, the Data API must be started using the `start()` function. This call must only be made at the end of all the hardware configuration (including other modules).
 
 ## Initialization sequence
 
