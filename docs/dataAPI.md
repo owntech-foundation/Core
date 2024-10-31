@@ -57,16 +57,17 @@ After the Data API has been started, it becomes possible to get data obtained fr
 
 If software-trigged is used for an ADC (default configuration), the acquisition must first be triggered, then the value read. If the acquisition is configured to be periodic for ann ADC, directly read the value.
 
-=== "Sofware-triggered acquisition"
-    ```
-    spin.data.triggerAcquisition(ADC_2); // Trigger acquisitions of all pins linked to ADC 2
-    spin.data.getLatestValue(35); // Get value read on pin 35
-    ```
+!!! note
+    === "Sofware-triggered acquisition"
+        ```
+        spin.data.triggerAcquisition(ADC_2); // Trigger acquisitions of all pins linked to ADC 2
+        spin.data.getLatestValue(35); // Get value read on pin 35
+        ```
 
-=== "Periodic acquisition"
-    ```
-    spin.data.getLatestValue(35); // Get value read on pin 35
-    ```
+    === "Periodic acquisition"
+        ```
+        spin.data.getLatestValue(35); // Get value read on pin 35
+        ```
 
 ## Advanced usage
 
@@ -90,7 +91,7 @@ Warning: using the ``getValues()`` function will convert values on-the-fly. This
 These function act similarly, except for the conversion part: they are called with two parameters, the first one is an input parameter indicating which pin you want data from, and the second is an output parameter, a uint32_t whose value will be updated by the function to indicate how many values are available. The function returns an array that has to be stored in a pointer variable.
 
 !!! note
-    === Using the converted values
+    === "Using the converted values"
         ```
         // Declare a variable for the output parameter:
         uint32_t valuesCount;
@@ -104,7 +105,7 @@ These function act similarly, except for the conversion part: they are called wi
         }
         ```
 
-    === Using the raw values
+    === "Using the raw values"
         ```
         // Declare a variable for the output parameter:
         uint32_t valuesCount;
@@ -292,16 +293,16 @@ After channels have been enabled (and optionnally conversion parameters have bee
         float32_t adc_value = data.getLatest(1, 5); // ADC 1 ; Pin 5
         ```
 
-## Retrieving last value
+## Retrieving latest value
 
-Getting the last measured value to feed the control algorithm is super simple.
+Getting the latest measured value to feed the control algorithm is super simple.
 
 !!! example
-    === "Get last value"
+    === "Get latest value"
         ```
         data.getLatest(1, 5)
         ```
-        This will retrieve the last sampled value of ADC 1 pin 5.
+        This will retrieve the latest sampled value of ADC 1 pin 5.
 
 ## Getting values with the right unit
 
