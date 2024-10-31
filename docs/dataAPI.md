@@ -326,12 +326,3 @@ DataAPI contains commodity function to retrieve an array of raw values that can 
 
 ::: doxy.powerAPI.class
 name: DataAPI
-
-## Using the Data API with a Twist shield
-
-The Data API is optimized for running on Twist shields.
-It provides variants of the functions that take Twist sensors as parameters instead of pins numbers.
-
-To enable the Twist Shield channels, use `set(SHIELD twist)` in `CMakeLists.txt`. From there, this module will provide additional functions to acquire and convert Twist channels by name.
-
-If you use the Twist sensors, you can use `data.enableTwistDefaultChannels()` to automatically perform a standard configuration. From there, all current/tension channels of the Twist shields will be enabled as part of the default configuration. Default parameters for the channels are also loaded automatically as part of the process.
