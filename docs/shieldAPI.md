@@ -212,14 +212,14 @@ On the TWIST board, a voltage value of 1.024V on the ADC corresponds to a curren
         - [Voltage mode boost](https://owntech-foundation.github.io/Documentation/examples/TWIST/DC_DC/boost_voltage_mode/)
 
 
-::: doxy.ShieldAPI.class
+::: doxy.powerAPI.class
 name: ShieldAPI
 
-::: doxy.SensorsAPI.class
+::: doxy.powerAPI.class
 name: SensorsAPI
 
-::: doxy.PowerAPI.class
+::: doxy.powerAPI.class
 name: PowerAPI
 
-::: doxy.NgndHAL.class
+::: doxy.powerAPI.class
 name: NgndHAL
