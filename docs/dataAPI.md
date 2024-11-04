@@ -5,7 +5,7 @@
 
     The Data API configures the DMAs to store the ADCs acquisitions for the Spin board, and dispatches them in per-channel buffers that can be read by the user. The module also provides functions to convert the raw values acquired by the sensors into values in the adequate unit.
 
-    If using a shield such as Twist, a dedicated interface for sensors configuration is made available by the [Shield sensors API](twistAPI.md).
+    If using a shield such as Twist, a dedicated interface for sensors configuration is made available by the [Shield sensors API](shield_sensors.md).
 
 ## Quick start with Spin Data API
 
