@@ -1,5 +1,5 @@
 !!! Note ""
-    This API is designed to work with the TWIST hardware, providing a set of functions to manage and control the output power.
+    This API is designed to work with Spin shields hardware, providing a set of functions to manage and control the shields.
 
 ## Features
 
@@ -211,15 +211,13 @@ On the TWIST board, a voltage value of 1.024V on the ADC corresponds to a curren
         - [Current mode buck](https://owntech-foundation.github.io/Documentation/examples/TWIST/DC_DC/buck_current_mode/)
         - [Voltage mode boost](https://owntech-foundation.github.io/Documentation/examples/TWIST/DC_DC/boost_voltage_mode/)
 
+## Detailed documentation on available APIs:
+- [Power API](powerAPI.md)
+- [Sensors API](shield_sensors.md)
 
+## Detailed documentation on hardware management class:
+- [NGND](powerAPI/classNgndHAL.md)
+
+## API Reference
 ::: doxy.powerAPI.class
 name: ShieldAPI
-
-::: doxy.powerAPI.class
-name: SensorsAPI
-
-::: doxy.powerAPI.class
-name: PowerAPI
-
-::: doxy.powerAPI.class
-name: NgndHAL

@@ -25,5 +25,6 @@ Moreover, as Shield sensor API is aware of what sensors are available on the shi
 
 The function is named ``shield.sensors.enableDefault***Sensors()``. For example, for the Twist shield, the function is named ``shield.sensors.enableDefaultTwistSensors()``. Just call this function then start the API, and you're ready to go!
 
+## API Reference
 ::: doxy.powerAPI.class
 name: SensorsAPI
