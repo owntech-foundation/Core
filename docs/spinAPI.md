@@ -1,17 +1,17 @@
 !!! Note ""
-    Spin API is an entry point to access APIs and classes dedicated for interaction with the Spin board peripherals
+    Spin API is an entry point to access APIs and peripheral HALs dedicated for interaction with the Spin board
 
-## Detailed documentation on available API:
+## Detailed documentation on available API classes:
 - [Data API](dataAPI.md)
 
-## Detailed documentation on hardware management classes:
-- [Comparator](https://owntech-foundation.github.io/Documentation/powerAPI/classCompHAL)
-- [Digital Analog converter](dac.md)
-- [General-Purpose Input Output](gpio.md)
-- [LEDs](https://owntech-foundation.github.io/Documentation/powerAPI/classLedHAL)
-- [PWM](pwm.md)
-- [Timer](https://owntech-foundation.github.io/Documentation/powerAPI/classTimerHAL)
-- [UART](https://owntech-foundation.github.io/Documentation/powerAPI/classUartHAL)
+## Detailed documentation on Hardware Abstraction Layer classes:
+- [Comparator HAL](https://owntech-foundation.github.io/Documentation/powerAPI/classCompHAL)
+- [Digital Analog converter HAL](dac.md)
+- [General-Purpose Input Output HAL](gpio.md)
+- [LEDs HAL](https://owntech-foundation.github.io/Documentation/powerAPI/classLedHAL)
+- [PWM HAL](pwm.md)
+- [Timer HAL](https://owntech-foundation.github.io/Documentation/powerAPI/classTimerHAL)
+- [UART HAL](https://owntech-foundation.github.io/Documentation/powerAPI/classUartHAL)
 
 ## API Reference
 ::: doxy.powerAPI.class

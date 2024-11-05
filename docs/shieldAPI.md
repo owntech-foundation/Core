@@ -211,12 +211,12 @@ On the TWIST board, a voltage value of 1.024V on the ADC corresponds to a curren
         - [Current mode buck](https://owntech-foundation.github.io/Documentation/examples/TWIST/DC_DC/buck_current_mode/)
         - [Voltage mode boost](https://owntech-foundation.github.io/Documentation/examples/TWIST/DC_DC/boost_voltage_mode/)
 
-## Detailed documentation on available APIs:
-- [Power API](powerAPI.md)
+## Detailed documentation on available APIs classes:
+- [Power API](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI)
 - [Sensors API](shield_sensors.md)
 
-## Detailed documentation on hardware management class:
-- [NGND](https://owntech-foundation.github.io/Documentation/powerAPI/classNgndHAL)
+## Detailed documentation on Hardware Abstraction Layer classes:
+- [NGND HAL](https://owntech-foundation.github.io/Documentation/powerAPI/classNgndHAL)
 
 ## API Reference
 ::: doxy.powerAPI.class
