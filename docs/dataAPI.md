@@ -144,7 +144,8 @@ Each ADC unit can measure multiple analog signal. This works by defining an acqu
     In this example, for each trigger, the ADC1 will measure channel 1.
 
 !!! note
-    Sequence order is given by `spin.adc.enableChannel()` order.
+    The sequence order is given by the order in which the `spin.adc.enableChannel()` function is called.
+    E.g., in the above case, the acquisition order would be pin 2, then 3, then 1.
 
 
 ### The different event and trigger of ADC/HRTIM
@@ -161,7 +162,7 @@ There is `hrtim_eevx` or `ADCTRIG_x`, let's see the role of each of them.
 
 In the PWM API, four signals can serve as ADC triggers, initiating ADC conversions: ADC_TRIG1, ADC_TRIG2, ADC_TRIG3, and ADC_TRIG4.
 
-The PWM is produced by a carrier (see [here](https://owntech-foundation.github.io/Documentation/core/docs/pwm/)) by using a comparator to compare a specific constant value with the carrier, we can generate an event when enabling a trigger on the PWM. For instance :
+The PWM is produced by a carrier (see [here](pwm.md)) by using a comparator to compare a specific constant value with the carrier, we can generate an event when enabling a trigger on the PWM. For instance :
 
 ```c++
 spin.pwm.setAdcTrigger(PWMA, ADCTRIG_1);
@@ -250,18 +251,18 @@ After channels have been enabled (and optionnally conversion parameters have bee
 !!! Note
 
     === "Software triggered"
-        1.  Enable acquisition on the pins you want: [`spin.data.enableAcquisition()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-enableacquisition)
-        2.  Define acquisition conversion parameter: [`spin.data.setParameters()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-setparameters-22)
-        3.  start data dispatching [`spin.data.start()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-start)
-        4. Trigger an initial adc conversion [`spin.data.triggerAcquisition(ADCx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-enablechannel)
-        5.  Retrieve values : [`spin.data.getLatest()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getlatest-12) or [`spin.data.getRawValues()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getrawvalues-12)
+        1. Enable acquisition on the pins you want: [`spin.data.enableAcquisition()`](#function-enableacquisition)
+        2. Define acquisition conversion parameters, e.g. using [`spin.data.setConversionParametersLinear()`](#function-setconversionparameterslinear)
+        3. Start data dispatching [`spin.data.start()`](#function-start)
+        4. Trigger an initial adc conversion [`spin.data.triggerAcquisition(ADCx)`](#function-triggeracquisition)
+        5. Retrieve values : [`spin.data.getLatestValue()`](#function-getlatestvalue) or [`spin.data.getRawValues()`](#function-getrawvalues)
 
     === "Hardware triggered"
-        1.  [Make sure PWM engine is initialized](https://owntech-foundation.github.io/Documentation/core/docs/pwm/)
-        2.  Enable acquisition on the pins you want: [`spin.data.enableAcquisition()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-enableacquisition)
-        3.  Define acquisition conversion parameter: [`spin.data.setParameters()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-setparameters-22)
-        4.  start data dispatching [`spin.data.start()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-start)
-        5.  Retrieve values : [`spin.data.getLatest()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getlatest-12) or [`spin.data.getRawValues()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getrawvalues-12)
+        1. [Make sure PWM engine is initialized](pwm.md)
+        2. Enable acquisition on the pins you want: [`spin.data.enableAcquisition()`](#function-enableacquisition)
+        3. Define acquisition conversion parameters, e.g. using [`spin.data.setConversionParametersLinear()`](#function-setconversionparameterslinear)
+        4. Start data dispatching [`spin.data.start()`](#function-start)
+        5. Retrieve values : [`spin.data.getLatestValue()`](#function-getlatestvalue) or [`spin.data.getRawValues()`](#function-getrawvalues)
 
 !!! example
 
