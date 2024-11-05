@@ -12,7 +12,7 @@ For example, if you want to access the V1_LOW sensor from the Twist shield using
 ```
 spin.data.enableAcquisition(29);
 ```
-However, using Shield sensor API, you just have to write;
+However, using Shield sensor API, you just have to write:
 ```
 shield.sensors.enableAcquisition(V1_LOW);
 ```

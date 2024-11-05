@@ -1,6 +1,12 @@
 !!! Note ""
     This API is designed to work with Spin shields hardware, providing a set of functions to manage and control the shields.
 
+To work with Spin API, include the following file in your code:
+!!! note
+    ```
+    #include <ShieldAPI.h>
+    ```
+
 ## Features
 
 === " "
