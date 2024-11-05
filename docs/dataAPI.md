@@ -243,33 +243,34 @@ If you use Data API in one of these cases, the Data API must be started using th
 
 If you want specific ADC behavior (trigger sources, discontinuous mode, etc.), you may want to configure the ADCs using the lower-level [ADC API](adc.md) first. Then, you can enable channels that you want to acquire.
 
-After channels have been enabled, the conversion parameters can be set so that raw values can be automatically converted to the relevant unit. This is done using the `data.setParameters()` function.
+After channels have been enabled, the conversion parameters can be set so that raw values can be automatically converted to the relevant unit. This is done using the `spin.data.setParameters()` function.
 
-After channels have been enabled (and optionnally conversion parameters have been set), there are two ways of starting the API, depending on your use of other OwnTech APIs. If your code uses an [uninterruptible task](scheduling.md), nothing more is required, the Data API will be started automatically when task is started. However, if you do not have an uninterruptible task in your code, you need to manually start the API by calling `data.start()`.
+After channels have been enabled (and optionnally conversion parameters have been set), there are two ways of starting the API, depending on your use of other OwnTech APIs. If your code uses an [uninterruptible task](scheduling.md), nothing more is required, the Data API will be started automatically when task is started. However, if you do not have an uninterruptible task in your code, you need to manually start the API by calling `spin.data.start()`.
 
 !!! Note
 
     === "Software triggered"
-        1.  Enable acquisition on the pins you want: [`data.enableAcquisition()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-enableacquisition)
-        2.  Define acquisition conversion parameter: [`data.setParameters()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-setparameters-22)
-        3.  start data dispatching [`data.start()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-start)
-        4. Trigger an initial adc conversion [`data.triggerAcquisition(ADCx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-enablechannel)
-        5.  Retrieve values : [`data.getLatest()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getlatest-12) or [`data.getRawValues()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getrawvalues-12)
+        1.  Enable acquisition on the pins you want: [`spin.data.enableAcquisition()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-enableacquisition)
+        2.  Define acquisition conversion parameter: [`spin.data.setParameters()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-setparameters-22)
+        3.  start data dispatching [`spin.data.start()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-start)
+        4. Trigger an initial adc conversion [`spin.data.triggerAcquisition(ADCx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-enablechannel)
+        5.  Retrieve values : [`spin.data.getLatest()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getlatest-12) or [`spin.data.getRawValues()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getrawvalues-12)
 
     === "Hardware triggered"
         1.  [Make sure PWM engine is initialized](https://owntech-foundation.github.io/Documentation/core/docs/pwm/)
-        2.  Enable acquisition on the pins you want: [`data.enableAcquisition()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-enableacquisition)
-        3.  Define acquisition conversion parameter: [`data.setParameters()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-setparameters-22)
-        4.  start data dispatching [`data.start()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-start)
-        5.  Retrieve values : [`data.getLatest()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getlatest-12) or [`data.getRawValues()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getrawvalues-12)
+        2.  Enable acquisition on the pins you want: [`spin.data.enableAcquisition()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-enableacquisition)
+        3.  Define acquisition conversion parameter: [`spin.data.setParameters()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-setparameters-22)
+        4.  start data dispatching [`spin.data.start()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-start)
+        5.  Retrieve values : [`spin.data.getLatest()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getlatest-12) or [`spin.data.getRawValues()`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getrawvalues-12)
 
 !!! example
 
     === "Software triggered ADC"
         ```cpp
-        data.enableAcquisition(1, 5); // ADC 1 ; Pin 5
-        data.triggerAcquisition(1); // ADC 1
-        float32_t adc_value = data.getLatest(1, 5); // ADC 1 ; Pin 5
+        spin.data.enableAcquisition(5, ADC_1); // Enable acquisition on pin 5 using ADC 1
+        spin.data.start();
+        spin.data.triggerAcquisition(ADC_1); // Trigger acquisition for ADC 1
+        float32_t adc_value = spin.data.getLatestValue(5); // Get latest value acquired for pin 5
         ```
     === "Hardware triggered ADC"
         ```cpp
@@ -286,11 +287,11 @@ After channels have been enabled (and optionnally conversion parameters have bee
         spin.pwm.startDualOutput(PWMA);
 
         /* ADC initialization */
-        spin.adc.configureTriggerSource(1, hrtim_eev1); // ADC 1 ; HRTIM event 1
-        spin.adc.configureDiscontinuousMode(1, 1); // ADC 1 ; acquire 1 pin at each event
-        data.enableAcquisition(1, 5); // ADC 1 ; Pin 5
-        data.start();
-        float32_t adc_value = data.getLatest(1, 5); // ADC 1 ; Pin 5
+        spin.data.configureTriggerSource(ADC_1, hrtim_eev1); // ADC 1 ; HRTIM event 1
+        spin.data.configureDiscontinuousMode(ADC_1, 1); // ADC 1 ; acquire 1 pin at each event
+        spin.data.enableAcquisition(5, ADC_1); // Pin 5 using ADC 1
+        spin.data.start();
+        float32_t adc_value = data.getLatestValue(5); // Pin 5
         ```
 
 ## Retrieving latest value
@@ -300,7 +301,7 @@ Getting the latest measured value to feed the control algorithm is super simple.
 !!! example
     === "Get latest value"
         ```
-        data.getLatest(1, 5)
+        spin.data.getLatest(5)
         ```
         This will retrieve the latest sampled value of ADC 1 pin 5.
 
@@ -311,7 +312,7 @@ DataAPI contains commodity functions to convert the raw binary measurement value
 !!! example
     === "Converting in volts"
         ```
-        data.setParameters()
+        spin.data.setParameters()
         ```
 
 ## Get an array of values
@@ -321,7 +322,7 @@ DataAPI contains commodity function to retrieve an array of raw values that can 
 !!! example
     === "Retrieve 5 values"
         ```
-        data.getRawValues()
+        spin.data.getRawValues()
         ```
 
 ::: doxy.powerAPI.class

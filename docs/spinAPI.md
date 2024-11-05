@@ -1,6 +1,12 @@
 !!! Note ""
     Spin API is an entry point to access APIs and peripheral HALs dedicated for interaction with the Spin board
 
+To work with Spin API, include the following file in your code:
+!!! note
+    ```
+    #include <SpinAPI.h>
+    ```
+
 ## Detailed documentation on available API classes:
 - [Data API](dataAPI.md)
 
