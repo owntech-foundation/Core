@@ -134,7 +134,7 @@ However, using a constant peak current reference can lead to subharmonic oscilla
 === "Final current mode waveform "
     ![](images/current_mode_pwm_scheme_final.svg)
 
-The sawtooth signal `Slope compensation` is generated with the function [`shield.power.setSlopeCompensation`](https://owntech-foundation.github.io/Documentation/powerAPI/classowerAPI/#function-setslopecompensation). This function sets the slope compensation based on the input parameters.  for example `shield.power.setSlopeCompensation(ALL, 1.4, 1.0)` generates a sawtooth signal ranging from 1.4V to 1.0V. You can create a sawtooth signal between 2.048V and 0V as well.
+The sawtooth signal `Slope compensation` is generated with the function [`shield.power.setSlopeCompensation`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-setslopecompensation). This function sets the slope compensation based on the input parameters.  for example `shield.power.setSlopeCompensation(ALL, 1.4, 1.0)` generates a sawtooth signal ranging from 1.4V to 1.0V. You can create a sawtooth signal between 2.048V and 0V as well.
 
 This sawtooth signal is then compared with the ADC's current value. When selecting the sawtooth parameters, it's essential to consider the conversion of current to voltage.
 
@@ -216,7 +216,7 @@ On the TWIST board, a voltage value of 1.024V on the ADC corresponds to a curren
 - [Sensors API](shield_sensors.md)
 
 ## Detailed documentation on hardware management class:
-- [NGND](powerAPI/classNgndHAL.md)
+- [NGND](https://owntech-foundation.github.io/Documentation/powerAPI/classNgndHAL)
 
 ## API Reference
 ::: doxy.powerAPI.class

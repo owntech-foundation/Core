@@ -5,13 +5,13 @@
 - [Data API](dataAPI.md)
 
 ## Detailed documentation on hardware management classes:
-- [Comparator](powerAPI/classCompHAL.md)
+- [Comparator](https://owntech-foundation.github.io/Documentation/powerAPI/classCompHAL)
 - [Digital Analog converter](dac.md)
 - [General-Purpose Input Output](gpio.md)
-- [LEDs](powerAPI/classLedHAL.md)
+- [LEDs](https://owntech-foundation.github.io/Documentation/powerAPI/classLedHAL)
 - [PWM](pwm.md)
-- [Timer](powerAPI/classTimerHAL.md)
-- [UART](powerAPI/classUartHAL.md)
+- [Timer](https://owntech-foundation.github.io/Documentation/powerAPI/classTimerHAL)
+- [UART](https://owntech-foundation.github.io/Documentation/powerAPI/classUartHAL)
 
 ## API Reference
 ::: doxy.powerAPI.class
