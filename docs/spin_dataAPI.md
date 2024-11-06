@@ -49,7 +49,7 @@ Note that providing the ADC number is not required. For pins connected to multip
 
 By default, the acquisitions are software-triggered, which means that when your program will want to acquire a measure, you'll have to trigger the acquisition. Other means of triggering the measure exists, notably periodic acquisitions, see [detailed information](adc.md#synchronous-with-pwms). If you need to change the trigger source, this must be done at this point.
 
-At the end of all the hardware configuration (including other modules), the Data API must be started using the `start()` function. Note that in case you use an [uninterruptible task](scheduling.md), you do not need to start the Data API manually, this will be done automatically when the uninterruptible task is started.
+At the end of all the hardware configuration (including other modules), the Data API must be started using the `start()` function. Note that in case you use an [uninterruptible task](task_introduction.md), you do not need to start the Data API manually, this will be done automatically when the uninterruptible task is started.
 
 ### Obtaining data
 
@@ -167,7 +167,7 @@ There is `hrtim_eevx` or `ADCTRIG_x`, let's see the role of each of them.
 
 In the PWM API, four signals can serve as ADC triggers, initiating ADC conversions: ADC_TRIG1, ADC_TRIG2, ADC_TRIG3, and ADC_TRIG4.
 
-The PWM is produced by a carrier (see [here](pwm.md)) by using a comparator to compare a specific constant value with the carrier, we can generate an event when enabling a trigger on the PWM. For instance :
+The PWM is produced by a carrier (see [here](spin_pwm.md)) by using a comparator to compare a specific constant value with the carrier, we can generate an event when enabling a trigger on the PWM. For instance :
 
 ```c++
 spin.pwm.setAdcTrigger(PWMA, ADCTRIG_1);
@@ -227,7 +227,7 @@ Data dispatching is an internal mechanism of Data API, that transfers Data from 
 
 The dispatch is done automatically and the in most cases, the user does not have to worry about it. However, in some cases, the user may want to know when this is done.
 
-If you use an [uninterruptible task](scheduling.md) to manage the converter on a fast loop, the dispatch is automatically done just before each call of the task.
+If you use an [uninterruptible task](task_introduction.md) to manage the converter on a fast loop, the dispatch is automatically done just before each call of the task.
 
 If you do not have an uninterruptible task however, then the dispatch will be done once all enabled acquisitions for an ADC have been done.
 This means that if you configure ADC 1 with one acquisition and ADC 3 with two acquisitions, the data for a pin controlled by the ADC 1 will be available at each acquisition, while the data for a pin controlled by the ADC 3 will only be available every time it has acquired two values.
@@ -235,7 +235,7 @@ This means that if you configure ADC 1 with one acquisition and ADC 3 with two a
 ### API start
 
 The Data API must be started after all configuration has been carried out. However, in most common cases, this will happen automatically.
-If you use an [uninterruptible task](scheduling.md) to manage the converter on a fast loop, the Data API is automatically started when the task is started.
+If you use an [uninterruptible task](task_introduction.md) to manage the converter on a fast loop, the Data API is automatically started when the task is started.
 
 The cases where you have to manually start the Data API are the following:
 * No uninterruptible task defined in the program,
@@ -251,7 +251,7 @@ If you want specific ADC behavior (trigger sources, discontinuous mode, etc.), y
 
 After channels have been enabled, the conversion parameters can be set so that raw values can be automatically converted to the relevant unit. This is done using the `spin.data.setParameters()` function.
 
-After channels have been enabled (and optionnally conversion parameters have been set), there are two ways of starting the API, depending on your use of other OwnTech APIs. If your code uses an [uninterruptible task](scheduling.md), nothing more is required, the Data API will be started automatically when task is started. However, if you do not have an uninterruptible task in your code, you need to manually start the API by calling `spin.data.start()`.
+After channels have been enabled (and optionnally conversion parameters have been set), there are two ways of starting the API, depending on your use of other OwnTech APIs. If your code uses an [uninterruptible task](task_introduction.md), nothing more is required, the Data API will be started automatically when task is started. However, if you do not have an uninterruptible task in your code, you need to manually start the API by calling `spin.data.start()`.
 
 !!! Note
 
@@ -263,7 +263,7 @@ After channels have been enabled (and optionnally conversion parameters have bee
         5. Retrieve values : [`spin.data.getLatestValue()`](#function-getlatestvalue) or [`spin.data.getRawValues()`](#function-getrawvalues)
 
     === "Hardware triggered"
-        1. [Make sure PWM engine is initialized](pwm.md)
+        1. [Make sure PWM engine is initialized](spin_pwm.md)
         2. Enable acquisition on the pins you want: [`spin.data.enableAcquisition()`](#function-enableacquisition)
         3. Define acquisition conversion parameters, e.g. using [`spin.data.setConversionParametersLinear()`](#function-setconversionparameterslinear)
         4. Start data dispatching [`spin.data.start()`](#function-start)
@@ -323,7 +323,7 @@ DataAPI contains commodity functions to convert the raw binary measurement value
 
 ## Get an array of values
 
-DataAPI contains commodity function to retrieve an array of raw values that can be fed to a [post processing filter](controlLibrary/controlLibrary/docs/use-filters).
+DataAPI contains commodity function to retrieve an array of raw values that can be fed to a [post processing filter](https://owntech-foundation.github.io/Documentation/controlLibrary/docs/use-filters).
 
 !!! example
     === "Retrieve 5 values"

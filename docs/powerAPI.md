@@ -32,7 +32,7 @@
 
     Generate accurate periodic actions and handle background tasks
 
-    [:octicons-arrow-right-24: API Reference](taskAPI.md)
+    [:octicons-arrow-right-24: API Reference](task_introduction.md)
 
 -   :fontawesome-solid-wave-square:{ .lg .middle } __High resolution PWMs__
 
@@ -40,7 +40,7 @@
 
     Unleash fully configurable and feature rich digital control signals
 
-    [:octicons-arrow-right-24: HAL Reference](pwm.md)
+    [:octicons-arrow-right-24: HAL Reference](spin_pwm.md)
 
 -   :fontawesome-solid-chart-line:{ .lg .middle } __Fast and precisely timed acquisitions__
 
@@ -48,7 +48,7 @@
 
     Measurements done right in time
 
-    [:octicons-arrow-right-24: API Reference](dataAPI.md)
+    [:octicons-arrow-right-24: API Reference](spin_dataAPI.md)
 
 -   :fontawesome-solid-microchip:{ .lg .middle } __Analog accelerated control loops__
 
