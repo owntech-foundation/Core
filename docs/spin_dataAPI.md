@@ -75,10 +75,15 @@ The above procedure is only for basic usage. Data API has other capabilities tha
 
 ### Controlling the conversion
 
-By default, the acquired values are converted using generic conversion parameters, except if the board was calibrated.
+By default, the raw acquired values are provided, except if the board was calibrated.
+
+!!! abstract "Raw ADC values"
+    -  ADC resolution is 12 bit: the value ranges from 0 to 4096
+    -  Sensing full scale: 0 V to 2.048 V
+    -  The returned value is then linear, from 0 for 0 V to 4096 for 2.048 V
+
 You can edit the conversion factors by calling one of the ``spin.data.setConversionParameters***()`` functions.
 E.g. ``setConversionParametersLinear(35, 2, -0.1);`` will set the conversion parameters for pin 35 to ``Linear``, with a gain of ``2`` and an offset of ``-0.1``.
-
 
 ### Obtaining all the acquired data
 

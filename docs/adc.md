@@ -1,40 +1,4 @@
-!!! note ""
-    An ADC, or Analog-to-Digital Converter, is a device that turns analog signals, like sound or temperature, into digital data that a computer or microcontroller can understand. It measures the analog voltage and converts it into a digital value that can be used by digital systems for processing, storage, or display.
 
-!!! warning
-    The ADC API is an advanced interface provided for users with technical background.
-    For most data acquisition tasks, use the [Data API](dataAPI.md) which provides a more user-friendly and higher-level entry point.
-
-## Pinout
-
-SPIN boards have 5 independant ADC units. Each unit can measure multiple analog signals, using a measurment sequence.
-
-!!! abstract "Capabilities"
-    Each ADC channel has :
-    -  12 bit resolution: 0b to 4096b
-    -  Sensing full scale: 0V to 2.048V
-    -  Sampling time down to 42ns
-
-=== "SPIN v1.1.0"
-    ![SPIN_1_1_0_ADC_pinout_main](images/SPIN_1.1.0_main_adc.png){ width=451 align=left }
-    ![SPIN_1_1_0_ADC_pinout_inner](images/SPIN_1.1.0_inner_adc.png){ width=243 }
-
-=== "SPIN v1.0.0"
-    ![SPIN_1_0_0_ADC_pinout_main](images/SPIN_1.0.0_main_adc.png){ width=451 align=left }
-    ![SPIN_1_0_0_ADC_pinout_inner](images/SPIN_1.0.0_inner_adc.png){ width=243 }
-
-
-!!! info
-    -  ADC12 means that the pin can be used either as ADC1 or ADC2
-    -  INx means that it is channel x.
-
-## Include
-
-!!! note
-    ```
-    #include <SpinAPI.h>
-    ```
-    Make sure that SPIN API is included to use AdcHAL
 
 ## Initialization sequence
 
