@@ -11,7 +11,7 @@
         4.  Retrieve value : [`data.getLatest(ADCx, pinx)`](https://owntech-foundation.github.io/Documentation/core/docs/dataAPI/#function-getlatest-22)
 
     === "Hardware triggered"
-        1\. [Make sure PWM engine is initialized](pwm/#initialization-sequence)
+        1\. [Make sure PWM engine is initialized](spin_pwm.md/#initialization-sequence)
         2. Link an adc trigger event to the ADC [`spin.adc.configureTriggerSource(ADCx, TRIG)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-configuretriggersource)
         3. Set continuous/discontinuous conversion mode. Optional : [`spin.adc.configureDiscontinuousMode(x, 0/1)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-configurediscontinuousmode)
         4.  Define acquisition sequence by enabling adc channel : [`spin.adc.enableChannel(ADCx, channelx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classAdcHAL/#function-enablechannel)
@@ -95,10 +95,6 @@ The section below explain how to synchronize measurements with control signals.
 ### Source ADC and PWM channel
 
 ADC1 and ADC2 can be associated with PWM channels at will.
-
-::: doxy.powerAPI.class.method
-name: AdcHAL
-method: void configureDiscontinuousMode (uint8_t adc_number, uint32_t dicontinuous_count)
 
 === "ADC1 and PWMA"
     ![left_aligned_ADC_50](images/left_aligned_ADC_50.svg){ width=800 }

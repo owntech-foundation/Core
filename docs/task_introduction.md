@@ -19,35 +19,35 @@ Having a periodical code execution is key to real time applications. It is easy 
 
  You can have different **source** calling the control task.
 
-The control task is synchronous, it means that it is called at fixed period. So we need some kind of timer calling the control, this timer is considered as the **source**. There are two sources :   
-- The PWM carrier  
-- An independant timer   
+The control task is synchronous, it means that it is called at fixed period. So we need some kind of timer calling the control, this timer is considered as the **source**. There are two sources :
+- The PWM carrier
+- An independant timer
 
 #### The PWM carrier
 
-The carrier has a period called the **switching period**, we can use it to call the control task after a fixed number of switching period. 
+The carrier has a period called the **switching period**, we can use it to call the control task after a fixed number of switching period.
 
 ![PWM control task](images/pwm_source_task.svg)
 
 On the figure above, the switching period is 5µs (200Khz) and we call the control every 10 switching cycle so 50µs (20Khz).
 
 !!! warning
-    There are limitations when using this method :   
-        - You need to start the a PWM to start the control task  
-        - You can only have control period which are multiple of the switching period  
-        - You can not have a control period inferior to the switching period  
+    There are limitations when using this method :
+        - You need to start the a PWM to start the control task
+        - You can only have control period which are multiple of the switching period
+        - You can not have a control period inferior to the switching period
 
 !!! tip
-    Synchronizing the control task period with PWM period can be usefull when you try to synchronize PWM between several SPIN or TWIST, in that case the control task is also synchronized between the board.  
+    Synchronizing the control task period with PWM period can be usefull when you try to synchronize PWM between several SPIN or TWIST, in that case the control task is also synchronized between the board.
 
 #### Independant timer
 
-A simple timer not related to the PWM can be used to compute the control task period. We choose one of the MCU timer (the `timer 6`), to which we give our control period and this timer will call the control task each period.  
+A simple timer not related to the PWM can be used to compute the control task period. We choose one of the MCU timer (the `timer 6`), to which we give our control period and this timer will call the control task each period.
 
 ![timer source](images/timer_source_task.svg)
 
 !!! tip
-    With an independant timer you can choose any value in µs as the control period, there is not the same limitation as the PWM source.  
+    With an independant timer you can choose any value in µs as the control period, there is not the same limitation as the PWM source.
 
 !!! warning
     The disavantage of such method is that since it is independant from the PWM you can't have synchronization between several control task modules.
@@ -56,17 +56,17 @@ A simple timer not related to the PWM can be used to compute the control task pe
 
 !!! note
     === "Periodic task based on PWM source"
-        1\. Create the critical task and link it to the function to be called and choose hrtim as the source source. [`task.createCritical(critical_function, control_period, source_hrtim);`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-createcritical)  
-        2\. Start the critical function.  [`task.startCritical()`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-startcritical)  
+        1\. Create the critical task and link it to the function to be called and choose hrtim as the source source. [`task.createCritical(critical_function, control_period, source_hrtim);`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-createcritical)
+        2\. Start the critical function.  [`task.startCritical()`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-startcritical)
 
     === "Periodic task based on Timer6"
-        1\. Create the critical task and link it to the function to be called and choose tim6 as the source.  [`task.createCritical(critical_function, control_period, source_tim6);`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-createcritical)  
-        2\. Start the critical function.  [`task.startCritical()`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-startcritical)  
+        1\. Create the critical task and link it to the function to be called and choose tim6 as the source.  [`task.createCritical(critical_function, control_period, source_tim6);`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-createcritical)
+        2\. Start the critical function.  [`task.startCritical()`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-startcritical)
 
 !!! example
     === "20kHz Periodic task based on PWM"
         ```
-            task.createCritical(my_critical_function, 50, source_hrtim); 
+            task.createCritical(my_critical_function, 50, source_hrtim);
             task.startCritical();
         ```
     === "10kHz Periodic task based on Timer6"
@@ -76,7 +76,7 @@ A simple timer not related to the PWM can be used to compute the control task pe
         ```
 
 !!! tip
-    Having a control Task is required for [synchronous measurements](adc/#synchronous-with-pwms) to work correctly.
+    Having a control Task is required for [synchronous measurements](spin_dataAPI.md/#synchronous-with-pwms) to work correctly.
 
 ## Non time critical tasks
 
@@ -98,8 +98,8 @@ Non-critical tasks aren't synchronous, meaning they're not recurring at regular 
 ### Initialization sequence
 
 !!! note
-    1\. Create the background task and link it to the function to be called. [`task.createBackground(function)`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-createbackground)   
-    2\. Start the background function. [`task.startCritical()`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-startbackground)  
+    1\. Create the background task and link it to the function to be called. [`task.createBackground(function)`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-createbackground)
+    2\. Start the background function. [`task.startCritical()`](https://owntech-foundation.github.io/Documentation/core/docs/scheduling/#function-startbackground)
 
 !!! example
     === "Spawning a background task"

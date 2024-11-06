@@ -58,7 +58,7 @@
         1.  Set the rising/falling dead time. Can be changed before/after init : [`spin.pwm.setDeadTime(PWMx, rise, fall)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setdeadtime)
         2. Set an initial value for the  duty cycle [`spin.pwm.setDutyCycle(0.5)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setdutycycle)
         3. Start the PWM, either start both outout or just one [`spin.pwm.startDualOutput(PWMx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-startdualoutput) / [`spin.pwm.startSingleOutput(PWMx, PWMx1/PWMx2)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-startsingleoutput)
-        4. if ADC hardware triggered : [follow ADC init sequence](adc/#initialization-sequence)
+        4. if ADC hardware triggered : [follow ADC init sequence](spin_dataAPI.md/#initialization-sequence)
 
     === "Hardware triggered"
         1.  Set the rising/falling dead time. Can be changed before/after init : [`spin.pwm.setDeadTime(PWMx, rise, fall)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setdeadtime)
@@ -66,7 +66,7 @@
         3.  Enable the adc trigger [`spin.pwm.enableAdcTrigger`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-enableadctrigger)
         4. Set an initial value for the  duty cycle [`spin.pwm.setDutyCycle(0.5)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-setdutycycle)
         5. Start the PWM, either start both outout or just one [`spin.pwm.startDualOutput(PWMx)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-startdualoutput) / [`spin.pwm.startSingleOutput(PWMx, PWMx1/PWMx2)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPwmHAL/#function-startsingleoutput)
-        6. if ADC hardware triggered : [follow ADC init sequence](adc/#initialization-sequence)
+        6. if ADC hardware triggered : [follow ADC init sequence](spin_dataAPI.md/#initialization-sequence)
 
 !!! example
 
