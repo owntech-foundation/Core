@@ -1,6 +1,8 @@
 # Copyright (c) 2022-2023 OwnTech
 # SPDX-License-Identifier: LGPL-2.1
 
+# This file is used by the test runner.
+
 identifier: spin
 name: OwnTech Spin
 type: mcu
@@ -21,3 +23,4 @@ supported:
   - dac
   - dma
   - can
+vendor: owntech
