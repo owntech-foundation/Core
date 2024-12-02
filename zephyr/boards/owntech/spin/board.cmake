@@ -1,5 +1,5 @@
 # Copied from original file: Zephyr's G474RE board.cmake
-# zephyr/boards/arm/nucleo_g474re/board.cmake
+# zephyr/boards/st/nucleo_g474re/board.cmake
 # Copyright (c) Zephyr's contributors
 
 # SPDX-License-Identifier: Apache-2.0
