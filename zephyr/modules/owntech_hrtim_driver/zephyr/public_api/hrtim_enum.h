@@ -41,7 +41,7 @@ extern "C"
 
     static const uint8_t HRTIM_CHANNELS = 6;
 
-    static const uint32_t HRTIM_PRESCALER_RESOLUTION_PS[8] = {184, 
+    static const uint32_t HRTIM_PRESCALER_RESOLUTION_PS[8] = {184,
                                                               368,
                                                               735,
                                                               1470,
@@ -301,6 +301,19 @@ extern "C"
 
     } hrtim_cnt_t;
 
+    /**
+     * @brief  HRTIM burst mode clock setting
+     */
+    typedef enum
+    {
+        BURST_TIMA = LL_HRTIM_BM_CLKSRC_TIMER_A,
+        BURST_TIMB = LL_HRTIM_BM_CLKSRC_TIMER_B,
+        BURST_TIMC = LL_HRTIM_BM_CLKSRC_TIMER_C,
+        BURST_TIMD = LL_HRTIM_BM_CLKSRC_TIMER_D,
+        BURST_TIME = LL_HRTIM_BM_CLKSRC_TIMER_E,
+        BURST_TIMF = LL_HRTIM_BM_CLKSRC_TIMER_F
+    } hrtim_burst_clk_t;
+
     /////////////////////////////
     ////// STRUCT
 
@@ -325,6 +338,7 @@ extern "C"
         uint32_t resolution;                       /* Holds the resolution of the timing unit  */
         hrtim_pwm_mode_t pwm_mode;                 /* pwm mode for voltage mode or current mode */
         hrtim_external_trigger_t external_trigger; /* external trigger event for current mode */
+        hrtim_burst_clk_t burst_clk;               /* clock source for burst mode generator*/
     } pwm_conf_t;
 
     /**

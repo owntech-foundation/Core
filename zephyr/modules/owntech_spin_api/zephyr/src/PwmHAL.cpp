@@ -380,3 +380,29 @@ uint32_t PwmHAL::getResolutionPs(hrtim_tu_number_t pwmX)
 {
 	return hrtim_get_resolution_ps(pwmX);
 }
+
+
+void PwmHAL::initBurstMode()
+{
+	hrtim_burst_mode_init();
+}
+
+void PwmHAL::setBurstMode(int bm_cmp, int bm_per)
+{
+	hrtim_burst_set(bm_cmp, bm_per);
+}
+
+void PwmHAL::startBurstMode()
+{
+	hrtim_burst_start();
+}
+
+void PwmHAL::stopBurstMode()
+{
+	hrtim_burst_stop();
+}
+
+void PwmHAL::deInitBurstMode()
+{
+	hrtim_burst_dis();
+}
