@@ -306,12 +306,12 @@ extern "C"
      */
     typedef enum
     {
-        TIMA = LL_HRTIM_BM_CLKSRC_TIMER_A,
-        TIMB = LL_HRTIM_BM_CLKSRC_TIMER_B,
-        TIMC = LL_HRTIM_BM_CLKSRC_TIMER_C,
-        TIMD = LL_HRTIM_BM_CLKSRC_TIMER_D,
-        TIME = LL_HRTIM_BM_CLKSRC_TIMER_E,
-        TIMF = LL_HRTIM_BM_CLKSRC_TIMER_F
+        BURST_TIMA = LL_HRTIM_BM_CLKSRC_TIMER_A,
+        BURST_TIMB = LL_HRTIM_BM_CLKSRC_TIMER_B,
+        BURST_TIMC = LL_HRTIM_BM_CLKSRC_TIMER_C,
+        BURST_TIMD = LL_HRTIM_BM_CLKSRC_TIMER_D,
+        BURST_TIME = LL_HRTIM_BM_CLKSRC_TIMER_E,
+        BURST_TIMF = LL_HRTIM_BM_CLKSRC_TIMER_F
     } hrtim_burst_clk_t;
 
     /////////////////////////////
