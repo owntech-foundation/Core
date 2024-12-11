@@ -338,6 +338,7 @@ extern "C"
         uint32_t resolution;                       /* Holds the resolution of the timing unit  */
         hrtim_pwm_mode_t pwm_mode;                 /* pwm mode for voltage mode or current mode */
         hrtim_external_trigger_t external_trigger; /* external trigger event for current mode */
+        hrtim_burst_clk_t burst_clk;               /* clock source for burst mode generator*/
     } pwm_conf_t;
 
     /**
