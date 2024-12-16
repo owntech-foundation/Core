@@ -32,6 +32,7 @@
 #include <zephyr/kernel.h>
 
 // OwnTech API
+#include "adc.h"
 #include "SpinAPI.h"
 
 // Current module header

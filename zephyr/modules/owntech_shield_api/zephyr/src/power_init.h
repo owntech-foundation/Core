@@ -22,6 +22,7 @@
  *
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  * @author Jean Alinei <jean.alinei@owntech.org>
+ * @author Clément Foucher <clement.foucher@laas.fr>
  *
  * @brief This file save all the parameters set in the device tree
 */
@@ -31,6 +32,7 @@
 
 #include <zephyr/kernel.h>
 #include "hrtim.h"
+#include "SpinAPI.h"
 
 /** Define a macro LEG_PWM_PIN that retrieves the PWM gpio pin
  * property from the Device Tree node with the given 'node_id'.
@@ -53,10 +55,10 @@
  */
 #define LEG_CURRENT_PIN(node_id)	DT_PROP_OR(node_id, current_pin_num, 0),
 
-/** Define a macro LEG_ADC that retrieves the 'adc_trigger'
+/** Define a macro LEG_ADC that retrieves the 'adc'
  * property from the Device Tree node with the given 'node_id'.
  */
-#define LEG_ADC(node_id)	DT_STRING_TOKEN(node_id, default_adc_trigger),
+#define LEG_ADC(node_id)	DT_STRING_TOKEN(node_id, default_adc),
 
 /** Define a macro LEG_ROLLOVER that retrieves the roll_over
  * (ie. when the adc is triggered) property from the Device Tree node with
@@ -164,11 +166,11 @@ extern uint16_t dt_pwm_pin[];
  */
 extern uint16_t dt_pwm_x1_high[];
 
-/** Define an array 'dt_adc' of type 'hrtim_adc_trigger_t' and initialize it
- * with an array of 'adc_trigger' property from the children of the Device Tree
+/** Define an array 'dt_adc' of type 'adc_t' and initialize it
+ * with an array of 'adc' property from the children of the Device Tree
  * node with the ID 'POWER_SHIELD_ID'.
  */
-extern hrtim_adc_trigger_t dt_adc[];
+extern adc_t dt_adc[];
 
 /** Define an array 'dt_adc_decim' of type 'uint32_t' and initialize it with
  * an array of 'adc_decim' property from the children of the Device Tree node

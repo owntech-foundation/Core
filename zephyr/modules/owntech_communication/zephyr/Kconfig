@@ -20,7 +20,6 @@ if OWNTECH_COMMUNICATION
 		depends on CAN
 		depends on ISOTP
 		depends on THINGSET
-		depends on OWNTECH_DATA_API
 
 	config OWNTECH_COMMUNICATION_ENABLE_RS485
 		bool "Enable RS485 bus communication API"

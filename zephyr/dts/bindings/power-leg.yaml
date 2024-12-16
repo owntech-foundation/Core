@@ -89,17 +89,18 @@ child-binding:
       description : It is the pin driving the optocoupler for the mosfet driver since twist V1.3.0
                     Set to 0 (no pin) if no property defined.
 
-    default-adc-trigger :
+    default-adc :
       type : string
       required : true
       description : Which adc trigger is used for data acquisition (only two leg can support it),
                     if this leg isn't suposed to trigger the adc choose ADCTRIG_NONE.
       enum :
-      - "ADCTRIG_NONE"
-      - "ADCTRIG_1"
-      - "ADCTRIG_2"
-      - "ADCTRIG_3"
-      - "ADCTRIG_4"
+      - "UNKNOWN_ADC"
+      - "ADC_1"
+      - "ADC_2"
+      - "ADC_3"
+      - "ADC_4"
+      - "ADC_5"
 
     default-edge-trigger :
       type : string

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 LAAS-CNRS
+ * Copyright (c) 2021-2024 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2023
+ * @date   2024
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  *
@@ -58,6 +58,11 @@ typedef enum
 	hrtim_ev2 = 2,
 	hrtim_ev3 = 3,
 	hrtim_ev4 = 4,
+	hrtim_ev5 = 5,
+	hrtim_ev6 = 6,
+	hrtim_ev7 = 7,
+	hrtim_ev8 = 8,
+	hrtim_ev9 = 9
 } adc_ev_src_t;
 
 

@@ -38,6 +38,8 @@ LedHAL SpinAPI::led;
 
 DacHAL SpinAPI::dac;
 
+DataAPI SpinAPI::data;
+
 CompHAL SpinAPI::comp;
 
 PwmHAL SpinAPI::pwm;
@@ -47,7 +49,3 @@ UartHAL SpinAPI::uart;
 #endif
 
 TimerHAL SpinAPI::timer;
-
-#ifdef CONFIG_OWNTECH_DATA_API
-DataAPI SpinAPI::data;
-#endif

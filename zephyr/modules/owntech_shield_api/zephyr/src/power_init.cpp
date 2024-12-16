@@ -22,6 +22,7 @@
  *
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  * @author Jean Alinei <jean.alinei@owntech.org>
+ * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
 #include "power_init.h"
@@ -34,7 +35,7 @@ uint16_t dt_pwm_pin[] =
 uint16_t dt_pwm_x1_high[] =
     {DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_PWM_X1_HIGH)};
 
-hrtim_adc_trigger_t dt_adc[] =
+adc_t dt_adc[] =
     {DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_ADC)};
 
 uint32_t dt_adc_decim[] =
