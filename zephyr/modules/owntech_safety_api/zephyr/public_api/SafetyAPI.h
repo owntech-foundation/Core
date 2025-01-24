@@ -45,7 +45,7 @@ class SafetyAPI{
      *
      * @return none
     */
-    void init_shield();
+    void initShield();
 
     /**
      * @brief Initializes thresholds min/max with the default value from the device tree,
@@ -58,7 +58,7 @@ class SafetyAPI{
      *
      * @return none
     */
-    void init_shield(sensor_t* sensors_watch, uint8_t sensors_watch_number);
+    void initShield(sensor_t* sensors_watch, uint8_t sensors_watch_number);
 
     /**
      * @brief Enables the monitoring of the selected sensors for safety.

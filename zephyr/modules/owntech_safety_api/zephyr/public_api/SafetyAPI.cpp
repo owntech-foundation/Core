@@ -30,12 +30,12 @@
 
 SafetyAPI safety;
 
-void SafetyAPI::init_shield()
+void SafetyAPI::initShield()
 {
     safety_init_shield(true);
 }
 
-void SafetyAPI::init_shield(sensor_t* sensors_watch, uint8_t sensors_watch_number)
+void SafetyAPI::initShield(sensor_t* sensors_watch, uint8_t sensors_watch_number)
 {
     safety_init_shield(false);
     safety_set_sensor_watch(sensors_watch, sensors_watch_number);
