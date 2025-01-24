@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 LAAS-CNRS
+ * Copyright (c) 2021-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -38,7 +38,7 @@
 #define ADC_H_
 
 
-// Stdlib
+/* Stdlib */
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -48,8 +48,7 @@ extern "C" {
 #endif
 
 
-/////
-// Public enums
+/* Public enums */
 
 typedef enum
 {
@@ -61,18 +60,17 @@ typedef enum
 } adc_ev_src_t;
 
 
-/////
-// Public API
+/* Public API */
 
 /**
- * @brief Registers the triger source for an ADC.
+ * @brief Registers the trigger source for an ADC.
  *
  *        This will only be applied when ADC is started.
  *        If ADC is already started, it must be stopped
  *        then started again.
  *
  * @param adc_number Number of the ADC to configure.
- * @param triggger_source Source of the trigger.
+ * @param trigger_source Source of the trigger.
  */
 void adc_configure_trigger_source(uint8_t adc_number, adc_ev_src_t trigger_source);
 
@@ -108,7 +106,7 @@ void adc_add_channel(uint8_t adc_number, uint8_t channel);
  * @brief Removes a channel from the list of channels
  *        that are acquired by an ADC.
  *        If a channel has been added multiple times,
- *        then only the first occurence in the list
+ *        then only the first occurrence in the list
  *        will be removed.
  *
  *        This will only be applied when ADC is started.
@@ -168,4 +166,4 @@ void adc_trigger_software_conversion(uint8_t adc_number, uint8_t number_of_acqui
 }
 #endif
 
-#endif // ADC_H_
+#endif /* ADC_H_ */
