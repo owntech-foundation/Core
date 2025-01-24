@@ -135,7 +135,7 @@ void adc_start()
 	 * Nothing here for now.
 	 * If some channels have to be set as differential,
 	 * or ADCs have to be set as dual mode,
-	 * this shoud be done here.
+	 * this should be done here.
 	 */
 
 	/* Enable ADCs */
