@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 LAAS-CNRS
+ * Copyright (c) 2021-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -24,25 +24,23 @@
  */
 
 
-// STM32 LL
+/* STM32 LL */
 #include <stm32_ll_adc.h>
 
-// Current module private functions
+/* Current module private functions */
 #include "../src/adc_core.h"
 
-// Current file header
+/* Current file header */
 #include "adc.h"
 
 
-/////
-// Constants
+/* Constants */
 
 #define NUMBER_OF_ADCS 5
 #define NUMBER_OF_CHANNELS_PER_ADC 16
 
 
-/////
-// Local variables
+/* Local variables */
 
 static adc_ev_src_t adc_trigger_sources[NUMBER_OF_ADCS]    = {0};
 static uint32_t     adc_discontinuous_mode[NUMBER_OF_ADCS] = {0};
@@ -52,8 +50,7 @@ static bool         enable_dma[NUMBER_OF_ADCS]             = {0};
 static uint32_t     enabled_channels[NUMBER_OF_ADCS][NUMBER_OF_CHANNELS_PER_ADC] = {0};
 
 
-/////
-// Public API
+/* Public API */
 
 void adc_configure_trigger_source(uint8_t adc_number, adc_ev_src_t trigger_source)
 {
@@ -130,30 +127,25 @@ void adc_configure_use_dma(uint8_t adc_number, bool use_dma)
 
 void adc_start()
 {
-	/////
-	// Initialize ADCs
+	/* Initialize ADCs */
 
 	adc_core_init();
 
-	/////
-	// Pre-enable configuration
+	/** Pre-enable configuration
+	 * Nothing here for now.
+	 * If some channels have to be set as differential,
+	 * or ADCs have to be set as dual mode,
+	 * this shoud be done here.
+	 */
 
-	// Nothing here for now.
-
-	// If some channels have to be set as differential,
-	// or ADCs have to be set as dual mode,
-	// this shoud be done here.
-
-	/////
-	// Enable ADCs
+	/* Enable ADCs */
 
 	for (int adc_num = 1 ; adc_num <= NUMBER_OF_ADCS ; adc_num++)
 	{
 		adc_core_enable(adc_num);
 	}
 
-	/////
-	// Post-enable configuration
+	/* Post-enable configuration */
 
 	for (uint8_t adc_num = 1 ; adc_num <= NUMBER_OF_ADCS ; adc_num++)
 	{
@@ -193,7 +185,7 @@ void adc_start()
 		uint8_t adc_index = adc_num-1;
 		if (enabled_channels_count[adc_index] > 0)
 		{
-			// Convert to LL constants
+			/* Convert to LL constants */
 			uint32_t trig;
 			switch (adc_trigger_sources[adc_index])
 			{
@@ -234,8 +226,7 @@ void adc_start()
 		}
 	}
 
-	/////
-	// Start ADCs
+	/* Start ADCs */
 
 	for (uint8_t adc_num = 1 ; adc_num <= NUMBER_OF_ADCS ; adc_num++)
 	{
