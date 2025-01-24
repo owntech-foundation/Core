@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 LAAS-CNRS
+ * Copyright (c) 2021-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -37,8 +37,7 @@
 extern "C" {
 #endif
 
-/////
-// Init, enable, start, stop
+/* Init, enable, start, stop */
 
 /**
  * @brief ADC initialization procedure for
@@ -72,8 +71,7 @@ void adc_core_start(uint8_t adc_num, uint8_t sequence_length);
 void adc_core_stop(uint8_t adc_num);
 
 
-/////
-// Configuration functions
+/* Configuration functions */
 
 /**
  * @brief ADC DMA mode configuration.
@@ -135,4 +133,4 @@ void adc_core_configure_channel(uint8_t adc_num, uint8_t channel, uint8_t rank);
 }
 #endif
 
-#endif // ADC_CORE_H_
+#endif /* ADC_CORE_H_ */
