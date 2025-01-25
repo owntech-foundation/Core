@@ -48,7 +48,9 @@ extern "C" {
 #endif
 
 
-/* Public enums */
+/**
+ *  Public enums
+ */
 
 typedef enum
 {
@@ -65,7 +67,9 @@ typedef enum
 } adc_ev_src_t;
 
 
-/* Public API */
+/**
+ *  Public API
+ */
 
 /**
  * @brief Registers the trigger source for an ADC.

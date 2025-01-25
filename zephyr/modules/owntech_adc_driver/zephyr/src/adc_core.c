@@ -34,12 +34,16 @@
 #include <stm32_ll_bus.h>
 
 
-/* Constants */
+/**
+ *  Constants
+ */
 
 #define NUMBER_OF_ADCS 5
 
 
-/* Helper functions */
+/**
+ *  Helper functions
+ */
 
 ADC_TypeDef* _get_adc_by_number(uint8_t adc_number)
 {
@@ -124,7 +128,9 @@ uint32_t _adc_decimal_nb_to_rank(uint8_t decimal_rank)
 }
 
 
-/* Private functions */
+/**
+ *  Private functions
+ */
 
 /**
  * ADC wake-up.
@@ -166,7 +172,9 @@ static void _adc_core_calibrate(uint8_t adc_num)
 }
 
 
-/* Public API */
+/**
+ *  Public API
+ */
 
 void adc_core_enable(uint8_t adc_num)
 {
