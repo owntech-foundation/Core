@@ -33,14 +33,17 @@
 /* Current file header */
 #include "adc.h"
 
-
-/* Constants */
+/**
+ * Constants
+ */
 
 #define NUMBER_OF_ADCS 5
 #define NUMBER_OF_CHANNELS_PER_ADC 16
 
 
-/* Local variables */
+/**
+ *  Local variables
+ */
 
 static adc_ev_src_t adc_trigger_sources[NUMBER_OF_ADCS]    = {0};
 static uint32_t     adc_discontinuous_mode[NUMBER_OF_ADCS] = {0};
@@ -50,7 +53,9 @@ static bool         enable_dma[NUMBER_OF_ADCS]             = {0};
 static uint32_t     enabled_channels[NUMBER_OF_ADCS][NUMBER_OF_CHANNELS_PER_ADC] = {0};
 
 
-/* Public API */
+/**
+ *  Public API
+ */
 
 void adc_configure_trigger_source(uint8_t adc_number, adc_ev_src_t trigger_source)
 {

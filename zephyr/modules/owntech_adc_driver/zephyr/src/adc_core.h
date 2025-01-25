@@ -37,7 +37,9 @@
 extern "C" {
 #endif
 
-/* Init, enable, start, stop */
+/**
+ *  Init, enable, start, stop
+ */
 
 /**
  * @brief ADC initialization procedure for
@@ -71,7 +73,9 @@ void adc_core_start(uint8_t adc_num, uint8_t sequence_length);
 void adc_core_stop(uint8_t adc_num);
 
 
-/* Configuration functions */
+/**
+ * Configuration functions
+ */
 
 /**
  * @brief ADC DMA mode configuration.
