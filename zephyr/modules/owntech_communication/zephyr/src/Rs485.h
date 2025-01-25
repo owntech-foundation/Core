@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 LAAS-CNRS
+ * Copyright (c) 2023-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -37,80 +37,80 @@ typedef enum{
 }usart_oversampling_t;
 
 /**
- * @brief initialize user transmission and reception buffer
+ * @brief Initialize user transmission and reception buffer
  *
- * @param[in] tx_buffer transmission buffer
- * @param[in] rx_buffer reception buffer
-*/
+ * @param[in] tx_buffer Transmission buffer
+ * @param[in] rx_buffer Reception buffer
+ */
 void init_usrBuffer(uint8_t* tx_buffer, uint8_t* rx_buffer);
 
 /**
- * @brief initialize user function called every RX callback
+ * @brief Initialize user function called every RX callback
  *
- * @param[in] fnc_callback void function with no parameters, use NULL if there is no function to call
-*/
+ * @param[in] fnc_callback Void function with no parameters, use NULL if there is no function to call
+ */
 void init_usrFunc(dma_callbackRXfunc_t fnc_callback);
 
 /**
- * @brief initialize baudrate with user choice.
+ * @brief Initialize baudrate with user choice.
  *
- * @param[in] usr_baud baud in bits per second
- * @note baudrate is initialized by default to 10Mbps if this function is not used
-*/
+ * @param[in] usr_baud Baud in bits per second
+ * @note Baudrate is initialized by default to 10Mbps if this function is not used
+ */
 void init_usrBaudrate(uint32_t usr_baud);
 
 /**
- * @brief initialize DMA data size to send and receive
+ * @brief Initialize DMA data size to send and receive
  *
- * @param[in] size size of the data in byte (max 65535)
-*/
+ * @param[in] size Size of the data in byte (max 65535)
+ */
 void init_usrDataSize(uint16_t size);
 
 /**
- * @brief initialize USART3
-*/
+ * @brief Initialize USART3
+ */
 void serial_init(void);
 
 /**
- * @brief initialize Driver Enable mode for RS485 hardware flowcontrol.
+ * @brief Initialize Driver Enable mode for RS485 hardware flowcontrol.
  *        pin B14 is set to level high when data is transmitted.
-*/
+ */
 void init_DEmode(void);
 
 /**
- * @brief set oversampling which is by default oversampling_16. With oversampling_8 we increase speed
+ * @brief Set oversampling which is by default oversampling_16. With oversampling_8 we increase speed
  *        by 2 but decrease USART sampling by half making it more sensitive to noise.
  *
  * @param[in] oversampling choice of oversampling
  *            @arg @ref OVER8 oversampling_8
  *            @arg @ref OVER16 oversampling_16
-*/
+ */
 void oversamp_set(usart_oversampling_t oversampling);
 
 /**
- * @brief initialize dma 1 channel 6 for sending data via USART3.
-*/
+ * @brief Initialize dma 1 channel 6 for sending data via USART3.
+ */
 void dma_channel_init_tx();
 
 /**
- * @brief initialize dma 1 channel 7 for receiving data in circular mode
-*/
+ * @brief Initialize dma 1 channel 7 for receiving data in circular mode
+ */
 void dma_channel_init_rx();
 
 /**
- * @brief reload dma buffer TX
- * @note after reloading the buffer, usart will start sending datas
-*/
+ * @brief Reload dma buffer TX
+ * @note After reloading the buffer, USART will start sending datas
+ */
 void serial_tx_on();
 
 /**
- * @brief disable usart
-*/
+ * @brief Disable USART
+ */
 void serial_stop();
 
 /**
- * @brief enable usart
-*/
+ * @brief Enable USART
+ */
 void serial_start();
 
-#endif // RS485_H_
+#endif /* RS485_H_ */

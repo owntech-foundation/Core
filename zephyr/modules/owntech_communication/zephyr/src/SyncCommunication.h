@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 LAAS-CNRS
+ * Copyright (c) 2024-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -31,12 +31,13 @@
 
 #include <stdint.h>
 
-// OWNTECH API
+/* OWNTECH API */
 #include "SpinAPI.h"
 
 
-/////
-// Static class definition
+/**
+ *  Static class definition
+ */
 
 class SyncCommunication
 {
@@ -44,16 +45,16 @@ class SyncCommunication
 public:
 
 	/**
-	 * @brief initialization synchronization as MASTER, the master send the synchronization pulsle.
-	*/
+	 * @brief initialization synchronization as MASTER, the master send the synchronization pulse.
+	 */
 	static void initMaster();
 
 	/**
-	 * @brief initialization synchronization as SLAVE, the slave receive the synchronization pulsle.
-	*/
+	 * @brief initialization synchronization as SLAVE, the slave receive the synchronization pulse.
+	 */
 	static void initSlave();
 };
 
-#endif // CONFIG_OWNTECH_COMMUNICATION_ENABLE_SYNC
+#endif /* CONFIG_OWNTECH_COMMUNICATION_ENABLE_SYNC */
 
-#endif // SYNCCOMMUNICATION_H_
+#endif /* SYNCCOMMUNICATION_H_ */
