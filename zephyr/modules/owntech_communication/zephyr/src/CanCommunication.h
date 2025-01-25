@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 LAAS-CNRS
+ * Copyright (c) 2024-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -33,8 +33,9 @@
 
 #define CAN_STANDBY_DEVICE DT_CHILD(DT_PATH(can_standby_switch), can_standby_gpio_pin)
 
-/////
-// Static class definition
+/**
+ * Static class definition
+ */
 
 class CanCommunication
 {
@@ -112,8 +113,8 @@ public:
 
 	/**
 	 * @brief Enable can
-	*/
+	 */
 	void enableCan();
 };
 
-#endif // CANCOMMUNICATION_H_
+#endif /* CANCOMMUNICATION_H_ */

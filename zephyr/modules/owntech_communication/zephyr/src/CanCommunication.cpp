@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 LAAS-CNRS
+ * Copyright (c) 2024-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -29,11 +29,12 @@
 #include "CanCommunication.h"
 #include "data_objects.h"
 
-/* Zephyr driver*/
+/* Zephyr driver */
 #include <zephyr/drivers/gpio.h>
 
-/////
-// Extern variable defined in this module
+/**
+ * Extern variable defined in this module
+ */
 
 extern uint16_t broadcast_time;
 extern uint16_t control_time;

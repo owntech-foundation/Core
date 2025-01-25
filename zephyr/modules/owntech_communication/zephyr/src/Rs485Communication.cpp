@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 LAAS-CNRS
+ * Copyright (c) 2024-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -48,7 +48,7 @@ void Rs485Communication::configure(uint8_t *transmission_bufer, uint8_t *recepti
             break;
     }
     init_usrBaudrate(10625000);
-    
+
     dma_channel_init_tx();
     dma_channel_init_rx();
     serial_init();
