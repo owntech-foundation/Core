@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 LAAS-CNRS
+ * Copyright (c) 2023-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -25,53 +25,54 @@
  */
 
 
-/////
-// Include
+/**
+ *  Includes
+ */
 
-// Zephyr
+/* Zephyr */
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
 #include <zephyr/fs/nvs.h>
 #include <zephyr/drivers/flash.h>
 #include <zephyr/storage/flash_map.h>
 
-// CMSIS
+/* CMSIS */
 #include <arm_math.h>
 
-// Current file header
+/* Current file header */
 #include "nvs_storage.h"
 
 
-// Constants and variables
+/* Constants and variables */
 static const uint16_t current_storage_version = 0x0001;
 static uint16_t storage_version_in_nvs = 0;
 static bool initialized = false;
 
-// Device-tree related macros
+/* Device-tree related macros */
 #define NVS_PARTITION storage_partition
 #define STORAGE_NODE  DT_NODE_BY_FIXED_PARTITION_LABEL(NVS_PARTITION)
 
-// Flash memory file system
+/* Flash memory file system */
 static struct nvs_fs fs =
 {
 	.offset       = FIXED_PARTITION_OFFSET(NVS_PARTITION),
 	.flash_device = FIXED_PARTITION_DEVICE(NVS_PARTITION)
 };
 
-
-/////
-// Private functions
+/**
+ *  Private Functions
+ */
 
 static int8_t _nvs_storage_store_version()
 {
 	if (storage_version_in_nvs == current_storage_version)
 	{
-		// Ok, nothing to do
+		/* Ok, nothing to do */
 		return 0;
 	}
 	else if (storage_version_in_nvs == 0)
 	{
-		// No version in NVS: this is the first use of NVS, store current version number.
+		/* No version in NVS: this is the first use of NVS, store current version number. */
 		int rc = nvs_write(&fs, VERSION, &current_storage_version, 2);
 
 		if (rc == 2)
@@ -84,8 +85,8 @@ static int8_t _nvs_storage_store_version()
 	}
 	else
 	{
-		// There is already a version number in NVS, but it differs from current API version.
-		// This is currently treated as an error and requires to explicitely clear NVS.
+		/* There is already a version number in NVS, but it differs from current API version. */
+		/* This is currently treated as an error and requires to explicitly clear NVS. */
 		return -1;
 	}
 }
@@ -101,11 +102,12 @@ static int8_t _nvs_storage_init()
 		return -1;
 	}
 
-	/* Handle non volatile memory used to store ADC parameters
-	 * Flash partition reserved to user data storage is 4kB long
-	 * We have to mount the file system then we extract one
-	 * memory page that is 2kB long that contains the data
-	 * and read the relevant addresses to init ADC parameters.
+	/**
+	 *  Handle non volatile memory used to store ADC parameters
+	 *  Flash partition reserved to user data storage is 4kB long
+	 *  We have to mount the file system then we extract one
+	 *  memory page that is 2kB long that contains the data
+	 *  and read the relevant addresses to init ADC parameters.
 	 */
 
 	struct flash_pages_info info;
@@ -125,30 +127,30 @@ static int8_t _nvs_storage_init()
 		return -1;
 	}
 
-	// Init OK
+	/* Init OK */
 	initialized = true;
 
-	// Check version in storage
+	/* Check version in storage */
 	rc = nvs_storage_retrieve_data(VERSION, &storage_version_in_nvs, 2);
 
 	if (rc < 0)
 	{
-		// No version in NVS: this is the first use of NVS.
+		/* No version in NVS: this is the first use of NVS. */
 		storage_version_in_nvs = 0;
 	}
 	else if (storage_version_in_nvs != current_storage_version)
 	{
 		printk("WARNING: stored version in NVS is different from current module version! Stored data may not have the expected format.\n");
-		// -2 indicates that the current version stored in NVS is different from current code version.
+		/* -2 indicates that the current version stored in NVS is different from current code version. */
 		return -2;
 	}
 
 	return 0;
 }
 
-
-/////
-// Public Functions
+/**
+ *  Public Functions
+ */
 
 int8_t nvs_storage_store_data(uint16_t data_id, const void* data, uint8_t data_size)
 {
@@ -179,11 +181,11 @@ int8_t nvs_storage_retrieve_data(uint16_t data_id, void* data_buffer, uint8_t da
 
 	int rc = nvs_read(&fs, data_id, data_buffer, 1);
 
-	if (rc > 1) // There is more than 1 byte of data
+	if (rc > 1) /* There is more than 1 byte of data */
 	{
 		if (rc > data_buffer_size)
 		{
-			// Indicate that provided buffer is too small to retreive data
+			/* Indicate that provided buffer is too small to retrieve data */
 			return -1;
 		}
 
