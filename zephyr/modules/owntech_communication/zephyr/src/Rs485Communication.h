@@ -48,7 +48,7 @@ class Rs485Communication
          * @brief Configuration for RS485 communication using a 10Mbit/s speed
          *
          * @param transmission_buffer Pointer to the transmitted buffer
-         * @param reception_buffer Pointer to the recevied buffer
+         * @param reception_buffer Pointer to the received buffer
          * @param data_size Size of the sent and received data (in byte)
          * @param user_function Callback function called when we received data
          * @param data_speed Transmission speed (by default to 10Mbits/s)
@@ -59,14 +59,14 @@ class Rs485Communication
          *
          * @warning The size of transmission_buffer and reception_buffer must be the same
          */
-        void configure(uint8_t *transmission_bufer, uint8_t *reception_buffer, uint16_t data_size, void (*user_function)(),
+        void configure(uint8_t *transmission_buffer, uint8_t *reception_buffer, uint16_t data_size, void (*user_function)(),
                             rs485_speed_t data_speed = SPEED_10M);
 
         /**
          * @brief Custom configuration for RS485 communication to choose the communication speed
          *
          * @param transmission_buffer Pointer to the transmitted buffer
-         * @param reception_buffer Pointer to the recevied buffer
+         * @param reception_buffer Pointer to the received buffer
          * @param data_size Size of the sent and received data (in byte)
          * @param user_function Callback function called when we received data
          * @param baudrate Communication speed in bit/s
@@ -74,7 +74,7 @@ class Rs485Communication
          *
          * @warning The size of transmission_buffer and reception_buffer must be the same
          */
-        void configureCustom(uint8_t *transmission_bufer, uint8_t *reception_buffer, uint16_t data_size, void (*user_function)(void), uint32_t baudrate, bool oversampling_8);
+        void configureCustom(uint8_t *transmission_buffer, uint8_t *reception_buffer, uint16_t data_size, void (*user_function)(void), uint32_t baudrate, bool oversampling_8);
 
         /**
          * @brief Start a transmission i.e. you send what is contained in the transmission buffer
