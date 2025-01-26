@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 LAAS-CNRS
+ * Copyright (c) 2021-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -27,7 +27,7 @@
 #ifndef DAC_H_
 #define DAC_H_
 
-// Zephyr
+/* Zephyr */
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
 
@@ -36,16 +36,18 @@ extern "C" {
 #endif
 
 
-/////
-// Public devices names
+/**
+ *  Public devices names
+ */
 
 #define DAC1_DEVICE DT_NODELABEL(dac1)
 #define DAC2_DEVICE DT_NODELABEL(dac2)
 #define DAC3_DEVICE DT_NODELABEL(dac3)
 
 
-/////
-// Configuration types
+/**
+ *  Configuration types
+ */
 
 typedef enum
 {
@@ -87,8 +89,9 @@ typedef enum
 	dac_pin_internal_and_external
 } dac_pin_config_t;
 
-/////
-// API
+/**
+ *  API
+ */
 
 typedef void (*dac_api_setconstvalue) (const struct device* dev, uint8_t channel, uint32_t value);
 typedef void (*dac_api_setfunction)   (const struct device* dev, uint8_t channel, const dac_function_config_t* config);
@@ -162,4 +165,4 @@ static inline void dac_stop(const struct device* dev, uint8_t channel)
 }
 #endif
 
-#endif // DAC_H_
+#endif /* DAC_H_ */

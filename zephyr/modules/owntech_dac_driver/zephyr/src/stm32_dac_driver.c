@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 LAAS-CNRS
+ * Copyright (c) 2021-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -25,19 +25,19 @@
  */
 
 
-// Zephyr
+/* Zephyr */
 #include <zephyr/kernel.h>
 
-// STM32 LL
+/* STM32 LL */
 #include <stm32_ll_dac.h>
 #include <stm32_ll_bus.h>
 
-// Current file header
+/* Current file header */
 #include "stm32_dac_driver.h"
 
-
-/////
-// Init function
+/**
+ *  Init function
+ */
 
 static int dac_stm32_init(const struct device* dev)
 {
@@ -60,8 +60,9 @@ static int dac_stm32_init(const struct device* dev)
 }
 
 
-/////
-// API
+/**
+ *  API
+ */
 
 static const struct dac_driver_api dac_funcs =
 {
@@ -239,7 +240,7 @@ static void dac_stm32_start(const struct device* dev, uint8_t channel)
 
 		while (LL_DAC_IsReady(dac_dev, dac_channel) == 0)
 		{
-			// Wait
+			/* Wait */
 		}
 
 		data->started[channel-1] = 1;
@@ -262,10 +263,11 @@ static void dac_stm32_stop(const struct device* dev, uint8_t channel)
 }
 
 
-/////
-// Device definitions
+/**
+ *  Devices Definition
+ */
 
-// DAC 1
+/* DAC 1 */
 #if DT_NODE_HAS_STATUS(DAC1_NODE, okay)
 
 struct stm32_dac_driver_data dac1_data =
@@ -285,9 +287,9 @@ DEVICE_DT_DEFINE(DAC1_NODE,
                  &dac_funcs
                 );
 
-#endif // DAC 1
+#endif /* DAC 1 */
 
-// DAC 2
+/* DAC 2 */
 #if DT_NODE_HAS_STATUS(DAC2_NODE, okay)
 
 struct stm32_dac_driver_data dac2_data =
@@ -307,9 +309,9 @@ DEVICE_DT_DEFINE(DAC2_NODE,
                  &dac_funcs
                 );
 
-#endif // DAC 2
+#endif /* DAC 2 */
 
-// DAC 3
+/* DAC 3 */
 #if DT_NODE_HAS_STATUS(DAC3_NODE, okay)
 
 struct stm32_dac_driver_data dac3_data =
@@ -329,4 +331,4 @@ DEVICE_DT_DEFINE(DAC3_NODE,
                  &dac_funcs
                 );
 
-#endif // DAC 3
+#endif /* DAC 3 */

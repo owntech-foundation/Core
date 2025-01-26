@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 LAAS-CNRS
+ * Copyright (c) 2021-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -26,10 +26,10 @@
 #ifndef STM32_DAC_DRIVER_H_
 #define STM32_DAC_DRIVER_H_
 
-// Zephyr
+/* Zephyr */
 #include <zephyr/device.h>
 
-// Public API
+/* Public API */
 #include "dac.h"
 
 
@@ -78,4 +78,4 @@ static void dac_stm32_stop(const struct device* dev, uint8_t channel);
 }
 #endif
 
-#endif // STM32_DAC_DRIVER_H_
+#endif /* STM32_DAC_DRIVER_H_ */
