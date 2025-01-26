@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 LAAS-CNRS
+ * Copyright (c) 2023-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -35,11 +35,15 @@
 extern "C" {
 #endif
 
-/////
-// Type definitions
+/**
+ *  Types definition
+ */
 
-// NVS categories must be on the upper half
-// of the 2-bytes value, hence end with 00
+/**
+ *  NVS categories must be on the upper half
+ *  of the 2-bytes value, hence end with 00
+ */
+
 typedef enum
 {
 	VERSION          = 0x0100,
@@ -47,8 +51,9 @@ typedef enum
 	MEASURE_THRESHOLD = 0x0300,
 }nvs_category_t;
 
-/////
-// API
+/**
+ *  API
+ */
 
 int8_t nvs_storage_store_data(uint16_t data_id, const void* data, uint8_t data_size);
 int8_t nvs_storage_retrieve_data(uint16_t data_id, void* data_buffer, uint8_t data_buffer_size);
@@ -62,4 +67,4 @@ uint16_t nvs_storage_get_version_in_nvs();
 }
 #endif
 
-#endif // NVS_STORAGE_H_
+#endif /* NVS_STORAGE_H_ */
