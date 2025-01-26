@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 LAAS-CNRS
+ * Copyright (c) 2021-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -38,10 +38,10 @@
 #define TU_DEFAULT_PERIOD (27200U) /* default period for 200kHz in bits */
 
 /**
- * @brief   HRTIM have 5 or 6 timing units
+ * @brief   HRTIM has 5 or 6 timing units
  */
 #ifdef HRTIM_MCR_TFCEN
-#define HRTIM_STU_NUMOF (6U) /**< number of slave timing units */
+#define HRTIM_STU_NUMOF (6U) /* number of slave timing units */
 #else
 #define HRTIM_STU_NUMOF (5U)
 #endif
@@ -52,7 +52,7 @@ extern "C"
 #endif
 
 /**
- * @brief   Timinig unit configuration - aggregates all the structures.
+ * @brief   Timing unit configuration - aggregates all the structures.
  */
 typedef struct
 {
@@ -66,8 +66,9 @@ typedef struct
 
 extern timer_hrtim_t *tu_channel[HRTIM_STU_NUMOF];
 
-/////////////////////////////
-////// fUNCTIONS
+/**
+ *  Functions
+ */
 
 /**
  * @brief   Gets the APB2 clock
@@ -75,7 +76,7 @@ extern timer_hrtim_t *tu_channel[HRTIM_STU_NUMOF];
 int hrtim_get_apb2_clock();
 
 /**
- * @brief this function initalize all the default parameters for each timing unit structure
+ * @brief this function initialize all the default parameters for each timing unit structure
  * @warning this function must be called before changing any timing unit parameters (frequency, phase_shift)
  */
 void hrtim_init_default_all();
@@ -121,7 +122,7 @@ hrtim_tu_ON_OFF_t hrtim_get_status(hrtim_tu_number_t tu_number);
 void hrtim_tu_gpio_init(hrtim_tu_number_t tu_number);
 
 /**
- * @brief   Disables the output of a given timingg unit
+ * @brief   Disables the output of a given timing unit
  *
  * @param[in] tu_number        Timing unit number:
  *            @arg @ref PWMA
@@ -833,11 +834,11 @@ hrtim_external_trigger_t hrtim_eev_get(hrtim_tu_number_t tu_number);
  * @brief Change the frequency/period after it has been initialized.
  * @param[in] new_frequency The new frequency in Hz
  * @warning the new frequency can't be inferior to the the one set in the initialization step
-*/
+ */
 void hrtim_change_frequency(uint32_t new_frequency);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // HRTIM_H_
+#endif /* HRTIM_H_ */

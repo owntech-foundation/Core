@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 LAAS-CNRS
+ * Copyright (c) 2023-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -50,8 +50,9 @@ extern "C"
                                                               11760,
                                                               23530};
 
-    /////////////////////////////
-    ////// ENUM
+    /**
+     *  Enums
+     */
 
     /**
      * @brief   HRTIM timing units definition
@@ -314,8 +315,9 @@ extern "C"
         BURST_TIMF = LL_HRTIM_BM_CLKSRC_TIMER_F
     } hrtim_burst_clk_t;
 
-    /////////////////////////////
-    ////// STRUCT
+    /**
+     *  Structs
+     */
 
     /**
      * @brief   Structure containing all the data regarding the pwm of a given timing unit
@@ -406,4 +408,4 @@ extern "C"
 }
 #endif
 
-#endif // COMPARATOR_DRIVER_H_
+#endif /* COMPARATOR_DRIVER_H_ */
