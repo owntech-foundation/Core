@@ -57,34 +57,48 @@ class Rs485Communication
          *        @arg  SPEED_10M
          *        @arg  SPEED_20M
          *
-         * @warning The size of transmission_buffer and reception_buffer must be the same
+         * @warning The size of transmission_buffer and reception_buffer
+         *          must be the same
          */
-        void configure(uint8_t *transmission_buffer, uint8_t *reception_buffer, uint16_t data_size, void (*user_function)(),
-                            rs485_speed_t data_speed = SPEED_10M);
+        void configure(uint8_t *transmission_buffer,
+                       uint8_t *reception_buffer,
+                       uint16_t data_size, void (*user_function)(),
+                       rs485_speed_t data_speed = SPEED_10M);
 
         /**
-         * @brief Custom configuration for RS485 communication to choose the communication speed
+         * @brief Custom configuration for RS485 communication
+         *        to choose the communication speed.
          *
          * @param transmission_buffer Pointer to the transmitted buffer
          * @param reception_buffer Pointer to the received buffer
          * @param data_size Size of the sent and received data (in byte)
          * @param user_function Callback function called when we received data
          * @param baudrate Communication speed in bit/s
-         * @param oversampling_8 True for oversampling (and multiply communication speed by 2), false if you want to keep the normal speed communication
+         * @param oversampling_8 True for oversampling
+         *                       (and multiply communication speed by 2),
+         *                       False if you want to keep
+         *                       the normal speed communication
          *
-         * @warning The size of transmission_buffer and reception_buffer must be the same
+         * @warning The size of transmission_buffer
+         *          and reception_buffer must be the same
          */
-        void configureCustom(uint8_t *transmission_buffer, uint8_t *reception_buffer, uint16_t data_size, void (*user_function)(void), uint32_t baudrate, bool oversampling_8);
+        void configureCustom(uint8_t *transmission_buffer,
+                             uint8_t *reception_buffer,
+                             uint16_t data_size, void (*user_function)(void),
+                             uint32_t baudrate, bool oversampling_8);
 
         /**
-         * @brief Start a transmission i.e. you send what is contained in the transmission buffer
+         * @brief Start a transmission i.e. you send
+         *        what is contained in the transmission buffer
          */
         void startTransmission();
 
         /**
          * @brief Turn on the RS485 communication
          *
-         * @remark The RS485 is automatically turned on when initializing with configureDefault or configure, no need to call this function
+         * @warning The RS485 is automatically turned on
+         *          when initializing with configureDefault or configure,
+         *          no need to call this function
          */
         void turnOnCommunication();
 

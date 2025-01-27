@@ -37,14 +37,19 @@ void SyncCommunication::initMaster()
 	LL_HRTIM_TIM_CounterDisable(HRTIM1, LL_HRTIM_TIMER_A);
 
 	/* SYNCOUT[1:0] and SYNCSRC[1:0] bitfield configuration in HRTIM_MCR */
-	LL_HRTIM_ConfigSyncOut(HRTIM1, LL_HRTIM_SYNCOUT_POSITIVE_PULSE, LL_HRTIM_SYNCOUT_SRC_TIMA_START);
+	LL_HRTIM_ConfigSyncOut(HRTIM1,
+						   LL_HRTIM_SYNCOUT_POSITIVE_PULSE,
+						   LL_HRTIM_SYNCOUT_SRC_TIMA_START);
 
 	/* HRTIM_SCOUT pin configuration */
 	LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOB);
 
 	/** The SyncIN pin is disabled here, it will be enabled in the ctrl task
 		to ensure synchronization between master and slave. */
-	LL_GPIO_SetPinSpeed     (GPIOB, LL_GPIO_PIN_1, LL_GPIO_SPEED_FREQ_VERY_HIGH);
+	LL_GPIO_SetPinSpeed     (GPIOB,
+							 LL_GPIO_PIN_1,
+							 LL_GPIO_SPEED_FREQ_VERY_HIGH);
+
 	LL_GPIO_SetPinOutputType(GPIOB, LL_GPIO_PIN_1, LL_GPIO_OUTPUT_PUSHPULL);
 	LL_GPIO_SetPinPull      (GPIOB, LL_GPIO_PIN_1, LL_GPIO_PULL_NO);
 	LL_GPIO_SetAFPin_0_7    (GPIOB, LL_GPIO_PIN_1, LL_GPIO_AF_13);
@@ -59,7 +64,8 @@ void SyncCommunication::initSlave()
 	/* HRTIM synchronization input source */
 	LL_HRTIM_SetSyncInSrc(HRTIM1, LL_HRTIM_SYNCIN_SRC_EXTERNAL_EVENT);
 
-	/* Enable the master timer reset when receiving a synchronization input event */
+	/* Enable the master timer reset
+	 * when receiving a synchronization input event */
 	LL_HRTIM_TIM_EnableResetOnSync(HRTIM1, LL_HRTIM_TIMER_MASTER);
 
 	/* HRTIM_SCIN pin configuration */
@@ -67,13 +73,19 @@ void SyncCommunication::initSlave()
 
 #ifdef CONFIG_SHIELD_TWIST_V1_4_1
 	LL_GPIO_SetPinMode      (GPIOB, LL_GPIO_PIN_2, LL_GPIO_MODE_ALTERNATE);
-	LL_GPIO_SetPinSpeed     (GPIOB, LL_GPIO_PIN_2, LL_GPIO_SPEED_FREQ_VERY_HIGH);
+	LL_GPIO_SetPinSpeed     (GPIOB,
+							 LL_GPIO_PIN_2,
+							 LL_GPIO_SPEED_FREQ_VERY_HIGH);
+
 	LL_GPIO_SetPinOutputType(GPIOB, LL_GPIO_PIN_2, LL_GPIO_OUTPUT_PUSHPULL);
 	LL_GPIO_SetPinPull      (GPIOB, LL_GPIO_PIN_2, LL_GPIO_PULL_NO);
 	LL_GPIO_SetAFPin_0_7    (GPIOB, LL_GPIO_PIN_2, LL_GPIO_AF_13);
 #else
 	LL_GPIO_SetPinMode      (GPIOB, LL_GPIO_PIN_6, LL_GPIO_MODE_ALTERNATE);
-	LL_GPIO_SetPinSpeed     (GPIOB, LL_GPIO_PIN_6, LL_GPIO_SPEED_FREQ_VERY_HIGH);
+	LL_GPIO_SetPinSpeed     (GPIOB,
+							 LL_GPIO_PIN_6,
+							 LL_GPIO_SPEED_FREQ_VERY_HIGH);
+
 	LL_GPIO_SetPinOutputType(GPIOB, LL_GPIO_PIN_6, LL_GPIO_OUTPUT_PUSHPULL);
 	LL_GPIO_SetPinPull      (GPIOB, LL_GPIO_PIN_6, LL_GPIO_PULL_NO);
 	LL_GPIO_SetAFPin_0_7    (GPIOB, LL_GPIO_PIN_6, LL_GPIO_AF_12);

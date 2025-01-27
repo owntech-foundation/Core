@@ -38,21 +38,28 @@
 #define DMA_USART DMA1 /* DMA used */
 
 /**
- *  HAL override is used because of undesired effect in zephyr's dma handler dma_stm32_irq_handler.
- *  We noticed that we called the callback only once, setting stream->busy to false then never called
- *  the callback again. This problem was only noticed in zephyr 3.3 and not in zephyr 2.7
+ *  HAL override is used because of undesired effect in zephyr's dma handler
+ *  dma_stm32_irq_handler. We noticed that we called the callback only once,
+ *  setting stream->busy to false then never called the callback again.
+ *  This problem was only noticed in zephyr 3.3 and not in zephyr 2.7
  *  that platformIO is using. For the sake of safety, we'll use HAL override.
  */
 #define STM32_DMA_HAL_OVERRIDE 0x7F
 
-/* Warning : if you change the channels number, you'll have to change some code line manually*/
+/**
+ * Warning : if you change the channels number,
+ * you'll have to change some code line manually
+ */
 
 /* Transmission DMA channel for zephyr driver */
 #define ZEPHYR_DMA_CHANNEL_TX 6
 /* Reception DMA channel for zephyr driver */
 #define ZEPHYR_DMA_CHANNEL_RX 7
 
-/* Warning : if you change the channels, you'll have to change some code line manually*/
+/**
+ * Warning : if you change the channels,
+ * you'll have to change some code line manually
+ */
 
 /* Transmission DMA channel for LL driver */
 #define LL_DMA_CHANNEL_TX LL_DMA_CHANNEL_6
@@ -86,7 +93,10 @@ static dma_callbackRXfunc_t user_fnc = NULL;
 /**
  *  DMA callback TX clear transmission flag, and disabled DMA channel TX.
  */
-static void _dma_callback_tx(const struct device *dev, void *user_data, uint32_t channel, int status)
+static void _dma_callback_tx(const struct device *dev,
+                             void *user_data,
+                             uint32_t channel,
+                             int status)
 {
     /* Disable DMA channel after sending datas */
     LL_DMA_DisableChannel(DMA_USART, LL_DMA_CHANNEL_TX);
@@ -175,10 +185,12 @@ void serial_init(void)
     /* Disable Transmission Complete Interrupt */
     LL_USART_DisableIT_TC(USART3);
 
-    /* Disable Transmission Data Register Empty Interrupt for DMA to provide data */
-    /* Disable interrupts for RX (not used with DMA) */
+    /* Disable Transmission Data Register Empty Interrupt
+     * for DMA to provide data.
+     * Disable interrupts for RX (not used with DMA) */
     LL_USART_DisableIT_TXE_TXFNF(USART3);
-    /* Disable Receiver Data Register Not Empty Interrupt for DMA to fetch data */
+    /* Disable Receiver Data Register
+     * Not Empty Interrupt for DMA to fetch data */
     LL_USART_DisableIT_RXNE_RXFNE(USART3);
 
     LL_USART_Enable(USART3);
@@ -229,9 +241,9 @@ void oversamp_set(usart_oversampling_t oversampling)
 }
 
 /**
- *  This is the TX dma channel initialization. The channel is not enabled here to avoid
- *  sending data unexpectedly, this channel is enabled only with serial_tx_on when data
- *  must be sent.
+ *  This is the TX dma channel initialization.
+ *  The channel is not enabled here to avoid sending data unexpectedly,
+ *  this channel is enabled only with serial_tx_on when data must be sent.
  */
 void dma_channel_init_tx()
 {
@@ -266,7 +278,10 @@ void dma_channel_init_tx()
     /* DMA data size */
     LL_DMA_SetDataLength(DMA_USART, LL_DMA_CHANNEL_TX, dma_buffer_size);
     /* DMA channel priority */
-    LL_DMA_SetChannelPriorityLevel(DMA_USART, LL_DMA_CHANNEL_TX, LL_DMA_PRIORITY_VERYHIGH);
+    LL_DMA_SetChannelPriorityLevel(DMA_USART,
+                                   LL_DMA_CHANNEL_TX,
+                                   LL_DMA_PRIORITY_VERYHIGH);
+
     LL_DMA_Init(DMA_USART, LL_DMA_CHANNEL_TX, &DMA_InitStruct);
 
     /* Clearing flags */
@@ -311,7 +326,10 @@ void dma_channel_init_rx()
     /* DMA data size */
     LL_DMA_SetDataLength(DMA_USART, LL_DMA_CHANNEL_RX, dma_buffer_size);
     /* DMA channel priority */
-    LL_DMA_SetChannelPriorityLevel(DMA_USART, LL_DMA_CHANNEL_RX, LL_DMA_PRIORITY_VERYHIGH);
+    LL_DMA_SetChannelPriorityLevel(DMA_USART,
+                                   LL_DMA_CHANNEL_RX,
+                                   LL_DMA_PRIORITY_VERYHIGH);
+
     LL_DMA_Init(DMA_USART, LL_DMA_CHANNEL_RX, &DMA_InitStruct);
 
     /* Clearing flag */
@@ -328,7 +346,8 @@ void dma_channel_init_rx()
 
 
 /**
- *  Reload DMA TX buffer. This functions enable TX channel to start sending the datas
+ *  Reload DMA TX buffer.
+ *  This functions enable TX channel to start sending the datas
  */
 void serial_tx_on()
 {
@@ -337,7 +356,10 @@ void serial_tx_on()
     /* Disable channel to reload TX buffer */
     LL_DMA_DisableChannel(DMA_USART, LL_DMA_CHANNEL_TX);
     /* Reloading TX buffer */
-    LL_DMA_SetMemoryAddress(DMA_USART, LL_DMA_CHANNEL_TX, (uint32_t)(tx_usart_val));
+    LL_DMA_SetMemoryAddress(DMA_USART,
+                            LL_DMA_CHANNEL_TX,
+                            (uint32_t)(tx_usart_val));
+
     LL_DMA_SetDataLength(DMA_USART, LL_DMA_CHANNEL_TX, dma_buffer_size);
     /* Re-enable the channel */
     LL_DMA_EnableChannel(DMA_USART, LL_DMA_CHANNEL_TX);

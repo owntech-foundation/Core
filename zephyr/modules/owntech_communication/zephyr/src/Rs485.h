@@ -47,7 +47,8 @@ void init_usrBuffer(uint8_t* tx_buffer, uint8_t* rx_buffer);
 /**
  * @brief Initialize user function called every RX callback
  *
- * @param[in] fnc_callback Void function with no parameters, use NULL if there is no function to call
+ * @param[in] fnc_callback Void function with no parameters,
+ * use NULL if there is no function to call
  */
 void init_usrFunc(dma_callbackRXfunc_t fnc_callback);
 
@@ -55,7 +56,9 @@ void init_usrFunc(dma_callbackRXfunc_t fnc_callback);
  * @brief Initialize baudrate with user choice.
  *
  * @param[in] usr_baud Baud in bits per second
- * @note Baudrate is initialized by default to 10Mbps if this function is not used
+ *
+ * @note Baudrate is initialized by default to 10Mbps,
+ * if this function is not used
  */
 void init_usrBaudrate(uint32_t usr_baud);
 
@@ -78,8 +81,10 @@ void serial_init(void);
 void init_DEmode(void);
 
 /**
- * @brief Set oversampling which is by default oversampling_16. With oversampling_8 we increase speed
- *        by 2 but decrease USART sampling by half making it more sensitive to noise.
+ * @brief Set oversampling which is by default oversampling_16.
+ *        With oversampling_8 we increase speed by 2
+ *        but we decrease USART sampling by half,
+ *        making it more sensitive to noise.
  *
  * @param[in] oversampling choice of oversampling
  *            @arg @ref OVER8 oversampling_8
