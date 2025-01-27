@@ -41,10 +41,12 @@ public:
 	void usart1Init();
 
 	/**
-	 * @brief This function sends back a single character waiting to be treated from the USART1
+	 * @brief This function sends back a single character waiting to be treated
+	 * 		  from the USART1
 	 *
 	 * @return This function returns a single char which is waiting to be treated
-	 *          if no char is waiting it returns an 'x' which should be treated as an error
+	 *          if no char is waiting it returns an 'x' which should be treated
+	 * 			as an error
 	 */
 	char usart1ReadChar();
 
@@ -56,7 +58,8 @@ public:
 	void usart1WriteChar(char data);
 
 	/**
-	 * @brief This function swaps the USART RX and TX pins. It should be called in conjunction with a board version setup.
+	 * @brief This function swaps the USART RX and TX pins. It should be called
+	 * 		  in conjunction with a board version setup.
 	 */
 	void usart1SwapRxTx();
 

@@ -71,7 +71,9 @@ void DacHAL::initConstValue(uint8_t dac_number)
 	}
 }
 
-void DacHAL::setConstValue(uint8_t dac_number, uint8_t channel, uint32_t const_value)
+void DacHAL::setConstValue(uint8_t dac_number,
+						   uint8_t channel,
+						   uint32_t const_value)
 {
 	const struct device* dac_dev;
 
@@ -195,7 +197,9 @@ void DacHAL::currentModeInit(uint8_t dac_number, hrtim_tu_t tu_src)
 }
 
 
-void DacHAL::slopeCompensation(uint8_t dac_number, float32_t set_voltage, float32_t reset_voltage)
+void DacHAL::slopeCompensation(uint8_t dac_number,
+							   float32_t set_voltage,
+							   float32_t reset_voltage)
 {
 	float32_t Dv = set_voltage - reset_voltage;
 

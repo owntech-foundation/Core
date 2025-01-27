@@ -140,10 +140,12 @@ public:
 	 *        intrinsically linked.
 	 *        If for some reason you have an uninterruptible task in your code,
 	 *        but do not want the Scheduling module to be in charge of Data
-	 *        Acquisition, you need to indicate it when starting the uninterruptible task.
+	 *        Acquisition, you need to indicate it when starting the uninterruptible
+	 * 		  task.
 	 *        In that case, Data Acquisition must be manually started using this
 	 *        function. Note that in that case, dispatch will use DMA interrupts
-	 *        which consumes a non-negligible amount of processor time and it is not advised.
+	 *        which consumes a non-negligible amount of processor time and
+	 * 		  it is not advised.
 	 *
 	 * @note  Data Acquisition must be started only after ADC module configuration
 	 *        has been fully carried out. No ADC configuration change is allowed
@@ -234,7 +236,8 @@ public:
 	 *         If number_of_values_acquired is 0, do not try to access the
 	 *         buffer as it may be nullptr.
 	 */
-	uint16_t* getRawValues(uint8_t pin_number, uint32_t& number_of_values_acquired);
+	uint16_t* getRawValues(uint8_t pin_number,
+						   uint32_t& number_of_values_acquired);
 
 	/**
 	 * @brief Function to access the acquired data for specified pin.
@@ -270,7 +273,8 @@ public:
 	 *         If number_of_values_acquired is 0, do not try to access the
 	 *         buffer as it may be nullptr.
 	 */
-	float32_t* getValues(uint8_t pin_number, uint32_t& number_of_values_acquired);
+	float32_t* getValues(uint8_t pin_number,
+						 uint32_t& number_of_values_acquired);
 
 	/**
 	 * @brief Function to access the latest value available from a pin,
@@ -331,7 +335,8 @@ public:
 	 * @param[in] pin_number Number of the pin from which to obtain values.
 	 * @param[in] raw_value Raw value obtained from the channel buffer.
 	 *
-	 * @return Converted value in the relevant unit. If there is an error, returns -5000.
+	 * @return Converted value in the relevant unit. If there is an error,
+	 * 		   returns -5000.
 	 */
 	float32_t convertValue(uint8_t pin_number, uint16_t raw_value);
 
@@ -348,7 +353,9 @@ public:
 	 * @param[in] offset Offset to be applied (added) to the channel value
 	 *        after gain has been applied.
 	 */
-	void setConversionParametersLinear(uint8_t pin_number, float32_t gain, float32_t offset);
+	void setConversionParametersLinear(uint8_t pin_number,
+									   float32_t gain,
+									   float32_t offset);
 
 	/**
 	 * @brief Use this function to set the conversion values for any NTC
@@ -364,52 +371,67 @@ public:
 	 * @param[in] rdiv The bridge divider resistance used to condition the NTC.
 	 * @param[in] t0 The reference temperature of the thermistor.
 	 */
-	void setConversionParametersNtcThermistor(uint8_t pin_num, float32_t r0, float32_t b, float32_t rdiv, float32_t t0);
+	void setConversionParametersNtcThermistor(uint8_t pin_num,
+											  float32_t r0,
+											  float32_t b,
+											  float32_t rdiv,
+											  float32_t t0);
 
 	/**
-	 * @brief Use this function to get the current conversion parameters for the chosen channel .
+	 * @brief Use this function to get the current conversion parameters
+	 * 		  for the chosen channel .
 	 *
 	 * @note  This function can't be called before the channel is enabled.
 	 *
 	 * @param[in] pin_number Number of the pin from which to obtain values.
 	 * @param[in] parameter_name Paramater to be retrieved: `gain` or `offset`.
 	 *
-	 * @return Returns the value of the parameter. Returns -5000 if the channel is not active.
+	 * @return Returns the value of the parameter. Returns -5000 if the channel
+	 * 		   is not active.
 	 */
-	float32_t getConversionParameterValue(uint8_t pin_number, parameter_t parameter_name);
+	float32_t getConversionParameterValue(uint8_t pin_number,
+										  parameter_t parameter_name);
 
 	/**
-	 * @brief Use this function to get the current conversion type for the chosen channel.
+	 * @brief Use this function to get the current conversion type
+	 * 		  for the chosen channel.
 	 *
 	 * @note  This function can't be called before the channel is enabled.
 	 *
 	 * @param[in] pin_number Number of the pin from which to obtain values.
 	 *
-	 * @return Returns the type of conversion of the given pin. Returns -5 if the channel is not active.
+	 * @return Returns the type of conversion of the given pin.
+	 * 		   Returns -5 if the channel is not active.
 	 */
 	conversion_type_t getConversionParameterType(uint8_t pin_number);
 
 	/**
-	 * @brief Store the currently configured conversion parameters of a given channel in persistent memory.
+	 * @brief Store the currently configured conversion parameters
+	 * 		  of a given channel in persistent memory.
 	 *
 	 * @param[in] pin_number SPIN pin number
 	 *
-	 * @return 0 if parameters were correctly stored, negative value if there was an error:
+	 * @return 0 if parameters were correctly stored, negative value
+	 * 			 if there was an error:
 	 * 			-1: There was an error,
 	 * 			-5000: pin not found.
 	 */
 	int8_t storeConversionParametersInMemory(uint8_t pin_number);
 
 	/**
-	 * @brief Retrieved previously configured conversion parameters from persistent memory.
+	 * @brief Retrieved previously configured conversion parameters
+	 * 		  from persistent memory.
 	 *
 	 * @param[in] pin_number SPIN pin number
 	 *
-	 * @return 0 if parameters were correctly retrieved, negative value if there was an error:
+	 * @return 0 if parameters were correctly retrieved, negative value
+	 * 		     if there was an error:
 	 *         -1: persistent memory is empty
-	 *         -2: persistent memory contains data, but its version doesn't match current version
+	 *         -2: persistent memory contains data, but its version
+	 * 			   doesn't match current version
 	 *         -3: data in persistent memory is corrupted
-	 *         -4: persistent memory contains data, but not for the requested pin
+	 *         -4: persistent memory contains data, but not for
+	 * 			   the requested pin
 	 *         -5000: pin not found.
 	 */
 	int8_t retrieveConversionParametersFromMemory(uint8_t pin_number);
@@ -428,7 +450,8 @@ public:
 	 * @param[in] discontinuous_count Number of channels to acquire on each
 	 *            trigger event. 0 to disable discontinuous mode (default).
 	 */
-	void configureDiscontinuousMode(adc_t adc_number, uint32_t dicontinuous_count);
+	void configureDiscontinuousMode(adc_t adc_number,
+									uint32_t dicontinuous_count);
 
 	/**
 	 * @brief Change the trigger source of an ADC.
@@ -447,10 +470,21 @@ private:
 	static void initializeAllAdcs();
 	static int8_t enableChannel(adc_t adc_number, uint8_t channel_num);
 	static void disableChannel(adc_t adc_number, uint8_t channel);
-	static uint16_t* getChannelRawValues(adc_t adc_number, uint8_t channel_num, uint32_t& number_of_values_acquired);
-	static float32_t* getChannelValues(adc_t adc_number, uint8_t channel_num, uint32_t& number_of_values_acquired);
+
+	static uint16_t* getChannelRawValues(adc_t adc_number,
+										 uint8_t channel_num,
+										 uint32_t& number_of_values_acquired);
+
+	static float32_t* getChannelValues(adc_t adc_number,
+									   uint8_t channel_num,
+									   uint32_t& number_of_values_acquired);
+
 	static float32_t peekChannel(adc_t adc_number, uint8_t channel_num);
-	static float32_t getChannelLatest(adc_t adc_number, uint8_t channel_num, uint8_t* dataValid = nullptr);
+
+	static float32_t getChannelLatest(adc_t adc_number,
+									  uint8_t channel_num,
+									  uint8_t* dataValid = nullptr);
+
 	static uint8_t getChannelRank(adc_t adc_number, uint8_t channel_num);
 	static uint8_t getChannelNumber(adc_t adc_number, uint8_t shield_pin);
 	static adc_t getDefaultAdcForPin(uint8_t pin_number);

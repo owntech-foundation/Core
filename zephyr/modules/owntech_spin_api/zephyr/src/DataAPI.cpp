@@ -144,7 +144,9 @@ int8_t DataAPI::stop()
 		{
 			if (DataAPI::converted_values_buffer[adc_index] != nullptr)
 			{
-				for (int channel_index = 0 ; channel_index < CHANNELS_PER_ADC ; channel_index++)
+				for (int channel_index = 0 ;
+					 channel_index < CHANNELS_PER_ADC ;
+					 channel_index++)
 				{
 					delete DataAPI::converted_values_buffer[adc_index][channel_index];
 				}
@@ -169,11 +171,13 @@ void DataAPI::triggerAcquisition(adc_t adc_num)
 	}
 
 	/*  Proceed */
-	uint8_t enabled_channels = adc_get_enabled_channels_count(adc_num);
+	uint8_t enabled_channels =
+				adc_get_enabled_channels_count(adc_num);
 	adc_trigger_software_conversion(adc_num, enabled_channels);
 }
 
-uint16_t* DataAPI::getRawValues(uint8_t pin_num, uint32_t& number_of_values_acquired)
+uint16_t* DataAPI::getRawValues(uint8_t pin_num,
+								uint32_t& number_of_values_acquired)
 {
 	adc_t adc_num = DataAPI::getCurrentAdcForPin(pin_num);
 	if (adc_num == UNKNOWN_ADC)
@@ -189,10 +193,13 @@ uint16_t* DataAPI::getRawValues(uint8_t pin_num, uint32_t& number_of_values_acqu
 		return nullptr;
 	}
 
-	return this->getChannelRawValues(adc_num, channel_num, number_of_values_acquired);
+	return this->getChannelRawValues(adc_num,
+									 channel_num,
+									 number_of_values_acquired);
 }
 
-float32_t* DataAPI::getValues(uint8_t pin_number, uint32_t& number_of_values_acquired)
+float32_t* DataAPI::getValues(uint8_t pin_number,
+							  uint32_t& number_of_values_acquired)
 {
 	adc_t adc_number = DataAPI::getCurrentAdcForPin(pin_number);
 	if (adc_number == UNKNOWN_ADC)
@@ -208,7 +215,9 @@ float32_t* DataAPI::getValues(uint8_t pin_number, uint32_t& number_of_values_acq
 		return nullptr;
 	}
 
-	return this->getChannelValues(adc_number, channel_num, number_of_values_acquired);
+	return this->getChannelValues(adc_number,
+								  channel_num,
+								  number_of_values_acquired);
 }
 
 float32_t DataAPI::peekLatestValue(uint8_t pin_num)
@@ -270,7 +279,9 @@ float32_t DataAPI::convertValue(uint8_t pin_num, uint16_t raw_value)
 	return data_conversion_convert_raw_value(adc_num, channel_num, raw_value);
 }
 
-void DataAPI::setConversionParametersLinear(uint8_t pin_num, float32_t gain, float32_t offset)
+void DataAPI::setConversionParametersLinear(uint8_t pin_num,
+											float32_t gain,
+											float32_t offset)
 {
 	adc_t adc_num = DataAPI::getCurrentAdcForPin(pin_num);
 	if (adc_num == UNKNOWN_ADC)
@@ -284,10 +295,17 @@ void DataAPI::setConversionParametersLinear(uint8_t pin_num, float32_t gain, flo
 		return;
 	}
 
-	data_conversion_set_conversion_parameters_linear(adc_num, channel_num, gain, offset);
+	data_conversion_set_conversion_parameters_linear(adc_num,
+													 channel_num,
+													 gain,
+													 offset);
 }
 
-void DataAPI::setConversionParametersNtcThermistor(uint8_t pin_num, float32_t r0, float32_t b, float32_t rdiv, float32_t t0)
+void DataAPI::setConversionParametersNtcThermistor(uint8_t pin_num,
+												   float32_t r0,
+												   float32_t b,
+												   float32_t rdiv,
+												   float32_t t0)
 {
 	adc_t adc_num = DataAPI::getCurrentAdcForPin(pin_num);
 	if (adc_num == UNKNOWN_ADC)
@@ -301,11 +319,17 @@ void DataAPI::setConversionParametersNtcThermistor(uint8_t pin_num, float32_t r0
 		return;
 	}
 
-	data_conversion_set_conversion_parameters_therm(adc_num, channel_num, r0, b, rdiv, t0);
+	data_conversion_set_conversion_parameters_therm(adc_num,
+													channel_num,
+													r0,
+													b,
+													rdiv,
+													t0);
 }
 
 
-float32_t DataAPI::getConversionParameterValue(uint8_t pin_num, parameter_t parameter_name)
+float32_t DataAPI::getConversionParameterValue(uint8_t pin_num,
+											   parameter_t parameter_name)
 {
 	adc_t adc_num = DataAPI::getCurrentAdcForPin(pin_num);
 	if (adc_num == UNKNOWN_ADC)
@@ -371,10 +395,12 @@ int8_t DataAPI::retrieveConversionParametersFromMemory(uint8_t pin_num)
 		return ERROR_CHANNEL_NOT_FOUND;
 	}
 
-	return data_conversion_retrieve_channel_parameters_from_nvs(adc_num, channel_num);
+	return data_conversion_retrieve_channel_parameters_from_nvs(adc_num,
+																channel_num);
 }
 
-void DataAPI::configureDiscontinuousMode(adc_t adc_number, uint32_t discontinuous_count)
+void DataAPI::configureDiscontinuousMode(adc_t adc_number,
+										 uint32_t discontinuous_count)
 {
 	/* Make sure module is initialized */
 	if (adcInitialized == false)
@@ -386,7 +412,8 @@ void DataAPI::configureDiscontinuousMode(adc_t adc_number, uint32_t discontinuou
 	adc_configure_discontinuous_mode(adc_number, discontinuous_count);
 }
 
-void DataAPI::configureTriggerSource(adc_t adc_number, adc_ev_src_t trigger_source)
+void DataAPI::configureTriggerSource(adc_t adc_number,
+									 adc_ev_src_t trigger_source)
 {
 	/* Make sure module is initialized */
 	if (adcInitialized == false)
@@ -446,7 +473,8 @@ int8_t DataAPI::enableChannel(adc_t adc_num, uint8_t channel_num)
 	uint8_t adc_index = adc_num-1;
 	uint8_t channel_index = channel_num-1;
 	DataAPI::current_rank[adc_index]++;
-	DataAPI::channels_ranks[adc_index][channel_index] = DataAPI::current_rank[adc_index];
+	DataAPI::channels_ranks[adc_index][channel_index] =
+											DataAPI::current_rank[adc_index];
 
 	return 0;
 }
@@ -463,7 +491,9 @@ void DataAPI::disableChannel(adc_t adc_num, uint8_t channel)
 	adc_remove_channel(adc_num, channel);
 }
 
-uint16_t* DataAPI::getChannelRawValues(adc_t adc_num, uint8_t channel_num, uint32_t& number_of_values_acquired)
+uint16_t* DataAPI::getChannelRawValues(adc_t adc_num,
+									   uint8_t channel_num,
+									   uint32_t& number_of_values_acquired)
 {
 	if (DataAPI::is_started == false)
 	{
@@ -478,10 +508,14 @@ uint16_t* DataAPI::getChannelRawValues(adc_t adc_num, uint8_t channel_num, uint3
 		return nullptr;
 	}
 
-	return data_dispatch_get_acquired_values(adc_num, channel_rank, number_of_values_acquired);
+	return data_dispatch_get_acquired_values(adc_num,
+											 channel_rank,
+											 number_of_values_acquired);
 }
 
-float32_t* DataAPI::getChannelValues(adc_t adc_number, uint8_t channel_num, uint32_t& number_of_values_acquired)
+float32_t* DataAPI::getChannelValues(adc_t adc_number,
+									 uint8_t channel_num,
+									 uint32_t& number_of_values_acquired)
 {
 	/* Check that API is started */
 	if (DataAPI::is_started == false)
@@ -491,7 +525,11 @@ float32_t* DataAPI::getChannelValues(adc_t adc_number, uint8_t channel_num, uint
 	}
 
 	/* Get raw values */
-	uint16_t* raw_values = DataAPI::getChannelRawValues(adc_number, channel_num, number_of_values_acquired);
+	uint16_t* raw_values =
+				DataAPI::getChannelRawValues(adc_number,
+											 channel_num,
+											 number_of_values_acquired);
+
 	if (number_of_values_acquired == 0)
 	{
 		return nullptr;
@@ -510,7 +548,9 @@ float32_t* DataAPI::getChannelValues(adc_t adc_number, uint8_t channel_num, uint
 	}
 	if (DataAPI::converted_values_buffer[adc_index] == nullptr)
 	{
-		DataAPI::converted_values_buffer[adc_index] = new float32_t*[CHANNELS_PER_ADC];
+		DataAPI::converted_values_buffer[adc_index] =
+										new float32_t*[CHANNELS_PER_ADC];
+
 		for (int i = 0 ; i < CHANNELS_PER_ADC ; i++)
 		{
 			DataAPI::converted_values_buffer[adc_index][i] = nullptr;
@@ -518,13 +558,17 @@ float32_t* DataAPI::getChannelValues(adc_t adc_number, uint8_t channel_num, uint
 	}
 	if (DataAPI::converted_values_buffer[adc_index][channel_index] == nullptr)
 	{
-		DataAPI::converted_values_buffer[adc_index][channel_index] = new float32_t[CHANNELS_BUFFERS_SIZE];
+		DataAPI::converted_values_buffer[adc_index][channel_index] =
+										new float32_t[CHANNELS_BUFFERS_SIZE];
 	}
 
 	/* Proceed to conversion */
 	for (uint32_t i = 0 ; i < number_of_values_acquired ; i++)
 	{
-		DataAPI::converted_values_buffer[adc_index][channel_index][i] = data_conversion_convert_raw_value(adc_number, channel_num, raw_values[i]);
+		DataAPI::converted_values_buffer[adc_index][channel_index][i] =
+					data_conversion_convert_raw_value(adc_number,
+													  channel_num,
+													  raw_values[i]);
 	}
 
 	/* Return converted values buffer */
@@ -544,7 +588,8 @@ float32_t DataAPI::peekChannel(adc_t adc_num, uint8_t channel_num)
 		return NO_VALUE;
 	}
 
-	uint16_t raw_value = data_dispatch_peek_acquired_value(adc_num, channel_rank);
+	uint16_t raw_value = data_dispatch_peek_acquired_value(adc_num,
+														   channel_rank);
 	if (raw_value == PEEK_NO_VALUE)
 	{
 		return NO_VALUE;
@@ -553,7 +598,9 @@ float32_t DataAPI::peekChannel(adc_t adc_num, uint8_t channel_num)
 	return data_conversion_convert_raw_value(adc_num, channel_num, raw_value);
 }
 
-float32_t DataAPI::getChannelLatest(adc_t adc_num, uint8_t channel_num, uint8_t* dataValid)
+float32_t DataAPI::getChannelLatest(adc_t adc_num,
+									uint8_t channel_num,
+									uint8_t* dataValid)
 {
 	if (DataAPI::is_started == false)
 	{
@@ -575,7 +622,9 @@ float32_t DataAPI::getChannelLatest(adc_t adc_num, uint8_t channel_num, uint8_t*
 	}
 
 	uint32_t data_count;
-	uint16_t* buffer = data_dispatch_get_acquired_values(adc_num, channel_rank, data_count);
+	uint16_t* buffer = data_dispatch_get_acquired_values(adc_num,
+														 channel_rank,
+														 data_count);
 
 	if (data_count > 0)
 	{
@@ -584,16 +633,21 @@ float32_t DataAPI::getChannelLatest(adc_t adc_num, uint8_t channel_num, uint8_t*
 		{
 			*dataValid = DATA_IS_OK;
 		}
-		return data_conversion_convert_raw_value(adc_num, channel_num, raw_value);
+		return data_conversion_convert_raw_value(adc_num,
+												 channel_num,
+												 raw_value);
 	}
 	else
 	{
-		uint16_t raw_value = data_dispatch_peek_acquired_value(adc_num, channel_rank);
+		uint16_t raw_value = data_dispatch_peek_acquired_value(adc_num,
+															   channel_rank);
 
 		float32_t peekValue;
 		if (raw_value != PEEK_NO_VALUE)
 		{
-			peekValue = data_conversion_convert_raw_value(adc_num, channel_num, raw_value);
+			peekValue = data_conversion_convert_raw_value(adc_num,
+														  channel_num,
+														  raw_value);
 		}
 		else
 		{

@@ -34,7 +34,8 @@
 
 bool LedHAL::ledInitialized = false;
 
-static struct gpio_dt_spec led_pin_spec = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
+static struct gpio_dt_spec led_pin_spec =
+							GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
 
 
 void LedHAL::initialize()

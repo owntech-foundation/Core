@@ -42,8 +42,15 @@ class DacHAL
 {
 public:
 	void initConstValue(uint8_t dac_number);
-	void setConstValue(uint8_t dac_number, uint8_t channel, uint32_t const_value);
-	void slopeCompensation(uint8_t dac_number, float32_t peak_voltage, float32_t low_voltage);
+
+	void setConstValue(uint8_t dac_number,
+					   uint8_t channel,
+					   uint32_t const_value);
+
+	void slopeCompensation(uint8_t dac_number,
+						   float32_t peak_voltage,
+						   float32_t low_voltage);
+
 	void currentModeInit(uint8_t dac_number, hrtim_tu_t tu_src);
 };
 

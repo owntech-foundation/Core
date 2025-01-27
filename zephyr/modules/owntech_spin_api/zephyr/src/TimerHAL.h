@@ -41,7 +41,8 @@
 /**
  * @brief  Handles timer 4 for the SPIN board
  *
- * @note   Use this element to initialize timer 4 and use it with an incremental encoder
+ * @note   Use this element to initialize timer 4 and use it with
+ * 		   an incremental encoder
  */
 class TimerHAL
 {
@@ -54,7 +55,8 @@ public:
 
 	/**
 	 * @brief Gets the encoder step value.
-	 * @return An uint32 value of the counter which corresponds to the step of the system.
+	 * @return An uint32 value of the counter which corresponds to the
+	 * 		   step of the system.
 	 */
 	uint32_t getTimer4IncrementalEncoderValue();
 

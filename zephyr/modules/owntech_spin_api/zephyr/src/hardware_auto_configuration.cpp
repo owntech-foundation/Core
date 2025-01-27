@@ -97,7 +97,10 @@ static int _img_validation()
 #endif /* CONFIG_BOOTLOADER_MCUBOOT */
 
 
-#if defined(CONFIG_RETENTION_BOOT_MODE) && defined(CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT) && defined(CONFIG_USB_CDC_ACM)
+#if defined(CONFIG_RETENTION_BOOT_MODE) && \
+	defined(CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT) && \
+	defined(CONFIG_USB_CDC_ACM)
+
 #include <zephyr/retention/bootmode.h>
 #include <zephyr/sys/reboot.h>
 void reboot_bootloader_task(struct k_work* work)
@@ -124,7 +127,9 @@ static int _register_cdc_rate_callback()
 
 	return 0;
 }
-#endif /* CONFIG_RETENTION_BOOT_MODE && CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT && CONFIG_USB_CDC_ACM */
+#endif /* CONFIG_RETENTION_BOOT_MODE &&
+		* CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT &&
+		* CONFIG_USB_CDC_ACM */
 
 
 #ifdef CONFIG_SHIELD_O2
@@ -167,12 +172,17 @@ SYS_INIT(_img_validation,
         );
 #endif /* CONFIG_BOOTLOADER_MCUBOOT */
 
-#if defined(CONFIG_RETENTION_BOOT_MODE) && defined(CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT) && defined(CONFIG_USB_CDC_ACM)
+#if defined(CONFIG_RETENTION_BOOT_MODE) && \
+	defined(CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT) && \
+	defined(CONFIG_USB_CDC_ACM)
+
 SYS_INIT(_register_cdc_rate_callback,
          APPLICATION,
          CONFIG_APPLICATION_INIT_PRIORITY
         );
-#endif /* CONFIG_RETENTION_BOOT_MODE && CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT && CONFIG_USB_CDC_ACM */
+#endif /* CONFIG_RETENTION_BOOT_MODE &&
+		* CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT &&
+		* CONFIG_USB_CDC_ACM */
 
 #ifdef CONFIG_SHIELD_O2
 /* To be run in the first init phase */

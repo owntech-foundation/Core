@@ -50,7 +50,8 @@ static bool command_flag = false;
  *  USART 1 private functions
  */
 
-static void _uart_usart1_process_input(const struct device *dev, void* user_data)
+static void _uart_usart1_process_input(const struct device *dev,
+									   void* user_data)
 {
 	uint8_t c;
 
@@ -85,7 +86,11 @@ void UartHAL::usart1Init()
 	if (device_is_ready(uart_dev) == true)
 	{
 		uart_configure(uart_dev, &usart1_config);
-		uart_irq_callback_user_data_set(uart_dev, _uart_usart1_process_input, NULL);
+
+		uart_irq_callback_user_data_set(uart_dev,
+										_uart_usart1_process_input,
+										NULL);
+
 		uart_irq_rx_enable(uart_dev);
 	}
 }

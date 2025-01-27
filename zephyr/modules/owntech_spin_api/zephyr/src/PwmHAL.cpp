@@ -46,7 +46,8 @@ void PwmHAL::stopDualOutput(hrtim_tu_number_t pwmX)
 	hrtim_out_dis(pwmX);
 }
 
-void PwmHAL::startSingleOutput(hrtim_tu_number_t tu, hrtim_output_number_t output)
+void PwmHAL::startSingleOutput(hrtim_tu_number_t tu,
+							   hrtim_output_number_t output)
 {
 	if (output == TIMING_OUTPUT1)
 	{
@@ -102,7 +103,8 @@ void PwmHAL::startSingleOutput(hrtim_tu_number_t tu, hrtim_output_number_t outpu
 	}
 }
 
-void PwmHAL::stopSingleOutput(hrtim_tu_number_t tu, hrtim_output_number_t output)
+void PwmHAL::stopSingleOutput(hrtim_tu_number_t tu,
+							  hrtim_output_number_t output)
 {
 	if (output == TIMING_OUTPUT1)
 	{
@@ -174,7 +176,8 @@ void PwmHAL::setSwitchConvention(hrtim_tu_number_t pwmX,
 	hrtim_set_switch_convention(pwmX, convention);
 }
 
-void PwmHAL::initVariableFrequency(uint32_t initial_frequency, uint32_t minimal_frequency)
+void PwmHAL::initVariableFrequency(uint32_t initial_frequency,
+								   uint32_t minimal_frequency)
 {
 	if (!hrtim_get_status(PWMA))
 		/* Initialize default parameters before */
@@ -190,7 +193,9 @@ void PwmHAL::initFixedFrequency(uint32_t fixed_frequency)
 	hrtim_frequency_set(fixed_frequency, fixed_frequency);
 }
 
-void PwmHAL::setDeadTime(hrtim_tu_number_t pwmX, uint16_t rise_ns, uint16_t fall_ns)
+void PwmHAL::setDeadTime(hrtim_tu_number_t pwmX,
+						 uint16_t rise_ns,
+						 uint16_t fall_ns)
 {
 	if (!hrtim_get_status(pwmX))
 		/*Initialize default parameters before */
@@ -283,7 +288,9 @@ void PwmHAL::disableAdcTrigger(hrtim_tu_number_t tu_number)
 	hrtim_adc_trigger_dis(tu_number);
 }
 
-void PwmHAL::configurePeriodEvnt(hrtim_tu_t PWM_tu, uint32_t repetition, hrtim_callback_t callback)
+void PwmHAL::configurePeriodEvnt(hrtim_tu_t PWM_tu,
+								 uint32_t repetition,
+								 hrtim_callback_t callback)
 {
 	hrtim_PeriodicEvent_configure(PWM_tu, repetition, callback);
 }
@@ -313,7 +320,8 @@ uint32_t PwmHAL::getPeriodUs(hrtim_tu_number_t pwmX)
 	return hrtim_period_get_us(pwmX);
 }
 
-void PwmHAL::setAdcEdgeTrigger(hrtim_tu_number_t pwmX, hrtim_adc_edgetrigger_t adc_edge_trigger)
+void PwmHAL::setAdcEdgeTrigger(hrtim_tu_number_t pwmX,
+							   hrtim_adc_edgetrigger_t adc_edge_trigger)
 {
 	if (!hrtim_get_status(pwmX))
 		/* Initialize default parameters before */
@@ -334,7 +342,8 @@ void PwmHAL::setAdcTrigger(hrtim_tu_number_t pwmX, hrtim_adc_trigger_t adc_trig)
 	hrtim_adc_trigger_set(pwmX, adc_trig);
 }
 
-hrtim_adc_trigger_t PwmHAL::getAdcTrigger(hrtim_tu_number_t pwmX, hrtim_adc_trigger_t adc_trig)
+hrtim_adc_trigger_t PwmHAL::getAdcTrigger(hrtim_tu_number_t pwmX,
+										  hrtim_adc_trigger_t adc_trig)
 {
 	return hrtim_adc_trigger_get(pwmX);
 }

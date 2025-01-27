@@ -59,9 +59,12 @@ void data_conversion_init();
  * @param[in] channel_num Channel number
  * @param[in] raw_value   Value to convert
  *
- * @return   A float32_t value representing the value in the physical unit of the given channel.
+ * @return   A float32_t value representing the value in the physical unit
+ * 			 of the given channel.
  */
-float32_t data_conversion_convert_raw_value(uint8_t adc_num, uint8_t channel_num, uint16_t raw_value);
+float32_t data_conversion_convert_raw_value(uint8_t adc_num,
+											uint8_t channel_num,
+											uint16_t raw_value);
 
 /**
  * @brief    Set the conversion type for a given channel to linear
@@ -72,7 +75,10 @@ float32_t data_conversion_convert_raw_value(uint8_t adc_num, uint8_t channel_num
  * @param[in] gain        Gain of the channel
  * @param[in] offset      Offset of the channel
  */
-void data_conversion_set_conversion_parameters_linear(uint8_t adc_num, uint8_t channel_num, float32_t gain, float32_t offset);
+void data_conversion_set_conversion_parameters_linear(uint8_t adc_num,
+													  uint8_t channel_num,
+													  float32_t gain,
+													  float32_t offset);
 
 /**
  * @brief    Set the conversion type for a given channel to therm
@@ -85,7 +91,12 @@ void data_conversion_set_conversion_parameters_linear(uint8_t adc_num, uint8_t c
  * @param[in] rdiv        Parameter RDIV for the channel
  * @param[in] t0          Parameter T0 for the channel
  */
-void data_conversion_set_conversion_parameters_therm(uint8_t adc_num, uint8_t channel_num, float32_t r0, float32_t b, float32_t rdiv, float32_t t0);
+void data_conversion_set_conversion_parameters_therm(uint8_t adc_num,
+													 uint8_t channel_num,
+													 float32_t r0,
+													 float32_t b,
+													 float32_t rdiv,
+													 float32_t t0);
 
 /**
  * @brief Get the conversion type for a given channel
@@ -95,29 +106,35 @@ void data_conversion_set_conversion_parameters_therm(uint8_t adc_num, uint8_t ch
  *
  * @return Currently configured conversion type.
  */
-conversion_type_t data_conversion_get_conversion_type(uint8_t adc_num, uint8_t channel_num);
+conversion_type_t data_conversion_get_conversion_type(uint8_t adc_num,
+													  uint8_t channel_num);
 
 /**
  * @brief Get a conversion parameter for a given channel
  *
  * @param[in] adc_num       ADC number
  * @param[in] channel_num   Channel number
- * @param[in] parameter_num Number of the parameter to retrieve. E.g. for linear parameters,
+ * @param[in] parameter_num Number of the parameter to retrieve.
+ * 							E.g. for linear parameters,
  *                          gain is param 1 and offset is param 2.
  *
  * @return Current value of the given parameter.
  */
-float32_t data_conversion_get_parameter(uint8_t adc_num, uint8_t channel_num, uint8_t parameter_num);
+float32_t data_conversion_get_parameter(uint8_t adc_num,
+										uint8_t channel_num,
+										uint8_t parameter_num);
 
 /**
- * @brief Store the currently configured conversion parameters of a given channel in NVS.
+ * @brief Store the currently configured conversion parameters
+ * 		  of a given channel in NVS.
  *
  * @param[in] adc_num       ADC number
  * @param[in] channel_num   Channel number
  *
  * @return 0 if parameters were correctly stored, -1 if there was an error.
  */
-int8_t data_conversion_store_channel_parameters_in_nvs(uint8_t adc_num, uint8_t channel_num);
+int8_t data_conversion_store_channel_parameters_in_nvs(uint8_t adc_num,
+													   uint8_t channel_num);
 
 /**
  * @brief Retrieved previously configured conversion parameters from NVS.
@@ -125,13 +142,15 @@ int8_t data_conversion_store_channel_parameters_in_nvs(uint8_t adc_num, uint8_t 
  * @param[in] adc_num       ADC number
  * @param[in] channel_num   Channel number
  *
- * @return 0 if parameters were correctly retrieved, negative value if there was an error:
+ * @return 0 if parameters were correctly retrieved, negative value
+ * 		     if there was an error:
  *         -1: NVS is empty
  *         -2: NVS contains data, but their version doesn't match current version
  *         -3: NVS data is corrupted
  *         -4: NVS contains data, but not for the requested channel
  */
-int8_t data_conversion_retrieve_channel_parameters_from_nvs(uint8_t adc_num, uint8_t channel_num);
+int8_t data_conversion_retrieve_channel_parameters_from_nvs(uint8_t adc_num,
+															uint8_t channel_num);
 
 
 #endif /* DATA_CONVERSION_H_ */
