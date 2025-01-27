@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 LAAS-CNRS
+ * Copyright (c) 2023-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -34,27 +34,29 @@
 #define SENSORS_H_
 
 
-// Stdlib
+/* Stdlib */
 #include <stdint.h>
 
-// Zephyr
+/* Zephyr */
 #include <zephyr/kernel.h>
 
-// ARM CMSIS library
+/* ARM CMSIS library */
 #include <arm_math.h>
 
-// Other modules public API
+/* Other modules public API */
 #include "SpinAPI.h"
 
-
-/////
-// Device-tree related macro
+/**
+ *  Device-tree related macro
+ */
 
 #define SENSOR_TOKEN(node_id) DT_STRING_TOKEN(node_id, sensor_name),
 
 
-/////
-// Type definitions
+/**
+ *  Type definitions
+ */
+
 typedef enum
 {
 	UNDEFINED_SENSOR = 0,
@@ -84,14 +86,16 @@ struct sensor_info_t
 	} ownverter_temp_sensor_t;
 #endif
 
-/////
-// Static class definition
+/**
+ *  Static class definition
+ */
 
 class SensorsAPI
 {
 
-	/////
-	// Private types definitions
+/**
+ *  Private types definitions
+ */
 
 private:
 	typedef union
@@ -113,9 +117,9 @@ private:
 		uint8_t            channel_number;
 		uint8_t            pin_number;
 		bool               is_differential;
-		uint32_t           adc_reg_addr; // ADC addr is used to identify ADC
+		uint32_t           adc_reg_addr; /* ADC addr is used to identify ADC */
 		conv_type_string_t conversion_type;
-		// Default calibration parameters
+		/* Default calibration parameters */
 		int2float default_gain;
 		int2float default_offset;
 		int2float default_r0;
@@ -131,7 +135,7 @@ public:
 	 * @brief This function is used to enable a shield sensor for acquisition
 	 *        by a given ADC.
 	 *
-	 * @note  This function requires the presence of an "shielde-sensor" node in the
+	 * @note  This function requires the presence of an "shield-sensor" node in the
 	 *        shield device-tree.
 	 *
 	 * @note  This function must be called *before* ADC is started.
@@ -191,10 +195,10 @@ public:
 	 *
 	 * @warning This is an expensive function. Calling this function trigger
 	 *          the conversion of all values acquired since the last call.
-	 *          If only the lastet value is required, it is advised to call
+	 *          If only the latest value is required, it is advised to call
 	 *          getLatestValue() instead. If multiple values are required,
 	 *          but not all, it is advised to call getRawValues() instead,
-	 *          then explicitely convert required values using convertValue().
+	 *          then explicitly convert required values using convertValue().
 	 *
 	 * @note  This function can't be called before the pin is enabled.
 	 *        The DataAPI module must have been started, either
@@ -219,7 +223,7 @@ public:
 	/**
 	 * @brief Function to access the latest value available from the sensor,
 	 *        expressed in the relevant unit for the data: Volts, Amperes, or
-	 *        Degree Celcius. This function will not touch anything in the
+	 *        Degree Celsius. This function will not touch anything in the
 	 *        buffer, and thus can be called safely at any time after the
 	 *        module has been started.
 	 *
@@ -238,7 +242,7 @@ public:
 	/**
 	 * @brief This function returns the latest acquired measure expressed
 	 *        in the relevant unit for the sensor: Volts, Amperes, or
-	 *        Degree Celcius.
+	 *        Degree Celsius.
 	 *
 	 * @note  This function can't be called before the sensor is enabled
 	 *        and the DataAPI module is started, either explicitly
@@ -268,7 +272,7 @@ public:
 	/**
 	 * @brief Use this function to convert values obtained using matching
 	 *        spin.data.get*RawValues() function to relevant
-	 *        unit for the data: Volts, Amperes, or Degree Celcius.
+	 *        unit for the data: Volts, Amperes, or Degree Celsius.
 	 *
 	 * @note  This function can't be called before the sensor is enabled.
 	 *
@@ -296,7 +300,7 @@ public:
 	void setConversionParametersLinear(sensor_t sensor_name, float32_t gain, float32_t offset);
 
 	/**
-	 * @brief Use this function to set the conversion values for any NTC 
+	 * @brief Use this function to set the conversion values for any NTC
 	 * 		  thermistor sensor if default values are not accurate enough.
 	 *
 	 * @note  This function can't be called before the sensor is enabled.
@@ -306,18 +310,18 @@ public:
 	 * @param[in] sensor_name Name of the shield sensor to set conversion values.
 	 * @param[in] r0 The NTC resistance at a reference temperature.
 	 * @param[in] b The sensibility coefficient of the resistance to temperature.
-	 * @param[in] rdiv The bridge dividor resistance used to condition the NTC.
+	 * @param[in] rdiv The bridge divider resistance used to condition the NTC.
 	 * @param[in] t0 The reference temperature of the thermistor.
 	 */
 	void setConversionParametersNtcThermistor(sensor_t sensor_name, float32_t r0, float32_t b, float32_t rdiv, float32_t t0);
 
 	/**
-	 * @brief Use this function to get the current conversion parameteres for the chosen sensor.
+	 * @brief Use this function to get the current conversion parameters for the chosen sensor.
 	 *
 	 * @note  This function can't be called before the sensor is enabled.
 	 *
 	 * @param[in] sensor_name Name of the shield sensor to get a conversion parameter.
-	 * @param[in] parameter_name Paramater to be retreived: `gain` or `offset`.
+	 * @param[in] parameter_name Paramater to be retrieved: `gain` or `offset`.
 	 */
 	float32_t retrieveStoredParameterValue(sensor_t sensor_name, parameter_t parameter_name);
 
@@ -343,7 +347,7 @@ public:
 	 * @brief Use this function to read the gain and offset parameters of the board to is non-volatile memory.
 	 *
 	 * @param[in] sensor_name Name of the shield sensor to save the values.
-     * @return 0 if parameters were correcly retreived, negative value if there was an error:
+     * @return 0 if parameters were correctly retrieved, negative value if there was an error:
      *         -1: NVS is empty
      *         -2: NVS contains data, but their version doesn't match current version
      *         -3: NVS data is corrupted
@@ -357,7 +361,7 @@ public:
 	 * @brief This function is used to enable acquisition of all voltage/current
 	 *        sensors on the Twist shield.
 	 *        Sensors are attributed as follows:
-	 *        ADC1: - V1, V2, V3, VH, VN      
+	 *        ADC1: - V1, V2, V3, VH, VN
 	 * 		  ADC2: - I1, I2, I3, IH, T
 	 *
 	 * @note  This function will configure ADC 1 and 2 to be automatically
@@ -366,14 +370,14 @@ public:
 	 *        All other ADCs remain software triggered, thus will only be
 	 *        acquired when triggerAcquisition() is called.
 	 * 		  It also configures the gpios that control the MUX that chooses which
-	 * 		  temperature will be measured. 
+	 * 		  temperature will be measured.
 	 *
 	 * @note  This function must be called *before* ADC is started.
 	 */
 	void enableDefaultOwnverterSensors();
 
 	/**
-	 * @brief This function sets the gpios attached to the MUX to control which 
+	 * @brief This function sets the gpios attached to the MUX to control which
 	 * 		  measurement will be performed.
 	 *        The logic is:
 	 * 					 IN1   IN2
@@ -384,7 +388,7 @@ public:
 	 * @param[in] temperature_sensor Name of the temperature sensor to trigger.
 	 * 							     Can be either TEMP_1, TEMP_2 or TEMP_3.
 	 *
-	 * @note  This function will decide which value will be read automatically 
+	 * @note  This function will decide which value will be read automatically
 	 * 	      by the ADC2 to which the temperature of the Ownverter is linked.
 	 */
 	void setOwnverterTempMeas(ownverter_temp_sensor_t temperature_sensor);
@@ -412,9 +416,9 @@ public:
 
 	/**
 	 * @brief Manually set parameters values using console. You will be directed
-	 * 		  via console to input the parameters of each sensor of the Twist 
-	 * 		  board.  
-	 * 		  After the parameters have been inputed, they will be stored in 
+	 * 		  via console to input the parameters of each sensor of the Twist
+	 * 		  board.
+	 * 		  After the parameters have been set, they will be stored in
 	 *        Spin Non-Volatile memory so that they are automatically applied on
 	 *        subsequent boots.
 	 *
@@ -465,7 +469,7 @@ private:
 	void buildSensorListFromDeviceTree();
 
 	/**
-	 * @brief Function to retraive a line from console.
+	 * @brief Function to retrieve a line from console.
 	 */
 	void getLineFromConsole(char* buffer, uint8_t buffer_size);
 
@@ -489,4 +493,4 @@ private:
 
 };
 
-#endif // SENSORS_H_
+#endif /* SENSORS_H */_

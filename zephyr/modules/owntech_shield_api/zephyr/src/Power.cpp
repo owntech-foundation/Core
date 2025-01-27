@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 LAAS-CNRS
+ * Copyright (c) 2023-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -73,12 +73,15 @@ void PowerAPI::initMode(leg_t leg,                                             \
     if (leg == ALL)
     {
         startIndex = 0;
-        endIndex = dt_leg_count; /* retrives the total number of legs */
+        /* retrieves the total number of legs */
+        endIndex = dt_leg_count;
     }
     else
     {
-        startIndex = leg; /* Treat `leg` as the specific leg index */
-        endIndex = leg + 1; /* Only iterate for this specific leg */
+        /* Treat `leg` as the specific leg index */
+        startIndex = leg;
+        /* Only iterate for this specific leg */
+        endIndex = leg + 1;
     }
 
     for (int8_t i = startIndex; i < endIndex; i++)
@@ -199,7 +202,7 @@ void PowerAPI::initMode(leg_t leg,                                             \
 
 void PowerAPI::setDutyCycle(leg_t leg, float32_t duty_leg)
 {
-    // Clamp the duty cycle to be within the range 0.1 to 0.9
+    /* Clamp the duty cycle to be within the range 0.1 to 0.9 */
     if (duty_leg > 0.9)
     {
         duty_leg = 0.9;
@@ -216,7 +219,8 @@ void PowerAPI::setDutyCycle(leg_t leg, float32_t duty_leg)
     if (leg == ALL)
     {
         startIndex = 0;
-        endIndex = dt_leg_count; /* retrives the total number of legs */
+        /* retrieves the total number of legs */
+        endIndex = dt_leg_count;
     }
     else
     {
@@ -246,8 +250,10 @@ void PowerAPI::start(leg_t leg)
     }
     else
     {
-        startIndex = leg;   /* Treat `leg` as the specific leg index */
-        endIndex = leg + 1; /* Only iterates for this specific leg */
+        /* Treat `leg` as the specific leg index */
+        startIndex = leg;
+        /* Only iterates for this specific leg */
+        endIndex = leg + 1;
     }
 
     for (int8_t leg_index = startIndex; leg_index < endIndex; leg_index++)
@@ -282,12 +288,15 @@ void PowerAPI::stop(leg_t leg)
     if(leg == ALL)
     {
         startIndex = 0;
-        endIndex = dt_leg_count; /* retrives the total number of legs */
+        /* retrieves the total number of legs */
+        endIndex = dt_leg_count;
     }
     else
     {
-        startIndex = leg; /* Treat `leg` as the specific leg index */
-        endIndex = leg + 1; /* Only iterate for this specific leg */
+        /* Treat `leg` as the specific leg index */
+        startIndex = leg;
+        /* Only iterate for this specific leg */
+        endIndex = leg + 1;
     }
 
     for (int8_t i = startIndex; i < endIndex; i++)
@@ -317,12 +326,15 @@ void PowerAPI::connectCapacitor(leg_t leg)
     if(leg == ALL)
     {
         startIndex = 0;
-        endIndex = dt_leg_count; /* retrives the total number of legs */
+        /* retrieves the total number of legs */
+        endIndex = dt_leg_count;
     }
     else
     {
-        startIndex = leg; /* Treat `leg` as the specific leg index */
-        endIndex = leg + 1; /* Only iterate for this specific leg */
+        /* Treat `leg` as the specific leg index */
+        startIndex = leg;
+        /* Only iterate for this specific leg */
+        endIndex = leg + 1;
     }
 
     for (int8_t i = startIndex; i < endIndex; i++)
@@ -343,12 +355,15 @@ void PowerAPI::disconnectCapacitor(leg_t leg)
     if(leg == ALL)
     {
         startIndex = 0;
-        endIndex = dt_leg_count; /* retrives the total number of legs */
+        /* retrieves the total number of legs */
+        endIndex = dt_leg_count;
     }
     else
     {
-        startIndex = leg; /* Treat `leg` as the specific leg index */
-        endIndex = leg + 1; /* Only iterate for this specific leg */
+        /* Treat `leg` as the specific leg index */
+        startIndex = leg;
+        /* Only iterate for this specific leg */
+        endIndex = leg + 1;
     }
 
     for (int8_t i = startIndex; i < endIndex; i++)
@@ -373,7 +388,7 @@ void PowerAPI::connectDriver(leg_t leg)
     if(leg == ALL)
     {
         startIndex = 0;
-        endIndex = dt_leg_count; /* retrives the total number of legs */
+        endIndex = dt_leg_count; /* retrieves the total number of legs */
     }
     else
     {
@@ -398,12 +413,15 @@ void PowerAPI::disconnectDriver(leg_t leg)
     if(leg == ALL)
     {
         startIndex = 0;
-        endIndex = dt_leg_count; /* retrives the total number of legs */
+        /* retrieves the total number of legs */
+        endIndex = dt_leg_count;
     }
     else
     {
-        startIndex = leg; /* Treat `leg` as the specific leg index */
-        endIndex = leg + 1; /* Only iterate for this specific leg */
+        /* Treat `leg` as the specific leg index */
+        startIndex = leg;
+        /* Only iterate for this specific leg */
+        endIndex = leg + 1;
     }
 
     for (int8_t i = startIndex; i < endIndex; i++)
@@ -427,12 +445,15 @@ void PowerAPI::setSlopeCompensation(leg_t leg,                              \
     if(leg == ALL)
     {
         startIndex = 0;
-        endIndex = dt_leg_count; /* retrives the total number of legs */
+        /* retrieves the total number of legs */
+        endIndex = dt_leg_count;
     }
     else
     {
-        startIndex = leg; /* Treat `leg` as the specific leg index */
-        endIndex = leg + 1; /* Only iterate for this specific leg */
+        /* Treat `leg` as the specific leg index */
+        startIndex = leg;
+        /* Only iterate for this specific leg */
+        endIndex = leg + 1;
     }
 
     for (int8_t i = startIndex; i < endIndex; i++)
@@ -456,7 +477,7 @@ void PowerAPI::setTriggerValue(leg_t leg, float32_t trigger_value)
     int8_t startIndex = 0;
     int8_t endIndex = 0;
 
-    // Clamp the trigger value within the acceptable range
+    /* Clamp the trigger value within the acceptable range */
     if (trigger_value > 0.95)
     {
         trigger_value = 0.95;
@@ -470,12 +491,15 @@ void PowerAPI::setTriggerValue(leg_t leg, float32_t trigger_value)
     if(leg == ALL)
     {
         startIndex = 0;
-        endIndex = dt_leg_count; /* retrives the total number of legs */
+        /* retrieves the total number of legs */
+        endIndex = dt_leg_count;
     }
     else
     {
-        startIndex = leg; /* Treat `leg` as the specific leg index */
-        endIndex = leg + 1; /* Only iterate for this specific leg */
+        /* Treat `leg` as the specific leg index */
+        startIndex = leg;
+        /* Only iterate for this specific leg */
+        endIndex = leg + 1;
     }
 
     for (int8_t i = startIndex; i < endIndex; i++)
@@ -494,12 +518,15 @@ void PowerAPI::setPhaseShift(leg_t leg, int16_t phase_shift)
     if(leg == ALL)
     {
         startIndex = 0;
-        endIndex = dt_leg_count; /* retrives the total number of legs */
+        /* retrieves the total number of legs */
+        endIndex = dt_leg_count;
     }
     else
     {
-        startIndex = leg; /* Treat `leg` as the specific leg index */
-        endIndex = leg + 1; /* Only iterate for this specific leg */
+        /* Treat `leg` as the specific leg index */
+        startIndex = leg;
+        /* Only iterate for this specific leg */
+        endIndex = leg + 1;
     }
 
     for (int8_t i = startIndex; i < endIndex; i++)
@@ -519,12 +546,15 @@ void PowerAPI::setDeadTime(leg_t leg,                                       \
     if(leg == ALL)
     {
         startIndex = 0;
-        endIndex = dt_leg_count; /* retrives the total number of legs */
+        /* retrieves the total number of legs */
+        endIndex = dt_leg_count;
     }
     else
     {
-        startIndex = leg; /* Treat `leg` as the specific leg index */
-        endIndex = leg + 1; /* Only iterate for this specific leg */
+        /* Treat `leg` as the specific leg index */
+        startIndex = leg;
+        /* Only iterate for this specific leg */
+        endIndex = leg + 1;
     }
 
     for (int8_t i = startIndex; i < endIndex; i++)
@@ -544,12 +574,15 @@ void PowerAPI::setAdcDecim(leg_t leg, uint16_t adc_decim)
     if(leg == ALL)
     {
         startIndex = 0;
-        endIndex = dt_leg_count; /* retrives the total number of legs */
+        /* retrieves the total number of legs */
+        endIndex = dt_leg_count;
     }
     else
     {
-        startIndex = leg; /* Treat `leg` as the specific leg index */
-        endIndex = leg + 1; /* Only iterate for this specific leg */
+        /* Treat `leg` as the specific leg index */
+        startIndex = leg;
+         /* Only iterate for this specific leg */
+        endIndex = leg + 1;
     }
 
     for (int8_t i = startIndex; i < endIndex; i++)
@@ -568,12 +601,15 @@ void PowerAPI::initBuck(leg_t leg, hrtim_pwm_mode_t leg_mode)
     if(leg == ALL)
     {
         startIndex = 0;
-        endIndex = dt_leg_count; /* retrives the total number of legs */
+        /* retrieves the total number of legs */
+        endIndex = dt_leg_count;
     }
     else
     {
-        startIndex = leg; /* Treat `leg` as the specific leg index */
-        endIndex = leg + 1; /* Only iterate for this specific leg */
+        /* Treat `leg` as the specific leg index */
+        startIndex = leg;
+        /* Only iterate for this specific leg */
+        endIndex = leg + 1;
     }
 
     for (int8_t i = startIndex; i < endIndex; i++)
@@ -600,12 +636,15 @@ void PowerAPI::initBoost(leg_t leg)
     if(leg == ALL)
     {
         startIndex = 0;
-        endIndex = dt_leg_count; /* retrives the total number of legs */
+        /* retrieves the total number of legs */
+        endIndex = dt_leg_count;
     }
     else
     {
-        startIndex = leg; /* Treat `leg` as the specific leg index */
-        endIndex = leg + 1; /* Only iterate for this specific leg */
+        /* Treat `leg` as the specific leg index */
+        startIndex = leg;
+        /* Only iterate for this specific leg */
+        endIndex = leg + 1;
     }
 
     for (int8_t i = startIndex; i < endIndex; i++)
