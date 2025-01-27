@@ -45,7 +45,9 @@ static int ngnd_init(const struct device* dev)
 {
 	struct owntech_ngnd_driver_dev_data* data = dev->data;
 
-	const struct gpio_dt_spec ngnd_spec = GPIO_DT_SPEC_GET(DT_CHILD(NGND_NODE, ngnd_gpio_pin), gpios);
+	const struct gpio_dt_spec ngnd_spec =
+                GPIO_DT_SPEC_GET(DT_CHILD(NGND_NODE, ngnd_gpio_pin), gpios);
+
 	data->ngnd_pin_spec = ngnd_spec;
 
 	gpio_pin_configure_dt(&data->ngnd_pin_spec, GPIO_OUTPUT_ACTIVE);
