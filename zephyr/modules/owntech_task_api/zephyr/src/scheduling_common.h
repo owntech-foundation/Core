@@ -23,8 +23,8 @@
  */
 
 
-#ifndef SCHEDULING_COMMON_HPP_
-#define SCHEDULING_COMMON_HPP_
+#ifndef SCHEDULING_COMMON_H_
+#define SCHEDULING_COMMON_H_
 
 
 /* Stdlib */
@@ -57,7 +57,9 @@ typedef struct
 	task_status_t status;
 } task_information_t;
 
-void scheduling_common_start_task(task_information_t& task_info, k_thread_entry_t entry_point);
+void scheduling_common_start_task(task_information_t& task_info,
+								  k_thread_entry_t entry_point);
+
 void scheduling_common_suspend_task(task_information_t& task_info);
 void scheduling_common_resume_task(task_information_t& task_info);
 

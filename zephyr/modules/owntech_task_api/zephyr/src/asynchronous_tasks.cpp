@@ -28,7 +28,11 @@
 #include "scheduling_common.h"
 
 
-static K_THREAD_STACK_ARRAY_DEFINE(asynchronous_thread_stack, CONFIG_OWNTECH_TASK_MAX_ASYNCHRONOUS_TASKS, CONFIG_OWNTECH_TASK_ASYNCHRONOUS_TASKS_STACK_SIZE);
+static K_THREAD_STACK_ARRAY_DEFINE(
+			asynchronous_thread_stack,
+			CONFIG_OWNTECH_TASK_MAX_ASYNCHRONOUS_TASKS,
+			CONFIG_OWNTECH_TASK_ASYNCHRONOUS_TASKS_STACK_SIZE
+		);
 
 
 static task_information_t tasks_information[CONFIG_OWNTECH_TASK_MAX_ASYNCHRONOUS_TASKS];
@@ -37,7 +41,9 @@ static uint8_t task_count = 0;
 static const int ASYNCHRONOUS_THREADS_PRIORITY = 14;
 
 
-void _scheduling_user_asynchronous_task_entry_point(void* thread_function_p, void*, void*)
+void _scheduling_user_asynchronous_task_entry_point(void* thread_function_p,
+													void*,
+													void*)
 {
 	while(1)
 	{
@@ -54,10 +60,16 @@ int8_t scheduling_define_asynchronous_task(task_function_t routine)
 		task_count++;
 
 		tasks_information[task_number].routine     = routine;
-		tasks_information[task_number].priority    = ASYNCHRONOUS_THREADS_PRIORITY;
+		tasks_information[task_number].priority    =
+				ASYNCHRONOUS_THREADS_PRIORITY;
+
 		tasks_information[task_number].task_number = task_number;
-		tasks_information[task_number].stack       = asynchronous_thread_stack[task_number];
-		tasks_information[task_number].stack_size  = K_THREAD_STACK_SIZEOF(asynchronous_thread_stack[task_number]);
+		tasks_information[task_number].stack       =
+				asynchronous_thread_stack[task_number];
+
+		tasks_information[task_number].stack_size  =
+				K_THREAD_STACK_SIZEOF(asynchronous_thread_stack[task_number]);
+
 		tasks_information[task_number].status      = task_status_t::defined;
 
 		return task_number;
@@ -74,10 +86,14 @@ void scheduling_start_asynchronous_task(uint8_t task_number)
 	{
 		if (tasks_information[task_number].status == task_status_t::defined)
 		{
-			scheduling_common_start_task(tasks_information[task_number], _scheduling_user_asynchronous_task_entry_point);
+			scheduling_common_start_task(
+				tasks_information[task_number],
+				_scheduling_user_asynchronous_task_entry_point);
+
 			tasks_information[task_number].status = task_status_t::running;
 		}
-		else if (tasks_information[task_number].status == task_status_t::suspended)
+		else if (tasks_information[task_number].status ==
+				 task_status_t::suspended)
 		{
 			scheduling_common_resume_task(tasks_information[task_number]);
 			tasks_information[task_number].status = task_status_t::running;

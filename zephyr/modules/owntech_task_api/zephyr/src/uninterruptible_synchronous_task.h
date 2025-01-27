@@ -23,8 +23,8 @@
  */
 
 
-#ifndef UNINTERRUPTIBLESYNCHRONOUSTASK_HPP_
-#define UNINTERRUPTIBLESYNCHRONOUSTASK_HPP_
+#ifndef UNINTERRUPTIBLESYNCHRONOUSTASK_H_
+#define UNINTERRUPTIBLESYNCHRONOUSTASK_H_
 
 /* Stdlib */
 #include <stdint.h>
@@ -33,9 +33,16 @@
 #include "TaskAPI.h"
 
 
-void scheduling_set_uninterruptible_synchronous_task_interrupt_source(scheduling_interrupt_source_t int_source);
-int8_t scheduling_define_uninterruptible_synchronous_task(task_function_t periodic_task, uint32_t task_period_us);
-void scheduling_start_uninterruptible_synchronous_task(bool manage_data_acquisition);
+void scheduling_set_uninterruptible_synchronous_task_interrupt_source(
+                                    scheduling_interrupt_source_t int_source);
+
+int8_t scheduling_define_uninterruptible_synchronous_task(
+                                    task_function_t periodic_task,
+                                    uint32_t task_period_us);
+
+void scheduling_start_uninterruptible_synchronous_task(
+                                    bool manage_data_acquisition);
+
 void scheduling_stop_uninterruptible_synchronous_task();
 
 

@@ -23,8 +23,8 @@
  */
 
 
-#ifndef ASYNCHRONOUSTASKS_HPP_
-#define ASYNCHRONOUSTASKS_HPP_
+#ifndef ASYNCHRONOUSTASKS_H_
+#define ASYNCHRONOUSTASKS_H_
 
 
 /* Stdlib */

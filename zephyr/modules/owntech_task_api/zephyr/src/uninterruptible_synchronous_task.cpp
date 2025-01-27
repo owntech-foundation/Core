@@ -123,14 +123,18 @@ void user_task_proxy()
  *  Public API
  */
 
-void scheduling_set_uninterruptible_synchronous_task_interrupt_source(scheduling_interrupt_source_t int_source)
+void scheduling_set_uninterruptible_synchronous_task_interrupt_source(
+									scheduling_interrupt_source_t int_source)
 {
 	interrupt_source = int_source;
 }
 
-int8_t scheduling_define_uninterruptible_synchronous_task(task_function_t periodic_task, uint32_t task_period_us)
+int8_t scheduling_define_uninterruptible_synchronous_task(
+									task_function_t periodic_task,
+									uint32_t task_period_us)
 {
-	if ( (uninterruptibleTaskStatus != task_status_t::inexistent) && (uninterruptibleTaskStatus != task_status_t::suspended))
+	if ( (uninterruptibleTaskStatus != task_status_t::inexistent) &&
+		 (uninterruptibleTaskStatus != task_status_t::suspended))
 		return -1;
 
 	if (periodic_task == NULL)
@@ -184,9 +188,11 @@ int8_t scheduling_define_uninterruptible_synchronous_task(task_function_t period
 	return -1;
 }
 
-void scheduling_start_uninterruptible_synchronous_task(bool manage_data_acquisition)
+void scheduling_start_uninterruptible_synchronous_task(
+									bool manage_data_acquisition)
 {
-	if ( (uninterruptibleTaskStatus != task_status_t::defined) && (uninterruptibleTaskStatus != task_status_t::suspended) )
+	if ( (uninterruptibleTaskStatus != task_status_t::defined) &&
+		 (uninterruptibleTaskStatus != task_status_t::suspended) )
 		return;
 
 	if (interrupt_source == scheduling_interrupt_source_t::source_uninitialized)
