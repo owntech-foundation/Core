@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 LAAS-CNRS
+ * Copyright (c) 2022-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -26,32 +26,32 @@
 #define TASKAPI_H_
 
 
-// Stdlib
+/* Stdlib */
 #include <stdint.h>
 
-// Zephyr
+/* Zephyr */
 #include <zephyr/kernel.h>
 
-
-/////
-// Public types
+/**
+ *  Public types
+ */
 
 typedef void (*task_function_t)();
 
 typedef enum { source_uninitialized, source_hrtim, source_tim6 } scheduling_interrupt_source_t;
 
-
-/////
-// Static class definition
+/**
+ *  Static class definition
+ */
 
 class TaskAPI
 {
 public:
 	/**
-	 * @brief Creates a time critial task.
+	 * @brief Creates a time critical task.
 	 *        A critical task is an Uninterruptible Synchronous Task
 	 *        that uses a precise timer to execute a periodic,
-	 *        non-interruptible user task.
+	 *        non-interruptable user task.
 	 *        Use this function to define such a task.
 	 *        Only one task of this kind can be defined.
 	 *        This function can be used to redefine (replace) a
@@ -87,7 +87,7 @@ public:
 	 *        a critical task.
 	 *
 	 *        A critical task is an Uninterruptible Synchronous Task that uses a precise timer to
-	 *        execute a periodic, non-interruptible user task.
+	 *        execute a periodic, non-interruptable user task.
 	 *
 	 *        If no value is provided
 	 *        for the parameter and Data Acquisition has not been started
@@ -105,7 +105,7 @@ public:
 	/**
 	 * @brief Stop the previously started critical task.
 	 *        A critical task is an Uninterruptible Synchronous Task that uses a precise timer to
-	 *        execute a periodic, non-interruptible user task.
+	 *        execute a periodic, non-interruptable user task.
 	 *        The task can be then resumed by calling
 	 *        startCritical() again.
 	 */
@@ -184,11 +184,11 @@ private:
 
 };
 
-
-/////
-// Public object to interact with the class
+/**
+ *  Public object to interact with the class
+ */
 
 extern TaskAPI task;
 
 
-#endif // TASKAPI_H_
+#endif /* TASKAPI_H_ */

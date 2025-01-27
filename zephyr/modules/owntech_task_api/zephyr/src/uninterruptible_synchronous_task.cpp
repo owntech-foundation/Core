@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 LAAS-CNRS
+ * Copyright (c) 2022-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -24,10 +24,10 @@
  */
 
 
-// Current module
+/* Current module */
 #include "scheduling_common.hpp"
 
-// OwnTech Power API
+/* OwnTech Power API */
 #include "timer.h"
 #include "hrtim.h"
 #include "SpinAPI.h"
@@ -35,7 +35,7 @@
 #include "safety_internal.h"
 #include "SafetyAPI.h"
 
-/* size of stack area used by error thread */
+/* Size of stack area used by error thread */
 #define STACKSIZE 512
 #define PRIORITY 0
 
@@ -44,30 +44,32 @@ void thread_error(void *, void *, void *);
 K_THREAD_DEFINE(thread_error_id, STACKSIZE, thread_error, NULL, NULL, NULL,
 				PRIORITY, 0, 0);
 
-/////
-// Local variables and constants
+/**
+ *  Local variables and constants
+ */
 
-// Timer device
+/* Timer device */
 static const struct device* timer6 = DEVICE_DT_GET(TIMER6_DEVICE);
 
-// Task status
+/* Task status */
 static task_status_t uninterruptibleTaskStatus = task_status_t::inexistent;
 
-// Interrupt source
+/* Interrupt source */
 static scheduling_interrupt_source_t interrupt_source = source_uninitialized;
 
-// For HRTIM interrupts
+/* For HRTIM interrupts */
 static task_function_t user_periodic_task = NULL;
 
-// Data dispatch
+/* Data dispatch */
 static bool do_data_dispatch = false;
 static uint32_t task_period = 0;
 
-// Safety
+/* Safety */
 static bool safety_alert = false;
 
-/////
-// Private API
+/**
+ *  Private API
+ */
 
 void thread_error(void *, void *, void *)
 {
@@ -117,9 +119,9 @@ void user_task_proxy()
 	user_periodic_task();
 }
 
-/////
-// Public API
-
+/**
+ *  Public API
+ */
 
 void scheduling_set_uninterruptible_synchronous_task_interrupt_source(scheduling_interrupt_source_t int_source)
 {
@@ -142,7 +144,7 @@ int8_t scheduling_define_uninterruptible_synchronous_task(task_function_t period
 		task_period = task_period_us;
 		user_periodic_task = periodic_task;
 
-		// Everything OK, go on with timer configuration
+		/* Everything OK, go on with timer configuration */
 		struct timer_config_t timer_cfg = {0};
 		timer_cfg.timer_enable_irq       = 1;
 		timer_cfg.timer_irq_callback     = user_task_proxy;
@@ -192,11 +194,13 @@ void scheduling_start_uninterruptible_synchronous_task(bool manage_data_acquisit
 
 	if ( (manage_data_acquisition == true) && (spin.data.started() == false) )
 	{
-		// If Data Acquisition has not been started yet,
-		// then Scheduling will be in charge of data dispatch
+		/**
+		 * If Data Acquisition has not been started yet,
+		 * then Scheduling will be in charge of data dispatch
+		 */
 		do_data_dispatch = true;
 
-		// Configure Data Acquisition module
+		/* Configure Data Acquisition module */
 		spin.data.setDispatchMethod(DispatchMethod_t::externally_triggered);
 
 		uint32_t repetition;
@@ -204,7 +208,7 @@ void scheduling_start_uninterruptible_synchronous_task(bool manage_data_acquisit
 		{
 			repetition = hrtim_PeriodicEvent_GetRep(MSTR);
 		}
-		else // (interrupt_source == scheduling_interrupt_source_t::source_tim6)
+		else /* (interrupt_source == scheduling_interrupt_source_t::source_tim6) */
 		{
 			uint32_t hrtim_period_us = hrtim_period_Master_get_us();
 			if (hrtim_period_us == 0)
@@ -216,7 +220,7 @@ void scheduling_start_uninterruptible_synchronous_task(bool manage_data_acquisit
 		}
 		spin.data.setRepetitionsBetweenDispatches(repetition);
 
-		// Then start it
+		/* Then start it */
 		spin.data.start();
 	}
 
