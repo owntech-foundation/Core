@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 LAAS-CNRS
+ * Copyright (c) 2024-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -32,13 +32,13 @@
 /**
  * two types of reactions :
  *  - Open_Circuit : Open both high-side and low-side switches
- *  - Short_Circuit : Open high-side switch and close low-side switch, maitaining output in shortcircuit.
- * */
+ *  - Short_Circuit : Open high-side switch and close low-side switch, maintaining output in short circuit.
+ */
 typedef enum
 {
     Open_Circuit,
     Short_Circuit,
 } safety_reaction_t;
 
-#endif // SAFETY_ENUM_H_
+#endif /* SAFETY_ENUM_H_ */
 

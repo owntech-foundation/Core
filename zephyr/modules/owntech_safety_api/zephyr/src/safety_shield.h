@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 LAAS-CNRS
+ * Copyright (c) 2024-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -37,7 +37,7 @@
  *                   to watch later.
  *        @arg true
  *        @arg false
-*/
+ */
 void safety_init_shield(bool watch_all);
 
-#endif // SHIELD_SAFETY_H_
+#endif /* SHIELD_SAFETY_H_ */

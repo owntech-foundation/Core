@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 LAAS-CNRS
+ * Copyright (c) 2024-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -29,7 +29,7 @@
 /* Current Header */
 #include "safety_shield.h"
 
-#define TRHRESHOLD_WRITE_PROP(node_id) \
+#define THRESHOLD_WRITE_PROP(node_id) \
         { \
             .sensor = DT_STRING_TOKEN(node_id, sensor_name),\
             .name = DT_PROP(node_id, threshold_name), \
@@ -37,9 +37,9 @@
             .threshold_max = DT_PROP(node_id, threshold_high),  \
         },    \
 
-/* *
+/**
  * Define the number of sensors that need to be monitored for safety purpose.
-*/
+ */
 #define THRESHOLD_COUNTER(node_id) +1
 #define DT_THRESHOLDS_NUMBER DT_FOREACH_STATUS_OKAY(safety_thresholds, THRESHOLD_COUNTER)
 
@@ -50,16 +50,16 @@ struct threshold_prop_t{
     uint32_t threshold_max;
 };
 
-/* Struct wich contains all the propriety from the device tree */
+/* Struct which contains all the propriety from the device tree */
 static threshold_prop_t dt_threshold_props[] =
 {
-	DT_FOREACH_STATUS_OKAY(safety_thresholds, TRHRESHOLD_WRITE_PROP)
+	DT_FOREACH_STATUS_OKAY(safety_thresholds, THRESHOLD_WRITE_PROP)
 };
 
 /**
  * @brief Initializes the threshold min and max for all the sensors with th default value
  *        from the device tree if values not found in the static storage.
-*/
+ */
 void safety_init_shield(bool watch_all)
 {
     for(uint8_t i = 0; i < DT_THRESHOLDS_NUMBER; i++)
