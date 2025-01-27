@@ -93,13 +93,45 @@ typedef enum
  *  API
  */
 
-typedef void (*dac_api_setconstvalue) (const struct device* dev, uint8_t channel, uint32_t value);
-typedef void (*dac_api_setfunction)   (const struct device* dev, uint8_t channel, const dac_function_config_t* config);
-typedef void (*dac_api_fn_upd_reset)  (const struct device* dev, uint8_t channel, uint32_t reset_data);
-typedef void (*dac_api_fn_upd_step)   (const struct device* dev, uint8_t channel, uint32_t step_data);
-typedef void (*dac_api_pinconfigure)  (const struct device* dev, uint8_t channel, dac_pin_config_t config);
-typedef void (*dac_api_start)         (const struct device* dev, uint8_t channel);
-typedef void (*dac_api_stop)          (const struct device* dev, uint8_t channel);
+typedef void (*dac_api_setconstvalue)(
+	const struct device* dev,
+	uint8_t channel,
+	uint32_t value
+);
+
+typedef void (*dac_api_setfunction)(
+	const struct device* dev,
+	uint8_t channel,
+	const dac_function_config_t* config
+);
+
+typedef void (*dac_api_fn_upd_reset)(
+	const struct device* dev,
+	uint8_t channel,
+	uint32_t reset_data
+);
+
+typedef void (*dac_api_fn_upd_step)(
+	const struct device* dev,
+	uint8_t channel,
+	uint32_t step_data
+);
+
+typedef void (*dac_api_pinconfigure)(
+	const struct device* dev,
+	uint8_t channel,
+	dac_pin_config_t config
+);
+
+typedef void (*dac_api_start)(
+	const struct device* dev,
+	uint8_t channel
+);
+
+typedef void (*dac_api_stop)(
+	const struct device* dev,
+	uint8_t channel
+);
 
 __subsystem struct dac_driver_api
 {
@@ -112,35 +144,46 @@ __subsystem struct dac_driver_api
 	dac_api_stop          stop;
 };
 
-static inline void dac_set_const_value(const struct device* dev, uint8_t channel, uint32_t value)
+static inline void dac_set_const_value(const struct device* dev,
+									   uint8_t channel,
+									   uint32_t value)
 {
 	const struct dac_driver_api* api = (const struct dac_driver_api*)(dev->api);
 
 	api->setconstvalue(dev, channel, value);
 }
 
-static inline void dac_set_function(const struct device* dev, uint8_t channel, const dac_function_config_t* function_config)
+static inline void dac_set_function(
+								const struct device* dev,
+								uint8_t channel,
+								const dac_function_config_t* function_config)
 {
 	const struct dac_driver_api* api = (const struct dac_driver_api*)(dev->api);
 
 	api->setfunction(dev, channel, function_config);
 }
 
-static inline void dac_function_update_reset(const struct device* dev, uint8_t channel, uint32_t reset_data)
+static inline void dac_function_update_reset(const struct device* dev,
+											 uint8_t channel,
+											 uint32_t reset_data)
 {
 	const struct dac_driver_api* api = (const struct dac_driver_api*)(dev->api);
 
 	api->fn_upd_reset(dev, channel, reset_data);
 }
 
-static inline void dac_function_update_step(const struct device* dev, uint8_t channel, uint32_t step_data)
+static inline void dac_function_update_step(const struct device* dev,
+											uint8_t channel,
+											uint32_t step_data)
 {
 	const struct dac_driver_api* api = (const struct dac_driver_api*)(dev->api);
 
 	api->fn_upd_step(dev, channel, step_data);
 }
 
-static inline void dac_pin_configure(const struct device* dev, uint8_t channel, dac_pin_config_t pin_config)
+static inline void dac_pin_configure(const struct device* dev,
+									 uint8_t channel,
+									 dac_pin_config_t pin_config)
 {
 	const struct dac_driver_api* api = (const struct dac_driver_api*)(dev->api);
 
