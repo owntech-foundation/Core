@@ -45,12 +45,14 @@ class SyncCommunication
 public:
 
 	/**
-	 * @brief initialization synchronization as MASTER, the master send the synchronization pulse.
+	 * @brief Initialization synchronization as MASTER,
+	 * 		  the master send the synchronization pulse.
 	 */
 	static void initMaster();
 
 	/**
-	 * @brief initialization synchronization as SLAVE, the slave receive the synchronization pulse.
+	 * @brief Initialization synchronization as SLAVE,
+	 * 		  the slave receive the synchronization pulse.
 	 */
 	static void initSlave();
 };
