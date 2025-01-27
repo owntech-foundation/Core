@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 LAAS-CNRS
+ * Copyright (c) 2022-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -26,10 +26,10 @@
 #ifndef UNINTERRUPTIBLESYNCHRONOUSTASK_HPP_
 #define UNINTERRUPTIBLESYNCHRONOUSTASK_HPP_
 
-// Stdlib
+/* Stdlib */
 #include <stdint.h>
 
-// OwnTech Power API
+/* OwnTech Power API */
 #include "TaskAPI.h"
 
 
@@ -39,4 +39,4 @@ void scheduling_start_uninterruptible_synchronous_task(bool manage_data_acquisit
 void scheduling_stop_uninterruptible_synchronous_task();
 
 
-#endif // UNINTERRUPTIBLESYNCHRONOUSTASK_HPP_
+#endif /* UNINTERRUPTIBLESYNCHRONOUSTASK_HPP_ */

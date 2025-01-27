@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 LAAS-CNRS
+ * Copyright (c) 2022-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -27,13 +27,13 @@
 #define SCHEDULING_COMMON_HPP_
 
 
-// Stdlib
+/* Stdlib */
 #include <stdint.h>
 
-// Zephyr
+/* Zephyr */
 #include <zephyr/kernel.h>
 
-// OwnTech Power API
+/* OwnTech Power API */
 #include "TaskAPI.h"
 
 
@@ -62,4 +62,4 @@ void scheduling_common_suspend_task(task_information_t& task_info);
 void scheduling_common_resume_task(task_information_t& task_info);
 
 
-#endif // SCHEDULING_COMMON_HPP_
+#endif /* SCHEDULING_COMMON_HPP_ */
