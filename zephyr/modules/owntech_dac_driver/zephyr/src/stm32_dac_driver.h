@@ -65,12 +65,31 @@ struct stm32_dac_driver_data
 
 
 static int  dac_stm32_init(const struct device* dev);
-static void dac_stm32_set_const_value(const struct device* dev, uint8_t channel, uint32_t value);
-static void dac_stm32_set_function(const struct device* dev, uint8_t channel, const dac_function_config_t* function_config);
-static void dac_stm32_function_update_reset(const struct device* dev, uint8_t channel, uint32_t reset_data);
-static void dac_stm32_function_update_step(const struct device* dev, uint8_t channel, uint32_t step_data);
-static void dac_stm32_pin_configure(const struct device* dev, uint8_t channel, dac_pin_config_t pin_config);
+
+static void dac_stm32_set_const_value(const struct device* dev,
+									  uint8_t channel,
+									  uint32_t value);
+
+static void dac_stm32_set_function(
+	const struct device* dev,
+	uint8_t channel,
+	const dac_function_config_t* function_config
+);
+
+static void dac_stm32_function_update_reset(const struct device* dev,
+											uint8_t channel,
+											uint32_t reset_data);
+
+static void dac_stm32_function_update_step(const struct device* dev,
+										   uint8_t channel,
+										   uint32_t step_data);
+
+static void dac_stm32_pin_configure(const struct device* dev,
+									uint8_t channel,
+									dac_pin_config_t pin_config);
+
 static void dac_stm32_start(const struct device* dev, uint8_t channel);
+
 static void dac_stm32_stop(const struct device* dev, uint8_t channel);
 
 
