@@ -66,12 +66,14 @@ public:
 	static LedHAL led;
 
 	/**
-	 * @brief Contains all the function of the STM32 DAC used to generate signals and handle the current mode.
+	 * @brief Contains all the function of the STM32 DAC used to generate
+	 * 		  signals and handle the current mode.
 	 */
 	static DacHAL dac;
 
 	/**
-	 * @brief Contains all the function of the STM32 comparator used with the current mode.
+	 * @brief Contains all the function of the STM32 comparator used
+	 * 		  with the current mode.
 	 */
 	static CompHAL comp;
 

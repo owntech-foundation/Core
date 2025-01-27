@@ -94,7 +94,9 @@ void data_dispatch_do_full_dispatch();
  *         by further calls to the function with same
  *         adc number/channel rank.
  */
-uint16_t* data_dispatch_get_acquired_values(uint8_t adc_number, uint8_t channel_rank, uint32_t& number_of_values_acquired);
+uint16_t* data_dispatch_get_acquired_values(uint8_t adc_number,
+                                            uint8_t channel_rank,
+                                            uint32_t& number_of_values_acquired);
 
 /**
  * @brief  Peek data for a specific channel:
@@ -109,7 +111,8 @@ uint16_t* data_dispatch_get_acquired_values(uint8_t adc_number, uint8_t channel_
  *         Note that if no value has been acquired,
  *         returned value will be 0.
  */
-uint16_t data_dispatch_peek_acquired_value(uint8_t adc_number, uint8_t channel_rank);
+uint16_t data_dispatch_peek_acquired_value(uint8_t adc_number,
+                                           uint8_t channel_rank);
 
 
 #endif /* DATA_DISPATCH_H_ */

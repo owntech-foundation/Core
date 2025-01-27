@@ -51,7 +51,10 @@
  * @param buffer Pointer to buffer.
  * @param buffer_size Number of uint16_t words the buffer can contain.
  */
-void dma_configure_adc_acquisition(uint8_t adc_number, bool disable_interrupts, uint16_t* buffer, size_t buffer_size);
+void dma_configure_adc_acquisition(uint8_t adc_number,
+                                   bool disable_interrupts,
+                                   uint16_t* buffer,
+                                   size_t buffer_size);
 
 /**
  * @brief Obtain the number of acquired data since

@@ -32,7 +32,8 @@
 /**
  * @brief  Handles comparator 1 and 3 of the SPIN board
  *
- * @note   Use this element to call the initialization function of either comparator
+ * @note   Use this element to call the initialization function
+ * 		   of either comparator
  */
 class CompHAL
 {
@@ -41,9 +42,10 @@ public:
 	 * @brief  Initializes a comparator for the current mode control.
 	 *
 	 * @note   Current mode control deploys a comparator together with a DAC.
-     *         This function must be called after setting up the DAC linked to the comparator.
-     *         Note that comparator 1 is linked with DAC3 and comparator 3 with DAC1.
-     *         Comparator 1 is linked with ilow1 and comparator 3 is linked with ilow2.
+     *         This function must be called after setting up the DAC linked
+	 * 		   to the comparator. Note that comparator 1 is linked with DAC3
+	 *         and comparator 3 with DAC1. Comparator 1 is linked with ilow1
+	 * 		   and comparator 3 is linked with ilow2.
 	 *
 	 * @param  comparator_number can be either 1 or 3
 	 */
