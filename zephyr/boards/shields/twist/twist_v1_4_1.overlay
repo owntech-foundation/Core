@@ -7,6 +7,7 @@
 / {
 	choosen{
 		zephyr,can-primary = &fdcan2;
+		thingset,can = &fdcan2;
 	};
 
 	powershield: power-shield{
