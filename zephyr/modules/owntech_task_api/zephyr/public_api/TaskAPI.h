@@ -38,7 +38,10 @@
 
 typedef void (*task_function_t)();
 
-typedef enum { source_uninitialized, source_hrtim, source_tim6 } scheduling_interrupt_source_t;
+typedef enum { source_uninitialized,
+			   source_hrtim,
+			   source_tim6 }
+			   scheduling_interrupt_source_t;
 
 /**
  *  Static class definition
@@ -80,14 +83,18 @@ public:
 	 *         An error can occur notably when an uninterruptible
 	 *         task has already been defined previously.
 	 */
-	int8_t createCritical(task_function_t periodic_task, uint32_t task_period_us, scheduling_interrupt_source_t int_source = source_hrtim);
+	int8_t createCritical(
+				task_function_t periodic_task,
+				uint32_t task_period_us,
+				scheduling_interrupt_source_t int_source = source_hrtim
+			);
 
 	/**
 	 * @brief Use this function to start a previously defined
 	 *        a critical task.
 	 *
-	 *        A critical task is an Uninterruptible Synchronous Task that uses a precise timer to
-	 *        execute a periodic, non-interruptable user task.
+	 *        A critical task is an Uninterruptible Synchronous Task that uses
+	 * 		  a precise timer to execute a periodic, non-interruptable user task.
 	 *
 	 *        If no value is provided
 	 *        for the parameter and Data Acquisition has not been started
@@ -104,9 +111,9 @@ public:
 
 	/**
 	 * @brief Stop the previously started critical task.
-	 *        A critical task is an Uninterruptible Synchronous Task that uses a precise timer to
-	 *        execute a periodic, non-interruptable user task.
-	 *        The task can be then resumed by calling
+	 *        A critical task is an Uninterruptible Synchronous Task
+	 * 		  that uses a precise timer to execute a periodic, non-interruptable
+	 * 		  user task. The task can be then resumed by calling
 	 *        startCritical() again.
 	 */
 	void stopCritical();
@@ -116,8 +123,8 @@ public:
 
 	/**
 	 * @brief Creates a background task.
-	 *        Background tasks are asynchronous tasks that run in the background when there
-	 *        is no critical task running.
+	 *        Background tasks are asynchronous tasks that run in the
+	 * 		  background when there is no critical task running.
 	 *
 	 * @param routine Pointer to the void(void) function
 	 *        that will act as the task main function.
@@ -133,8 +140,8 @@ public:
 	 * @brief Use this function to start a previously defined
 	 *        background task using its task number.
 	 *
-	 *        Background tasks are asynchronous tasks that run in the background when there
-	 *        is no critical task running.
+	 *        Background tasks are asynchronous tasks that run in the background
+	 * 		  when there is no critical task running.
 	 *
 	 * @param task_number Number of the task to start, obtained
 	 *        using the defineAsynchronousTask() function.
@@ -145,8 +152,8 @@ public:
 	 * @brief Use this function to stop a previously started
 	 *        background task using its task number.
 	 *
-	 *        Background tasks are asynchronous tasks that run in the background when there
-	 *        is no critical task running.
+	 *        Background tasks are asynchronous tasks that run in the background
+	 * 		  when there is no critical task running.
 	 *        The task can be then resumed by calling
 	 *        startAsynchronousTask() again.
 	 *

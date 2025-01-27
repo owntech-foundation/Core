@@ -48,10 +48,14 @@ TaskAPI task;
  */
 
 /* Non-interruptable control task */
-int8_t TaskAPI::createCritical(task_function_t periodic_task, uint32_t task_period_us, scheduling_interrupt_source_t int_source)
+int8_t TaskAPI::createCritical(task_function_t periodic_task,
+							   uint32_t task_period_us,
+							   scheduling_interrupt_source_t int_source)
 {
 	scheduling_set_uninterruptible_synchronous_task_interrupt_source(int_source);
-	return scheduling_define_uninterruptible_synchronous_task(periodic_task, task_period_us);
+
+	return scheduling_define_uninterruptible_synchronous_task(periodic_task,
+															  task_period_us);
 }
 
 void TaskAPI::startCritical(bool manage_data_acquisition)

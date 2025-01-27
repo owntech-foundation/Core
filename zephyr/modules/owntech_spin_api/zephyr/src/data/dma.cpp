@@ -89,7 +89,10 @@ static dma_user_data_t user_data[5] = {0};
  * twice: when buffer is half-filled and when buffer is filled.
  * For other ADCs, it will never be called.
  */
-static void _dma_callback(const struct device* dev, void* user_data, uint32_t dma_channel, int status)
+static void _dma_callback(const struct device* dev,
+						  void* user_data,
+						  uint32_t dma_channel,
+						  int status)
 {
 	UNUSED(dev);
 	UNUSED(dma_channel);
@@ -101,9 +104,16 @@ static void _dma_callback(const struct device* dev, void* user_data, uint32_t dm
 	data_dispatch_do_dispatch(my_user_data->channel);
 
 	/* Reload DMA on last transaction */
-	if ( (my_user_data->has_interrupt == true) && (status == DMA_STATUS_COMPLETE) )
+	if ( (my_user_data->has_interrupt == true) &&
+		 (status == DMA_STATUS_COMPLETE) )
 	{
-		dma_reload(dma1, my_user_data->channel, my_user_data->src, my_user_data->dst, my_user_data->size);
+		dma_reload(
+			dma1,
+			my_user_data->channel,
+			my_user_data->src,
+			my_user_data->dst,
+			my_user_data->size
+		);
 	}
 }
 
@@ -111,7 +121,10 @@ static void _dma_callback(const struct device* dev, void* user_data, uint32_t dm
  *  Public API
  */
 
-void dma_configure_adc_acquisition(uint8_t adc_number, bool disable_interrupts, uint16_t* buffer, size_t buffer_size)
+void dma_configure_adc_acquisition(uint8_t adc_number,
+								   bool disable_interrupts,
+								   uint16_t* buffer,
+								   size_t buffer_size)
 {
 	/* Check environment */
 	if (device_is_ready(dma1) == false)
@@ -193,19 +206,26 @@ uint32_t dma_get_retrieved_data_count(uint8_t adc_number)
 	/* Get data */
 	uint32_t dma_index = adc_number - 1;
 	uint32_t dma_remaining_data = LL_DMA_GetDataLength(DMA1, dma_index);
-	int32_t previous_dma_latest_data_pointer = previous_dma_latest_data_pointers[dma_index];
+
+	int32_t previous_dma_latest_data_pointer =
+					previous_dma_latest_data_pointers[dma_index];
 
 	/* Compute pointers */
-	int32_t dma_next_data_pointer = buffers_sizes[dma_index] - dma_remaining_data;
+	int32_t dma_next_data_pointer =
+					buffers_sizes[dma_index] - dma_remaining_data;
+
 	int32_t dma_latest_data_pointer = dma_next_data_pointer - 1;
 
 	int32_t corrected_dma_pointer = dma_latest_data_pointer;
+
 	if (dma_latest_data_pointer < previous_dma_latest_data_pointer)
 	{
 		corrected_dma_pointer += buffers_sizes[dma_index];
 	}
 
-	uint32_t retrieved_data = corrected_dma_pointer - previous_dma_latest_data_pointer;
+	uint32_t retrieved_data =
+					corrected_dma_pointer - previous_dma_latest_data_pointer;
+
 	previous_dma_latest_data_pointers[dma_index] = dma_latest_data_pointer;
 
 	return retrieved_data;
