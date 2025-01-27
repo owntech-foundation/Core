@@ -19,7 +19,7 @@
 #include <string.h>
 
 #include "thingset.h"
-#include "DataAPI.h"
+#include "ShieldAPI.h"
 
 char manufacturer[] = "OwnTech";
 char device_type[] = "Twist";
@@ -45,14 +45,14 @@ uint16_t can_node_addr = 0x60;
 
 static void update_measurements(enum thingset_callback_reason cb_reason)
 {
-    if (cb_reason == THINGSET_CALLBACK_PRE_READ && data.started() == true)
+    if (cb_reason == THINGSET_CALLBACK_PRE_READ)
     {
-        v1_low_value = data.peek(V1_LOW);
-        v2_low_value = data.peek(V2_LOW);
-        v_high_value = data.peek(V_HIGH);
-        i1_low_value = data.peek(I1_LOW);
-        i2_low_value = data.peek(I2_LOW);
-        i_high_value = data.peek(I_HIGH);
+        v1_low_value = shield.sensors.peekLatestValue(V1_LOW);
+        v2_low_value = shield.sensors.peekLatestValue(V2_LOW);
+        v_high_value = shield.sensors.peekLatestValue(V_HIGH);
+        i1_low_value = shield.sensors.peekLatestValue(I1_LOW);
+        i2_low_value = shield.sensors.peekLatestValue(I2_LOW);
+        i_high_value = shield.sensors.peekLatestValue(I_HIGH);
         // Do not update this value for now, as the measure is not enabled
         //temp_value = peekTemperature();
     }
