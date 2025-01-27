@@ -23,43 +23,25 @@
  */
 
 
-#ifndef SCHEDULING_COMMON_HPP_
-#define SCHEDULING_COMMON_HPP_
+#ifndef ASYNCHRONOUSTASKS_HPP_
+#define ASYNCHRONOUSTASKS_HPP_
 
 
 /* Stdlib */
 #include <stdint.h>
 
-/* Zephyr */
-#include <zephyr/kernel.h>
-
 /* OwnTech Power API */
 #include "TaskAPI.h"
 
 
-enum class task_status_t
-{
-	inexistent,
-	defined,
-	running,
-	suspended
-};
-
-typedef struct
-{
-	task_function_t routine;
-	int priority;
-	uint8_t task_number;
-	k_thread_stack_t* stack;
-	size_t stack_size;
-	k_tid_t thread_id;
-	k_thread thread_data;
-	task_status_t status;
-} task_information_t;
-
-void scheduling_common_start_task(task_information_t& task_info, k_thread_entry_t entry_point);
-void scheduling_common_suspend_task(task_information_t& task_info);
-void scheduling_common_resume_task(task_information_t& task_info);
+#ifdef CONFIG_OWNTECH_TASK_ENABLE_ASYNCHRONOUS_TASKS
 
 
-#endif /* SCHEDULING_COMMON_HPP_ */
+int8_t scheduling_define_asynchronous_task(task_function_t routine);
+void scheduling_start_asynchronous_task(uint8_t task_number);
+void scheduling_stop_asynchronous_task(uint8_t task_number);
+
+
+#endif /* CONFIG_OWNTECH_TASK_ENABLE_ASYNCHRONOUS_TASKS */
+
+#endif /* ASYNCHRONOUSTASKS_H_ */

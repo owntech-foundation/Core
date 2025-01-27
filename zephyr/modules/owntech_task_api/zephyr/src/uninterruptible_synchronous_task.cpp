@@ -25,7 +25,7 @@
 
 
 /* Current module */
-#include "scheduling_common.hpp"
+#include "scheduling_common.h"
 
 /* OwnTech Power API */
 #include "timer.h"

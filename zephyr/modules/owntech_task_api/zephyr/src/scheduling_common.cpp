@@ -24,7 +24,7 @@
 
 
 /* OwnTech Power API */
-#include "scheduling_common.hpp"
+#include "scheduling_common.h"
 
 void scheduling_common_start_task(task_information_t& task_info, k_thread_entry_t entry_point)
 {
