@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 LAAS-CNRS
+ * Copyright (c) 2021-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -28,7 +28,7 @@
 #define OWNTECH_NGND_DRIVER_H_
 
 
-// Public header
+/* Public header */
 #include "ngnd.h"
 
 
@@ -47,4 +47,4 @@ static int ngnd_init(const struct device* dev);
 }
 #endif
 
-#endif // OWNTECH_NGND_DRIVER_H_
+#endif /* OWNTECH_NGND_DRIVER_H_ */
