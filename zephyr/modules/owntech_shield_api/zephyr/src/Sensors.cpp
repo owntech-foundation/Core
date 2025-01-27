@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 LAAS-CNRS
+ * Copyright (c) 2021-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -25,26 +25,21 @@
  * @author Thomas Walter <thomas.walter@laas.fr>
  */
 
-
-
-// Stdlib
+/* Stdlib */
 #include <stdlib.h>
 
-// Zephyr headers
+/* Zephyr headers */
 #include <zephyr/console/console.h>
 
-// Current class header
+/* Current class header */
 #include "Sensors.h"
 
-// Other modules public API
+/* Other modules public API */
 #include "SpinAPI.h"
 
-
-
-/////
-// Device-tree related macros
-
-
+/**
+ *  Device-tree related macros
+ */
 
 #define SENSOR_NAME(node_id)                      DT_STRING_TOKEN(DT_PARENT(node_id), sensor_name)
 #define CHANNEL_IS_DIFF(node_id)                  DT_PROP(node_id, differential)
@@ -54,7 +49,7 @@
 #define CONVERSION_TYPE(node_id)                  DT_STRING_TOKEN(DT_PARENT(node_id), sensor_conv_type)
 #define SENSOR_DEFAULT_PARAM(node_id, param_name) DT_PROP_OR(DT_PARENT(node_id), default_##param_name, 0)
 
-// Sensor properties
+/* Sensor properties */
 #define SENSOR_WRITE_PROP(node_id)                                            \
 	{                                                                         \
 		.name=SENSOR_NAME(node_id),                                           \
@@ -74,7 +69,7 @@
 #define SUBSENSOR_WRITE_PROP(node_id) DT_FOREACH_CHILD(node_id, SENSOR_WRITE_PROP)
 
 
-// Sensors count. This is very dirty!
+/* Sensors count. This is very dirty! */
 #define SENSORS_COUNTER(node_id) +1
 #define SUBSENSORS_COUNTER(node_id) DT_FOREACH_CHILD(node_id, SENSORS_COUNTER)
 #define DT_SENSORS_COUNT DT_FOREACH_STATUS_OKAY(shield_sensors, SUBSENSORS_COUNTER)
@@ -83,43 +78,48 @@
 
 #ifdef CONFIG_SHIELD_OWNVERTER
 	uint8_t SensorsAPI::temp_mux_in_1 = DT_PROP(DT_NODELABEL(temp), mux_spin_pin_1);
-	uint8_t SensorsAPI::temp_mux_in_2 = DT_PROP(DT_NODELABEL(temp), mux_spin_pin_2);	
+	uint8_t SensorsAPI::temp_mux_in_2 = DT_PROP(DT_NODELABEL(temp), mux_spin_pin_2);
 #endif
 
 
-/////
-// Variables
+/**
+ *  Variables
+ */
 
-// Auto-populated array containing available sensors
-// extracted from the device tree.
+/**
+ * Auto-populated array containing available sensors extracted
+ * from the device tree.
+ */
 SensorsAPI::sensor_dt_data_t SensorsAPI::dt_sensors_props[] =
 {
 	DT_FOREACH_STATUS_OKAY(shield_sensors, SUBSENSOR_WRITE_PROP)
 };
 
-// Number of available sensors defined in device tree for each ADC.
+/* Number of available sensors defined in device tree for each ADC. */
 uint8_t SensorsAPI::available_sensors_count[ADC_COUNT] = {0};
 
-// List of available sensors containing 1 array for each ADC.
-// Each array contains pointers to sensors definitions in
-// available_sensors_props array.
-// For each ADC, the array size will match the value of
-// available_sensors_count for the ADC.
+/**
+ * List of available sensors containing 1 array for each ADC.
+ * Each array contains pointers to sensors definitions in
+ * available_sensors_props array.
+ * For each ADC, the array size will match the value of
+ * available_sensors_count for the ADC.
+ */
 SensorsAPI::sensor_dt_data_t** SensorsAPI::available_sensors_props[ADC_COUNT] = {0};
 
-// List of sensors enabled by user configuration.
-// For each sensor, a nullptr indicates it has not been
-// enabled, and a valid pointer will point to the structure
-// containing relevant information for this sensor.
+/** List of sensors enabled by user configuration.
+ * For each sensor, a nullptr indicates it has not been
+ * enabled, and a valid pointer will point to the structure
+ * containing relevant information for this sensor.
+ */
 SensorsAPI::sensor_dt_data_t* SensorsAPI::enabled_sensors[DT_SENSORS_COUNT] = {0};
 
 bool SensorsAPI::initialized = false;
 
 
-
-/////
-// Public functions accessible only when using a power shield
-
+/**
+ *  Public functions accessible only when using a power shield
+ */
 
 int8_t SensorsAPI::enableSensor(sensor_t sensor_name, adc_t adc_num)
 {
@@ -128,11 +128,11 @@ int8_t SensorsAPI::enableSensor(sensor_t sensor_name, adc_t adc_num)
 		buildSensorListFromDeviceTree();
 	}
 
-	// Check parameters
+	/* Check parameters */
 	if (adc_num > ADC_COUNT) return ERROR_CHANNEL_NOT_FOUND;
 	if (sensor_name == UNDEFINED_SENSOR) return ERROR_CHANNEL_NOT_FOUND;
 
-	// Find sensor property
+	/* Find sensor property */
 	uint8_t adc_index = adc_num-1;
 	sensor_dt_data_t* sensor_prop = nullptr;
 	for (uint8_t sensor = 0 ; sensor < available_sensors_count[adc_index] ; sensor++)
@@ -144,10 +144,10 @@ int8_t SensorsAPI::enableSensor(sensor_t sensor_name, adc_t adc_num)
 		}
 	}
 
-	// Check if we did find a sensor
+	/* Check if we did find a sensor */
 	if (sensor_prop == nullptr) return ERROR_CHANNEL_NOT_FOUND;
 
-	// Register sensor enabling
+	/* Register sensor enabling */
 	int sensor_index = ((int)sensor_name) - 1;
 	enabled_sensors[sensor_index] = sensor_prop;
 
@@ -189,8 +189,8 @@ float32_t SensorsAPI::convertRawValue(sensor_t sensor_name, uint16_t raw_value)
 void SensorsAPI::setConversionParametersLinear(sensor_t sensor_name, float32_t gain, float32_t offset)
 {
 	sensor_info_t sensor_info = getEnabledSensorInfo(sensor_name);
-	conversion_type_t sensor_conv_type = retrieveStoredConversionType(sensor_name);	
-	
+	conversion_type_t sensor_conv_type = retrieveStoredConversionType(sensor_name);
+
 	/* Verifies the conversion is of type linear */
 	if(sensor_conv_type == conversion_linear){
 		data_conversion_set_conversion_parameters_linear(sensor_info.adc_num,   \
@@ -201,8 +201,8 @@ void SensorsAPI::setConversionParametersLinear(sensor_t sensor_name, float32_t g
 
 void SensorsAPI::setConversionParametersNtcThermistor(sensor_t sensor_name, float32_t r0, float32_t b, float32_t rdiv, float32_t t0)
 {
-	sensor_info_t sensor_info = getEnabledSensorInfo(sensor_name);	
-	conversion_type_t sensor_conv_type = retrieveStoredConversionType(sensor_name);	
+	sensor_info_t sensor_info = getEnabledSensorInfo(sensor_name);
+	conversion_type_t sensor_conv_type = retrieveStoredConversionType(sensor_name);
 
 	if(sensor_conv_type == conversion_therm){
 		data_conversion_set_conversion_parameters_therm(sensor_info.adc_num, 	 \
@@ -240,21 +240,25 @@ int8_t SensorsAPI::storeParametersInMemory(sensor_t sensor_name)
 
 void SensorsAPI::enableDefaultOwnverterSensors()
 {
-	/*  Defines the triggers of all ADCs.
-		ADC 1 - Triggered by HRTIM C, which is linked to event 3
-		ADC 2 - Triggered by HRTIM A, which is linked to event 1
-		ADC 3, 4 and 5 - Triggered by software 
-		                 They are mainly used for non-real-time measurements,
-						 such as temperature*/
+	/**
+	 * Defines the triggers of all ADCs.
+	 * 	ADC 1 - Triggered by HRTIM C, which is linked to event 3
+	 * 	ADC 2 - Triggered by HRTIM A, which is linked to event 1
+	 * 	ADC 3, 4 and 5 - Triggered by software
+	 * 					They are mainly used for non-real-time measurements,
+	 * 					such as temperature
+	 */
 	spin.data.configureTriggerSource(ADC_1, hrtim_ev1);
 	spin.data.configureTriggerSource(ADC_2, hrtim_ev3);
 	spin.data.configureTriggerSource(ADC_3, software);
 	spin.data.configureTriggerSource(ADC_4, software);
 	spin.data.configureTriggerSource(ADC_5, software);
 
-	/*  Defines ADC 1 and ADC 2 measurments as discontinuous.
-		This is specially helpful for creating synchronous measurements. 
-		Each measurement is done once per period of HRTIM at a precise moment*/
+	/**
+	 * Defines ADC 1 and ADC 2 measurements as discontinuous.
+	 * This is specially helpful for creating synchronous measurements.
+	 * Each measurement is done once per period of HRTIM at a precise moment
+	 */
 	spin.data.configureDiscontinuousMode(ADC_1, 1);
 	spin.data.configureDiscontinuousMode(ADC_2, 1);
 
@@ -282,7 +286,7 @@ void SensorsAPI::enableDefaultOwnverterSensors()
 void SensorsAPI::setOwnverterTempMeas(ownverter_temp_sensor_t temperature_sensor)
 {
 	if(temperature_sensor == TEMP_1){
-		spin.gpio.setPin(temp_mux_in_1);   
+		spin.gpio.setPin(temp_mux_in_1);
 		spin.gpio.resetPin(temp_mux_in_2);
 	}else if(temperature_sensor == TEMP_2){
 		spin.gpio.resetPin(temp_mux_in_1);
@@ -300,12 +304,14 @@ void SensorsAPI::setOwnverterTempMeas(ownverter_temp_sensor_t temperature_sensor
 
 void SensorsAPI::enableDefaultTwistSensors()
 {
-	/*  Defines the triggers of all ADCs.
-		ADC 1 - Triggered by HRTIM C, which is linked to event 3
-		ADC 2 - Triggered by HRTIM A, which is linked to event 1
-		ADC 3, 4 and 5 - Triggered by software 
-		                 They are mainly used for non-real-time measurements,
-						 such as temperature*/
+	/**
+	 * Defines the triggers of all ADCs.
+	 *  ADC 1 - Triggered by HRTIM C, which is linked to event 3
+	 *  ADC 2 - Triggered by HRTIM A, which is linked to event 1
+	 *  ADC 3, 4 and 5 - Triggered by software
+	 * 					They are mainly used for non-real-time measurements,
+	 * 					such as temperature
+	 */
 	spin.data.configureTriggerSource(ADC_1, hrtim_ev1);
 	spin.data.configureTriggerSource(ADC_2, hrtim_ev3);
 	spin.data.configureTriggerSource(ADC_3, software);
@@ -313,9 +319,11 @@ void SensorsAPI::enableDefaultTwistSensors()
 	spin.data.configureTriggerSource(ADC_5, software);
 
 
-	/*  Defines ADC 1 and ADC 2 measurments as discontinuous.
-		This is specially helpful for creating synchronous measurements. 
-		Each measurement is done once per period of HRTIM at a precise moment*/
+	/**
+	 * Defines ADC 1 and ADC 2 measurements as discontinuous.
+	 * This is specially helpful for creating synchronous measurements.
+	 * Each measurement is done once per period of HRTIM at a precise moment
+	 */
 	uint32_t num_discontinuous_meas = 1;
 	spin.data.configureDiscontinuousMode(ADC_1, num_discontinuous_meas);
 	spin.data.configureDiscontinuousMode(ADC_2, num_discontinuous_meas);
@@ -349,14 +357,19 @@ void SensorsAPI::triggerTwistTempMeas(sensor_t temperature_sensor)
 
 void SensorsAPI::setTwistSensorsUserCalibrationFactors()
 {
-	float32_t gains[6];   // VH, V1, V2, IH, I1, I2
-	float32_t offsets[6]; // VH, V1, V2, IH, I1, I2
+	/* VH, V1, V2, IH, I1, I2 */
+	float32_t gains[6];
+	/* VH, V1, V2, IH, I1, I2 */
+	float32_t offsets[6];
 
-	float32_t r0[2];   		// T1 and T2 R0 - sensor resistance at reference temperature
-	float32_t b[2];   		// T1 and T2 B - sensor temperature negavie coefficient  
-	float32_t rdiv[2];   	// T1 and T2 R_DIV - bridge dividor resistance
-	float32_t t0[2];   		// T1 and T2 T0 - Reference temperature
-
+	/* T1 and T2 R0 - sensor resistance at reference temperature */
+	float32_t r0[2];
+	/* T1 and T2 B - sensor temperature negative coefficient */
+	float32_t b[2];
+	/* T1 and T2 R_DIV - bridge divider resistance */
+	float32_t rdiv[2];
+	/* T1 and T2 T0 - Reference temperature */
+	float32_t t0[2];
 
 	gains[0]   = getCalibrationCoefficients("VHigh", "gain");
 	offsets[0] = getCalibrationCoefficients("VHigh", "offset");
@@ -413,9 +426,9 @@ void SensorsAPI::setTwistSensorsUserCalibrationFactors()
 
 	printk("Calibration coefficients successfully updated!\n");
 
-	// Ask for save in NVS
+	/* Ask for save in NVS */
 	printk("Do you want to store these parameters in permanent storage?\n");
-	printk("Parameters stored in permanent storage are automatically retreived at board boot.\n");
+	printk("Parameters stored in permanent storage are automatically retrieved at board boot.\n");
 	printk("Not storing them in permanent storage will result in parameters being lost on board power cycle.\n");
 	printk("Press y to store parameters in permanent storage, any other key to don't store them.\n");
 
@@ -488,10 +501,10 @@ void SensorsAPI::buildSensorListFromDeviceTree()
 {
 	bool checkNvs = true;
 
-	// Retreive calibration coefficients for each sensor listed in device tree
+	/* Retrieve calibration coefficients for each sensor listed in device tree */
 	for (uint8_t dt_sensor_index = 0 ; dt_sensor_index < DT_SENSORS_COUNT ; dt_sensor_index++)
 	{
-		// Determine ADC number based on its address
+		/* Determine ADC number based on its address */
 		switch (dt_sensors_props[dt_sensor_index].adc_reg_addr)
 		{
 			case 0x50000000:
@@ -515,7 +528,7 @@ void SensorsAPI::buildSensorListFromDeviceTree()
 				break;
 		}
 
-		// Get parameters from NVS if they exist
+		/* Get parameters from NVS if they exist */
 		bool nvsRetrieved = false;
 		if (checkNvs == true)
 		{
@@ -579,7 +592,7 @@ void SensorsAPI::buildSensorListFromDeviceTree()
 
 		if (nvsRetrieved == false)
 		{
-			// In case parameters were not found in NVS, get default vaules from device tree
+			/* In case parameters were not found in NVS, get default values from device tree */
 			switch (dt_sensors_props[dt_sensor_index].conversion_type)
 			{
 			case LINEAR:
@@ -604,18 +617,18 @@ void SensorsAPI::buildSensorListFromDeviceTree()
 
 		}
 
-		// Count sensor for ADC
+		/* Count sensor for ADC */
 		uint8_t adc_index = dt_sensors_props[dt_sensor_index].adc_number - 1;
 		available_sensors_count[adc_index]++;
 	}
 
-	// Create the channels list for each ADC
+	/* Create the channels list for each ADC */
 	for (uint8_t adc_index = 0 ; adc_index < ADC_COUNT ; adc_index++)
 	{
 		available_sensors_props[adc_index] = (sensor_dt_data_t**)k_malloc(sizeof(sensor_dt_data_t*) * available_sensors_count[adc_index]);
 	}
 
-	// Populate the channels list for each ADC
+	/* Populate the channels list for each ADC */
 	uint8_t adc_channels_count[ADC_COUNT] = {0};
 	for (uint8_t dt_sensor_index = 0 ; dt_sensor_index < DT_SENSORS_COUNT ; dt_sensor_index++)
 	{
@@ -634,7 +647,7 @@ void SensorsAPI::buildSensorListFromDeviceTree()
 
 void SensorsAPI::getLineFromConsole(char* buffer, uint8_t buffer_size)
 {
-	//Initializing variables for eventual loop
+	/* Initializing variables for eventual loop */
 	uint8_t carcount = 0;
 	char received_char;
 
@@ -643,9 +656,11 @@ void SensorsAPI::getLineFromConsole(char* buffer, uint8_t buffer_size)
 		received_char = console_getchar();
 		buffer[carcount] = received_char;
 
-		if (received_char == 0x08) // Backspace character
+		/* Backspace character */
+		if (received_char == 0x08)
 		{
-			if (carcount>0) // To avoid carcount being negative
+			/* To avoid character count being negative */
+			if (carcount>0)
 			{
 				carcount--;
 			}
@@ -655,25 +670,28 @@ void SensorsAPI::getLineFromConsole(char* buffer, uint8_t buffer_size)
 			carcount++;
 		}
 
-		printk("%c", received_char); // Echo received char
+		/* Echo received char */
+		printk("%c", received_char);
 
 		if (carcount >= (buffer_size-1))
 		{
-			printk("Maximum caracter allowed reached \n");
+			printk("Maximum character allowed reached \n");
 			break;
 		}
-
-	} while ((received_char!='\n')); // EOL char : CRLF
-	buffer[carcount-2] = '\0'; // adding end of tab character to prepare for atof function
+	/* EOL char : CRLF */
+	} while ((received_char!='\n'));
+	 /* Adding end of tab character to prepare for atof function */
+	buffer[carcount-2] = '\0';
 }
 
 float32_t SensorsAPI::getCalibrationCoefficients(const char* physicalParameter, const char* gainOrOffset)
 {
-	// Maximum number of number for gain and offset value
+	/* Maximum number of number for gain and offset value */
 	const uint8_t MaxCharInOneLine = 20;
-
-	char line[MaxCharInOneLine]; 	// Number of character in one line
-	float32_t confirm; 				//confirmation
+	/* Number of character in one line */
+	char line[MaxCharInOneLine];
+	/* Confirmation */
+	float32_t confirm;
 	float32_t parameterCoefficient;
 
 	do
@@ -681,19 +699,21 @@ float32_t SensorsAPI::getCalibrationCoefficients(const char* physicalParameter, 
 		printk("Type %s %s and press enter \n", physicalParameter, gainOrOffset);
 		getLineFromConsole(line, MaxCharInOneLine);
 
-		// Convert string to float
+		/* Convert string to float */
 		parameterCoefficient = atof(line);
 
-		// Get confirmation
+		/* Get confirmation */
 		printk("%s %s applied will be : %f\n", physicalParameter, gainOrOffset, (double)parameterCoefficient);
 		printk("Press enter to validate, any other character to retype the %s \n", gainOrOffset);
 		getLineFromConsole(line, MaxCharInOneLine);
 
-        // Check if Enter was pressed (empty input)
+        /* Check if Enter was pressed (empty input) */
         if (strlen(line) == 0) {
-            confirm = 0; // Confirmed
+			/* Confirmed */
+            confirm = 0;
         } else {
-            confirm = 1; // Re-type required
+			/* Re-type required */
+            confirm = 1;
         }
 
 	} while(confirm);

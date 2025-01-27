@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 LAAS-CNRS
+ * Copyright (c) 2024-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -33,8 +33,9 @@
 #include "../src/Power.h"
 
 
-/////
-// Static class definition
+/**
+ *  Static class definition
+ */
 
 class ShieldAPI
 {
@@ -59,11 +60,11 @@ public:
 
 };
 
-
-/////
-// Public object to interact with the class
+/**
+ *  Public object to interact with the class
+ */
 
 extern ShieldAPI shield;
 
 
-#endif // SHIELDAPI_H_
+#endif /* SHIELDAPI_H_ */
