@@ -39,4 +39,4 @@ void scheduling_start_uninterruptible_synchronous_task(bool manage_data_acquisit
 void scheduling_stop_uninterruptible_synchronous_task();
 
 
-#endif /* UNINTERRUPTIBLESYNCHRONOUSTASK_HPP_ */
+#endif /* UNINTERRUPTIBLESYNCHRONOUSTASK_H_ */

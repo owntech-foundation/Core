@@ -24,8 +24,8 @@
 
 #ifdef CONFIG_OWNTECH_TASK_ENABLE_ASYNCHRONOUS_TASKS
 
-#include "asynchronous_tasks.hpp"
-#include "scheduling_common.hpp"
+#include "asynchronous_tasks.h"
+#include "scheduling_common.h"
 
 
 static K_THREAD_STACK_ARRAY_DEFINE(asynchronous_thread_stack, CONFIG_OWNTECH_TASK_MAX_ASYNCHRONOUS_TASKS, CONFIG_OWNTECH_TASK_ASYNCHRONOUS_TASKS_STACK_SIZE);

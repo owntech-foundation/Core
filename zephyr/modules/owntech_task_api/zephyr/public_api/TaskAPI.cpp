@@ -24,8 +24,8 @@
 
 
 /* OwnTech Power API */
-#include "../src/uninterruptible_synchronous_task.hpp"
-#include "../src/asynchronous_tasks.hpp"
+#include "../src/uninterruptible_synchronous_task.h"
+#include "../src/asynchronous_tasks.h"
 
 
 /* Current class header */
