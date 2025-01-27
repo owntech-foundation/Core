@@ -76,7 +76,8 @@ typedef enum
  * @param adc_number Number of the ADC to configure.
  * @param trigger_source Source of the trigger.
  */
-void adc_configure_trigger_source(uint8_t adc_number, adc_ev_src_t trigger_source);
+void adc_configure_trigger_source(uint8_t adc_number,
+								  adc_ev_src_t trigger_source);
 
 /**
  * @brief Registers the discontinuous count for an ADC.
@@ -89,7 +90,8 @@ void adc_configure_trigger_source(uint8_t adc_number, adc_ev_src_t trigger_sourc
  * @param discontinuous_count Number of channels to acquire on each
  *        trigger event. 0 to disable discontinuous mode (default).
  */
-void adc_configure_discontinuous_mode(uint8_t adc_number, uint32_t discontinuous_count);
+void adc_configure_discontinuous_mode(uint8_t adc_number,
+									  uint32_t discontinuous_count);
 
 /**
  * @brief Adds a channel to the list of channels to be acquired
@@ -163,7 +165,8 @@ void adc_stop();
  *
  * @param  adc_number Number of the ADC.
  */
-void adc_trigger_software_conversion(uint8_t adc_number, uint8_t number_of_acquisitions);
+void adc_trigger_software_conversion(uint8_t adc_number,
+									 uint8_t number_of_acquisitions);
 
 
 #ifdef __cplusplus
