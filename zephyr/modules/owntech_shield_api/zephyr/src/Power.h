@@ -61,9 +61,9 @@ public:
 	 * 						 The other will be complementary - PWMx1 or PWMx2
 	 * @param leg_mode PWM mode - VOLTAGE_MODE or CURRENT_MODE
 	 */
-	void initMode(leg_t leg, 											\
-					 hrtim_switch_convention_t leg_convention,				\
-					 hrtim_pwm_mode_t leg_mode);
+	void initMode(leg_t leg,
+				  hrtim_switch_convention_t leg_convention,
+				  hrtim_pwm_mode_t leg_mode);
 
 	/**
 	 * @brief Set the duty cycle for a specific leg's power control.
@@ -168,9 +168,9 @@ public:
 	 *
 	 * @warning Be sure that set_voltage > reset_voltage
 	 */
-	void setSlopeCompensation(leg_t leg, 								\
-								 float32_t set_voltage, 					\
-								 float32_t reset_voltage);
+	void setSlopeCompensation(leg_t leg,
+							  float32_t set_voltage,
+							  float32_t reset_voltage);
 
 	/**
 	 * @brief set the dead time value for a leg
@@ -179,9 +179,9 @@ public:
 	 * @param ns_rising_dt  - rising dead time value in ns
 	 * @param ns_falling_dt - falling dead time value in ns
 	 */
-	void setDeadTime(leg_t leg, 											\
-						uint16_t ns_rising_dt, 								\
-						uint16_t ns_falling_dt);
+	void setDeadTime(leg_t leg,
+					 uint16_t ns_rising_dt,
+					 uint16_t ns_falling_dt);
 
 	/**
 	 * @brief set ADC decimator for a leg

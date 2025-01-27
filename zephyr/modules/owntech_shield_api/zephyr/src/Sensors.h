@@ -135,15 +135,16 @@ public:
 	 * @brief This function is used to enable a shield sensor for acquisition
 	 *        by a given ADC.
 	 *
-	 * @note  This function requires the presence of an "shield-sensor" node in the
-	 *        shield device-tree.
+	 * @note  This function requires the presence of an "shield-sensor" node
+	 * 		  in the shield device-tree.
 	 *
 	 * @note  This function must be called *before* ADC is started.
 	 *
 	 * @param[in] sensor_name Name of the sensor using enumeration sensor_t.
 	 * @param[in] adc_number The ADC which should be used for acquisition.
 	 *
-	 * @return 0 if the sensor was correctly enabled, negative value if there was an error.
+	 * @return 0 if the sensor was correctly enabled, negative value
+	 * 		   if there was an error.
 	 */
 	int8_t enableSensor(sensor_t sensor_name, adc_t adc_number);
 
@@ -173,7 +174,8 @@ public:
 	 *        latest converted value for the same sensor as this function
 	 *        will clear the buffer and disregard all values but the latest.
 	 *
-	 * @param[in]  sensor_name Name of the shield sensor from which to obtain values.
+	 * @param[in]  sensor_name Name of the shield sensor from which
+	 * 						   to obtain values.
 	 * @param[out] number_of_values_acquired Pass an uint32_t variable.
 	 *             This variable will be updated with the number of values that
 	 *             are present in the returned buffer.
@@ -182,7 +184,8 @@ public:
 	 *         If number_of_values_acquired is 0, do not try to access the
 	 *         buffer as it may be nullptr.
 	 */
-	uint16_t* getRawValues(sensor_t sensor_name, uint32_t& number_of_values_acquired);
+	uint16_t* getRawValues(sensor_t sensor_name,
+						   uint32_t& number_of_values_acquired);
 
 	/**
 	 * @brief Function to access the acquired data for specified pin.
@@ -209,7 +212,8 @@ public:
 	 *        However, different channels buffers are independent
 	 *        from each other.
 	 *
-	 * @param[in]  sensor_name Name of the shield sensor from which to obtain values.
+	 * @param[in]  sensor_name Name of the shield sensor from which
+	 * 						   to obtain values.
 	 * @param[out] number_of_values_acquired Pass an uint32_t variable.
 	 *             This variable will be updated with the number of values that
 	 *             are present in the returned buffer.
@@ -218,7 +222,8 @@ public:
 	 *         If number_of_values_acquired is 0, do not try to access the
 	 *         buffer as it may be nullptr.
 	 */
-	float32_t* getValues(sensor_t sensor_name, uint32_t& number_of_values_acquired);
+	float32_t* getValues(sensor_t sensor_name,
+						 uint32_t& number_of_values_acquired);
 
 	/**
 	 * @brief Function to access the latest value available from the sensor,
@@ -297,7 +302,9 @@ public:
 	 * @param[in] offset Offset to be applied (added) to the sensor value
 	 *            after gain has been applied.
 	 */
-	void setConversionParametersLinear(sensor_t sensor_name, float32_t gain, float32_t offset);
+	void setConversionParametersLinear(sensor_t sensor_name,
+									   float32_t gain,
+									   float32_t offset);
 
 	/**
 	 * @brief Use this function to set the conversion values for any NTC
@@ -313,7 +320,11 @@ public:
 	 * @param[in] rdiv The bridge divider resistance used to condition the NTC.
 	 * @param[in] t0 The reference temperature of the thermistor.
 	 */
-	void setConversionParametersNtcThermistor(sensor_t sensor_name, float32_t r0, float32_t b, float32_t rdiv, float32_t t0);
+	void setConversionParametersNtcThermistor(sensor_t sensor_name,
+											  float32_t r0,
+											  float32_t b,
+											  float32_t rdiv,
+											  float32_t t0);
 
 	/**
 	 * @brief Use this function to get the current conversion parameters for the chosen sensor.
@@ -323,7 +334,8 @@ public:
 	 * @param[in] sensor_name Name of the shield sensor to get a conversion parameter.
 	 * @param[in] parameter_name Paramater to be retrieved: `gain` or `offset`.
 	 */
-	float32_t retrieveStoredParameterValue(sensor_t sensor_name, parameter_t parameter_name);
+	float32_t retrieveStoredParameterValue(sensor_t sensor_name,
+										   parameter_t parameter_name);
 
 	/**
 	 * @brief Use this function to get the current conversion type for the chosen sensor.
@@ -335,19 +347,23 @@ public:
 	conversion_type_t retrieveStoredConversionType(sensor_t sensor_name);
 
 	/**
-	 * @brief Use this function to write the gain and offset parameters of the board to is non-volatile memory.
+	 * @brief Use this function to write the gain and offset parameters
+	 * 		  of the board to is non-volatile memory.
 	 *
-	 * @note  This function should be called after updating the parameters using setParameters.
+	 * @note  This function should be called after updating the parameters
+	 * 		  using setParameters.
 	 *
 	 * @param[in] sensor_name Name of the shield sensor to save the values.
 	 */
 	int8_t storeParametersInMemory(sensor_t sensor_name);
 
 	/**
-	 * @brief Use this function to read the gain and offset parameters of the board to is non-volatile memory.
+	 * @brief Use this function to read the gain and offset parameters
+	 * 		  of the board to is non-volatile memory.
 	 *
 	 * @param[in] sensor_name Name of the shield sensor to save the values.
-     * @return 0 if parameters were correctly retrieved, negative value if there was an error:
+     * @return 0 if parameters were correctly retrieved, negative value
+	 * 			 if there was an error:
      *         -1: NVS is empty
      *         -2: NVS contains data, but their version doesn't match current version
      *         -3: NVS data is corrupted
@@ -476,7 +492,8 @@ private:
 	/**
 	 * @brief Function to ask user about a coefficient.
 	 */
-	float32_t getCalibrationCoefficients(const char* physicalParameter, const char* gainOrOffset);
+	float32_t getCalibrationCoefficients(const char* physicalParameter,
+										 const char* gainOrOffset);
 
 private:
 	static sensor_dt_data_t dt_sensors_props[];

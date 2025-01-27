@@ -62,9 +62,9 @@ hrtim_tu_number_t PowerAPI::spinNumberToTu(uint16_t spin_number)
     }
 }
 
-void PowerAPI::initMode(leg_t leg,                                             \
-                           hrtim_switch_convention_t leg_convention,           \
-                           hrtim_pwm_mode_t leg_mode)
+void PowerAPI::initMode(leg_t leg,
+                        hrtim_switch_convention_t leg_convention,
+                        hrtim_pwm_mode_t leg_mode)
 {
     int8_t startIndex = 0;
     int8_t endIndex = 0;
@@ -90,12 +90,12 @@ void PowerAPI::initMode(leg_t leg,                                             \
         spin.pwm.initFixedFrequency(timer_frequency);
 
         /* Set modulation */
-        spin.pwm.setModulation(spinNumberToTu(dt_pwm_pin[i]),                  \
-                                          dt_modulation[i]);
+        spin.pwm.setModulation(spinNumberToTu(dt_pwm_pin[i]),
+                               dt_modulation[i]);
 
         /* Configure ADC rollover in center aligned mode */
-        spin.pwm.setAdcEdgeTrigger(spinNumberToTu(dt_pwm_pin[i]),              \
-                                dt_edge_trigger[i]);
+        spin.pwm.setAdcEdgeTrigger(spinNumberToTu(dt_pwm_pin[i]),
+                                   dt_edge_trigger[i]);
 
         /**
          * Configure which External Event will reset the timer for current mode.
@@ -130,30 +130,30 @@ void PowerAPI::initMode(leg_t leg,                                             \
         }
 
         /* Choose which output of the timer unit to control with duty cycle */
-        spin.pwm.setSwitchConvention(spinNumberToTu(dt_pwm_pin[i]),           \
-                                                leg_convention);
+        spin.pwm.setSwitchConvention(spinNumberToTu(dt_pwm_pin[i]),
+                                     leg_convention);
 
         /* Initialize leg unit */
         spin.pwm.initUnit(spinNumberToTu(dt_pwm_pin[i]));
 
         /* Configure PWM initial phase shift */
-        spin.pwm.setPhaseShift(spinNumberToTu(dt_pwm_pin[i]),                 \
-                                          dt_phase_shift[i]);
+        spin.pwm.setPhaseShift(spinNumberToTu(dt_pwm_pin[i]),
+                               dt_phase_shift[i]);
 
         /* Configure PWM dead time */
-        spin.pwm.setDeadTime(spinNumberToTu(dt_pwm_pin[i]),                   \
-                                        dt_rising_deadtime[i],                \
-                                        dt_falling_deadtime[i]);
+        spin.pwm.setDeadTime(spinNumberToTu(dt_pwm_pin[i]),
+                             dt_rising_deadtime[i],
+                             dt_falling_deadtime[i]);
 
         /**
          * Configure PWM ADC trigger.
          */
         if (dt_adc[i] != UNKNOWN_ADC)
         {
-            spin.pwm.setAdcDecimation(spinNumberToTu(dt_pwm_pin[i]),          \
+            spin.pwm.setAdcDecimation(spinNumberToTu(dt_pwm_pin[i]),
                                       dt_adc_decim[i]);
 
-            spin.pwm.setAdcTrigger(spinNumberToTu(dt_pwm_pin[i]),             \
+            spin.pwm.setAdcTrigger(spinNumberToTu(dt_pwm_pin[i]),
                                    dt_adc[i]);
 
             spin.pwm.enableAdcTrigger(spinNumberToTu(dt_pwm_pin[i]));
@@ -168,17 +168,19 @@ void PowerAPI::initMode(leg_t leg,                                             \
         {
             if (dt_current_pin[i] == CM_DAC1)
             {
-                spin.dac.currentModeInit(                                       \
-                    1,                                                          \
-                    tu_channel[spinNumberToTu(dt_pwm_pin[i])]->pwm_conf.pwm_tu);
+                spin.dac.currentModeInit(
+                    1,
+                    tu_channel[spinNumberToTu(dt_pwm_pin[i])]->pwm_conf.pwm_tu
+                );
 
                 spin.comp.initialize(3);
             }
             else if (dt_current_pin[i] == CM_DAC3)
             {
-                spin.dac.currentModeInit(                                       \
-                    3,                                                          \
-                    tu_channel[spinNumberToTu(dt_pwm_pin[i])]->pwm_conf.pwm_tu);
+                spin.dac.currentModeInit(
+                    3,
+                    tu_channel[spinNumberToTu(dt_pwm_pin[i])]->pwm_conf.pwm_tu
+                );
 
                 spin.comp.initialize(1);
             }
@@ -230,7 +232,7 @@ void PowerAPI::setDutyCycle(leg_t leg, float32_t duty_leg)
 
     for (int8_t i = startIndex; i < endIndex; i++)
     {
-        uint16_t value =                                                           \
+        uint16_t value =
             duty_leg * tu_channel[spinNumberToTu(dt_pwm_pin[i])]->pwm_conf.period;
 
         hrtim_duty_cycle_set(spinNumberToTu(dt_pwm_pin[i]), value);
@@ -268,13 +270,13 @@ void PowerAPI::start(leg_t leg)
 
         if (!dt_output1_inactive[leg_index])
         {
-            spin.pwm.startSingleOutput(spinNumberToTu(dt_pwm_pin[leg_index]),          \
-                                                    TIMING_OUTPUT1);
+            spin.pwm.startSingleOutput(spinNumberToTu(dt_pwm_pin[leg_index]),
+                                       TIMING_OUTPUT1);
         }
         if (!dt_output2_inactive[leg_index])
         {
-            spin.pwm.startSingleOutput(spinNumberToTu(dt_pwm_pin[leg_index]),          \
-                                                    TIMING_OUTPUT2);
+            spin.pwm.startSingleOutput(spinNumberToTu(dt_pwm_pin[leg_index]),
+                                       TIMING_OUTPUT2);
         }
     }
 }
@@ -434,9 +436,9 @@ void PowerAPI::disconnectDriver(leg_t leg)
 
 #endif
 
-void PowerAPI::setSlopeCompensation(leg_t leg,                              \
-                                       float32_t set_voltage,               \
-                                       float32_t reset_voltage)
+void PowerAPI::setSlopeCompensation(leg_t leg,
+                                    float32_t set_voltage,
+                                    float32_t reset_voltage)
 {
     int8_t startIndex = 0;
     int8_t endIndex = 0;
@@ -504,8 +506,8 @@ void PowerAPI::setTriggerValue(leg_t leg, float32_t trigger_value)
 
     for (int8_t i = startIndex; i < endIndex; i++)
     {
-        spin.pwm.setAdcTriggerInstant(spinNumberToTu(dt_pwm_pin[i]),         \
-                                                     trigger_value);
+        spin.pwm.setAdcTriggerInstant(spinNumberToTu(dt_pwm_pin[i]),
+                                      trigger_value);
     }
 }
 
@@ -535,9 +537,9 @@ void PowerAPI::setPhaseShift(leg_t leg, int16_t phase_shift)
     }
 }
 
-void PowerAPI::setDeadTime(leg_t leg,                                       \
-                              uint16_t ns_rising_dt,                        \
-                              uint16_t ns_falling_dt)
+void PowerAPI::setDeadTime(leg_t leg,
+                           uint16_t ns_rising_dt,
+                           uint16_t ns_falling_dt)
 {
     int8_t startIndex = 0;
     int8_t endIndex = 0;
@@ -559,8 +561,8 @@ void PowerAPI::setDeadTime(leg_t leg,                                       \
 
     for (int8_t i = startIndex; i < endIndex; i++)
     {
-        spin.pwm.setDeadTime(spinNumberToTu(dt_pwm_pin[i]),                 \
-                                            ns_rising_dt, ns_falling_dt);
+        spin.pwm.setDeadTime(spinNumberToTu(dt_pwm_pin[i]),
+                             ns_rising_dt, ns_falling_dt);
     }
 }
 

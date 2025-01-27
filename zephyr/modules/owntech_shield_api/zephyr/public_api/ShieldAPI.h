@@ -53,7 +53,8 @@ public:
 
 #ifdef CONFIG_OWNTECH_NGND_DRIVER
 	/**
-	 * @brief Contains all the function of the NGND switch compatible with TWISTs prior to 1.4.
+	 * @brief Contains all the function of the NGND switch compatible
+	 * 	      with TWISTs prior to 1.4.
 	 */
 	static NgndHAL ngnd;
 #endif
