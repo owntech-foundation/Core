@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 LAAS-CNRS
+ * Copyright (c) 2024-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -29,16 +29,16 @@
 
 /* Includes */
 
-//LL libraries
+/* LL libraries */
 #include "stm32_ll_gpio.h"
 #include "stm32_ll_bus.h"
 
-// OWNTECH APIs
+/* OWNTECH APIs */
 #include "nvs_storage.h"
 #include "SpinAPI.h"
 #include "ShieldAPI.h"
 
-// Zephyr
+/* Zephyr */
 #include "zephyr/kernel.h"
 
 /* Defines */
@@ -51,47 +51,57 @@
 
 /**
  * Counts the number of LEGs (i.e. the converters that need to be stopped for safety)
-*/
+ */
 #define POWER_SHIELD_ID DT_NODELABEL(powershield)
 #define LEG_COUNTER(node_id) +1
 #define DT_LEG_NUMBER DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_COUNTER)
 
 /**
  * Retrieves PWM GPIO pin number
-*/
+ */
 #define LEG_PWM_PIN_HIGH(node_id)	DT_PROP_BY_IDX(node_id, pwm_pin_num, 0),
 #define LEG_PWM_PIN_LOW(node_id)	DT_PROP_BY_IDX(node_id, pwm_pin_num, 1),
 
 /* Global variables */
 
-static bool sensor_watch[DT_SENSORS_NUMBER + 1];             // sensors that need to be watched (true) / ignored (false)
-static float32_t sensor_threshold_max[DT_SENSORS_NUMBER + 1]; // threshold max for each sensor
-static float32_t sensor_threshold_min[DT_SENSORS_NUMBER + 1]; // threshold min for each sensor
-static safety_reaction_t sensor_reaction = Open_Circuit;      // Reaction type by default in open circuit mode
-static bool sensor_errors[DT_SENSORS_NUMBER + 1];            // sensor that went over/below the threshold (true)
+/* sensors that need to be watched (true) / ignored (false) */
+static bool sensor_watch[DT_SENSORS_NUMBER + 1];
+/* threshold max for each sensor */
+static float32_t sensor_threshold_max[DT_SENSORS_NUMBER + 1];
+/* threshold min for each sensor */
+static float32_t sensor_threshold_min[DT_SENSORS_NUMBER + 1];
+/* Reaction type by default in open circuit mode */
+static safety_reaction_t sensor_reaction = Open_Circuit;
+/* sensor that went over/below the threshold (true) */
+static bool sensor_errors[DT_SENSORS_NUMBER + 1];
 
-static uint8_t dt_pin_high_side[] = { DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_PWM_PIN_HIGH) }; // Pin number of the gpio driving high side switchs
-static uint8_t dt_pin_low_side[] = { DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_PWM_PIN_LOW) };   // Pin number of the gpio driving low side switchs
+/* Pin number of the gpio driving high side switch */
+static uint8_t dt_pin_high_side[] = { DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_PWM_PIN_HIGH) };
+/* Pin number of the gpio driving low side switch */
+static uint8_t dt_pin_low_side[] = { DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_PWM_PIN_LOW) };
 
 /**
  * The purpose of safety_alert_counter is to have a delay when we detect a problem.
- * For example here we wait that safety_alert_counter = 5 before trigering a safety alert,
- * if the control task = 100µs then we wait 0.5ms before enabling short-circuit and open-circuit mode.
- * Thus we avoid stopping everything because of transient surge of current or voltage which are not really a
- * problem
-*/
+ * For example here we wait that safety_alert_counter = 5 before triggering a safety alert,
+ * if the control task = 100µs then we wait 0.5ms before enabling short-circuit
+ * and open-circuit mode. Thus we avoid stopping everything because of transient
+ * surge of current or voltage which are not really a problem.
+ */
 static uint8_t safety_alert_counter = 0;
 
-static bool safety_enable = true; // enable the safety API watch and action task
+/* enable the safety API watch and action task */
+static bool safety_enable = true;
 
-///// Private functions
+/**
+ * Private Functions
+ */
 
 /**
  * @brief This function enables the short-circuit mode
  *        i.e. the high-side switch is left open and
  *        the low-side switch is closed. Can be used to
  *        brake DC motor for example.
-*/
+ */
 void _short_circuit(void)
 {
     if(DT_LEG_NUMBER == 0) return;
@@ -110,7 +120,7 @@ void _short_circuit(void)
  * @brief This function enables the open-circuit mode
  *        i.e. the high-side switch is opened and
  *        the low-side switch is opened.
-*/
+ */
 void _open_circuit(void)
 {
     if(DT_LEG_NUMBER == 0) return;
@@ -125,7 +135,9 @@ void _open_circuit(void)
     }
 }
 
-///// Public functions
+/**
+ * Public Functions
+ */
 
 /**
  * @brief Sets the sensors that need to be monitored
@@ -231,7 +243,7 @@ int8_t safety_set_sensor_threshold_min(sensor_t *safety_sensors, float32_t *thre
 
 /**
  * @brief Returns the minimum threshold
-*/
+ */
 float32_t safety_get_sensor_threshold_min(sensor_t safety_sensor)
 {
     return sensor_threshold_min[safety_sensor];
@@ -239,7 +251,7 @@ float32_t safety_get_sensor_threshold_min(sensor_t safety_sensor)
 
 /**
  * @brief Returns the maximum threshold
-*/
+ */
 float32_t safety_get_sensor_threshold_max(sensor_t safety_sensor)
 {
     return sensor_threshold_max[safety_sensor];
@@ -247,7 +259,7 @@ float32_t safety_get_sensor_threshold_max(sensor_t safety_sensor)
 
 /**
  * @brief Returns if an error has been detected
-*/
+ */
 bool safety_get_sensor_error(sensor_t safety_sensor)
 {
     return sensor_errors[safety_sensor];
@@ -279,7 +291,7 @@ int8_t safety_watch()
  */
 void safety_action()
 {
-    // shield.power.stopAll();
+    /* shield.power.stopAll(); */
     shield.power.stop(ALL);
     if (sensor_reaction == Open_Circuit)
     {
@@ -292,16 +304,16 @@ void safety_action()
 }
 
 /**
- * @brief Enables the safet API fault detection task
-*/
+ * @brief Enables the safety API fault detection task
+ */
 void safety_enable_task()
 {
     safety_enable = true;
 }
 
 /**
- * @brief Disables the safet API fault detection task
-*/
+ * @brief Disables the safety API fault detection task
+ */
 void safety_disable_task()
 {
     safety_enable = false;
@@ -310,9 +322,9 @@ void safety_disable_task()
 /**
  * @brief Function that need to be put in the fast uninterruptible task.
  *        It monitors the measures from the ADC, and trigger safety warning.
- *        However, to avoid false trigerring from transient phenomenon we wait for
+ *        However, to avoid false triggering from transient phenomenon we wait for
  *        a delay with safety_alert_counter
-*/
+ */
 int8_t safety_task()
 {
     int8_t status = 0;
@@ -335,7 +347,7 @@ int8_t safety_task()
 
 /**
  * @brief Stores threshold value in the NVS
-*/
+ */
 int8_t safety_store_threshold_in_nvs(sensor_t sensor)
 {
 
@@ -366,10 +378,10 @@ int8_t safety_store_threshold_in_nvs(sensor_t sensor)
 
 /**
  * @brief Retrieves threshold value from the NVS
-*/
+ */
 int8_t  safety_retrieve_threshold_in_nvs(sensor_t sensor)
 {
-	// Checks that parameters currently stored in NVS are from the same version
+	/* Checks that parameters currently stored in NVS are from the same version */
 	uint16_t current_stored_version = nvs_storage_get_version_in_nvs();
 	if (current_stored_version == 0)
 	{
@@ -392,7 +404,7 @@ int8_t  safety_retrieve_threshold_in_nvs(sensor_t sensor)
 	{
 		uint8_t string_len = buffer[0];
 
-		// Check that all required values match
+		/* Check that all required values match */
 		if (sensor != buffer[string_len + 1])
 		{
 			ret = -3;

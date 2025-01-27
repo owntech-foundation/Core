@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 LAAS-CNRS
+ * Copyright (c) 2024-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -37,8 +37,8 @@
  *                        V1_LOW, V2_LOW, V_HIGH, I1_LOW, I2_LOW, I_HIGH, TEMP_SENSOR, EXTRA_MEAS, ANALOG_COMM
  * @param sensors_number The number of sensors present in the list safety_sensors.
  *
- * @return 0 if sucessfull, or -1 if there was an error
-*/
+ * @return 0 if successful, or -1 if there was an error
+ */
 int8_t safety_set_sensor_watch(sensor_t * safety_sensors, uint8_t sensors_number);
 
 
@@ -49,8 +49,8 @@ int8_t safety_set_sensor_watch(sensor_t * safety_sensors, uint8_t sensors_number
  *                        V1_LOW, V2_LOW, V_HIGH, I1_LOW, I2_LOW, I_HIGH, TEMP_SENSOR, EXTRA_MEAS, ANALOG_COMM
  * @param sensors_number The number of sensors present in the list safety_sensors.
  *
- * @return 0 if sucessfull, or -1 if there was an error
-*/
+ * @return 0 if successful, or -1 if there was an error
+ */
 int8_t safety_unset_sensor_watch(sensor_t * safety_sensors, uint8_t sensors_number);
 
 /**
@@ -59,7 +59,7 @@ int8_t safety_unset_sensor_watch(sensor_t * safety_sensors, uint8_t sensors_numb
  * @param safety_sensors the sensor to check
  *
  * @return true if the sensor is being monitored, false if not
-*/
+ */
 bool safety_get_sensor_watch(sensor_t  safety_sensors);
 
 /**
@@ -72,14 +72,14 @@ bool safety_get_sensor_watch(sensor_t  safety_sensors);
  *        @arg Short_Circuit
  *
  * @return none
-*/
+ */
 void safety_set_sensor_reaction(safety_reaction_t reaction);
 
 /**
- * @brief Returns the reaction to do when encoutering an error.
+ * @brief Returns the reaction to do when encountering an error.
  *
  * @return Open_Circuit or Short_Circuit
-*/
+ */
 safety_reaction_t safety_get_sensor_reaction();
 
 /**
@@ -90,8 +90,8 @@ safety_reaction_t safety_get_sensor_reaction();
  * @param threshold A list of the maximum threshold to apply to the sensors in safety_sensors.
  * @param sensors_number the number of sensors present in the list safety_sensors
  *
- * @return 0 if sucessfull, or -1 if not.
-*/
+ * @return 0 if successful, or -1 if not.
+ */
 int8_t safety_set_sensor_threshold_max(sensor_t *safety_sensors, float32_t *threshold, uint8_t sensors_number);
 
 
@@ -103,8 +103,8 @@ int8_t safety_set_sensor_threshold_max(sensor_t *safety_sensors, float32_t *thre
  * @param threshold A list of the minimum threshold to apply to the sensors in safety_sensors.
  * @param sensors_number the number of sensors present in the list safety_sensors
  *
- * @return 0 if sucessfull, or -1 if not.
-*/
+ * @return 0 if successful, or -1 if not.
+ */
 int8_t safety_set_sensor_threshold_min(sensor_t *safety_sensors, float32_t *threshold, uint8_t sensors_number);
 
 /**
@@ -113,7 +113,7 @@ int8_t safety_set_sensor_threshold_min(sensor_t *safety_sensors, float32_t *thre
  * @param safety_sensors the sensor to check
  *
  * @return The maximum threshold
-*/
+ */
 float32_t safety_get_sensor_threshold_max(sensor_t safety_sensor);
 
 /**
@@ -122,7 +122,7 @@ float32_t safety_get_sensor_threshold_max(sensor_t safety_sensor);
  * @param safety_sensors the sensor to check
  *
  * @return the minimum threshold
-*/
+ */
 float32_t safety_get_sensor_threshold_min(sensor_t safety_sensor);
 
 /**
@@ -131,35 +131,35 @@ float32_t safety_get_sensor_threshold_min(sensor_t safety_sensor);
  * @param safety_sensors name of the sensor to check
  *
  * @return true if the sensor faced an error, false if not
-*/
+ */
 bool safety_get_sensor_error(sensor_t safety_sensor);
 
 /**
  * @brief Monitors all the sensor set as watchable and compare them with the chosen thresholds.
  *
- * @return 0 if all the sensors are within their trehold, or -1 if one of them went under/over the threshold.
-*/
+ * @return 0 if all the sensors are within their threshold, or -1 if one of them went under/over the threshold.
+ */
 int8_t safety_watch();
 
 /**
  * @brief Enables the open-circuit or the short-circuit mode if an error has been detected.
  *
  * @return none
-*/
+ */
 void safety_action();
 
 /**
- * @brief Enable the safet API fault detection task
+ * @brief Enable the safety API fault detection task
  *
  * @return none
-*/
+ */
 void safety_enable_task();
 
 /**
- * @brief Disables the safet API fault detection task
+ * @brief Disables the safety API fault detection task
  *
  * @return none
-*/
+ */
 void safety_disable_task();
 
 /**
@@ -167,9 +167,9 @@ void safety_disable_task();
  *
  * @param safety_sensors the sensor for which we store the threshold in the NVS
  *
- * @return 0 if parameters were correcly stored, -1 if there was an error.
+ * @return 0 if parameters were correctly stored, -1 if there was an error.
  *
-*/
+ */
 int8_t safety_store_threshold_in_nvs(sensor_t sensor);
 
 
@@ -178,7 +178,7 @@ int8_t safety_store_threshold_in_nvs(sensor_t sensor);
  *
  * @param safety_sensors the sensor for which we store the threshold in the NVS
  *
- * @return  0: if parameters were correcly retreived, negative value if there was an error:
+ * @return  0: if parameters were correctly retrieved, negative value if there was an error:
  *         -1: NVS is empty
  *         -2: NVS contains data, but their version doesn't match current version
  *         -3: NVS data is corrupted
@@ -190,9 +190,8 @@ int8_t safety_store_threshold_in_nvs(sensor_t sensor);
  *          - 1 byte to store the sensor number (in the order in the device tree)
  *	        - 4 byte to store the sensor threshold min
  *	        - 4 byte to store the sensor threshold max
-
-*/
+ */
 int8_t  safety_retrieve_threshold_in_nvs(sensor_t sensor);
 
 
-#endif // SAFETY_SETTING_H_
+#endif /* SAFETY_SETTING_H_ */
