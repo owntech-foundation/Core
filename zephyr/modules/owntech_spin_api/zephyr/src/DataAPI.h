@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 LAAS-CNRS
+ * Copyright (c) 2022-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -29,21 +29,21 @@
 #define DATAAPI_H_
 
 
-// Stdlib
+/* Stdlib */
 #include <stdint.h>
 
-// Zephyr
+/* Zephyr */
 #include <zephyr/kernel.h>
 
-// ARM CMSIS library
+/* ARM CMSIS library */
 #include <arm_math.h>
 
-// Current module private functions
+/* Current module private functions */
 #include "./data/data_conversion.h"
 
-
-/////
-// Type definitions
+/**
+ *  Type definitions
+ */
 
 typedef enum : uint8_t
 {
@@ -78,14 +78,15 @@ enum class DispatchMethod_t
 	externally_triggered
 };
 
-//////
-// Constants definitions
+/**
+ *  Constants definitions
+ */
 
 static const uint8_t ADC_COUNT = 5;
 static const uint8_t PIN_COUNT = 59;
 static const uint8_t CHANNELS_PER_ADC = 19;
 
-// Define "no value" as an impossible, out of range value
+/* Define "no value" as an impossible, out of range value */
 const float32_t NO_VALUE = -10000;
 #define ERROR_CHANNEL_OFF -5
 #define ERROR_CHANNEL_NOT_FOUND -2
@@ -94,12 +95,13 @@ const uint8_t DATA_IS_OK      = 0;
 const uint8_t DATA_IS_OLD     = 1;
 const uint8_t DATA_IS_MISSING = 2;
 
-/////
-// Static class definition
+/**
+ *  Static class definition
+ */
 
 class DataAPI
 {
-	// Allow specific extenal members to access private members of this class
+	/* Allow specific external members to access private members of this class */
 	friend class SensorsAPI;
 	friend void user_task_proxy();
 	friend void scheduling_start_uninterruptible_synchronous_task(bool);
@@ -110,7 +112,7 @@ public:
 	 * @brief This function is used to enable acquisition on a Spin PIN with
 	 *        a given ADC.
 	 *
-	 * @note  Not any pin can be used for acquisiton: the pin must be linked
+	 * @note  Not any pin can be used for acquisition: the pin must be linked
 	 *        to a channel of the given ADC. Refer to Spin pinout image for
 	 *        PIN/ADC relations.
 	 *
@@ -126,7 +128,7 @@ public:
 	 * @return 0 if acquisition was correctly enabled, -1 if there was an error.
 	 *         Errors generally indicate that the given pin is not linked to and
 	 *         ADC, and thus can not be used for acquisition. If the adc_number
-	 *         parameter was explicitely provided, it can also indicate that the
+	 *         parameter was explicitly provided, it can also indicate that the
 	 *         given ADC is not available for acquisition on the provided pin.
 	 */
 	int8_t enableAcquisition(uint8_t pin_number, adc_t adc_number = DEFAULT_ADC);
@@ -142,7 +144,7 @@ public:
 	 *        but do not want the Scheduling module to be in charge of Data
 	 *        Acquisition, you need to indicate it when starting the uninterruptible task.
 	 *        In that case, Data Acquisition must be manually started using this
-	 *        function. Note that in taht case, dispatch will use DMA interrupts
+	 *        function. Note that in that case, dispatch will use DMA interrupts
 	 *        which consumes a non-negligible amount of processor time and it is not advised.
 	 *
 	 * @note  Data Acquisition must be started only after ADC module configuration
@@ -247,10 +249,10 @@ public:
 	 *
 	 * @warning This is an expensive function. Calling this function trigger
 	 *          the conversion of all values acquired since the last call.
-	 *          If only the lastet value is required, it is advised to call
+	 *          If only the latest value is required, it is advised to call
 	 *          getLatestValue() instead. If multiple values are required,
 	 *          but not all, it is advised to call getRawValues() instead,
-	 *          then explicitely convert required values using convertValue().
+	 *          then explicitly convert required values using convertValue().
 	 *
 	 * @note  This function can't be called before the pin is enabled.
 	 *        The DataAPI module must have been started, either
@@ -275,7 +277,7 @@ public:
 	/**
 	 * @brief Function to access the latest value available from a pin,
 	 *        expressed in the relevant unit for the data: Volts, Amperes, or
-	 *        Degree Celcius. This function will not touch anything in the
+	 *        Degree Celsius. This function will not touch anything in the
 	 *        buffer, and thus can be called safely at any time after the
 	 *        module has been started.
 	 *
@@ -294,7 +296,7 @@ public:
 	/**
 	 * @brief This function returns the latest acquired measure expressed
 	 *        in the relevant unit for the channel: Volts, Amperes, or
-	 *        Degree Celcius.
+	 *        Degree Celsius.
 	 *
 	 * @note  This function can't be called before the pin is enabled.
 	 *        The DataAPI module must have been started, either
@@ -324,7 +326,7 @@ public:
 	/**
 	 * @brief Use this function to convert values obtained using matching
 	 *        data.getRawValues() function to relevant
-	 *        unit for the data: Volts, Amperes, or Degree Celcius.
+	 *        unit for the data: Volts, Amperes, or Degree Celsius.
 	 *
 	 * @note  This function can't be called before the pin is enabled.
 	 *
@@ -361,18 +363,18 @@ public:
 	 * @param[in] pin_number Number of the pin from which to obtain values.
 	 * @param[in] r0 The NTC resistance at a reference temperature.
 	 * @param[in] b The sensibility coefficient of the resistance to temperature.
-	 * @param[in] rdiv The bridge dividor resistance used to condition the NTC.
+	 * @param[in] rdiv The bridge divider resistance used to condition the NTC.
 	 * @param[in] t0 The reference temperature of the thermistor.
 	 */
 	void setConversionParametersNtcThermistor(uint8_t pin_num, float32_t r0, float32_t b, float32_t rdiv, float32_t t0);
 
 	/**
-	 * @brief Use this function to get the current conversion parameteres for the chosen channel .
+	 * @brief Use this function to get the current conversion parameters for the chosen channel .
 	 *
 	 * @note  This function can't be called before the channel is enabled.
 	 *
 	 * @param[in] pin_number Number of the pin from which to obtain values.
-	 * @param[in] parameter_name Paramater to be retreived: `gain` or `offset`.
+	 * @param[in] parameter_name Paramater to be retrieved: `gain` or `offset`.
 	 *
 	 * @return Returns the value of the parameter. Returns -5000 if the channel is not active.
 	 */
@@ -385,7 +387,7 @@ public:
 	 *
 	 * @param[in] pin_number Number of the pin from which to obtain values.
 	 *
-	 * @return Returns the type of convertion of the given pin. Returns -5 if the channel is not active.
+	 * @return Returns the type of conversion of the given pin. Returns -5 if the channel is not active.
 	 */
 	conversion_type_t getConversionParameterType(uint8_t pin_number);
 
@@ -405,7 +407,7 @@ public:
 	 *
 	 * @param[in] pin_number SPIN pin number
 	 *
-	 * @return 0 if parameters were correcly retrieved, negative value if there was an error:
+	 * @return 0 if parameters were correctly retrieved, negative value if there was an error:
 	 *         -1: persistent memory is empty
 	 *         -2: persistent memory contains data, but its version doesn't match current version
 	 *         -3: data in persistent memory is corrupted
@@ -422,7 +424,7 @@ public:
 	 *        If ADC is already started, it must be stopped then started again.
 	 *
 	 * @note This is an advanced function that requires to understand the
-	 *       way the ADC work. Only for use if you explicitely requires it.
+	 *       way the ADC work. Only for use if you explicitly requires it.
 	 *
 	 * @param[in] adc_number Number of the ADC to configure.
 	 * @param[in] discontinuous_count Number of channels to acquire on each
@@ -432,7 +434,7 @@ public:
 
 	/**
 	 * @brief Change the trigger source of an ADC.
-	 *        By default, triggger source for ADC 1/2 is on HRTIM1,
+	 *        By default, trigger source for ADC 1/2 is on HRTIM1,
 	 *        and ADC 3/4 is software-triggered.
 	 *
 	 *        Applied configuration will only be set when ADC is started.
@@ -456,7 +458,7 @@ private:
 	static adc_t getDefaultAdcForPin(uint8_t pin_number);
 	static adc_t getCurrentAdcForPin(uint8_t pin_number);
 
-	// Private members accessed by external friend members
+	/* Private members accessed by external friend members */
 	static void setRepetitionsBetweenDispatches(uint32_t repetition);
 	static void setDispatchMethod(DispatchMethod_t dispatch_method);
 	static void doFullDispatch();
@@ -473,4 +475,4 @@ private:
 
 };
 
-#endif // DATAAPI_H_
+#endif /* DATAAPI_H_ */

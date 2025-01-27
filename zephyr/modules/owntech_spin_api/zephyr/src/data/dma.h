@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 LAAS-CNRS
+ * Copyright (c) 2021-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -32,7 +32,7 @@
 #define DMA_H_
 
 
-// Stdlib
+/* Stdlib */
 #include <stdint.h>
 
 
@@ -46,7 +46,7 @@
  *
  * @param adc_number Number of the ADC to acquire measures from.
  * @param disable_interrupts Boolean indicating whether interrupts
- *        shoud be disabled. Warning: this override Zephyr DMA
+ *        should be disabled. Warning: this override Zephyr DMA
  *        driver default behavior.
  * @param buffer Pointer to buffer.
  * @param buffer_size Number of uint16_t words the buffer can contain.
@@ -61,7 +61,7 @@ void dma_configure_adc_acquisition(uint8_t adc_number, bool disable_interrupts, 
  *
  * @return Number of acquired data modulo buffer size.
  */
-uint32_t dma_get_retreived_data_count(uint8_t adc_number);
+uint32_t dma_get_retrieved_data_count(uint8_t adc_number);
 
 
-#endif // DMA_H_
+#endif /* DMA_H_ */

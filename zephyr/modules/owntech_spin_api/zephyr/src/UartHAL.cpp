@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 LAAS-CNRS
+ * Copyright (c) 2022-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -24,19 +24,19 @@
  */
 
 
-// STM 32 LL
+/* STM 32 LL */
 #include <stm32_ll_lpuart.h>
 
-// Zephyr
+/* Zephyr */
 #include <zephyr/drivers/uart.h>
 #include <zephyr/console/console.h>
 
-// Current file header
+/* Current file header */
 #include "UartHAL.h"
 
-
-/////
-// USART 1 defines
+/**
+ *  USART 1 defines
+ */
 
 #define CONFIG_OWNTECH_SERIAL_TX_BUF_SIZE 5
 #define CONFIG_OWNTECH_SERIAL_RX_BUF_SIZE 5
@@ -46,9 +46,9 @@ static const struct device* uart_dev = DEVICE_DT_GET(DT_NODELABEL(usart1));
 static char buf_req[CONFIG_OWNTECH_SERIAL_RX_BUF_SIZE];
 static bool command_flag = false;
 
-
-/////
-// USART 1 private functions
+/**
+ *  USART 1 private functions
+ */
 
 static void _uart_usart1_process_input(const struct device *dev, void* user_data)
 {
@@ -67,8 +67,9 @@ static void _uart_usart1_process_input(const struct device *dev, void* user_data
 	}
 }
 
-/////
-// USART 1 public functions
+/**
+ *  USART 1 public functions
+ */
 
 void UartHAL::usart1Init()
 {
@@ -95,7 +96,8 @@ char UartHAL::usart1ReadChar()
 		command_flag = false;
 		return buf_req[0];
 	} else {
-		return 'x';		// returns an x to signal there is no command waiting to be treated
+		/* returns an x to signal there is no command waiting to be treated */
+		return 'x';
 	}
 }
 

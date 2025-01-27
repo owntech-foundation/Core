@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 LAAS-CNRS
+ * Copyright (c) 2021-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -28,11 +28,12 @@
 #ifndef DATA_CONVERSION_H_
 #define DATA_CONVERSION_H_
 
-#include <arm_math.h>   // adds all the CMSIS library
+/* adds all the CMSIS library */
+#include <arm_math.h>
 
-
-/////
-// Type definitions
+/**
+ *  Type definitions
+ */
 
 typedef enum : int8_t
 {
@@ -42,9 +43,9 @@ typedef enum : int8_t
 
 } conversion_type_t;
 
-
-/////
-// API
+/**
+ *  API
+ */
 
 /**
  * @brief Initialize data conversion.
@@ -101,7 +102,7 @@ conversion_type_t data_conversion_get_conversion_type(uint8_t adc_num, uint8_t c
  *
  * @param[in] adc_num       ADC number
  * @param[in] channel_num   Channel number
- * @param[in] parameter_num Number of the paramter to retreive. E.g. for linear parameters,
+ * @param[in] parameter_num Number of the parameter to retrieve. E.g. for linear parameters,
  *                          gain is param 1 and offset is param 2.
  *
  * @return Current value of the given parameter.
@@ -114,17 +115,17 @@ float32_t data_conversion_get_parameter(uint8_t adc_num, uint8_t channel_num, ui
  * @param[in] adc_num       ADC number
  * @param[in] channel_num   Channel number
  *
- * @return 0 if parameters were correcly stored, -1 if there was an error.
+ * @return 0 if parameters were correctly stored, -1 if there was an error.
  */
 int8_t data_conversion_store_channel_parameters_in_nvs(uint8_t adc_num, uint8_t channel_num);
 
 /**
- * @brief Retreived previously configured conversion parameters from NVS.
+ * @brief Retrieved previously configured conversion parameters from NVS.
  *
  * @param[in] adc_num       ADC number
  * @param[in] channel_num   Channel number
  *
- * @return 0 if parameters were correcly retreived, negative value if there was an error:
+ * @return 0 if parameters were correctly retrieved, negative value if there was an error:
  *         -1: NVS is empty
  *         -2: NVS contains data, but their version doesn't match current version
  *         -3: NVS data is corrupted
@@ -133,4 +134,4 @@ int8_t data_conversion_store_channel_parameters_in_nvs(uint8_t adc_num, uint8_t 
 int8_t data_conversion_retrieve_channel_parameters_from_nvs(uint8_t adc_num, uint8_t channel_num);
 
 
-#endif // DATA_CONVERSION_H_
+#endif /* DATA_CONVERSION_H_ */

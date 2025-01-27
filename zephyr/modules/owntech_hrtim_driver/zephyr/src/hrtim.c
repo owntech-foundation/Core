@@ -1254,13 +1254,13 @@ void hrtim_adc_trigger_dis(hrtim_tu_number_t tu_number)
                     & ~tu_channel[tu_number]->adc_hrtim.adc_source);
 }
 
-void hrtim_adc_triger_set(hrtim_tu_number_t tu_number,
+void hrtim_adc_trigger_set(hrtim_tu_number_t tu_number,
                           hrtim_adc_trigger_t adc_trig)
 {
     tu_channel[tu_number]->adc_hrtim.adc_trigger = adc_trig;
 }
 
-hrtim_adc_trigger_t hrtim_adc_triger_get(hrtim_tu_number_t tu_number)
+hrtim_adc_trigger_t hrtim_adc_trigger_get(hrtim_tu_number_t tu_number)
 {
     return tu_channel[tu_number]->adc_hrtim.adc_trigger;
 }
