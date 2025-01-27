@@ -541,14 +541,14 @@ void SensorsAPI::setTwistSensorsUserCalibrationFactors()
 
 	/* Ask for save in NVS */
 	printk("Do you want to store these parameters in permanent storage?\n");
-	printk("Parameters stored in permanent storage are automatically \
-			retrieved at board boot.\n");
+	printk("Parameters stored in permanent storage are automatically "
+		   "retrieved at board boot.\n");
 
-	printk("Not storing them in permanent storage will result in parameters \
-			being lost on board power cycle.\n");
+	printk("Not storing them in permanent storage will result in parameters "
+		   "being lost on board power cycle.\n");
 
-	printk("Press y to store parameters in permanent storage, \
-			any other key to don't store them.\n");
+	printk("Press y to store parameters in permanent storage, "
+		   "any other key to don't store them.\n");
 
 	char received_char = console_getchar();
 	if (received_char == 'y')
@@ -612,8 +612,8 @@ void SensorsAPI::setTwistSensorsUserCalibrationFactors()
 	}
 	else
 	{
-		printk("Exiting without permanent storage.\
-				Parameters won't be retained after power cycling.\n");
+		printk("Exiting without permanent storage."
+			   "Parameters won't be retained after power cycling.\n");
 	}
 }
 
@@ -686,8 +686,8 @@ void SensorsAPI::buildSensorListFromDeviceTree()
 
 			if (res == 0)
 			{
-				printk("Parameters for ADC %u channel %u \
-						have been retrieved from flash\n",
+				printk("Parameters for ADC %u channel %u "
+					   "have been retrieved from flash\n",
 						dt_sensors_props[dt_sensor_index].adc_number,
 						dt_sensors_props[dt_sensor_index].channel_number);
 
@@ -715,8 +715,8 @@ void SensorsAPI::buildSensorListFromDeviceTree()
 								2
 							);
 
-						printk("    Conversion type is linear, \
-							   with gain=%f and offset=%f\n",
+						printk("    Conversion type is linear, "
+							   "with gain=%f and offset=%f\n",
 							   (double)gain,
 							   (double)offset);
 					}
@@ -768,31 +768,32 @@ void SensorsAPI::buildSensorListFromDeviceTree()
 			}
 			else if (res == -1)
 			{
-				printk("No calibration value found in persistent storage. \
-						Default values will be used for data conversion.\n");
+				printk("No calibration value found in persistent storage. "
+					   "Default values will be used for data conversion.\n");
 				checkNvs = false;
 			}
 			else if (res == -2)
 			{
-				printk("Calibration values in persistent storage were stored \
-					  with a previous version of the API and can't be recovered.
-					  \ Default values will be used for data conversion.\n");
+				printk("Calibration values in persistent storage were stored"
+					   "with a previous version of the API "
+					   "and can't be recovered."
+					   "Default values will be used for data conversion.\n");
 				checkNvs = false;
 			}
 			else if (res == -3)
 			{
-				printk("Calibration values for ADC %u channel %u were found \
-					   in persistent storage, but their format is incorrect. \
-					   Possible data corruption.\n",
+				printk("Calibration values for ADC %u channel %u were found "
+					   "in persistent storage, but their format is incorrect. "
+					   "Possible data corruption.\n",
 				       dt_sensors_props[dt_sensor_index].adc_number,
 				       dt_sensors_props[dt_sensor_index].channel_number
 				      );
 			}
 			else if (res == -4)
 			{
-				printk("Unable to find calibration values for ADC \
-						%u channel %u in persistent storage. \
-						Default values will be used.\n",
+				printk("Unable to find calibration values for ADC "
+					   "%u channel %u in persistent storage. "
+					   "Default values will be used.\n",
 				       dt_sensors_props[dt_sensor_index].adc_number,
 				       dt_sensors_props[dt_sensor_index].channel_number
 				      );
@@ -927,8 +928,8 @@ float32_t SensorsAPI::getCalibrationCoefficients(const char* physicalParameter,
 			   gainOrOffset,
 			   (double)parameterCoefficient);
 
-		printk("Press enter to validate, any other character \
-				to retype the %s \n",
+		printk("Press enter to validate, any other character "
+			   "to retype the %s \n",
 				gainOrOffset);
 
 		getLineFromConsole(line, MaxCharInOneLine);

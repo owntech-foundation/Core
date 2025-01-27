@@ -212,7 +212,7 @@ void timer_stm32_start(const struct device* dev)
 void timer_stm32_stop(const struct device* dev)
 {
 	struct stm32_timer_driver_data* data =
-								(struct stm32_timer_driver_data*)dev->data
+								(struct stm32_timer_driver_data*)dev->data;
 
 	TIM_TypeDef* tim_dev = data->timer_struct;
 
