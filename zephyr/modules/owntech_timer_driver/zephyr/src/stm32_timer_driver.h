@@ -65,8 +65,10 @@ typedef enum
  * interrupt_line§:        interrupt line number (if interrupt has to be enabled)
  * interrupt_prio§:        interrupt priority (if interrupt has to be enabled)
  * timer_mode:             Mode in which the timer is configured.
- * timer_irq_callback:     user-defined, set by the timer_config call (if interrupt has to be enabled).
- *                         Should be set to NULL in structure passed to DEVICE_DT_DEFINE
+ * timer_irq_callback:     user-defined, set by the timer_config call
+ * 						   (if interrupt has to be enabled).
+ *                         Should be set to NULL in structure passed to
+ * 						   DEVICE_DT_DEFINE
  * timer_irq_period_usec:  period of the irq in microseconds.
  */
 struct stm32_timer_driver_data
@@ -80,7 +82,9 @@ struct stm32_timer_driver_data
 };
 
 static int timer_stm32_init(const struct device* dev);
-void timer_stm32_config(const struct device* dev, const struct timer_config_t* config);
+void timer_stm32_config(const struct device* dev,
+						const struct timer_config_t* config);
+
 void timer_stm32_start(const struct device* dev);
 void timer_stm32_stop(const struct device* dev);
 uint32_t timer_stm32_get_count(const struct device* dev);

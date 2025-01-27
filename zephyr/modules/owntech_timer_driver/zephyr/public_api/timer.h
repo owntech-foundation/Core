@@ -30,8 +30,10 @@
  *         at becoming more generic over time.
  *
  *         This version supports:
- *         * Timer 6 and Timer 7: Periodic call of a callback function with period ranging from 2 to 6553 µs.
- *         * Timer 4: Incremental coder acquisition with pinout: reset=PB3; CH1=PB6; CH2=PB7.
+ *         * Timer 6 and Timer 7: Periodic call of a callback function
+ * 			 with period ranging from 2 to 6553 µs.
+ *         * Timer 4: Incremental coder acquisition with pinout:
+ * 			 reset=PB3; CH1=PB6; CH2=PB7.
  */
 
 #ifndef TIMER_H_
@@ -77,7 +79,8 @@ typedef enum
  *                           called on timer overflow.
  * - timer_irq_t_usec      : period of the interrupt in microsecond (2 to 6553 µs)
  * - timer_use_zero_latency: for tasks, use zero-latency interrupts.
- *                           Only used by Task API, end-user should set this one to false.
+ *                           Only used by Task API,
+ * 							 end-user should set this one to false.
  *
  * *** Incremental encoder mode (ignored if timer_enable_encoder=0) ***
  * - timer_pin_mode : Pin mode for incremental coder interface.
@@ -105,7 +108,10 @@ struct timer_config_t
  *  API
  */
 
-typedef void     (*timer_api_config)   (const struct device* dev, const struct timer_config_t* config);
+typedef void     (*timer_api_config)(
+						const struct device* dev,
+						const struct timer_config_t* config
+				  );
 typedef void     (*timer_api_start)    (const struct device* dev);
 typedef void     (*timer_api_stop)     (const struct device* dev);
 typedef uint32_t (*timer_api_get_count)(const struct device* dev);
@@ -125,9 +131,11 @@ __subsystem struct timer_driver_api
  * @param dev    Zephyr device representing the timer.
  * @param config Configuration holding the timer configuration.
  */
-static inline void timer_config(const struct device* dev, const struct timer_config_t* config)
+static inline void timer_config(const struct device* dev,
+								const struct timer_config_t* config)
 {
-	const struct timer_driver_api* api = (const struct timer_driver_api*)(dev->api);
+	const struct timer_driver_api* api =
+								(const struct timer_driver_api*)(dev->api);
 
 	api->config(dev, config);
 }
@@ -140,7 +148,8 @@ static inline void timer_config(const struct device* dev, const struct timer_con
  */
 static inline void timer_start(const struct device* dev)
 {
-	const struct timer_driver_api* api = (const struct timer_driver_api*)(dev->api);
+	const struct timer_driver_api* api =
+								(const struct timer_driver_api*)(dev->api);
 
 	api->start(dev);
 }
@@ -153,7 +162,8 @@ static inline void timer_start(const struct device* dev)
  */
 static inline void timer_stop(const struct device* dev)
 {
-	const struct timer_driver_api* api = (const struct timer_driver_api*)(dev->api);
+	const struct timer_driver_api* api =
+								(const struct timer_driver_api*)(dev->api);
 
 	api->stop(dev);
 }
@@ -166,7 +176,8 @@ static inline void timer_stop(const struct device* dev)
  */
 static inline uint32_t timer_get_count(const struct device* dev)
 {
-	const struct timer_driver_api* api = (const struct timer_driver_api*)(dev->api);
+	const struct timer_driver_api* api =
+								(const struct timer_driver_api*)(dev->api);
 
 	return api->get_count(dev);
 }
