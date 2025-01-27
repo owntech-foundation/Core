@@ -218,7 +218,9 @@ void adc_core_configure_dma_mode(uint8_t adc_num, bool use_dma)
 	}
 }
 
-void adc_core_configure_trigger_source(uint8_t adc_num, uint32_t external_trigger_edge, uint32_t trigger_source)
+void adc_core_configure_trigger_source(uint8_t adc_num,
+									   uint32_t external_trigger_edge,
+									   uint32_t trigger_source)
 {
 	ADC_TypeDef* adc = _get_adc_by_number(adc_num);
 
@@ -229,7 +231,8 @@ void adc_core_configure_trigger_source(uint8_t adc_num, uint32_t external_trigge
 	LL_ADC_REG_SetTriggerSource(adc, trigger_source);
 }
 
-void adc_core_configure_discontinuous_mode(uint8_t adc_num, uint32_t discontinuous_count)
+void adc_core_configure_discontinuous_mode(uint8_t adc_num,
+										   uint32_t discontinuous_count)
 {
 	ADC_TypeDef* adc = _get_adc_by_number(adc_num);
 
@@ -274,11 +277,16 @@ void adc_core_configure_discontinuous_mode(uint8_t adc_num, uint32_t discontinuo
  * Applies differential mode to specified channel.
  * Refer to RM 21.4.7
  */
-void adc_core_set_channel_differential(uint8_t adc_num, uint8_t channel, bool enable_differential)
+void adc_core_set_channel_differential(uint8_t adc_num,
+									   uint8_t channel,
+									   bool enable_differential)
 {
 	ADC_TypeDef* adc = _get_adc_by_number(adc_num);
 
-	uint32_t diff = (enable_differential == true) ? LL_ADC_DIFFERENTIAL_ENDED : LL_ADC_SINGLE_ENDED;
+	uint32_t diff = (enable_differential == true)
+					? LL_ADC_DIFFERENTIAL_ENDED
+					: LL_ADC_SINGLE_ENDED;
+
 	uint32_t ll_channel = __LL_ADC_DECIMAL_NB_TO_CHANNEL(channel);
 
 	LL_ADC_SetChannelSingleDiff(adc, ll_channel, diff);
@@ -336,7 +344,9 @@ void adc_core_configure_channel(uint8_t adc_num, uint8_t channel, uint8_t rank)
 	 * Fconv up to 134 KSPS for 3 channels actually
 	 * used on each ADC
 	 */
-	LL_ADC_SetChannelSamplingTime(adc, ll_channel, LL_ADC_SAMPLINGTIME_12CYCLES_5);
+	LL_ADC_SetChannelSamplingTime(adc,
+								  ll_channel,
+								  LL_ADC_SAMPLINGTIME_12CYCLES_5);
 }
 
 void adc_core_init()
