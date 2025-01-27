@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2022 LAAS-CNRS
+ * Copyright (c) 2020-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -28,7 +28,7 @@
 #define NGND_H_
 
 
-// Zephyr
+/* Zephyr */
 #include <zephyr/device.h>
 
 
@@ -37,14 +37,16 @@ extern "C" {
 #endif
 
 
-/////
-// Public device name
+/**
+ *  Public Device Name
+ */
 
 #define NGND_DEVICE DT_NODELABEL(ngnd)
 
 
-/////
-// API
+/**
+ *  API
+ */
 
 void ngnd_set(const struct device* dev, int value);
 
@@ -53,4 +55,4 @@ void ngnd_set(const struct device* dev, int value);
 }
 #endif
 
-#endif // NGND_H_
+#endif /* NGND_H_ */
