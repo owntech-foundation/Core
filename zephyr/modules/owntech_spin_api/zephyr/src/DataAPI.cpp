@@ -406,7 +406,7 @@ void DataAPI::initializeAllAdcs()
 {
 	if (DataAPI::adcInitialized == false)
 	{
-		// Perform default configuration
+		/* Perform default configuration */
 		adc_configure_trigger_source(1, software);
 		adc_configure_trigger_source(2, software);
 		adc_configure_trigger_source(3, software);

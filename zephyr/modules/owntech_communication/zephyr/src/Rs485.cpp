@@ -35,7 +35,7 @@
 /* Header */
 #include "Rs485.h"
 
-#define DMA_USART DMA1 // DMA used
+#define DMA_USART DMA1 /* DMA used */
 
 /**
  *  HAL override is used because of undesired effect in zephyr's dma handler dma_stm32_irq_handler.

@@ -58,4 +58,4 @@ class CommunicationAPI
 
 extern CommunicationAPI communication;
 
-#endif // COMMUNICATIONAPI_H
+#endif /* COMMUNICATIONAPI_H */
