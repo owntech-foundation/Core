@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 LAAS-CNRS
+ * Copyright (c) 2021-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -23,17 +23,17 @@
  */
 
 
-// STM32 LL
+/* STM32 LL */
 #include <stm32_ll_tim.h>
 #include <stm32_ll_bus.h>
 #include <stm32_ll_gpio.h>
 
-// Current file header
+/* Current file header */
 #include "stm32_timer_driver.h"
 
-
-/////
-// Init function
+/**
+ *  Init function
+ */
 
 static int timer_stm32_init(const struct device* dev)
 {
@@ -51,9 +51,9 @@ static int timer_stm32_init(const struct device* dev)
 	return 0;
 }
 
-
-/////
-// Callback
+/**
+ *  Callback
+ */
 
 static void timer_stm32_callback(const void* arg)
 {
@@ -69,8 +69,9 @@ static void timer_stm32_callback(const void* arg)
 }
 
 
-/////
-// API
+/**
+ *  API
+ */
 
 static const struct timer_driver_api timer_funcs =
 {
@@ -121,7 +122,7 @@ void timer_stm32_config(const struct device* dev, const struct timer_config_t* c
 					break;
 			}
 
-			// Configure GPIO
+			/* Configure GPIO */
 			LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOB);
 
 			LL_GPIO_SetPinMode(GPIOB,LL_GPIO_PIN_3,LL_GPIO_MODE_ALTERNATE);
@@ -207,15 +208,15 @@ uint32_t timer_stm32_get_count(const struct device* dev)
 	return LL_TIM_GetCounter(tim_dev);
 }
 
-
-/////
-// Per-timer inits
+/**
+ *  Per-timer inits
+ */
 
 void init_timer_4()
 {
-	// Configure Timer in incremental coder mode
+	/* Configure Timer in incremental coder mode */
 
-	// Peripheral clock enable
+	/* Peripheral clock enable */
 	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM4);
 
 	LL_TIM_InitTypeDef TIM_InitStruct = {0};
@@ -246,11 +247,13 @@ void init_timer_6()
 {
 	LL_TIM_InitTypeDef TIM_InitStruct = {0};
 
-	// Peripheral clock enable
+	/* Peripheral clock enable */
 	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM6);
 
-	// TIM6 interrupt Init
-	TIM_InitStruct.Prescaler = (CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC/1e7) - 1; // Set prescaler to tick to 0.1µs
+	/* TIM6 interrupt Init */
+
+	/* Set prescaler to tick to 0.1µs */
+	TIM_InitStruct.Prescaler = (CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC/1e7) - 1;
 	TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
 	LL_TIM_Init(TIM6, &TIM_InitStruct);
 	LL_TIM_DisableARRPreload(TIM6);
@@ -262,11 +265,13 @@ void init_timer_7()
 {
 	LL_TIM_InitTypeDef TIM_InitStruct = {0};
 
-	// Peripheral clock enable
+	/* Peripheral clock enable */
 	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM7);
 
-	// TIM7 interrupt Init
-	TIM_InitStruct.Prescaler = (CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC/1e7) - 1; // Set prescaler to tick to 0.1µs
+	/* TIM7 interrupt Init */
+
+	/* Set prescaler to tick to 0.1µs */
+	TIM_InitStruct.Prescaler = (CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC/1e7) - 1;
 	TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
 	LL_TIM_Init(TIM7, &TIM_InitStruct);
 	LL_TIM_DisableARRPreload(TIM7);
@@ -274,11 +279,11 @@ void init_timer_7()
 	LL_TIM_DisableMasterSlaveMode(TIM7);
 }
 
+/**
+ *  Device definitions
+ */
 
-/////
-// Device definitions
-
-// Timer4
+/* Timer4 */
 #if DT_NODE_HAS_STATUS(TIMER4_NODE, okay)
 
 struct stm32_timer_driver_data timer4_data =
@@ -299,9 +304,9 @@ DEVICE_DT_DEFINE(TIMER4_NODE,
                  &timer_funcs
                 );
 
-#endif // Timer 4
+#endif /* Timer 4 */
 
-// Timer 6
+/* Timer 6 */
 #if DT_NODE_HAS_STATUS(TIMER6_NODE, okay)
 
 struct stm32_timer_driver_data timer6_data =
@@ -322,9 +327,9 @@ DEVICE_DT_DEFINE(TIMER6_NODE,
                  &timer_funcs
                 );
 
-#endif // Timer 6
+#endif /* Timer 6 */
 
-// Timer 7
+/* Timer 7 */
 #if DT_NODE_HAS_STATUS(TIMER7_NODE, okay)
 
 struct stm32_timer_driver_data timer7_data =
@@ -345,4 +350,4 @@ DEVICE_DT_DEFINE(TIMER7_NODE,
                  &timer_funcs
                 );
 
-#endif // Timer 7
+#endif /* Timer 7 */

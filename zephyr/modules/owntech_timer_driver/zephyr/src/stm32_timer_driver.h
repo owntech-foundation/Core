@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 LAAS-CNRS
+ * Copyright (c) 2021-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -25,10 +25,10 @@
 #define STM32_TIMER_DRIVER_H_
 
 
-// Zephyr
+/* Zephyr */
 #include <zephyr/device.h>
 
-// Common driver header
+/* Common driver header */
 #include "timer.h"
 
 
@@ -96,4 +96,4 @@ void init_timer_7();
 #endif
 
 
-#endif // STM32_TIMER_DRIVER_H_
+#endif /* STM32_TIMER_DRIVER_H_ */
