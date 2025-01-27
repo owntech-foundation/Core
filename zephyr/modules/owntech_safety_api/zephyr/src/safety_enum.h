@@ -32,7 +32,8 @@
 /**
  * two types of reactions :
  *  - Open_Circuit : Open both high-side and low-side switches
- *  - Short_Circuit : Open high-side switch and close low-side switch, maintaining output in short circuit.
+ *  - Short_Circuit : Open high-side switch and close low-side switch,
+ *                    maintaining output in short circuit.
  */
 typedef enum
 {

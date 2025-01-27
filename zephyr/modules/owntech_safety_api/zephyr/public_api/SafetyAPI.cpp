@@ -35,21 +35,25 @@ void SafetyAPI::initShield()
     safety_init_shield(true);
 }
 
-void SafetyAPI::initShield(sensor_t* sensors_watch, uint8_t sensors_watch_number)
+void SafetyAPI::initShield(sensor_t* sensors_watch,
+                           uint8_t sensors_watch_number)
 {
     safety_init_shield(false);
     safety_set_sensor_watch(sensors_watch, sensors_watch_number);
 }
 
-int8_t SafetyAPI::setChannelWatch(sensor_t* sensors_watch, uint8_t sensors_watch_number)
+int8_t SafetyAPI::setChannelWatch(sensor_t* sensors_watch,
+                                  uint8_t sensors_watch_number)
 {
     int8_t status =  safety_set_sensor_watch(sensors_watch, sensors_watch_number);
     return status;
 }
 
-int8_t SafetyAPI::unsetChannelWatch(sensor_t* sensors_watch, uint8_t sensors_watch_number)
+int8_t SafetyAPI::unsetChannelWatch(sensor_t* sensors_watch,
+                                    uint8_t sensors_watch_number)
 {
-    int8_t status =  safety_unset_sensor_watch(sensors_watch, sensors_watch_number);
+    int8_t status =  safety_unset_sensor_watch(sensors_watch,
+                                               sensors_watch_number);
     return status;
 }
 
@@ -71,15 +75,23 @@ safety_reaction_t SafetyAPI::getChannelReaction()
     return sensors_reaction;
 }
 
-int8_t SafetyAPI::setChannelThresholdMax(sensor_t *sensors_threshold, float32_t *threshold_max, uint8_t sensors_threshold_number)
+int8_t SafetyAPI::setChannelThresholdMax(sensor_t *sensors_threshold,
+                                         float32_t *threshold_max,
+                                         uint8_t sensors_threshold_number)
 {
-    uint8_t ret =  safety_set_sensor_threshold_max(sensors_threshold, threshold_max, sensors_threshold_number);
+    uint8_t ret =  safety_set_sensor_threshold_max(sensors_threshold,
+                                                   threshold_max,
+                                                   sensors_threshold_number);
     return ret;
 }
 
-int8_t SafetyAPI::setChannelThresholdMin(sensor_t *sensors_threshold, float32_t *threshold_min, uint8_t sensors_threshold_number)
+int8_t SafetyAPI::setChannelThresholdMin(sensor_t *sensors_threshold,
+                                         float32_t *threshold_min,
+                                         uint8_t sensors_threshold_number)
 {
-    uint8_t ret =  safety_set_sensor_threshold_min(sensors_threshold, threshold_min, sensors_threshold_number);
+    uint8_t ret =  safety_set_sensor_threshold_min(sensors_threshold,
+                                                   threshold_min,
+                                                   sensors_threshold_number);
     return ret;
 }
 
