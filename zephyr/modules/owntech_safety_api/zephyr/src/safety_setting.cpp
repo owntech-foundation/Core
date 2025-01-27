@@ -50,7 +50,8 @@
 #define DT_SENSORS_NUMBER DT_FOREACH_STATUS_OKAY(shield_sensors, SENSOR_COUNTER)
 
 /**
- * Counts the number of LEGs (i.e. the converters that need to be stopped for safety)
+ * Counts the number of LEGs
+ * (i.e. the converters that need to be stopped for safety)
  */
 #define POWER_SHIELD_ID DT_NODELABEL(powershield)
 #define LEG_COUNTER(node_id) +1
@@ -66,26 +67,34 @@
 
 /* sensors that need to be watched (true) / ignored (false) */
 static bool sensor_watch[DT_SENSORS_NUMBER + 1];
+
 /* threshold max for each sensor */
 static float32_t sensor_threshold_max[DT_SENSORS_NUMBER + 1];
+
 /* threshold min for each sensor */
 static float32_t sensor_threshold_min[DT_SENSORS_NUMBER + 1];
+
 /* Reaction type by default in open circuit mode */
 static safety_reaction_t sensor_reaction = Open_Circuit;
+
 /* sensor that went over/below the threshold (true) */
 static bool sensor_errors[DT_SENSORS_NUMBER + 1];
 
 /* Pin number of the gpio driving high side switch */
-static uint8_t dt_pin_high_side[] = { DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_PWM_PIN_HIGH) };
+static uint8_t dt_pin_high_side[] =
+        { DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_PWM_PIN_HIGH) };
+
 /* Pin number of the gpio driving low side switch */
-static uint8_t dt_pin_low_side[] = { DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_PWM_PIN_LOW) };
+static uint8_t dt_pin_low_side[] =
+        { DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_PWM_PIN_LOW) };
 
 /**
  * The purpose of safety_alert_counter is to have a delay when we detect a problem.
- * For example here we wait that safety_alert_counter = 5 before triggering a safety alert,
- * if the control task = 100µs then we wait 0.5ms before enabling short-circuit
- * and open-circuit mode. Thus we avoid stopping everything because of transient
- * surge of current or voltage which are not really a problem.
+ * For example here we wait that safety_alert_counter = 5 before triggering
+ * a safety alert, if the control task = 100µs then we wait 0.5ms before
+ * enabling short-circuit and open-circuit mode.
+ * Thus we avoid stopping everything because of transient surge of current or
+ * voltage which are not really a problem.
  */
 static uint8_t safety_alert_counter = 0;
 
@@ -142,11 +151,14 @@ void _open_circuit(void)
 /**
  * @brief Sets the sensors that need to be monitored
  */
-int8_t safety_set_sensor_watch(sensor_t * safety_sensors, uint8_t sensors_number)
+int8_t safety_set_sensor_watch(sensor_t * safety_sensors,
+                               uint8_t sensors_number)
 {
     if (sensors_number > DT_SENSORS_NUMBER)
     {
-        printk("ERROR: number of sensors superior to number of sensors defined in device tree");
+        printk("ERROR: number of sensors superior to number of sensors defined \
+                in device tree");
+
         return -1;
     }
 
@@ -167,13 +179,16 @@ bool safety_get_sensor_watch(sensor_t  safety_sensors)
 }
 
 /**
- * @brief Unsets from the watching list the sensors that do not need to be monitored
+ * @brief Unsets from the watching list the sensors that do not need
+ *        to be monitored
  */
-int8_t safety_unset_sensor_watch(sensor_t * safety_sensors, uint8_t sensors_number)
+int8_t safety_unset_sensor_watch(sensor_t * safety_sensors,
+                                 uint8_t sensors_number)
 {
     if (sensors_number > DT_SENSORS_NUMBER)
     {
-        printk("ERROR: number of sensors superior to number of sensors defined in device tree");
+        printk("ERROR: number of sensors superior to number of sensors defined \
+                in device tree");
         return -1;
     }
 
@@ -206,11 +221,15 @@ safety_reaction_t safety_get_sensor_reaction()
 /**
  * @brief Sets sensor threshold
  */
-int8_t safety_set_sensor_threshold_max(sensor_t *safety_sensors, float32_t *threshold, uint8_t sensors_number)
+int8_t safety_set_sensor_threshold_max(sensor_t *safety_sensors,
+                                       float32_t *threshold,
+                                       uint8_t sensors_number)
 {
     if (sensors_number > DT_SENSORS_NUMBER)
     {
-        printk("ERROR: number of sensors superior to number of sensors defined in device tree");
+        printk("ERROR: number of sensors superior to number of sensors defined \
+                in device tree");
+
         return -1;
     }
 
@@ -225,11 +244,15 @@ int8_t safety_set_sensor_threshold_max(sensor_t *safety_sensors, float32_t *thre
 /**
  * @brief Sets sensor threshold
  */
-int8_t safety_set_sensor_threshold_min(sensor_t *safety_sensors, float32_t *threshold, uint8_t sensors_number)
+int8_t safety_set_sensor_threshold_min(sensor_t *safety_sensors,
+                                       float32_t *threshold,
+                                       uint8_t sensors_number)
 {
     if (sensors_number > DT_SENSORS_NUMBER)
     {
-        printk("ERROR: number of sensors superior to number of sensors defined in device tree");
+        printk("ERROR: number of sensors superior to number of sensors defined \
+                in device tree");
+
         return -1;
     }
 
@@ -276,8 +299,16 @@ int8_t safety_watch()
     {
         if (sensor_watch[i])
         {
-            float32_t measure = shield.sensors.peekLatestValue(static_cast<sensor_t>(i));
-            if(measure != -10000) sensor_errors[i] = (measure > sensor_threshold_max[i] || measure < sensor_threshold_min[i]) ? true : false;
+            float32_t measure =
+                    shield.sensors.peekLatestValue(static_cast<sensor_t>(i));
+
+            if (measure != -10000){
+                sensor_errors[i] =
+                    (measure > sensor_threshold_max[i] ||
+                     measure < sensor_threshold_min[i])
+                     ? true
+                     : false;
+            }
             if (sensor_errors[i])
                 status = -1;
         }
@@ -322,8 +353,8 @@ void safety_disable_task()
 /**
  * @brief Function that need to be put in the fast uninterruptible task.
  *        It monitors the measures from the ADC, and trigger safety warning.
- *        However, to avoid false triggering from transient phenomenon we wait for
- *        a delay with safety_alert_counter
+ *        However, to avoid false triggering from transient phenomenon
+ *        we wait for a delay with safety_alert_counter.
  */
 int8_t safety_task()
 {
@@ -362,7 +393,9 @@ int8_t safety_store_threshold_in_nvs(sensor_t sensor)
 
 	uint16_t sensor_ID = MEASURE_THRESHOLD | (sensor&0x0F);
 
-	int ns = nvs_storage_store_data(sensor_ID, buffer, 1 + string_len + 1 + 4 + 4);
+	int ns = nvs_storage_store_data(sensor_ID,
+                                    buffer,
+                                    1 + string_len + 1 + 4 + 4);
 
 	k_free(buffer);
 
@@ -381,7 +414,8 @@ int8_t safety_store_threshold_in_nvs(sensor_t sensor)
  */
 int8_t  safety_retrieve_threshold_in_nvs(sensor_t sensor)
 {
-	/* Checks that parameters currently stored in NVS are from the same version */
+	/* Checks that parameters currently stored in NVS are
+     * from the same version */
 	uint16_t current_stored_version = nvs_storage_get_version_in_nvs();
 	if (current_stored_version == 0)
 	{
@@ -411,8 +445,11 @@ int8_t  safety_retrieve_threshold_in_nvs(sensor_t sensor)
 		}
 		else
 		{
-            sensor_threshold_min[sensor] = *((float32_t*)&buffer[string_len + 2]);
-            sensor_threshold_max[sensor] = *((float32_t*)&buffer[string_len + 2 + 4]);
+            sensor_threshold_min[sensor] =
+                                    *((float32_t*)&buffer[string_len + 2]);
+
+            sensor_threshold_max[sensor] =
+                                    *((float32_t*)&buffer[string_len + 2 + 4]);
 		}
 	}
 	else

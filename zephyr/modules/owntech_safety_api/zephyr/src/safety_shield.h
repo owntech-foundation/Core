@@ -28,13 +28,15 @@
 #define SHIELD_SAFETY_H_
 
 /**
- * @brief This function initialize the threshold max/min values with the default value
- *        from the device tree. If there are values stored and found in the NVS they
+ * @brief This function initialize the threshold max/min values
+ *        with the default value from the device tree.
+ *        If there are values stored and found in the NVS they
  *        will be used instead.
  *
- * @param watch_all a boolean value, if true all the sensors will be monitored to detect faults.
- *                   If false, none of the sensors will be monitored and we can set the sensors we desire
- *                   to watch later.
+ * @param watch_all a boolean value, if true all the sensors will be monitored
+ *                  to detect faults. If false, none of the sensors
+ *                  will be monitored and we can set the sensors we desire
+ *                  to watch later.
  *        @arg true
  *        @arg false
  */

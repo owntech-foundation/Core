@@ -34,8 +34,9 @@
 #include "arm_math.h"
 
 /**
- * @brief This function first watch the measure from the monitored channels, and compare it with
- *        the threshold values max/min to detect faults. If an error was detected, the switches will
+ * @brief This function first watch the measure from the monitored channels,
+ *        and compare it with the threshold values max/min to detect faults.
+ *        If an error was detected, the switches will
  *        either in open-circuit mode or in short-circuit mode.
  *
  * @return 0 if we did not detect any error, -1 else
