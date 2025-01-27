@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 LAAS-CNRS
+ * Copyright (c) 2022-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -26,17 +26,18 @@
 #ifndef PWMHAL_H_
 #define PWMHAL_H_
 
-// Stdlib
+/* Stdlib */
 #include <stdint.h>
 
-// ARM lib
+/* ARM lib */
 #include <arm_math.h>
 
-// OwnTech API
+/* OwnTech API */
 #include "adc.h"
 #include "hrtim_enum.h"
 
-/** Switch leg operation type.
+/**
+ *   Switch leg operation type.
  */
 typedef enum
 {
@@ -44,7 +45,8 @@ typedef enum
      boost
 } leg_operation_t;
 
-/** Inverter leg operation type.
+/**
+ *   Inverter leg operation type.
  */
 typedef enum
 {
@@ -60,7 +62,7 @@ typedef enum
 class PwmHAL
 {
 public:
-     // HRTIM configuration
+     /* HRTIM configuration */
 
      /**
       * @brief This function initializes a timing unit
@@ -70,7 +72,7 @@ public:
      void initUnit(hrtim_tu_number_t pwmX);
 
      /**
-      * @brief This fonction starts both outputs of the selected HRTIM channel
+      * @brief This function starts both outputs of the selected HRTIM channel
       *
       * @param[in] pwmX  PWM Unit - PWMA, PWMB, PWMC, PWMD, PWME or PWMF
       */
@@ -127,7 +129,7 @@ public:
       *
       * @param[in] fixed_frequency frequency to be fixed in Hz
       *
-      * @warning This function must be called BEFORE initialiazing any timing
+      * @warning This function must be called BEFORE initializing any timing
       *          unit. The frequency will not vary during the operation of the
       *          power device. Use it for fixed frequencies only.
       */
@@ -140,7 +142,7 @@ public:
       * @param[in] initial_frequency The initial value of the frequency in Hz
       * @param[in] minimal_frequency The minimal value of the frequency in Hz
       *
-      * @warning This function must be called BEFORE initialiazing any timing
+      * @warning This function must be called BEFORE initializing any timing
       *          unit. The user can vary the frequency during the operation of
       *          the power device. This may compromise the resolution of the
       *          PWM. you can check your resolution with the getResolutionPS
@@ -184,7 +186,7 @@ public:
       * @param[in] pwmX  PWM Unit - PWMA, PWMB, PWMC, PWMD, PWME or PWMF
       * @param[in] mode  PWM mode - VOLTAGE_MODE or CURRENT_MODE
       *
-      * @warning this function must be called BEFORE initialiazing the selected timing unit
+      * @warning this function must be called BEFORE initializing the selected timing unit
       */
      void setMode(hrtim_tu_number_t pwmX, hrtim_pwm_mode_t mode);
 
@@ -194,7 +196,7 @@ public:
       * @param[in] pwmX  PWM Unit - PWMA, PWMB, PWMC, PWMD, PWME or PWMF
       * @return     PWM mode - VOLTAGE_MODE or CURRENT_MODE
       *
-      * @warning this function must be called before initialiazing a timing unit
+      * @warning this function must be called before initializing a timing unit
       */
      hrtim_pwm_mode_t getMode(hrtim_tu_number_t pwmX);
 
@@ -204,7 +206,7 @@ public:
       * @param[in] pwmX  PWM Unit  - PWMA, PWMB, PWMC, PWMD, PWME or PWMF
       * @param[in] eev   external event trigger   - EEV1,EEV2, EEV3, EEV3, EEV4, EEV5, EEV6, EEV7, EEV8, EEV9
       *
-      * @warning this function must be called before initialiazing a timing unit
+      * @warning this function must be called before initializing a timing unit
       */
      void setEev(hrtim_tu_number_t pwmX, hrtim_external_trigger_t eev);
 
@@ -434,7 +436,7 @@ public:
      /**
       * @brief   This function initialize burst mode.
       *
-     */
+      */
      void initBurstMode();
 
      /**
@@ -460,8 +462,8 @@ public:
      /**
       * @brief   This function deinit burst mode.
       *
-     */
+      */
      void deInitBurstMode();
 };
 
-#endif // PWMHAL_H_
+#endif /* PWMHAL_H_ */

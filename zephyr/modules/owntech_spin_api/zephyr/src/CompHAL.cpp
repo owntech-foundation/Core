@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 LAAS-CNRS
+ * Copyright (c) 2023-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -24,13 +24,13 @@
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
-// Stdlib
+/* Stdlib */
 #include <stdint.h>
 
-// OwnTech low level module
+/* OwnTech low level module */
 #include "comparator.h"
 
-// Current file header
+/* Current file header */
 #include "CompHAL.h"
 
 

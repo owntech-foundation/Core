@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 LAAS-CNRS
+ * Copyright (c) 2021-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -24,11 +24,12 @@
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
-// OwnTech Power API
+/* OwnTech Power API */
 
-// Current file header
+/* Current file header */
 #include "PwmHAL.h"
-#include "hrtim.h" // PWM management layer by inverter leg interface
+/* PWM management layer by inverter leg interface */
+#include "hrtim.h"
 
 void PwmHAL::initUnit(hrtim_tu_number_t pwmX)
 {
@@ -160,35 +161,40 @@ void PwmHAL::stopSingleOutput(hrtim_tu_number_t tu, hrtim_output_number_t output
 void PwmHAL::setModulation(hrtim_tu_number_t pwmX, hrtim_cnt_t modulation)
 {
 	if (!hrtim_get_status(pwmX))
-		hrtim_init_default_all(); // initialize default parameters before
+		/* Initialize default parameters before */
+		hrtim_init_default_all();
 	hrtim_set_modulation(pwmX, modulation);
 }
 
 void PwmHAL::setSwitchConvention(hrtim_tu_number_t pwmX,
                                  hrtim_switch_convention_t convention) {
-  if (!hrtim_get_status(pwmX))
-    hrtim_init_default_all(); // initialize default parameters before
-  hrtim_set_switch_convention(pwmX, convention);
+	if (!hrtim_get_status(pwmX))
+		/* Initialize default parameters before */
+		hrtim_init_default_all();
+	hrtim_set_switch_convention(pwmX, convention);
 }
 
 void PwmHAL::initVariableFrequency(uint32_t initial_frequency, uint32_t minimal_frequency)
 {
 	if (!hrtim_get_status(PWMA))
-		hrtim_init_default_all(); // initialize default parameters before
+		/* Initialize default parameters before */
+		hrtim_init_default_all();
 	hrtim_frequency_set(initial_frequency, minimal_frequency);
 }
 
 void PwmHAL::initFixedFrequency(uint32_t fixed_frequency)
 {
 	if (!hrtim_get_status(PWMA))
-		hrtim_init_default_all(); // initialize default parameters before
+		/* Initialize default parameters before */
+		hrtim_init_default_all();
 	hrtim_frequency_set(fixed_frequency, fixed_frequency);
 }
 
 void PwmHAL::setDeadTime(hrtim_tu_number_t pwmX, uint16_t rise_ns, uint16_t fall_ns)
 {
 	if (!hrtim_get_status(pwmX))
-		hrtim_init_default_all(); // initialize default parameters before
+		/*Initialize default parameters before */
+		hrtim_init_default_all();
 	hrtim_dt_set(pwmX, rise_ns, fall_ns);
 }
 
@@ -200,9 +206,11 @@ void PwmHAL::setDutyCycle(hrtim_tu_number_t pwmX, float32_t duty_cycle)
 
 void PwmHAL::setPhaseShift(hrtim_tu_number_t pwmX, int16_t shift)
 {
-	int16_t phase_shift_degree = shift % 360; // modulo
+	/* modulo */
+	int16_t phase_shift_degree = shift % 360;
 	if (phase_shift_degree < 0)
-		phase_shift_degree += 360; // case of negative phase
+		/* case of negative phase */
+		phase_shift_degree += 360;
 	uint16_t period;
 	if (pwmX != PWMB)
 	{
@@ -219,7 +227,7 @@ void PwmHAL::setPhaseShift(hrtim_tu_number_t pwmX, int16_t shift)
 }
 
 hrtim_cnt_t PwmHAL::getModulation(hrtim_tu_number_t pwmX) {
-  return hrtim_get_modulation(pwmX);
+	return hrtim_get_modulation(pwmX);
 }
 
 hrtim_switch_convention_t PwmHAL::getSwitchConvention(hrtim_tu_number_t pwmX)
@@ -249,7 +257,8 @@ void PwmHAL::setAdcTriggerPostScaler(hrtim_tu_number_t pwmX, uint32_t ps_ratio)
 
 void PwmHAL::enableAdcTrigger(hrtim_tu_number_t pwmX)
 {
-	uint16_t initial_trigger_value; // initial trigger value when you enable the adc trigger
+	/* Initial trigger value when you enable the adc trigger */
+	uint16_t initial_trigger_value;
 	hrtim_adc_trigger_en(pwmX);
 	if (hrtim_get_modulation(pwmX) == UpDwn)
 	{
@@ -265,8 +274,8 @@ void PwmHAL::enableAdcTrigger(hrtim_tu_number_t pwmX)
 
 void PwmHAL::setAdcTriggerInstant(hrtim_tu_number_t pwmX, float32_t trig_val)
 {
-	uint16_t triger_value_int = trig_val * hrtim_period_get(pwmX);
-	hrtim_tu_cmp_set(pwmX, CMP3xR, triger_value_int);
+	uint16_t trigger_value_int = trig_val * hrtim_period_get(pwmX);
+	hrtim_tu_cmp_set(pwmX, CMP3xR, trigger_value_int);
 }
 
 void PwmHAL::disableAdcTrigger(hrtim_tu_number_t tu_number)
@@ -307,7 +316,8 @@ uint32_t PwmHAL::getPeriodUs(hrtim_tu_number_t pwmX)
 void PwmHAL::setAdcEdgeTrigger(hrtim_tu_number_t pwmX, hrtim_adc_edgetrigger_t adc_edge_trigger)
 {
 	if (!hrtim_get_status(pwmX))
-		hrtim_init_default_all(); // initialize default parameters before
+		/* Initialize default parameters before */
+		hrtim_init_default_all();
 	hrtim_adc_rollover_set(pwmX, adc_edge_trigger);
 }
 
@@ -319,19 +329,21 @@ hrtim_adc_edgetrigger_t PwmHAL::getAdcEdgeTrigger(hrtim_tu_number_t pwmX)
 void PwmHAL::setAdcTrigger(hrtim_tu_number_t pwmX, hrtim_adc_trigger_t adc_trig)
 {
 	if (!hrtim_get_status(pwmX))
-		hrtim_init_default_all(); // initialize default parameters before
-	hrtim_adc_triger_set(pwmX, adc_trig);
+		/* Initialize default parameters before */
+		hrtim_init_default_all();
+	hrtim_adc_trigger_set(pwmX, adc_trig);
 }
 
 hrtim_adc_trigger_t PwmHAL::getAdcTrigger(hrtim_tu_number_t pwmX, hrtim_adc_trigger_t adc_trig)
 {
-	return hrtim_adc_triger_get(pwmX);
+	return hrtim_adc_trigger_get(pwmX);
 }
 
 void PwmHAL::setMode(hrtim_tu_number_t pwmX, hrtim_pwm_mode_t mode)
 {
 	if (!hrtim_get_status(pwmX))
-		hrtim_init_default_all(); // initialize default parameters before
+		/* Initialize default parameters before */
+		hrtim_init_default_all();
 	hrtim_pwm_mode_set(pwmX, mode);
 }
 
@@ -343,7 +355,8 @@ hrtim_pwm_mode_t PwmHAL::getMode(hrtim_tu_number_t pwmX)
 void PwmHAL::setEev(hrtim_tu_number_t pwmX, hrtim_external_trigger_t eev)
 {
 	if (!hrtim_get_status(pwmX))
-		hrtim_init_default_all(); // initialize default parameters before
+		/* Initialize default parameters before */
+		hrtim_init_default_all();
 	hrtim_eev_set(pwmX, eev);
 }
 

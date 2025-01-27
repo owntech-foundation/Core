@@ -779,7 +779,7 @@ hrtim_pwm_mode_t hrtim_pwm_mode_get(hrtim_tu_number_t tu_number);
  *            @arg @ref ADCTRIG_3
  *            @arg @ref ADCTRIG_4
  */
-void hrtim_adc_triger_set(hrtim_tu_number_t tu_number, hrtim_adc_trigger_t adc_trig);
+void hrtim_adc_trigger_set(hrtim_tu_number_t tu_number, hrtim_adc_trigger_t adc_trig);
 
 /**
  * @brief Returns the adc trigger
@@ -789,7 +789,7 @@ void hrtim_adc_triger_set(hrtim_tu_number_t tu_number, hrtim_adc_trigger_t adc_t
  *            @arg @ref ADCTRIG_3 = ADC trigger 3,
  *            @arg @ref ADCTRIG_4 = ADC trigger 4
  */
-hrtim_adc_trigger_t hrtim_adc_triger_get(hrtim_tu_number_t tu_number);
+hrtim_adc_trigger_t hrtim_adc_trigger_get(hrtim_tu_number_t tu_number);
 
 /**
  * @brief Sets the external event used in current mode for a timing unit

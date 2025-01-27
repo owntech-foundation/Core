@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 LAAS-CNRS
+ * Copyright (c) 2022-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -31,22 +31,23 @@
  */
 
 
-// Zephyr
+/* Zephyr */
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
 #include <zephyr/console/console.h>
 
-// STM32 LL
+/* STM32 LL */
 #include <stm32_ll_bus.h>
 #include <stm32_ll_system.h>
 
-// Owntech driver
+/* Owntech driver */
 #include "dac.h"
 
 static const struct device* dac2 = DEVICE_DT_GET(DAC2_DEVICE);
 
-/////
-// Functions to be run
+/**
+ *  Functions to be run
+ */
 
 static int _vrefbuf_init()
 {
@@ -93,7 +94,7 @@ static int _img_validation()
 
 	return 0;
 }
-#endif // CONFIG_BOOTLOADER_MCUBOOT
+#endif /* CONFIG_BOOTLOADER_MCUBOOT */
 
 
 #if defined(CONFIG_RETENTION_BOOT_MODE) && defined(CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT) && defined(CONFIG_USB_CDC_ACM)
@@ -123,7 +124,7 @@ static int _register_cdc_rate_callback()
 
 	return 0;
 }
-#endif // CONFIG_RETENTION_BOOT_MODE && CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT && CONFIG_USB_CDC_ACM
+#endif /* CONFIG_RETENTION_BOOT_MODE && CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT && CONFIG_USB_CDC_ACM */
 
 
 #ifdef CONFIG_SHIELD_O2
@@ -136,18 +137,21 @@ static int _swap_usart1_tx_rx()
 
 	return 0;
 }
-#endif // SHIELD_O2
+#endif /* SHIELD_O2 */
 
-/////
-// Zephyr macros to automatically run above functions
+/**
+ *  Zephyr macros to automatically run above functions
+ */
 
+/* To be run in the first init phase */
 SYS_INIT(_vrefbuf_init,
-         PRE_KERNEL_1, // To be run in the first init phase
+         PRE_KERNEL_1,
          CONFIG_KERNEL_INIT_PRIORITY_DEVICE
         );
 
+/* To be run in the second init phase (depends on DAC driver initialization)*/
 SYS_INIT(_dac2_init,
-         PRE_KERNEL_2, // To be run in the second init phase (depends on DAC driver initialization)
+         PRE_KERNEL_2,
          CONFIG_KERNEL_INIT_PRIORITY_DEVICE
         );
 
@@ -161,18 +165,19 @@ SYS_INIT(_img_validation,
          APPLICATION,
          CONFIG_APPLICATION_INIT_PRIORITY
         );
-#endif // CONFIG_BOOTLOADER_MCUBOOT
+#endif /* CONFIG_BOOTLOADER_MCUBOOT */
 
 #if defined(CONFIG_RETENTION_BOOT_MODE) && defined(CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT) && defined(CONFIG_USB_CDC_ACM)
 SYS_INIT(_register_cdc_rate_callback,
          APPLICATION,
          CONFIG_APPLICATION_INIT_PRIORITY
         );
-#endif // CONFIG_RETENTION_BOOT_MODE && CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT && CONFIG_USB_CDC_ACM
+#endif /* CONFIG_RETENTION_BOOT_MODE && CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT && CONFIG_USB_CDC_ACM */
 
 #ifdef CONFIG_SHIELD_O2
+/* To be run in the first init phase */
 SYS_INIT(_swap_usart1_tx_rx,
-         PRE_KERNEL_1, // To be run in the first init phase
+         PRE_KERNEL_1,
          CONFIG_KERNEL_INIT_PRIORITY_DEVICE
         );
-#endif // SHIELD_O2
+#endif /* SHIELD_O2*/
