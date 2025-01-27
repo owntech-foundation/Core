@@ -72,7 +72,8 @@ static int8_t _nvs_storage_store_version()
 	}
 	else if (storage_version_in_nvs == 0)
 	{
-		/* No version in NVS: this is the first use of NVS, store current version number. */
+		/* No version in NVS: this is the first use of NVS,
+		 * store current version number. */
 		int rc = nvs_write(&fs, VERSION, &current_storage_version, 2);
 
 		if (rc == 2)
@@ -85,8 +86,10 @@ static int8_t _nvs_storage_store_version()
 	}
 	else
 	{
-		/* There is already a version number in NVS, but it differs from current API version. */
-		/* This is currently treated as an error and requires to explicitly clear NVS. */
+		/* There is already a version number in NVS,
+		 * but it differs from current API version.
+		 * This is currently treated as an error and requires
+		 * to explicitly clear NVS. */
 		return -1;
 	}
 }
@@ -140,8 +143,12 @@ static int8_t _nvs_storage_init()
 	}
 	else if (storage_version_in_nvs != current_storage_version)
 	{
-		printk("WARNING: stored version in NVS is different from current module version! Stored data may not have the expected format.\n");
-		/* -2 indicates that the current version stored in NVS is different from current code version. */
+		printk("WARNING: stored version in NVS is different from \
+				current module version! \
+				Stored data may not have the expected format.\n");
+
+		/* -2 indicates that the current version stored in NVS
+		 * is different from current code version. */
 		return -2;
 	}
 
@@ -152,7 +159,9 @@ static int8_t _nvs_storage_init()
  *  Public Functions
  */
 
-int8_t nvs_storage_store_data(uint16_t data_id, const void* data, uint8_t data_size)
+int8_t nvs_storage_store_data(uint16_t data_id,
+							  const void* data,
+							  uint8_t data_size)
 {
 	if (initialized == false)
 	{
@@ -171,7 +180,9 @@ int8_t nvs_storage_store_data(uint16_t data_id, const void* data, uint8_t data_s
 	return rc;
 }
 
-int8_t nvs_storage_retrieve_data(uint16_t data_id, void* data_buffer, uint8_t data_buffer_size)
+int8_t nvs_storage_retrieve_data(uint16_t data_id,
+								 void* data_buffer,
+								 uint8_t data_buffer_size)
 {
 	if (initialized == false)
 	{
