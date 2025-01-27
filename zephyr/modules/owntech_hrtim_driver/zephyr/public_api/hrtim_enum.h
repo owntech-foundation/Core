@@ -303,7 +303,7 @@ extern "C"
     typedef enum
     {
         Lft_aligned = LL_HRTIM_COUNTING_MODE_UP,
-        UpDwn = LL_HRTIM_COUNTING_MODE_UP_DOWN // also known as center aligned
+        UpDwn = LL_HRTIM_COUNTING_MODE_UP_DOWN /* also known as center aligned */
 
     } hrtim_cnt_t;
 

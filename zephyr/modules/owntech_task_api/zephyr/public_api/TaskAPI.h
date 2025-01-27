@@ -177,7 +177,7 @@ public:
 	 */
 	void suspendBackgroundUs(uint32_t duration_us);
 
-#endif // CONFIG_OWNTECH_TASK_ENABLE_ASYNCHRONOUS_TASKS
+#endif /* CONFIG_OWNTECH_TASK_ENABLE_ASYNCHRONOUS_TASKS */
 
 private:
 	static const int DEFAULT_PRIORITY;
