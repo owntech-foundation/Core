@@ -18,7 +18,7 @@
 
     Focus on your application and generate your real time control
 
-    [:octicons-arrow-right-24: Examples](https://owntech-foundation.github.io/Documentation/examples/SPIN/ADC/adc_software_trigger/)
+    [:octicons-arrow-right-24: Examples](https://owntech-foundation.github.io/Documentation/1.0.0/examples/SPIN/ADC/adc_software_trigger/)
 
 </div>
 

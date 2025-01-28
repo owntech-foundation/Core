@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 LAAS-CNRS
+ * Copyright (c) 2022-2024 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2023
+ * @date   2024
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
  */
@@ -33,7 +33,7 @@
 #include <arm_math.h>
 
 // OwnTech API
-#include "adc.h"
+#include "DataAPI.h"
 #include "hrtim_enum.h"
 
 /** Switch leg operation type.
@@ -271,19 +271,21 @@ public:
       * @brief This function sets the adc trigger linked to a timer unit
       *
       * @param[in] pwmX  PWM Unit - PWMA, PWMB, PWMC, PWMD, PWME or PWMF
-      * @param[in] adc_trig   adc trigger - ADCTRIG_1, ADCTRIG_2, ADCTRIG_3 et ADCTRIG_4
+      * @param[in] adc   adc - ADC_1, ADC_2, ADC_3, ADC_4 or ADC_5
       *
       * @warning Call this function BEFORE enabling the adc trigger and AFTER initializing the selected timer
       */
-     void setAdcTrigger(hrtim_tu_number_t pwmX, hrtim_adc_trigger_t adc_trig);
+     void setAdcTrigger(hrtim_tu_number_t pwmX, adc_t adc);
 
      /**
       * @brief This function returns the adc trigger linked to a timer unit
       *
       * @param[in] pwmX  PWM Unit - PWMA, PWMB, PWMC, PWMD, PWME or PWMF
-      * @return     adc trigger - ADCTRIG_1, ADCTRIG_2, ADCTRIG_3 et ADCTRIG_4
+      * @return          adc - ADC_1, ADC_2, ADC_3, ADC_4, ADC_5 or
+      *                  UNKNOWN_ADC if the ADC trigger was not configured
+      *                  for this timing unit.
       */
-     hrtim_adc_trigger_t getAdcTrigger(hrtim_tu_number_t pwmX, hrtim_adc_trigger_t adc_trig);
+     adc_t getAdcTrigger(hrtim_tu_number_t pwmX);
 
      /**
       * @brief This function enables the adc trigger for the selected timing unit

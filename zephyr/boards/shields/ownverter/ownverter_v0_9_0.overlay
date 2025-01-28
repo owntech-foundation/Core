@@ -18,7 +18,7 @@
             pwm-pin-num = <12 14>;
             driver-pin-num = <19>;
             current-pin-num = <25>;
-            default-adc-trigger = "ADCTRIG_1";
+            default-adc = "ADC_1";
             default-adc-decim = <1>;
             default-edge-trigger = "EdgeTrigger_up";
             default-dead-time = <100 100>;
@@ -33,7 +33,7 @@
             pwm-pin-num = <2 4>;
             driver-pin-num = <22>;
             current-pin-num = <30>;
-            default-adc-trigger = "ADCTRIG_3";
+            default-adc = "ADC_2";
             default-adc-decim = <1>;
             default-edge-trigger = "EdgeTrigger_up";
             default-dead-time = <100 100>;
@@ -48,7 +48,7 @@
             pwm-pin-num = <10 11>;
             driver-pin-num = <56>;
             current-pin-num = <1>;
-            default-adc-trigger = "ADCTRIG_3";
+            default-adc = "UNKNOWN_ADC";
             default-adc-decim = <1>;
             default-edge-trigger = "EdgeTrigger_up";
             default-dead-time = <100 100>;

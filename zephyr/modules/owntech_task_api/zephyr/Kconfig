@@ -3,7 +3,6 @@ config OWNTECH_TASK_API
 	default y
 	depends on OWNTECH_TIMER_DRIVER
 	depends on OWNTECH_HRTIM_DRIVER
-	depends on OWNTECH_DATA_API
 
 if OWNTECH_TASK_API
 

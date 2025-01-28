@@ -83,7 +83,7 @@
 
 #ifdef CONFIG_SHIELD_OWNVERTER
 	uint8_t SensorsAPI::temp_mux_in_1 = DT_PROP(DT_NODELABEL(temp), mux_spin_pin_1);
-	uint8_t SensorsAPI::temp_mux_in_2 = DT_PROP(DT_NODELABEL(temp), mux_spin_pin_2);	
+	uint8_t SensorsAPI::temp_mux_in_2 = DT_PROP(DT_NODELABEL(temp), mux_spin_pin_2);
 #endif
 
 
@@ -189,8 +189,8 @@ float32_t SensorsAPI::convertRawValue(sensor_t sensor_name, uint16_t raw_value)
 void SensorsAPI::setConversionParametersLinear(sensor_t sensor_name, float32_t gain, float32_t offset)
 {
 	sensor_info_t sensor_info = getEnabledSensorInfo(sensor_name);
-	conversion_type_t sensor_conv_type = retrieveStoredConversionType(sensor_name);	
-	
+	conversion_type_t sensor_conv_type = retrieveStoredConversionType(sensor_name);
+
 	/* Verifies the conversion is of type linear */
 	if(sensor_conv_type == conversion_linear){
 		data_conversion_set_conversion_parameters_linear(sensor_info.adc_num,   \
@@ -201,8 +201,8 @@ void SensorsAPI::setConversionParametersLinear(sensor_t sensor_name, float32_t g
 
 void SensorsAPI::setConversionParametersNtcThermistor(sensor_t sensor_name, float32_t r0, float32_t b, float32_t rdiv, float32_t t0)
 {
-	sensor_info_t sensor_info = getEnabledSensorInfo(sensor_name);	
-	conversion_type_t sensor_conv_type = retrieveStoredConversionType(sensor_name);	
+	sensor_info_t sensor_info = getEnabledSensorInfo(sensor_name);
+	conversion_type_t sensor_conv_type = retrieveStoredConversionType(sensor_name);
 
 	if(sensor_conv_type == conversion_therm){
 		data_conversion_set_conversion_parameters_therm(sensor_info.adc_num, 	 \
@@ -243,7 +243,7 @@ void SensorsAPI::enableDefaultOwnverterSensors()
 	/*  Defines the triggers of all ADCs.
 		ADC 1 - Triggered by HRTIM C, which is linked to event 3
 		ADC 2 - Triggered by HRTIM A, which is linked to event 1
-		ADC 3, 4 and 5 - Triggered by software 
+		ADC 3, 4 and 5 - Triggered by software
 		                 They are mainly used for non-real-time measurements,
 						 such as temperature*/
 	spin.data.configureTriggerSource(ADC_1, hrtim_ev1);
@@ -253,7 +253,7 @@ void SensorsAPI::enableDefaultOwnverterSensors()
 	spin.data.configureTriggerSource(ADC_5, software);
 
 	/*  Defines ADC 1 and ADC 2 measurments as discontinuous.
-		This is specially helpful for creating synchronous measurements. 
+		This is specially helpful for creating synchronous measurements.
 		Each measurement is done once per period of HRTIM at a precise moment*/
 	spin.data.configureDiscontinuousMode(ADC_1, 1);
 	spin.data.configureDiscontinuousMode(ADC_2, 1);
@@ -282,7 +282,7 @@ void SensorsAPI::enableDefaultOwnverterSensors()
 void SensorsAPI::setOwnverterTempMeas(ownverter_temp_sensor_t temperature_sensor)
 {
 	if(temperature_sensor == TEMP_1){
-		spin.gpio.setPin(temp_mux_in_1);   
+		spin.gpio.setPin(temp_mux_in_1);
 		spin.gpio.resetPin(temp_mux_in_2);
 	}else if(temperature_sensor == TEMP_2){
 		spin.gpio.resetPin(temp_mux_in_1);
@@ -301,20 +301,19 @@ void SensorsAPI::setOwnverterTempMeas(ownverter_temp_sensor_t temperature_sensor
 void SensorsAPI::enableDefaultTwistSensors()
 {
 	/*  Defines the triggers of all ADCs.
-		ADC 1 - Triggered by HRTIM C, which is linked to event 3
-		ADC 2 - Triggered by HRTIM A, which is linked to event 1
-		ADC 3, 4 and 5 - Triggered by software 
+		ADC 1 and 2 - Triggered by HRTIM
+		ADC 3, 4 and 5 - Triggered by software
 		                 They are mainly used for non-real-time measurements,
 						 such as temperature*/
-	spin.data.configureTriggerSource(ADC_1, hrtim_ev1);
-	spin.data.configureTriggerSource(ADC_2, hrtim_ev3);
-	spin.data.configureTriggerSource(ADC_3, software);
-	spin.data.configureTriggerSource(ADC_4, software);
-	spin.data.configureTriggerSource(ADC_5, software);
+	spin.data.configureTriggerSource(ADC_1, TRIG_PWM);
+	spin.data.configureTriggerSource(ADC_2, TRIG_PWM);
+	spin.data.configureTriggerSource(ADC_3, TRIG_SOFTWARE);
+	spin.data.configureTriggerSource(ADC_4, TRIG_SOFTWARE);
+	spin.data.configureTriggerSource(ADC_5, TRIG_SOFTWARE);
 
 
 	/*  Defines ADC 1 and ADC 2 measurments as discontinuous.
-		This is specially helpful for creating synchronous measurements. 
+		This is specially helpful for creating synchronous measurements.
 		Each measurement is done once per period of HRTIM at a precise moment*/
 	uint32_t num_discontinuous_meas = 1;
 	spin.data.configureDiscontinuousMode(ADC_1, num_discontinuous_meas);
@@ -353,7 +352,7 @@ void SensorsAPI::setTwistSensorsUserCalibrationFactors()
 	float32_t offsets[6]; // VH, V1, V2, IH, I1, I2
 
 	float32_t r0[2];   		// T1 and T2 R0 - sensor resistance at reference temperature
-	float32_t b[2];   		// T1 and T2 B - sensor temperature negavie coefficient  
+	float32_t b[2];   		// T1 and T2 B - sensor temperature negavie coefficient
 	float32_t rdiv[2];   	// T1 and T2 R_DIV - bridge dividor resistance
 	float32_t t0[2];   		// T1 and T2 T0 - Reference temperature
 

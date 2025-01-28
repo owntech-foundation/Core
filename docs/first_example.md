@@ -8,8 +8,8 @@ Before you start, please make sure you fullfil the requirements below.
 
 !!! note "Requirements"
      - Have your [VSCode Environment](environment_setup.md#setup-your-work-environment) already setup
-     - Run your first compilation [successfully](environment_setup.md#step-6---build-our-core-code).
-     - Run your first upload [successfully](environment_setup.md#step-8---upload-our-core-code-in-your-spin-board).
+     - Run your first compilation [successfully](environment_setup.md#step-6-build-our-core-code).
+     - Run your first upload [successfully](environment_setup.md#step-8-upload-our-core-code-in-your-spin-board).
      - Have an USB-C cable ready
      - Have a SPIN board ready (stand-alone or embedded on a TWIST)
      - Have an internet connection up and running
