@@ -172,6 +172,11 @@ extern "C"
         ADCTRIG_2 = LL_HRTIM_ADCTRIG_2,
         ADCTRIG_3 = LL_HRTIM_ADCTRIG_3,
         ADCTRIG_4 = LL_HRTIM_ADCTRIG_4,
+        ADCTRIG_5 = LL_HRTIM_ADCTRIG_5,
+        ADCTRIG_6 = LL_HRTIM_ADCTRIG_6,
+        ADCTRIG_7 = LL_HRTIM_ADCTRIG_7,
+        ADCTRIG_8 = LL_HRTIM_ADCTRIG_8,
+        ADCTRIG_9 = LL_HRTIM_ADCTRIG_9,
         ADCTRIG_NONE,
     } hrtim_adc_trigger_t;
 

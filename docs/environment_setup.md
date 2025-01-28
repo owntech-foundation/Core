@@ -167,7 +167,7 @@ Before running the code, make sure that you meet the following requirements:
 
 !!! note "Requirements for running the code on a board"
      - Have your [VS Code Environment](#setup-your-work-environment) already set up
-     - Run your first compilation [successfully](#step-6---build-our-core-code).
+     - Run your first compilation [successfully](#step-6-build-our-core-code).
      - Have an USB-C cable ready
      - Have a SPIN board ready (stand-alone or embedded on a TWIST)
 

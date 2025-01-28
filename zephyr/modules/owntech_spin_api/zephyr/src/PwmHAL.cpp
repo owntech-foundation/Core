@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 LAAS-CNRS
+ * Copyright (c) 2021-2024 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2023
+ * @date   2024
  * @author Luiz Villa <luiz.villa@laas.fr>
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
@@ -316,16 +316,64 @@ hrtim_adc_edgetrigger_t PwmHAL::getAdcEdgeTrigger(hrtim_tu_number_t pwmX)
 	return hrtim_adc_rollover_get(pwmX);
 }
 
-void PwmHAL::setAdcTrigger(hrtim_tu_number_t pwmX, hrtim_adc_trigger_t adc_trig)
+void PwmHAL::setAdcTrigger(hrtim_tu_number_t pwmX, adc_t adc)
 {
+	// Get trigger depending on ADC number,
+	// and make sure the ADC is correct.
+	hrtim_adc_trigger_t adc_trig;
+	switch(adc)
+	{
+		case ADC_1:
+			adc_trig = ADCTRIG_1;
+			break;
+		case ADC_2:
+			adc_trig = ADCTRIG_3;
+			break;
+		case ADC_3:
+			adc_trig = ADCTRIG_5;
+			break;
+		case ADC_4:
+			adc_trig = ADCTRIG_7;
+			break;
+		case ADC_5:
+			adc_trig = ADCTRIG_9;
+			break;
+		case UNKNOWN_ADC:
+		case DEFAULT_ADC:
+		default:
+			return;
+	}
+
 	if (!hrtim_get_status(pwmX))
 		hrtim_init_default_all(); // initialize default parameters before
+
 	hrtim_adc_triger_set(pwmX, adc_trig);
 }
 
-hrtim_adc_trigger_t PwmHAL::getAdcTrigger(hrtim_tu_number_t pwmX, hrtim_adc_trigger_t adc_trig)
+adc_t PwmHAL::getAdcTrigger(hrtim_tu_number_t pwmX)
 {
-	return hrtim_adc_triger_get(pwmX);
+	hrtim_adc_trigger_t adc_trig = hrtim_adc_triger_get(pwmX);
+
+	switch(adc_trig)
+	{
+		case ADCTRIG_1:
+			return ADC_1;
+			break;
+		case ADCTRIG_3:
+			return ADC_2;
+			break;
+		case ADCTRIG_5:
+			return ADC_3;
+			break;
+		case ADCTRIG_7:
+			return ADC_4;
+			break;
+		case ADCTRIG_9:
+			return ADC_5;
+			break;
+		default:
+			return UNKNOWN_ADC;
+	}
 }
 
 void PwmHAL::setMode(hrtim_tu_number_t pwmX, hrtim_pwm_mode_t mode)

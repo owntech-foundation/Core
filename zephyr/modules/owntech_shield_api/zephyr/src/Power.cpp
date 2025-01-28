@@ -22,6 +22,7 @@
  *
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  * @author Jean Alinei <jean.alinei@owntech.org>
+ * @author Clément Foucher <clement.foucher@laas.fr>
  */
 
 #include "power_init.h"
@@ -109,7 +110,7 @@ void PowerAPI::initMode(leg_t leg,                                             \
          *	                                EEV5
          *
          * /!\ WARNING : Current mode is currently only supported for BUCK /!\
-         */         
+         */
         if (leg_mode == CURRENT_MODE)
         {
             if (dt_current_pin[i] == CM_DAC3)
@@ -144,15 +145,17 @@ void PowerAPI::initMode(leg_t leg,                                             \
         /**
          * Configure PWM ADC trigger.
          */
-        if (dt_adc[i] != ADCTRIG_NONE)
+        if (dt_adc[i] != UNKNOWN_ADC)
         {
             spin.pwm.setAdcDecimation(spinNumberToTu(dt_pwm_pin[i]),          \
-                                                 dt_adc_decim[i]);
+                                      dt_adc_decim[i]);
 
             spin.pwm.setAdcTrigger(spinNumberToTu(dt_pwm_pin[i]),             \
-                                              dt_adc[i]);
+                                   dt_adc[i]);
 
             spin.pwm.enableAdcTrigger(spinNumberToTu(dt_pwm_pin[i]));
+
+            spin.data.configureTriggerSource(dt_adc[i], TRIG_PWM);
         }
 
         /**
@@ -619,4 +622,3 @@ void PowerAPI::initBoost(leg_t leg)
         }
     }
 }
-

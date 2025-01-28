@@ -34,6 +34,7 @@
 
 // OwnTech Power API
 #include "SpinAPI.h"
+#include "adc.h"
 
 // Current module private functions
 #include "./data/data_dispatch.h"
@@ -393,8 +394,13 @@ void DataAPI::configureDiscontinuousMode(adc_t adc_number, uint32_t discontinuou
 	adc_configure_discontinuous_mode(adc_number, discontinuous_count);
 }
 
-void DataAPI::configureTriggerSource(adc_t adc_number, adc_ev_src_t trigger_source)
+void DataAPI::configureTriggerSource(adc_t adc_number, trigger_source_t trigger_source)
 {
+	/////
+	// Check parameters validity
+
+	if ( (adc_number == UNKNOWN_ADC) || (adc_number == DEFAULT_ADC) ) return;
+
 	/////
 	// Make sure module is initialized
 
@@ -406,7 +412,37 @@ void DataAPI::configureTriggerSource(adc_t adc_number, adc_ev_src_t trigger_sour
 	/////
 	// Proceed
 
-	adc_configure_trigger_source(adc_number, trigger_source);
+	if (trigger_source == TRIG_SOFTWARE)
+	{
+		adc_configure_trigger_source(adc_number, software);
+	}
+	else // (trigger_source == TRIG_PWM)
+	{
+		adc_ev_src_t event;
+		switch(adc_number)
+		{
+			case ADC_1:
+				event = hrtim_ev1;
+				break;
+			case ADC_2:
+				event = hrtim_ev3;
+				break;
+			case ADC_3:
+				event = hrtim_ev5;
+				break;
+			case ADC_4:
+				event = hrtim_ev7;
+				break;
+			case ADC_5:
+				event = hrtim_ev9;
+				break;
+			case UNKNOWN_ADC:
+			case DEFAULT_ADC:
+			default:
+				return;
+		}
+		adc_configure_trigger_source(adc_number, event);
+	}
 }
 
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 LAAS-CNRS
+ * Copyright (c) 2021-2024 LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 /**
- * @date   2023
+ * @date   2024
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
@@ -208,6 +208,21 @@ void adc_start()
 				break;
 			case hrtim_ev4:
 				trig = LL_ADC_REG_TRIG_EXT_HRTIM_TRG4;
+				break;
+			case hrtim_ev5:
+				trig = LL_ADC_REG_TRIG_EXT_HRTIM_TRG5;
+				break;
+			case hrtim_ev6:
+				trig = LL_ADC_REG_TRIG_EXT_HRTIM_TRG6;
+				break;
+			case hrtim_ev7:
+				trig = LL_ADC_REG_TRIG_EXT_HRTIM_TRG7;
+				break;
+			case hrtim_ev8:
+				trig = LL_ADC_REG_TRIG_EXT_HRTIM_TRG8;
+				break;
+			case hrtim_ev9:
+				trig = LL_ADC_REG_TRIG_EXT_HRTIM_TRG9;
 				break;
 			case software:
 			default:

@@ -22,45 +22,45 @@ To work with Shield API, include the following file in your code:
 !!! note
     === "Voltage mode with all the legs"
 
-        1\. Choose the wished topology : buck, boost. You can select all the legs to be in the same topology or choose a specific configuration for each one [`shield.power.initBuck(ALL)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-initbuck), [`shield.power.initBoost(ALL)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-initboost)
+        1\. Choose the wished topology : buck, boost. You can select all the legs to be in the same topology or choose a specific configuration for each one [`shield.power.initBuck(ALL)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-initbuck), [`shield.power.initBoost(ALL)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-initboost)
 
         <details><summary>Optional steps</summary>
-        2\. Set the adc decimation to divide the number of trigger event starting the adc conversion [`shield.power.setAdcDecim(ALL, decim)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-setadcdecim)
-        3\. Set the dead time [`shield.power.setDeadTime(ALL, rise_deadTime_ns, fall_deadTime_ns)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-setdeadtime)
-        4\. Set the phase shift in degree [`shield.power.setPhaseShift(ALL, ps_degree)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-setphaseshift)
+        2\. Set the adc decimation to divide the number of trigger event starting the adc conversion [`shield.power.setAdcDecim(ALL, decim)`](https://owntech-foundation.github.io/1.0.0/powerAPI/classPowerAPI/#function-setadcdecim)
+        3\. Set the dead time [`shield.power.setDeadTime(ALL, rise_deadTime_ns, fall_deadTime_ns)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-setdeadtime)
+        4\. Set the phase shift in degree [`shield.power.setPhaseShift(ALL, ps_degree)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-setphaseshift)
         </details>
 
-        5\. Enable the ADC acquisition for twist to get voltage and current measures [`shield.sensors.enableDefaultTwistSensors()`](https://owntech-foundation.github.io/Documentation/core/docs/shieldAPI/#function-enabledefaulttwistsensors)
-        6\. Set the duty cycle to control output voltage [`shield.power.setDutyCycle(ALL, duty_cycle)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-setdutycycle)
-        7\. Then start the converters [`shield.power.start(ALL)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-start)
+        5\. Enable the ADC acquisition for twist to get voltage and current measures [`shield.sensors.enableDefaultTwistSensors()`](#function-enabledefaulttwistsensors)
+        6\. Set the duty cycle to control output voltage [`shield.power.setDutyCycle(ALL, duty_cycle)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-setdutycycle)
+        7\. Then start the converters [`shield.power.start(ALL)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-start)
 
     === "Voltage mode with only LEG1"
 
-        1\. Choose the wished topology : buck, boost [`shield.power.initBuck(LEG1/LEG2)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-initbuck), [`shield.power.initBoost(LEG1/LEG2)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-initboost)
+        1\. Choose the wished topology : buck, boost [`shield.power.initBuck(LEG1/LEG2)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-initbuck), [`shield.power.initBoost(LEG1/LEG2)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-initboost)
 
         <details><summary>Optional steps</summary>
-        2\. Set the adc decimation to divide the number of trigger event starting the adc conversion [`shield.power.setAdcDecim(LEG1/LEG2, decim)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-setadcdecim)
-        3\. Set the dead time [`shield.power.setDeadTime(LEG1/LEG2, rise_deadTime_ns, fall_deadTime_ns)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-setdeadtime)
-        4\. Set the phase shift in degree [`shield.power.setPhaseShift(LEG1/LEG2, ps_degree)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-setphaseshift)
+        2\. Set the adc decimation to divide the number of trigger event starting the adc conversion [`shield.power.setAdcDecim(LEG1/LEG2, decim)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-setadcdecim)
+        3\. Set the dead time [`shield.power.setDeadTime(LEG1/LEG2, rise_deadTime_ns, fall_deadTime_ns)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-setdeadtime)
+        4\. Set the phase shift in degree [`shield.power.setPhaseShift(LEG1/LEG2, ps_degree)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-setphaseshift)
         </details>
 
-        5\. Enable the ADC acquisition for twist to get voltage and current measures [`shield.sensors.enableDefaultTwistSensors()`](https://owntech-foundation.github.io/Documentation/core/docs/shieldAPI/#function-enabledefaulttwistsensors)
-        6\. Set the duty cycle to control output voltage [`shield.power.setDutyCycle(LEG1/LEG2, duty_cycle)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-setdutycycle)
-        7\. Then start the converters [`shield.power.start(ALL)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-start)
+        5\. Enable the ADC acquisition for twist to get voltage and current measures [`shield.sensors.enableDefaultTwistSensors()`](#function-enabledefaulttwistsensors)
+        6\. Set the duty cycle to control output voltage [`shield.power.setDutyCycle(LEG1/LEG2, duty_cycle)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-setdutycycle)
+        7\. Then start the converters [`shield.power.start(ALL)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-start)
 
     === "Current mode with all the legs"
 
-        1\. Choose the wished topology : buck, boost. You can select all the legs to be in the same topology or choose a specific configuration for each one [`shield.power.initBuck(ALL, CURRENT_MODE)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-initbuck), [`shield.power.initBoost(ALL)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-initboost)
+        1\. Choose the wished topology : buck, boost. You can select all the legs to be in the same topology or choose a specific configuration for each one [`shield.power.initBuck(ALL, CURRENT_MODE)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-initbuck), [`shield.power.initBoost(ALL)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-initboost)
 
         <details><summary>Optional steps</summary>
-        2\. Set the adc decimation to divide the number of trigger event starting the adc conversion [`shield.power.setAdcDecim(ALL, decim)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-setadcdecim)
-        3\. Set the dead time [`shield.power.setDeadTime(ALL, rise_deadTime_ns, fall_deadTime_ns)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-setdeadtime)
-        4\. Set the phase shift in degree [`shield.power.setPhaseShift(ALL, ps_degree)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-setphaseshift)
+        2\. Set the adc decimation to divide the number of trigger event starting the adc conversion [`shield.power.setAdcDecim(ALL, decim)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-setadcdecim)
+        3\. Set the dead time [`shield.power.setDeadTime(ALL, rise_deadTime_ns, fall_deadTime_ns)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-setdeadtime)
+        4\. Set the phase shift in degree [`shield.power.setPhaseShift(ALL, ps_degree)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-setphaseshift)
         </details>
 
-        5\. Enable the ADC acquisition for twist to get voltage and current measures [`shield.sensors.enableDefaultTwistSensors()`](https://owntech-foundation.github.io/Documentation/core/docs/shieldAPI/#function-enabledefaulttwistsensors)
-        6\. Set the slope compensation to control the output current[`shield.power.setSlopeCompensation(ALL, 1.4, 1.0)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-setslopecompensation)
-        7\. Then start the converters [`shield.power.start(ALL)`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-start)
+        5\. Enable the ADC acquisition for twist to get voltage and current measures [`shield.sensors.enableDefaultTwistSensors()`]#function-enabledefaulttwistsensors)
+        6\. Set the slope compensation to control the output current[`shield.power.setSlopeCompensation(ALL, 1.4, 1.0)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-setslopecompensation)
+        7\. Then start the converters [`shield.power.start(ALL)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-start)
 
 
 !!! warning
@@ -140,7 +140,7 @@ However, using a constant peak current reference can lead to subharmonic oscilla
 === "Final current mode waveform "
     ![](images/current_mode_pwm_scheme_final.svg)
 
-The sawtooth signal `Slope compensation` is generated with the function [`shield.power.setSlopeCompensation`](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI/#function-setslopecompensation). This function sets the slope compensation based on the input parameters.  for example `shield.power.setSlopeCompensation(ALL, 1.4, 1.0)` generates a sawtooth signal ranging from 1.4V to 1.0V. You can create a sawtooth signal between 2.048V and 0V as well.
+The sawtooth signal `Slope compensation` is generated with the function [`shield.power.setSlopeCompensation`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-setslopecompensation). This function sets the slope compensation based on the input parameters.  for example `shield.power.setSlopeCompensation(ALL, 1.4, 1.0)` generates a sawtooth signal ranging from 1.4V to 1.0V. You can create a sawtooth signal between 2.048V and 0V as well.
 
 This sawtooth signal is then compared with the ADC's current value. When selecting the sawtooth parameters, it's essential to consider the conversion of current to voltage.
 
@@ -218,11 +218,11 @@ On the TWIST board, a voltage value of 1.024V on the ADC corresponds to a curren
         - [Voltage mode boost](https://owntech-foundation.github.io/Documentation/examples/TWIST/DC_DC/boost_voltage_mode/)
 
 ## Detailed documentation on available APIs classes:
-- [Power API](https://owntech-foundation.github.io/Documentation/powerAPI/classPowerAPI)
+- [Power API](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI)
 - [Sensors API](shield_sensors.md)
 
 ## Detailed documentation on Hardware Abstraction Layer classes:
-- [NGND HAL](https://owntech-foundation.github.io/Documentation/powerAPI/classNgndHAL)
+- [NGND HAL](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classNgndHAL)
 
 ## API Reference
 ::: doxy.powerAPI.class
