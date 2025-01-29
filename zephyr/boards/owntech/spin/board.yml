@@ -1,0 +1,8 @@
+# Copyright (c) 2024 OwnTech
+# SPDX-License-Identifier: LGPL-2.1
+
+board:
+  name: spin
+  vendor: owntech
+  socs:
+    - name: stm32g474xx
