@@ -2,7 +2,7 @@ import os
 
 def stlink_to_usb():
     # Specify the dts path
-    dts_path = os.path.join(".", "zephyr", "boards", "arm", "spin", "spin.dts")
+    dts_path = os.path.join(".", "zephyr", "boards", "owntech", "spin", "spin.dts")
 
     # Define the search and replace strings
     search_str = "zephyr,console = &lpuart1;"
