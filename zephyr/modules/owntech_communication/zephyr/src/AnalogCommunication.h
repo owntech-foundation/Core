@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 LAAS-CNRS
+ * Copyright (c) 2024-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -32,8 +32,9 @@
 #include <arm_math.h>
 
 
-/////
-// Static class definition
+/**
+ * Static class definition
+ */
 
 class AnalogCommunication
 {
@@ -41,7 +42,7 @@ class AnalogCommunication
 public:
 	/**
 	 * @brief Initializing analog communication (ADC and DAC)
-	*/
+	 */
 	static void init();
 
 	/**
@@ -59,6 +60,6 @@ public:
 	static void setAnalogCommValue(uint32_t analog_bus_value);
 };
 
-#endif // CONFIG_OWNTECH_COMMUNICATION_ENABLE_ANALOG
+#endif /* CONFIG_OWNTECH_COMMUNICATION_ENABLE_ANALOG */
 
-#endif // ANALOGCOMMUNICATION_H_
+#endif /* ANALOGCOMMUNICATION_H_ */

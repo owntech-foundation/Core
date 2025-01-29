@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 LAAS-CNRS
+ * Copyright (c) 2021-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -24,24 +24,26 @@
  */
 
 
-// Stdlib
+/* Stdlib */
 #include <stdint.h>
 
-// Zephyr
+/* Zephyr */
 #include <zephyr/kernel.h>
 
-// STM32 LL
+/* STM32 LL */
 #include <stm32_ll_bus.h>
 
 
-/////
-// Constants
+/**
+ *  Constants
+ */
 
 #define NUMBER_OF_ADCS 5
 
 
-/////
-// Helper functions
+/**
+ *  Helper functions
+ */
 
 ADC_TypeDef* _get_adc_by_number(uint8_t adc_number)
 {
@@ -60,8 +62,9 @@ ADC_TypeDef* _get_adc_by_number(uint8_t adc_number)
 
 	return adc;
 }
+
 /**
- * Function to convert ADC decimal rank to litteral.
+ * Function to convert ADC decimal rank to literal.
  * Sadly, there seems to be no equivalent to
  * __LL_ADC_DECIMAL_NB_TO_CHANNEL() for ranks...
  */
@@ -125,8 +128,9 @@ uint32_t _adc_decimal_nb_to_rank(uint8_t decimal_rank)
 }
 
 
-/////
-// Private functions
+/**
+ *  Private functions
+ */
 
 /**
  * ADC wake-up.
@@ -136,13 +140,13 @@ static void _adc_core_wakeup(uint8_t adc_num)
 {
 	ADC_TypeDef* adc = _get_adc_by_number(adc_num);
 
-	// Disable deep power down
+	/* Disable deep power down */
 	LL_ADC_DisableDeepPowerDown(adc);
 
-	// Enable internal regulator
+	/* Enable internal regulator */
 	LL_ADC_EnableInternalRegulator(adc);
 
-	// Wait for ADC voltage regulator start-up time
+	/* Wait for ADC voltage regulator start-up time */
 	k_busy_wait(LL_ADC_DELAY_INTERNAL_REGUL_STAB_US);
 }
 
@@ -154,28 +158,29 @@ static void _adc_core_calibrate(uint8_t adc_num)
 {
 	ADC_TypeDef* adc = _get_adc_by_number(adc_num);
 
-	// Single ended calibration
+	/* Single ended calibration */
 	LL_ADC_StartCalibration(adc, LL_ADC_SINGLE_ENDED);
 	while ( LL_ADC_IsCalibrationOnGoing(adc) ) { /* Wait */ }
 
-	// Seems to require an additionnal delay between calibrations
-	// TODO: undocumented???
+	/* Seems to require an additional delay between calibrations */
+	/* TODO: undocumented??? */
 	k_busy_wait(10);
 
-	// Differential ended calibration
+	/* Differential ended calibration */
 	LL_ADC_StartCalibration(adc, LL_ADC_DIFFERENTIAL_ENDED);
 	while ( LL_ADC_IsCalibrationOnGoing(adc) ) { /* Wait */ }
 }
 
 
-/////
-// Public API
+/**
+ *  Public API
+ */
 
 void adc_core_enable(uint8_t adc_num)
 {
 	ADC_TypeDef* adc = _get_adc_by_number(adc_num);
 
-	// Enable ADC and wait for it to be ready
+	/* Enable ADC and wait for it to be ready */
 	LL_ADC_ClearFlag_ADRDY(adc);
 	LL_ADC_Enable(adc);
 	while (LL_ADC_IsActiveFlag_ADRDY(adc) == 0) { /* Wait */ }
@@ -185,10 +190,10 @@ void adc_core_start(uint8_t adc_num, uint8_t sequence_length)
 {
 	ADC_TypeDef* adc = _get_adc_by_number(adc_num);
 
-	// Set regular sequence length
+	/* Set regular sequence length */
 	LL_ADC_REG_SetSequencerLength(adc, sequence_length - 1);
 
-	// Go
+	/* Go */
 	LL_ADC_REG_StartConversion(adc);
 }
 
@@ -213,18 +218,21 @@ void adc_core_configure_dma_mode(uint8_t adc_num, bool use_dma)
 	}
 }
 
-void adc_core_configure_trigger_source(uint8_t adc_num, uint32_t external_trigger_edge, uint32_t trigger_source)
+void adc_core_configure_trigger_source(uint8_t adc_num,
+									   uint32_t external_trigger_edge,
+									   uint32_t trigger_source)
 {
 	ADC_TypeDef* adc = _get_adc_by_number(adc_num);
 
-	// Set trigger edge
+	/* Set trigger edge */
 	LL_ADC_REG_SetTriggerEdge(adc, external_trigger_edge);
 
-	// Set trigger source
+	/* Set trigger source */
 	LL_ADC_REG_SetTriggerSource(adc, trigger_source);
 }
 
-void adc_core_configure_discontinuous_mode(uint8_t adc_num, uint32_t discontinuous_count)
+void adc_core_configure_discontinuous_mode(uint8_t adc_num,
+										   uint32_t discontinuous_count)
 {
 	ADC_TypeDef* adc = _get_adc_by_number(adc_num);
 
@@ -269,11 +277,16 @@ void adc_core_configure_discontinuous_mode(uint8_t adc_num, uint32_t discontinuo
  * Applies differential mode to specified channel.
  * Refer to RM 21.4.7
  */
-void adc_core_set_channel_differential(uint8_t adc_num, uint8_t channel, bool enable_differential)
+void adc_core_set_channel_differential(uint8_t adc_num,
+									   uint8_t channel,
+									   bool enable_differential)
 {
 	ADC_TypeDef* adc = _get_adc_by_number(adc_num);
 
-	uint32_t diff = (enable_differential == true) ? LL_ADC_DIFFERENTIAL_ENDED : LL_ADC_SINGLE_ENDED;
+	uint32_t diff = (enable_differential == true)
+					? LL_ADC_DIFFERENTIAL_ENDED
+					: LL_ADC_SINGLE_ENDED;
+
 	uint32_t ll_channel = __LL_ADC_DECIMAL_NB_TO_CHANNEL(channel);
 
 	LL_ADC_SetChannelSingleDiff(adc, ll_channel, diff);
@@ -286,12 +299,12 @@ void adc_core_configure_channel(uint8_t adc_num, uint8_t channel, uint8_t rank)
 	uint32_t ll_channel = __LL_ADC_DECIMAL_NB_TO_CHANNEL(channel);
 	uint32_t ll_rank = _adc_decimal_nb_to_rank(rank);
 
-	// Set regular sequence
+	/* Set regular sequence */
 	LL_ADC_REG_SetSequencerRanks(adc, ll_rank, ll_channel);
 
-	// Set channels sampling time
-
-	/* 000: 2.5 ADC clock cycles
+	/** Set channels sampling time
+	 *
+	 * 000: 2.5 ADC clock cycles
 	 * 001: 6.5 ADC clock cycles
 	 * 010: 12.5 ADC clock cycles
 	 * 011: 24.5 ADC clock cycles
@@ -299,18 +312,18 @@ void adc_core_configure_channel(uint8_t adc_num, uint8_t channel, uint8_t rank)
 	 * 101: 92.5 ADC clock cycles
 	 * 110: 247.5 ADC clock cycles
 	 * 111: 640.5 ADC clock cycles
-	 */
-	/* Vrefint minimum sampling time : 4us
-	 */
-	/* Vts minimum sampling time : 5us
-	 */
-	/* For 0b110:
+	 *
+	 * Vrefint minimum sampling time : 4us
+	 *
+	 * Vts minimum sampling time : 5us
+	 *
+	 * For 0b110:
 	 * Tadc_clk = 1 / 42.5 MHz = 23.5 ns
 	 * Tsar = 12.5 * Tadc_clk = 293.75 ns
 	 * Tsmpl = 247.5 * Tadc_clk = 5816.25 ns
 	 * Tconv = Tsmpl + Tsar = 6.11 us
 	 * -> Fconv up to 163.6 KSPS for 1 channel per ADC
-	 * Fconv up to 27.2 KSPS with the 6 channels actally
+	 * Fconv up to 27.2 KSPS with the 6 channels actually
 	 * used on the ADC1
 	 *
 	 * For 0b001 (ok for voltage):
@@ -319,7 +332,7 @@ void adc_core_configure_channel(uint8_t adc_num, uint8_t channel, uint8_t rank)
 	 * Tsmpl = 6.5 * Tadc_clk = 152.75 ns
 	 * Tconv = Tsmpl + Tsar = 446.4 ns
 	 * -> Fconv up to 2239 KSPS for 1 channel per ADC
-	 * Fconv up to 373 KSPS with the 6 channels actally
+	 * Fconv up to 373 KSPS with the 6 channels actually
 	 * used on the ADC1
 	 *
 	 * For 0b101 (ok for current):
@@ -328,10 +341,12 @@ void adc_core_configure_channel(uint8_t adc_num, uint8_t channel, uint8_t rank)
 	 * Tsmpl = 92.5 * Tadc_clk = 2173.75 ns
 	 * Tconv = Tsmpl + Tsar = 2.47 µs
 	 * -> Fconv up to 404 KSPS for 1 channel per ADC
-	 * Fconv up to 134 KSPS for 3 channels actally
+	 * Fconv up to 134 KSPS for 3 channels actually
 	 * used on each ADC
 	 */
-	LL_ADC_SetChannelSamplingTime(adc, ll_channel, LL_ADC_SAMPLINGTIME_12CYCLES_5);
+	LL_ADC_SetChannelSamplingTime(adc,
+								  ll_channel,
+								  LL_ADC_SAMPLINGTIME_12CYCLES_5);
 }
 
 void adc_core_init()
@@ -340,22 +355,22 @@ void adc_core_init()
 
 	if (initialized == false)
 	{
-		// Enable ADCs clocks
+		/* Enable ADCs clocks */
 		LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_ADC12);
 		LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_ADC345);
 
-		// Wake-up ADCs
+		/* Wake-up ADCs */
 		for (int i = 1 ; i <= NUMBER_OF_ADCS ; i++)
 		{
 			_adc_core_wakeup(i);
 		}
 
-		// Set common clock between ADC 1 and ADC 2
-		// Refer to RM 21.4.3 and 21.7.2
+		/* Set common clock between ADC 1 and ADC 2 */
+		/* Refer to RM 21.4.3 and 21.7.2 */
 		LL_ADC_SetCommonClock(ADC12_COMMON, LL_ADC_CLOCK_SYNC_PCLK_DIV4);
 		LL_ADC_SetCommonClock(ADC345_COMMON, LL_ADC_CLOCK_SYNC_PCLK_DIV4);
 
-		// Calibrate ADCs
+		/* Calibrate ADCs */
 		for (int i = 1 ; i <= NUMBER_OF_ADCS ; i++)
 		{
 			_adc_core_calibrate(i);

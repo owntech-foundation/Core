@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 LAAS-CNRS
+ * Copyright (c) 2022-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -27,36 +27,39 @@
 #define UARTHAL_H_
 
 /**
- * @brief  Handles usart 1 for the SPIN board
+ * @brief  Handles USART1 for the SPIN board
  *
- * @note   Use this element to initialize and send messages via usart 1
+ * @note   Use this element to initialize and send messages via USART1
  */
 class UartHAL
 {
 public:
 	/**
-	 * @brief Library initialization function for the usart communication.
+	 * @brief Library initialization function for the USART communication.
 	 *        This function is declared on the private section of the .c file
 	 */
 	void usart1Init();
 
 	/**
-	 * @brief This function sends back a single character waiting to be treated from the usart1
+	 * @brief This function sends back a single character waiting to be treated
+	 * 		  from the USART1
 	 *
 	 * @return This function returns a single char which is waiting to be treated
-	 *          if no char is waiting it returns an 'x' which should be treated as an error
+	 *          if no char is waiting it returns an 'x' which should be treated
+	 * 			as an error
 	 */
 	char usart1ReadChar();
 
 	/**
-	 * @brief This function transmits a single character through the usart 1
+	 * @brief This function transmits a single character through the USART1
 	 *
 	 * @param data single char to be sent out
 	 */
 	void usart1WriteChar(char data);
 
 	/**
-	 * @brief This function swaps the usart RX and TX pins. It should be called in conjunction with a board version setup.
+	 * @brief This function swaps the USART RX and TX pins. It should be called
+	 * 		  in conjunction with a board version setup.
 	 */
 	void usart1SwapRxTx();
 
@@ -65,4 +68,4 @@ public:
 
 
 
-#endif // UARTHAL_H_
+#endif /* UARTHAL_H_ */

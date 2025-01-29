@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 LAAS-CNRS
+ * Copyright (c) 2021-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -26,10 +26,10 @@
 #ifndef STM32_DAC_DRIVER_H_
 #define STM32_DAC_DRIVER_H_
 
-// Zephyr
+/* Zephyr */
 #include <zephyr/device.h>
 
-// Public API
+/* Public API */
 #include "dac.h"
 
 
@@ -65,12 +65,31 @@ struct stm32_dac_driver_data
 
 
 static int  dac_stm32_init(const struct device* dev);
-static void dac_stm32_set_const_value(const struct device* dev, uint8_t channel, uint32_t value);
-static void dac_stm32_set_function(const struct device* dev, uint8_t channel, const dac_function_config_t* function_config);
-static void dac_stm32_function_update_reset(const struct device* dev, uint8_t channel, uint32_t reset_data);
-static void dac_stm32_function_update_step(const struct device* dev, uint8_t channel, uint32_t step_data);
-static void dac_stm32_pin_configure(const struct device* dev, uint8_t channel, dac_pin_config_t pin_config);
+
+static void dac_stm32_set_const_value(const struct device* dev,
+									  uint8_t channel,
+									  uint32_t value);
+
+static void dac_stm32_set_function(
+	const struct device* dev,
+	uint8_t channel,
+	const dac_function_config_t* function_config
+);
+
+static void dac_stm32_function_update_reset(const struct device* dev,
+											uint8_t channel,
+											uint32_t reset_data);
+
+static void dac_stm32_function_update_step(const struct device* dev,
+										   uint8_t channel,
+										   uint32_t step_data);
+
+static void dac_stm32_pin_configure(const struct device* dev,
+									uint8_t channel,
+									dac_pin_config_t pin_config);
+
 static void dac_stm32_start(const struct device* dev, uint8_t channel);
+
 static void dac_stm32_stop(const struct device* dev, uint8_t channel);
 
 
@@ -78,4 +97,4 @@ static void dac_stm32_stop(const struct device* dev, uint8_t channel);
 }
 #endif
 
-#endif // STM32_DAC_DRIVER_H_
+#endif /* STM32_DAC_DRIVER_H_ */

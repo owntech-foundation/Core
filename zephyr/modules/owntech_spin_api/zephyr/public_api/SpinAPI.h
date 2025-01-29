@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 LAAS-CNRS
+ * Copyright (c) 2022-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -66,12 +66,14 @@ public:
 	static LedHAL led;
 
 	/**
-	 * @brief Contains all the function of the STM32 DAC used to generate signals and handle the current mode.
+	 * @brief Contains all the function of the STM32 DAC used to generate
+	 * 		  signals and handle the current mode.
 	 */
 	static DacHAL dac;
 
 	/**
-	 * @brief Contains all the function of the STM32 comparator used with the current mode.
+	 * @brief Contains all the function of the STM32 comparator used
+	 * 		  with the current mode.
 	 */
 	static CompHAL comp;
 
@@ -100,10 +102,11 @@ public:
 };
 
 
-/////
-// Public object to interact with the class
+/**
+ *  Public object to interact with the class
+ */
 
 extern SpinAPI spin;
 
 
-#endif // SPINAPI_H_
+#endif /* SPINAPI_H_ */
