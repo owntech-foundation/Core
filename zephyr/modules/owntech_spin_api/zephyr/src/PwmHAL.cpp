@@ -372,7 +372,7 @@ void PwmHAL::setAdcTrigger(hrtim_tu_number_t pwmX, adc_t adc)
 
 adc_t PwmHAL::getAdcTrigger(hrtim_tu_number_t pwmX)
 {
-	hrtim_adc_trigger_t adc_trig = hrtim_adc_triger_get(pwmX);
+	hrtim_adc_trigger_t adc_trig = hrtim_adc_trigger_get(pwmX);
 
 	switch(adc_trig)
 	{
