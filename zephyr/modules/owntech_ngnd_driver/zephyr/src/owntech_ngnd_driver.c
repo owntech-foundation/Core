@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2022 LAAS-CNRS
+ * Copyright (c) 2020-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -25,15 +25,16 @@
  */
 
 
-// Zephyr
+/* Zephyr */
 #include <zephyr/drivers/gpio.h>
 
-// Current file header
+/* Current file header */
 #include "owntech_ngnd_driver.h"
 
 
-/////
-// Private functions
+/**
+ *  Private Functions
+ */
 
 static struct owntech_ngnd_driver_dev_data
 {
@@ -44,7 +45,9 @@ static int ngnd_init(const struct device* dev)
 {
 	struct owntech_ngnd_driver_dev_data* data = dev->data;
 
-	const struct gpio_dt_spec ngnd_spec = GPIO_DT_SPEC_GET(DT_CHILD(NGND_NODE, ngnd_gpio_pin), gpios);
+	const struct gpio_dt_spec ngnd_spec =
+                GPIO_DT_SPEC_GET(DT_CHILD(NGND_NODE, ngnd_gpio_pin), gpios);
+
 	data->ngnd_pin_spec = ngnd_spec;
 
 	gpio_pin_configure_dt(&data->ngnd_pin_spec, GPIO_OUTPUT_ACTIVE);
@@ -53,8 +56,9 @@ static int ngnd_init(const struct device* dev)
 }
 
 
-/////
-// Public API
+/**
+ *  Public API
+ */
 
 void ngnd_set(const struct device* dev, int value)
 {
@@ -64,8 +68,9 @@ void ngnd_set(const struct device* dev, int value)
 }
 
 
-//////
-// Device definition
+/**
+ *  Device Definition
+ */
 
 #if DT_NODE_HAS_STATUS(NGND_NODE, okay)
 

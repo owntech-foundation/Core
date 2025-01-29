@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 LAAS-CNRS
+ * Copyright (c) 2021-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -24,28 +24,28 @@
  */
 
 
-// Stdlib
+/* Stdlib */
 #include <stdint.h>
 
-// Zephyr
+/* Zephyr */
 #include <zephyr/kernel.h>
 #include <zephyr/drivers/dma.h>
 
-// STM32 LL
+/* STM32 LL */
 #include <stm32_ll_dma.h>
 
-// Current module private functions
+/* Current module private functions */
 #include "data_dispatch.h"
 
-
-/////
-// DT definition
+/**
+ *  DT definition
+ */
 
 static const struct device* dma1 = DEVICE_DT_GET(DT_NODELABEL(dma1));
 
-
-/////
-// Local variables
+/**
+ *  Local variables
+ */
 
 static const uint32_t source_registers[5] =
 {
@@ -78,8 +78,9 @@ typedef struct
 
 static dma_user_data_t user_data[5] = {0};
 
-/////
-// Private API
+/**
+ *  Private API
+ */
 
 /**
  * DMA callback
@@ -88,31 +89,44 @@ static dma_user_data_t user_data[5] = {0};
  * twice: when buffer is half-filled and when buffer is filled.
  * For other ADCs, it will never be called.
  */
-static void _dma_callback(const struct device* dev, void* user_data, uint32_t dma_channel, int status)
+static void _dma_callback(const struct device* dev,
+						  void* user_data,
+						  uint32_t dma_channel,
+						  int status)
 {
 	UNUSED(dev);
 	UNUSED(dma_channel);
 
-	// Get user data for current channel
+	/* Get user data for current channel */
 	dma_user_data_t* my_user_data = (dma_user_data_t*) user_data;
 
-	// Do dispatch
+	/* Do dispatch */
 	data_dispatch_do_dispatch(my_user_data->channel);
 
-	// Reload DMA on last transaction
-	if ( (my_user_data->has_interrupt == true) && (status == DMA_STATUS_COMPLETE) )
+	/* Reload DMA on last transaction */
+	if ( (my_user_data->has_interrupt == true) &&
+		 (status == DMA_STATUS_COMPLETE) )
 	{
-		dma_reload(dma1, my_user_data->channel, my_user_data->src, my_user_data->dst, my_user_data->size);
+		dma_reload(
+			dma1,
+			my_user_data->channel,
+			my_user_data->src,
+			my_user_data->dst,
+			my_user_data->size
+		);
 	}
 }
 
+/**
+ *  Public API
+ */
 
-/////
-// Public API
-
-void dma_configure_adc_acquisition(uint8_t adc_number, bool disable_interrupts, uint16_t* buffer, size_t buffer_size)
+void dma_configure_adc_acquisition(uint8_t adc_number,
+								   bool disable_interrupts,
+								   uint16_t* buffer,
+								   size_t buffer_size)
 {
-	// Check environment
+	/* Check environment */
 	if (device_is_ready(dma1) == false)
 		return;
 
@@ -120,36 +134,56 @@ void dma_configure_adc_acquisition(uint8_t adc_number, bool disable_interrupts, 
 	uint32_t buffer_size_bytes = (uint32_t) buffer_size * sizeof(uint16_t);
 	buffers_sizes[dma_index] = buffer_size;
 
-	// Private data for DMA channel
+	/* Private data for DMA channel */
 	user_data[dma_index].has_interrupt = !disable_interrupts;
 	user_data[dma_index].src           = source_registers[dma_index];
 	user_data[dma_index].dst           = (uint32_t)buffer;
 	user_data[dma_index].size          = buffer_size_bytes;
 	user_data[dma_index].channel       = adc_number;
 
-	// Configure DMA
+	/* Configure DMA */
 	struct dma_block_config dma_block_config_s = {0};
-	dma_block_config_s.source_address   = user_data[dma_index].src;  // Source: ADC DR register
-	dma_block_config_s.dest_address     = user_data[dma_index].dst;  // Dest: buffer in memory
-	dma_block_config_s.block_size       = user_data[dma_index].size; // Buffer size in bytes
-	dma_block_config_s.source_addr_adj  = DMA_ADDR_ADJ_NO_CHANGE;    // Source: no increment in ADC register
-	dma_block_config_s.dest_addr_adj    = DMA_ADDR_ADJ_INCREMENT;    // Dest: increment in memory
-	dma_block_config_s.dest_reload_en   = 1;                         // Reload destination address on block completion
-	dma_block_config_s.source_reload_en = 1;                         // Reload source address on block completion; Enables Half-transfer interrupt
+	/* Source: ADC DR register */
+	dma_block_config_s.source_address   = user_data[dma_index].src;
+	/* Destination: buffer in memory */
+	dma_block_config_s.dest_address     = user_data[dma_index].dst;
+	/* Buffer size in bytes */
+	dma_block_config_s.block_size       = user_data[dma_index].size;
+	/* Source: no increment in ADC register */
+	dma_block_config_s.source_addr_adj  = DMA_ADDR_ADJ_NO_CHANGE;
+	/* Destination: increment in memory */
+	dma_block_config_s.dest_addr_adj    = DMA_ADDR_ADJ_INCREMENT;
+	/* Reload destination address on block completion */
+	dma_block_config_s.dest_reload_en   = 1;
+	/**
+	 * Reload source address on block completion
+	 * Enables Half-transfer interrupt
+	 */
+	dma_block_config_s.source_reload_en = 1;
 
 	struct dma_config dma_config_s = {0};
-	dma_config_s.dma_slot            = source_triggers[dma_index]; // Trigger source: ADC
-	dma_config_s.channel_direction   = PERIPHERAL_TO_MEMORY;       // From periph to mem
-	dma_config_s.source_data_size    = 2;                          // Source: 2 bytes (uint16_t)
-	dma_config_s.dest_data_size      = 2;                          // Dest: 2 bytes (uint16_t)
-	dma_config_s.source_burst_length = 1;                          // Source: No burst
-	dma_config_s.dest_burst_length   = 1;                          // Dest: No burst
-	dma_config_s.block_count         = 1;                          // 1 block
-	dma_config_s.head_block          = &dma_block_config_s;        // Block config as defined above
-	dma_config_s.dma_callback        = _dma_callback;              // DMA interrupt callback
-	dma_config_s.user_data           = &user_data[dma_index];      // User data provided to callback
+	/* Trigger source: ADC */
+	dma_config_s.dma_slot            = source_triggers[dma_index];
+	/* From peripheral to memory */
+	dma_config_s.channel_direction   = PERIPHERAL_TO_MEMORY;
+	/* Source: 2 bytes (uint16_t) */
+	dma_config_s.source_data_size    = 2;
+	/* Destination: 2 bytes (uint16_t) */
+	dma_config_s.dest_data_size      = 2;
+	/* Source: No burst */
+	dma_config_s.source_burst_length = 1;
+	/* Destination: No burst */
+	dma_config_s.dest_burst_length   = 1;
+	/* 1 block */
+	dma_config_s.block_count         = 1;
+	/* Block config as defined above */
+	dma_config_s.head_block          = &dma_block_config_s;
+	/* DMA interrupt callback */
+	dma_config_s.dma_callback        = _dma_callback;
+	/* User data provided to callback */
+	dma_config_s.user_data           = &user_data[dma_index];
 
-	// Use DMA 1 channel x for ADC x
+	/* Use DMA 1 channel x for ADC x */
 	dma_config(dma1, user_data[dma_index].channel, &dma_config_s);
 
 	if (disable_interrupts == true)
@@ -161,29 +195,38 @@ void dma_configure_adc_acquisition(uint8_t adc_number, bool disable_interrupts, 
 	dma_start(dma1, user_data[dma_index].channel);
 }
 
-uint32_t dma_get_retreived_data_count(uint8_t adc_number)
+uint32_t dma_get_retrieved_data_count(uint8_t adc_number)
 {
-	// Permanent variable
-	// -1 is equivalent to (buffer size - 1) in modulo arithmetics
+	/**
+	 * Permanent variable
+	 * -1 is equivalent to (buffer size - 1) in modulo arithmetics
+	 */
 	static int32_t previous_dma_latest_data_pointers[5] = {-1, -1, -1, -1, -1};
 
-	// Get data
+	/* Get data */
 	uint32_t dma_index = adc_number - 1;
 	uint32_t dma_remaining_data = LL_DMA_GetDataLength(DMA1, dma_index);
-	int32_t previous_dma_latest_data_pointer = previous_dma_latest_data_pointers[dma_index];
 
-	// Compute pointers
-	int32_t dma_next_data_pointer = buffers_sizes[dma_index] - dma_remaining_data;
+	int32_t previous_dma_latest_data_pointer =
+					previous_dma_latest_data_pointers[dma_index];
+
+	/* Compute pointers */
+	int32_t dma_next_data_pointer =
+					buffers_sizes[dma_index] - dma_remaining_data;
+
 	int32_t dma_latest_data_pointer = dma_next_data_pointer - 1;
 
 	int32_t corrected_dma_pointer = dma_latest_data_pointer;
+
 	if (dma_latest_data_pointer < previous_dma_latest_data_pointer)
 	{
 		corrected_dma_pointer += buffers_sizes[dma_index];
 	}
 
-	uint32_t retreived_data = corrected_dma_pointer - previous_dma_latest_data_pointer;
+	uint32_t retrieved_data =
+					corrected_dma_pointer - previous_dma_latest_data_pointer;
+
 	previous_dma_latest_data_pointers[dma_index] = dma_latest_data_pointer;
 
-	return retreived_data;
+	return retrieved_data;
 }

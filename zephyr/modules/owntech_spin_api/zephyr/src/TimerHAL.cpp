@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 LAAS-CNRS
+ * Copyright (c) 2022-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -24,7 +24,7 @@
 
 
 
-// Current file header
+/* Current file header */
 #include "TimerHAL.h"
 
 
@@ -38,7 +38,7 @@ void TimerHAL::timer4Initialize()
 {
 	if (device_is_ready(timer4) == true)
 	{
-		// Configure timer
+		/* Configure timer */
 		struct timer_config_t timer_cfg =
 		{
 			.timer_enable_irq = 0,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 LAAS-CNRS
+ * Copyright (c) 2021-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -35,11 +35,11 @@
 #define DATA_DISPATCH_H_
 
 
-// Stdlib
+/* Stdlib */
 #include <stdint.h>
 
 
-// Constants
+/* Constants */
 
 const uint16_t PEEK_NO_VALUE = 0xFFFF;
 const uint8_t CHANNELS_BUFFERS_SIZE = 32;
@@ -63,7 +63,7 @@ void data_dispatch_init(dispatch_t dispatch_method, uint32_t repetitions);
 
 /**
  * @brief Dispatch function: gets the readings and store them
- *        in per-channel arrays. This functon is called by DMA
+ *        in per-channel arrays. This function is called by DMA
  *        callback when the DMA has filled one of its buffers.
  *
  * @param adc_number Number of the ADC from which data comes.
@@ -94,7 +94,9 @@ void data_dispatch_do_full_dispatch();
  *         by further calls to the function with same
  *         adc number/channel rank.
  */
-uint16_t* data_dispatch_get_acquired_values(uint8_t adc_number, uint8_t channel_rank, uint32_t& number_of_values_acquired);
+uint16_t* data_dispatch_get_acquired_values(uint8_t adc_number,
+                                            uint8_t channel_rank,
+                                            uint32_t& number_of_values_acquired);
 
 /**
  * @brief  Peek data for a specific channel:
@@ -109,7 +111,8 @@ uint16_t* data_dispatch_get_acquired_values(uint8_t adc_number, uint8_t channel_
  *         Note that if no value has been acquired,
  *         returned value will be 0.
  */
-uint16_t data_dispatch_peek_acquired_value(uint8_t adc_number, uint8_t channel_rank);
+uint16_t data_dispatch_peek_acquired_value(uint8_t adc_number,
+                                           uint8_t channel_rank);
 
 
-#endif // DATA_DISPATCH_H_
+#endif /* DATA_DISPATCH_H_ */

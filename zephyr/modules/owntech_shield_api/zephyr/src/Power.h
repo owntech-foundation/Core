@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 LAAS-CNRS
+ * Copyright (c) 2023-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -61,9 +61,9 @@ public:
 	 * 						 The other will be complementary - PWMx1 or PWMx2
 	 * @param leg_mode PWM mode - VOLTAGE_MODE or CURRENT_MODE
 	 */
-	void initMode(leg_t leg, 											\
-					 hrtim_switch_convention_t leg_convention,				\
-					 hrtim_pwm_mode_t leg_mode);
+	void initMode(leg_t leg,
+				  hrtim_switch_convention_t leg_convention,
+				  hrtim_pwm_mode_t leg_mode);
 
 	/**
 	 * @brief Set the duty cycle for a specific leg's power control.
@@ -103,38 +103,38 @@ public:
 	 * @brief Connect the electrolytic capacitor.
 	 *
 	 * @param leg The selected leg for which the capacitor will be connected.
-	 * 
+	 *
 	 * @warning This function can only be called AFTER initializing the LEG.
-	*/
+	 */
 	void connectCapacitor(leg_t leg);
 
 	/**
 	 * @brief Disconnect the electrolytic capacitor.
-	 * 
+	 *
 	 * @param leg The selected leg for which the capacitor will be disconnected.
-	 * 
+	 *
 	 * @warning This function can only be called AFTER initializing the LEG.
-	*/
+	 */
 	void disconnectCapacitor(leg_t leg);
 
 	/**
-	 * @brief Turns the driver of the leg ON. This enables control over the 
+	 * @brief Turns the driver of the leg ON. This enables control over the
 	 * 		  power switches.
 	 *
 	 * @param leg The leg for which the driver will be turned on.
-	 * 
+	 *
 	 * @warning This function can only be called AFTER initializing the LEG.
-	*/
+	 */
 	void connectDriver(leg_t leg);
 
 	/**
-	 * @brief Turns the driver of the leg ON. This disenables control over the 
+	 * @brief Turns the driver of the leg ON. This disenables control over the
 	 * 		  power switches.
-	 * 
-	 * @param leg The leg for which the driver will be turned off. 
-	 * 
+	 *
+	 * @param leg The leg for which the driver will be turned off.
+	 *
 	 * @warning This function can only be called AFTER initializing the LEG.
-	*/
+	 */
 	void disconnectDriver(leg_t leg);
 
 	/**
@@ -168,9 +168,9 @@ public:
 	 *
 	 * @warning Be sure that set_voltage > reset_voltage
 	 */
-	void setSlopeCompensation(leg_t leg, 								\
-								 float32_t set_voltage, 					\
-								 float32_t reset_voltage);
+	void setSlopeCompensation(leg_t leg,
+							  float32_t set_voltage,
+							  float32_t reset_voltage);
 
 	/**
 	 * @brief set the dead time value for a leg
@@ -178,10 +178,10 @@ public:
 	 * @param leg           - the leg for which to set dead time value
 	 * @param ns_rising_dt  - rising dead time value in ns
 	 * @param ns_falling_dt - falling dead time value in ns
-	*/
-	void setDeadTime(leg_t leg, 											\
-						uint16_t ns_rising_dt, 								\
-						uint16_t ns_falling_dt);
+	 */
+	void setDeadTime(leg_t leg,
+					 uint16_t ns_rising_dt,
+					 uint16_t ns_falling_dt);
 
 	/**
 	 * @brief set ADC decimator for a leg
@@ -194,7 +194,7 @@ public:
 	 * @param leg       - leg for which to set adc decimator value
 	 * @param adc_decim - adc decimator, a number between 1 and 32
 	 *
-	*/
+	 */
 	void setAdcDecim(leg_t leg, uint16_t adc_decim);
 
 	/**
@@ -216,4 +216,4 @@ public:
 
 };
 
-#endif // POWER_H_
+#endif /* POWER_H_ */

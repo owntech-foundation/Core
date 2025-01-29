@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 LAAS-CNRS
+ * Copyright (c) 2024-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -26,9 +26,12 @@
 #include "Rs485.h"
 #include "Rs485Communication.h"
 
-void Rs485Communication::configure(uint8_t *transmission_bufer, uint8_t *reception_buffer, uint16_t data_size, void (*user_function)(), rs485_speed_t data_speed)
+void Rs485Communication::configure(uint8_t *transmission_buffer,
+                                   uint8_t *reception_buffer,
+                                   uint16_t data_size, void (*user_function)(),
+                                   rs485_speed_t data_speed)
 {
-    init_usrBuffer(transmission_bufer, reception_buffer);
+    init_usrBuffer(transmission_buffer, reception_buffer);
     init_usrFunc(user_function);
     init_usrDataSize(data_size);
 
@@ -48,7 +51,7 @@ void Rs485Communication::configure(uint8_t *transmission_bufer, uint8_t *recepti
             break;
     }
     init_usrBaudrate(10625000);
-    
+
     dma_channel_init_tx();
     dma_channel_init_rx();
     serial_init();
@@ -58,9 +61,14 @@ void Rs485Communication::configure(uint8_t *transmission_bufer, uint8_t *recepti
     else oversamp_set(OVER16);
 }
 
-void Rs485Communication::configureCustom(uint8_t* transmission_bufer, uint8_t* reception_buffer, uint16_t data_size, void (*user_function)(void), uint32_t baudrate, bool oversampling_8)
+void Rs485Communication::configureCustom(uint8_t* transmission_buffer,
+                                         uint8_t* reception_buffer,
+                                         uint16_t data_size,
+                                         void (*user_function)(void),
+                                         uint32_t baudrate,
+                                         bool oversampling_8)
 {
-    init_usrBuffer(transmission_bufer, reception_buffer);
+    init_usrBuffer(transmission_buffer, reception_buffer);
     init_usrFunc(user_function);
     init_usrDataSize(data_size);
     init_usrBaudrate(baudrate);

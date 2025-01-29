@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 LAAS-CNRS
+ * Copyright (c) 2022-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -23,14 +23,14 @@
  */
 
 
-#ifndef ASYNCHRONOUSTASKS_HPP_
-#define ASYNCHRONOUSTASKS_HPP_
+#ifndef ASYNCHRONOUSTASKS_H_
+#define ASYNCHRONOUSTASKS_H_
 
 
-// Stdlib
+/* Stdlib */
 #include <stdint.h>
 
-// OwnTech Power API
+/* OwnTech Power API */
 #include "TaskAPI.h"
 
 
@@ -42,6 +42,6 @@ void scheduling_start_asynchronous_task(uint8_t task_number);
 void scheduling_stop_asynchronous_task(uint8_t task_number);
 
 
-#endif // CONFIG_OWNTECH_TASK_ENABLE_ASYNCHRONOUS_TASKS
+#endif /* CONFIG_OWNTECH_TASK_ENABLE_ASYNCHRONOUS_TASKS */
 
-#endif // ASYNCHRONOUSTASKS_HPP_
+#endif /* ASYNCHRONOUSTASKS_H_ */
