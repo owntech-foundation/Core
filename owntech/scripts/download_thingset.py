@@ -40,21 +40,25 @@ if do_download:
 	third_party_dir = os.path.join(".", "zephyr", "third_party_modules")
 
 	def cloneRepo(org_url, repo_name, rev):
-		from git import Repo, GitCommandError
+		try:
+			from git import Repo
+		except:
+			print("Can not find git in PlatformIO Python\n")
+
 		path = os.path.join(third_party_dir, repo_name)
 		if os.path.isdir(path):
 			repo = Repo(path)
 		else:
 			try:
 				repo = Repo.clone_from(org_url + "/" + repo_name, path)
-			except GitCommandError:
+			except:
 				print(f"Can not clone Thingset repository.")
 
 		try:
 			repo.git.fetch('origin', rev)  # Ensure the commit is available
 			repo.git.checkout(rev)
 		except GitCommandError:
-			print(f"Error: Unable to checkout on commit {rev}.")
+			print(f"Error: Unable to checkout on commit {rev}.\n")
 
 
 	#####
