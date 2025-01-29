@@ -370,9 +370,9 @@
 &fdcan2 {
 	pinctrl-0 = <&fdcan2_rx_pb5 &fdcan2_tx_pb6>;
 	pinctrl-names = "default";
-	bus-speed = <500000>;
+	bitrate = <500000>;
 	sample-point = <875>;
-	bus-speed-data = <500000>;
+	bitrate-data = <500000>;
 	sample-point-data = <875>;
 	status = "okay";
 	transceiver0: can-phy0 {

@@ -1,8 +1,0 @@
-# Copyright (c) 2023 OwnTech
-# SPDX-License-Identifier: LGPL-2.1
-
-# OwnTech board Kconfig definition
-
-config BOARD_SPIN
-	bool "OwnTech Spin"
-	depends on SOC_STM32G474XX
