@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 LAAS-CNRS
+ * Copyright (c) 2021-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -27,7 +27,7 @@
 #ifndef DAC_H_
 #define DAC_H_
 
-// Zephyr
+/* Zephyr */
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
 
@@ -36,16 +36,18 @@ extern "C" {
 #endif
 
 
-/////
-// Public devices names
+/**
+ *  Public devices names
+ */
 
 #define DAC1_DEVICE DT_NODELABEL(dac1)
 #define DAC2_DEVICE DT_NODELABEL(dac2)
 #define DAC3_DEVICE DT_NODELABEL(dac3)
 
 
-/////
-// Configuration types
+/**
+ *  Configuration types
+ */
 
 typedef enum
 {
@@ -87,16 +89,49 @@ typedef enum
 	dac_pin_internal_and_external
 } dac_pin_config_t;
 
-/////
-// API
+/**
+ *  API
+ */
 
-typedef void (*dac_api_setconstvalue) (const struct device* dev, uint8_t channel, uint32_t value);
-typedef void (*dac_api_setfunction)   (const struct device* dev, uint8_t channel, const dac_function_config_t* config);
-typedef void (*dac_api_fn_upd_reset)  (const struct device* dev, uint8_t channel, uint32_t reset_data);
-typedef void (*dac_api_fn_upd_step)   (const struct device* dev, uint8_t channel, uint32_t step_data);
-typedef void (*dac_api_pinconfigure)  (const struct device* dev, uint8_t channel, dac_pin_config_t config);
-typedef void (*dac_api_start)         (const struct device* dev, uint8_t channel);
-typedef void (*dac_api_stop)          (const struct device* dev, uint8_t channel);
+typedef void (*dac_api_setconstvalue)(
+	const struct device* dev,
+	uint8_t channel,
+	uint32_t value
+);
+
+typedef void (*dac_api_setfunction)(
+	const struct device* dev,
+	uint8_t channel,
+	const dac_function_config_t* config
+);
+
+typedef void (*dac_api_fn_upd_reset)(
+	const struct device* dev,
+	uint8_t channel,
+	uint32_t reset_data
+);
+
+typedef void (*dac_api_fn_upd_step)(
+	const struct device* dev,
+	uint8_t channel,
+	uint32_t step_data
+);
+
+typedef void (*dac_api_pinconfigure)(
+	const struct device* dev,
+	uint8_t channel,
+	dac_pin_config_t config
+);
+
+typedef void (*dac_api_start)(
+	const struct device* dev,
+	uint8_t channel
+);
+
+typedef void (*dac_api_stop)(
+	const struct device* dev,
+	uint8_t channel
+);
 
 __subsystem struct dac_driver_api
 {
@@ -109,35 +144,46 @@ __subsystem struct dac_driver_api
 	dac_api_stop          stop;
 };
 
-static inline void dac_set_const_value(const struct device* dev, uint8_t channel, uint32_t value)
+static inline void dac_set_const_value(const struct device* dev,
+									   uint8_t channel,
+									   uint32_t value)
 {
 	const struct dac_driver_api* api = (const struct dac_driver_api*)(dev->api);
 
 	api->setconstvalue(dev, channel, value);
 }
 
-static inline void dac_set_function(const struct device* dev, uint8_t channel, const dac_function_config_t* function_config)
+static inline void dac_set_function(
+								const struct device* dev,
+								uint8_t channel,
+								const dac_function_config_t* function_config)
 {
 	const struct dac_driver_api* api = (const struct dac_driver_api*)(dev->api);
 
 	api->setfunction(dev, channel, function_config);
 }
 
-static inline void dac_function_update_reset(const struct device* dev, uint8_t channel, uint32_t reset_data)
+static inline void dac_function_update_reset(const struct device* dev,
+											 uint8_t channel,
+											 uint32_t reset_data)
 {
 	const struct dac_driver_api* api = (const struct dac_driver_api*)(dev->api);
 
 	api->fn_upd_reset(dev, channel, reset_data);
 }
 
-static inline void dac_function_update_step(const struct device* dev, uint8_t channel, uint32_t step_data)
+static inline void dac_function_update_step(const struct device* dev,
+											uint8_t channel,
+											uint32_t step_data)
 {
 	const struct dac_driver_api* api = (const struct dac_driver_api*)(dev->api);
 
 	api->fn_upd_step(dev, channel, step_data);
 }
 
-static inline void dac_pin_configure(const struct device* dev, uint8_t channel, dac_pin_config_t pin_config)
+static inline void dac_pin_configure(const struct device* dev,
+									 uint8_t channel,
+									 dac_pin_config_t pin_config)
 {
 	const struct dac_driver_api* api = (const struct dac_driver_api*)(dev->api);
 
@@ -162,4 +208,4 @@ static inline void dac_stop(const struct device* dev, uint8_t channel)
 }
 #endif
 
-#endif // DAC_H_
+#endif /* DAC_H_ */

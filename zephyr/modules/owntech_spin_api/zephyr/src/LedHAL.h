@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 LAAS-CNRS
+ * Copyright (c) 2022-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -36,14 +36,14 @@ public:
 	void toggle();
 
 private:
-    // Private functions
+    /* Private functions */
 	void initialize();
 
-    // Private variables
+    /* Private variables */
 	static bool ledInitialized;
 
 };
 
 
 
-#endif // LED_H_
+#endif /* LED_H_ */

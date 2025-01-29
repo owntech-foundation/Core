@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 LAAS-CNRS
+ * Copyright (c) 2021-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -37,4 +37,4 @@ void comparator_comp3_init();
 }
 #endif
 
-#endif // COMPARATOR_DRIVER_H_
+#endif /* COMPARATOR_DRIVER_H_ */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2023 LAAS-CNRS
+ * Copyright (c) 2020-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -105,7 +105,7 @@ static hrtim_external_trigger_t tu_external_trig[HRTIM_STU_NUMOF] =
 
 /**
  *  PWMx1 : setting high-side switch convention
- *  PWMx2 : setting low-side switch conventioon
+ *  PWMx2 : setting low-side switch convention
  */
 static hrtim_switch_convention_t conv_PWMx1 = PWMx1;
 static hrtim_switch_convention_t conv_PWMx2 = PWMx2;
@@ -138,8 +138,9 @@ timer_hrtim_t timerF;
 timer_hrtim_t *tu_channel[HRTIM_STU_NUMOF] =
     {&timerA, &timerB, &timerC, &timerD, &timerE, &timerF};
 
-/////////////////////////////
-////// Private functions
+/**
+ *  Private Functions
+ */
 
 static inline void _clk_init()
 {
@@ -150,7 +151,7 @@ static inline void _clk_init()
     /* 2. clock enable for the registers mapped on the APB2 bus */
     LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_HRTIM1);
 
-    __DSB(); // from cmsis_armcc.h
+    __DSB(); /* from cmsis_armcc.h */
     /* Data Synchronization Barrier
      * Acts as a special kind of Data Memory Barrier.
      * It completes when all explicit memory accesses before this
@@ -165,14 +166,13 @@ static inline void _clk_init()
     /* Check DLL end of calibration flag */
     while (LL_HRTIM_IsActiveFlag_DLLRDY(HRTIM1) == RESET)
     {
-        // Wait
+        /* Wait */
     }
 }
 
 static inline unsigned _msb(unsigned v)
 {
     /* Return the most significant bit */
-
     return 8 * sizeof(v) - __builtin_clz(v) - 1;
 }
 
@@ -311,7 +311,7 @@ void _CM_init_EEV(void)
                             LL_HRTIM_EE_FASTMODE_DISABLE);
 }
 
-/* hrtim master initialization */
+/* HRTIM master initialization */
 void _init_master()
 {
     /* HRTIM clock initialization */
@@ -350,8 +350,9 @@ void _init_master()
     timerMaster.pwm_conf.unit_on = UNIT_ON;
 }
 
-/////////////////////////////
-////// Public functions
+/**
+ *  Public Functions
+ */
 
 /* return bus clock prescaler */
 int hrtim_get_apb2_clock()
@@ -444,7 +445,6 @@ void hrtim_init_default_all()
             tu_channel[tu_count]->gpio_conf.unit = unit[tu_count];
 
             /* sets up the switching convention variables of the timing units */
-
             tu_channel[tu_count]->switch_conv.set_H[conv_PWMx1] = SET_PER;
             tu_channel[tu_count]->switch_conv.reset_H[conv_PWMx1] = RST_CMP1;
             tu_channel[tu_count]->switch_conv.set_L[conv_PWMx1] = SET_CMP1;
@@ -497,7 +497,7 @@ uint16_t hrtim_tu_init(hrtim_tu_number_t tu_number)
 
     if (tu_channel[tu_number]->pwm_conf.pwm_mode == CURRENT_MODE)
     {
-        /* If we are in current mode, only lft_aligned is supported */
+        /* if we are in current mode, only lft_aligned is supported */
         tu_channel[tu_number]->pwm_conf.modulation = Lft_aligned;
     }
     /* setting the adc roll-over mode on period event
@@ -541,7 +541,7 @@ uint16_t hrtim_tu_init(hrtim_tu_number_t tu_number)
 
     else if (tu_channel[tu_number]->pwm_conf.pwm_mode == CURRENT_MODE)
     {
-        /* IF we are in current mode */
+        /* If we are in current mode */
 
         /* External event initialization */
         _CM_init_EEV();
@@ -865,12 +865,12 @@ hrtim_external_trigger_t hrtim_eev_get(hrtim_tu_number_t tu_number)
 }
 
 /**
- * The difference between hrtim_dt_set and hrtim_dt_init, is that the latter
- * is called only once for computing the dead prescaler, after that it is not
- * possible to change the prescaler and there is maximum value for the rising
- * and falling dead time. hrtim_set_dt can change dynamically the dead time
- * without stopping the PWM.
-*/
+ *  The difference between hrtim_dt_set and hrtim_dt_init, is that the latter
+ *  is called only once for computing the dead prescaler, after that it is not
+ *  possible to change the prescaler and there is maximum value for the rising
+ *  and falling dead time. hrtim_set_dt can change dynamically the dead time
+ *  without stopping the PWM.
+ */
 void hrtim_dt_set(hrtim_tu_number_t tu_number, uint16_t rise_ns, uint16_t fall_ns)
 {
     #if defined(CONFIG_SOC_SERIES_STM32F3X)
@@ -1254,13 +1254,13 @@ void hrtim_adc_trigger_dis(hrtim_tu_number_t tu_number)
                     & ~tu_channel[tu_number]->adc_hrtim.adc_source);
 }
 
-void hrtim_adc_triger_set(hrtim_tu_number_t tu_number,
+void hrtim_adc_trigger_set(hrtim_tu_number_t tu_number,
                           hrtim_adc_trigger_t adc_trig)
 {
     tu_channel[tu_number]->adc_hrtim.adc_trigger = adc_trig;
 }
 
-hrtim_adc_trigger_t hrtim_adc_triger_get(hrtim_tu_number_t tu_number)
+hrtim_adc_trigger_t hrtim_adc_trigger_get(hrtim_tu_number_t tu_number)
 {
     return tu_channel[tu_number]->adc_hrtim.adc_trigger;
 }
@@ -1315,7 +1315,7 @@ void hrtim_PeriodicEvent_en(hrtim_tu_t tu)
 void hrtim_PeriodicEvent_dis(hrtim_tu_t tu)
 {
     irq_disable(HRTIM_IRQ_NUMBER);
-    /* Disabling the interrupt on repetition counter event*/
+    /* Disabling the interrupt on repetition counter event */
     LL_HRTIM_DisableIT_REP(HRTIM1, tu);
 }
 

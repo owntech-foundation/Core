@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 LAAS-CNRS
+ * Copyright (c) 2022-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -26,22 +26,22 @@
  */
 
 
-// Stdlib
+/* Stdlib */
 #include <string.h>
 
-// Current class header
+/* Current class header */
 #include "DataAPI.h"
 
-// OwnTech Power API
+/* OwnTech Power API */
 #include "SpinAPI.h"
 #include "adc.h"
 
-// Current module private functions
+/* Current module private functions */
 #include "./data/data_dispatch.h"
 
-
-/////
-// Static class members
+/**
+ *  Static class members
+ */
 
 bool DataAPI::is_started = false;
 bool DataAPI::adcInitialized = false;
@@ -54,12 +54,13 @@ float32_t*** DataAPI::converted_values_buffer = nullptr;
 
 adc_t DataAPI::current_adc[PIN_COUNT] = {DEFAULT_ADC};
 
-/////
-// Public functions accessible only when using a power shield
+/**
+ *  Public functions accessible only when using a power shield
+ */
 
-
-/////
-// Public functions
+/**
+ *  Public functions
+ */
 
 int8_t DataAPI::enableAcquisition(uint8_t pin_num, adc_t adc_num)
 {
@@ -93,31 +94,31 @@ int8_t DataAPI::start()
 	if (DataAPI::is_started == true)
 		return -1;
 
-	// Initialize conversion
+	/* Initialize conversion */
 	data_conversion_init();
 
-	// Initialize data dispatch
+	/* Initialize data dispatch */
 	switch (this->dispatch_method)
 	{
 		case DispatchMethod_t::on_dma_interrupt:
-			// Dispatch is handled automatically by Data Dispatch on interrupt
+			/* Dispatch is handled automatically by Data Dispatch on interrupt */
 			data_dispatch_init(interrupt, 0);
 			break;
 		case DispatchMethod_t::externally_triggered:
-			// Dispatch is triggered by an external call
+			/* Dispatch is triggered by an external call */
 			if (this->repetition_count_between_dispatches == 0)
 				return -1;
 
 			data_dispatch_init(task, this->repetition_count_between_dispatches);
 	}
 
-	// Make sure module is initialized
+	/* Make sure module is initialized */
 	if (adcInitialized == false)
 	{
 		initializeAllAdcs();
 	}
 
-	// Launch ADC conversion
+	/* Launch ADC conversion */
 	adc_start();
 
 	DataAPI::is_started = true;
@@ -137,14 +138,16 @@ int8_t DataAPI::stop()
 
 	adc_stop();
 
-	// Free buffers storage
+	/* Free buffers storage */
 	if (DataAPI::converted_values_buffer != nullptr)
 	{
 		for (int adc_index = 0 ; adc_index < ADC_COUNT ; adc_index++)
 		{
 			if (DataAPI::converted_values_buffer[adc_index] != nullptr)
 			{
-				for (int channel_index = 0 ; channel_index < CHANNELS_PER_ADC ; channel_index++)
+				for (int channel_index = 0 ;
+					 channel_index < CHANNELS_PER_ADC ;
+					 channel_index++)
 				{
 					delete DataAPI::converted_values_buffer[adc_index][channel_index];
 				}
@@ -162,22 +165,20 @@ int8_t DataAPI::stop()
 
 void DataAPI::triggerAcquisition(adc_t adc_num)
 {
-	/////
-	// Make sure module is initialized
-
+	/*Make sure module is initialized */
 	if (adcInitialized == false)
 	{
 		initializeAllAdcs();
 	}
 
-	/////
-	// Proceed
-
-	uint8_t enabled_channels = adc_get_enabled_channels_count(adc_num);
+	/*  Proceed */
+	uint8_t enabled_channels =
+				adc_get_enabled_channels_count(adc_num);
 	adc_trigger_software_conversion(adc_num, enabled_channels);
 }
 
-uint16_t* DataAPI::getRawValues(uint8_t pin_num, uint32_t& number_of_values_acquired)
+uint16_t* DataAPI::getRawValues(uint8_t pin_num,
+								uint32_t& number_of_values_acquired)
 {
 	adc_t adc_num = DataAPI::getCurrentAdcForPin(pin_num);
 	if (adc_num == UNKNOWN_ADC)
@@ -193,10 +194,13 @@ uint16_t* DataAPI::getRawValues(uint8_t pin_num, uint32_t& number_of_values_acqu
 		return nullptr;
 	}
 
-	return this->getChannelRawValues(adc_num, channel_num, number_of_values_acquired);
+	return this->getChannelRawValues(adc_num,
+									 channel_num,
+									 number_of_values_acquired);
 }
 
-float32_t* DataAPI::getValues(uint8_t pin_number, uint32_t& number_of_values_acquired)
+float32_t* DataAPI::getValues(uint8_t pin_number,
+							  uint32_t& number_of_values_acquired)
 {
 	adc_t adc_number = DataAPI::getCurrentAdcForPin(pin_number);
 	if (adc_number == UNKNOWN_ADC)
@@ -212,7 +216,9 @@ float32_t* DataAPI::getValues(uint8_t pin_number, uint32_t& number_of_values_acq
 		return nullptr;
 	}
 
-	return this->getChannelValues(adc_number, channel_num, number_of_values_acquired);
+	return this->getChannelValues(adc_number,
+								  channel_num,
+								  number_of_values_acquired);
 }
 
 float32_t DataAPI::peekLatestValue(uint8_t pin_num)
@@ -274,7 +280,9 @@ float32_t DataAPI::convertValue(uint8_t pin_num, uint16_t raw_value)
 	return data_conversion_convert_raw_value(adc_num, channel_num, raw_value);
 }
 
-void DataAPI::setConversionParametersLinear(uint8_t pin_num, float32_t gain, float32_t offset)
+void DataAPI::setConversionParametersLinear(uint8_t pin_num,
+											float32_t gain,
+											float32_t offset)
 {
 	adc_t adc_num = DataAPI::getCurrentAdcForPin(pin_num);
 	if (adc_num == UNKNOWN_ADC)
@@ -288,10 +296,17 @@ void DataAPI::setConversionParametersLinear(uint8_t pin_num, float32_t gain, flo
 		return;
 	}
 
-	data_conversion_set_conversion_parameters_linear(adc_num, channel_num, gain, offset);
+	data_conversion_set_conversion_parameters_linear(adc_num,
+													 channel_num,
+													 gain,
+													 offset);
 }
 
-void DataAPI::setConversionParametersNtcThermistor(uint8_t pin_num, float32_t r0, float32_t b, float32_t rdiv, float32_t t0)
+void DataAPI::setConversionParametersNtcThermistor(uint8_t pin_num,
+												   float32_t r0,
+												   float32_t b,
+												   float32_t rdiv,
+												   float32_t t0)
 {
 	adc_t adc_num = DataAPI::getCurrentAdcForPin(pin_num);
 	if (adc_num == UNKNOWN_ADC)
@@ -305,11 +320,17 @@ void DataAPI::setConversionParametersNtcThermistor(uint8_t pin_num, float32_t r0
 		return;
 	}
 
-	data_conversion_set_conversion_parameters_therm(adc_num, channel_num, r0, b, rdiv, t0);
+	data_conversion_set_conversion_parameters_therm(adc_num,
+													channel_num,
+													r0,
+													b,
+													rdiv,
+													t0);
 }
 
 
-float32_t DataAPI::getConversionParameterValue(uint8_t pin_num, parameter_t parameter_name)
+float32_t DataAPI::getConversionParameterValue(uint8_t pin_num,
+											   parameter_t parameter_name)
 {
 	adc_t adc_num = DataAPI::getCurrentAdcForPin(pin_num);
 	if (adc_num == UNKNOWN_ADC)
@@ -375,48 +396,45 @@ int8_t DataAPI::retrieveConversionParametersFromMemory(uint8_t pin_num)
 		return ERROR_CHANNEL_NOT_FOUND;
 	}
 
-	return data_conversion_retrieve_channel_parameters_from_nvs(adc_num, channel_num);
+	return data_conversion_retrieve_channel_parameters_from_nvs(adc_num,
+																channel_num);
 }
 
-void DataAPI::configureDiscontinuousMode(adc_t adc_number, uint32_t discontinuous_count)
+void DataAPI::configureDiscontinuousMode(adc_t adc_number,
+										 uint32_t discontinuous_count)
 {
-	/////
-	// Make sure module is initialized
-
+	/* Make sure module is initialized */
 	if (adcInitialized == false)
 	{
 		initializeAllAdcs();
 	}
 
-	/////
-	// Proceed
-
+	/* Proceed */
 	adc_configure_discontinuous_mode(adc_number, discontinuous_count);
 }
 
-void DataAPI::configureTriggerSource(adc_t adc_number, trigger_source_t trigger_source)
+void DataAPI::configureTriggerSource(adc_t adc_number,
+									 trigger_source_t trigger_source)
 {
-	/////
-	// Check parameters validity
+	/**
+	 *  Check parameters validity
+	 */
 
 	if ( (adc_number == UNKNOWN_ADC) || (adc_number == DEFAULT_ADC) ) return;
 
-	/////
-	// Make sure module is initialized
-
+	/* Make sure module is initialized */
 	if (adcInitialized == false)
 	{
 		initializeAllAdcs();
 	}
 
-	/////
-	// Proceed
+	/* Proceed */
 
 	if (trigger_source == TRIG_SOFTWARE)
 	{
 		adc_configure_trigger_source(adc_number, software);
 	}
-	else // (trigger_source == TRIG_PWM)
+	else /* (trigger_source == TRIG_PWM) */
 	{
 		adc_ev_src_t event;
 		switch(adc_number)
@@ -445,15 +463,15 @@ void DataAPI::configureTriggerSource(adc_t adc_number, trigger_source_t trigger_
 	}
 }
 
-
-/////
-// Private functions
+/**
+ *  Private Functions
+ */
 
 void DataAPI::initializeAllAdcs()
 {
 	if (DataAPI::adcInitialized == false)
 	{
-		// Perform default configuration
+		/* Perform default configuration */
 		adc_configure_trigger_source(1, software);
 		adc_configure_trigger_source(2, software);
 		adc_configure_trigger_source(3, software);
@@ -476,47 +494,44 @@ int8_t DataAPI::enableChannel(adc_t adc_num, uint8_t channel_num)
 		return -1;
 
 
-	/////
-	// Make sure module is initialized
-
+	/* Make sure module is initialized */
 	if (adcInitialized == false)
 	{
 		initializeAllAdcs();
 	}
 
-	// Enable DMA
+	/* Enable DMA */
 	adc_configure_use_dma(adc_num, true);
 
-	// Set channel for activation
+	/* Set channel for activation */
 	adc_add_channel(adc_num, channel_num);
 
 
-	// Remember rank
+	/* Remember rank */
 	uint8_t adc_index = adc_num-1;
 	uint8_t channel_index = channel_num-1;
 	DataAPI::current_rank[adc_index]++;
-	DataAPI::channels_ranks[adc_index][channel_index] = DataAPI::current_rank[adc_index];
+	DataAPI::channels_ranks[adc_index][channel_index] =
+											DataAPI::current_rank[adc_index];
 
 	return 0;
 }
 
 void DataAPI::disableChannel(adc_t adc_num, uint8_t channel)
 {
-	/////
-	// Make sure module is initialized
-
+	/* Make sure module is initialized */
 	if (adcInitialized == false)
 	{
 		initializeAllAdcs();
 	}
 
-	/////
-	// Proceed
-
+	/* Proceed */
 	adc_remove_channel(adc_num, channel);
 }
 
-uint16_t* DataAPI::getChannelRawValues(adc_t adc_num, uint8_t channel_num, uint32_t& number_of_values_acquired)
+uint16_t* DataAPI::getChannelRawValues(adc_t adc_num,
+									   uint8_t channel_num,
+									   uint32_t& number_of_values_acquired)
 {
 	if (DataAPI::is_started == false)
 	{
@@ -531,26 +546,34 @@ uint16_t* DataAPI::getChannelRawValues(adc_t adc_num, uint8_t channel_num, uint3
 		return nullptr;
 	}
 
-	return data_dispatch_get_acquired_values(adc_num, channel_rank, number_of_values_acquired);
+	return data_dispatch_get_acquired_values(adc_num,
+											 channel_rank,
+											 number_of_values_acquired);
 }
 
-float32_t* DataAPI::getChannelValues(adc_t adc_number, uint8_t channel_num, uint32_t& number_of_values_acquired)
+float32_t* DataAPI::getChannelValues(adc_t adc_number,
+									 uint8_t channel_num,
+									 uint32_t& number_of_values_acquired)
 {
-	// Check that API is started
+	/* Check that API is started */
 	if (DataAPI::is_started == false)
 	{
 		number_of_values_acquired = 0;
 		return nullptr;
 	}
 
-	// Get raw values
-	uint16_t* raw_values = DataAPI::getChannelRawValues(adc_number, channel_num, number_of_values_acquired);
+	/* Get raw values */
+	uint16_t* raw_values =
+				DataAPI::getChannelRawValues(adc_number,
+											 channel_num,
+											 number_of_values_acquired);
+
 	if (number_of_values_acquired == 0)
 	{
 		return nullptr;
 	}
 
-	// At least one value to convert: make sure a buffer is available
+	/* At least one value to convert: make sure a buffer is available */
 	uint8_t adc_index = (uint8_t)adc_number - 1;
 	uint8_t channel_index = channel_num - 1;
 	if (DataAPI::converted_values_buffer == nullptr)
@@ -563,7 +586,9 @@ float32_t* DataAPI::getChannelValues(adc_t adc_number, uint8_t channel_num, uint
 	}
 	if (DataAPI::converted_values_buffer[adc_index] == nullptr)
 	{
-		DataAPI::converted_values_buffer[adc_index] = new float32_t*[CHANNELS_PER_ADC];
+		DataAPI::converted_values_buffer[adc_index] =
+										new float32_t*[CHANNELS_PER_ADC];
+
 		for (int i = 0 ; i < CHANNELS_PER_ADC ; i++)
 		{
 			DataAPI::converted_values_buffer[adc_index][i] = nullptr;
@@ -571,16 +596,20 @@ float32_t* DataAPI::getChannelValues(adc_t adc_number, uint8_t channel_num, uint
 	}
 	if (DataAPI::converted_values_buffer[adc_index][channel_index] == nullptr)
 	{
-		DataAPI::converted_values_buffer[adc_index][channel_index] = new float32_t[CHANNELS_BUFFERS_SIZE];
+		DataAPI::converted_values_buffer[adc_index][channel_index] =
+										new float32_t[CHANNELS_BUFFERS_SIZE];
 	}
 
-	// Proceed to conversion
+	/* Proceed to conversion */
 	for (uint32_t i = 0 ; i < number_of_values_acquired ; i++)
 	{
-		DataAPI::converted_values_buffer[adc_index][channel_index][i] = data_conversion_convert_raw_value(adc_number, channel_num, raw_values[i]);
+		DataAPI::converted_values_buffer[adc_index][channel_index][i] =
+					data_conversion_convert_raw_value(adc_number,
+													  channel_num,
+													  raw_values[i]);
 	}
 
-	// Return converted values buffer
+	/* Return converted values buffer */
 	return DataAPI::converted_values_buffer[adc_index][channel_index];
 }
 
@@ -597,7 +626,8 @@ float32_t DataAPI::peekChannel(adc_t adc_num, uint8_t channel_num)
 		return NO_VALUE;
 	}
 
-	uint16_t raw_value = data_dispatch_peek_acquired_value(adc_num, channel_rank);
+	uint16_t raw_value = data_dispatch_peek_acquired_value(adc_num,
+														   channel_rank);
 	if (raw_value == PEEK_NO_VALUE)
 	{
 		return NO_VALUE;
@@ -606,7 +636,9 @@ float32_t DataAPI::peekChannel(adc_t adc_num, uint8_t channel_num)
 	return data_conversion_convert_raw_value(adc_num, channel_num, raw_value);
 }
 
-float32_t DataAPI::getChannelLatest(adc_t adc_num, uint8_t channel_num, uint8_t* dataValid)
+float32_t DataAPI::getChannelLatest(adc_t adc_num,
+									uint8_t channel_num,
+									uint8_t* dataValid)
 {
 	if (DataAPI::is_started == false)
 	{
@@ -628,7 +660,9 @@ float32_t DataAPI::getChannelLatest(adc_t adc_num, uint8_t channel_num, uint8_t*
 	}
 
 	uint32_t data_count;
-	uint16_t* buffer = data_dispatch_get_acquired_values(adc_num, channel_rank, data_count);
+	uint16_t* buffer = data_dispatch_get_acquired_values(adc_num,
+														 channel_rank,
+														 data_count);
 
 	if (data_count > 0)
 	{
@@ -637,16 +671,21 @@ float32_t DataAPI::getChannelLatest(adc_t adc_num, uint8_t channel_num, uint8_t*
 		{
 			*dataValid = DATA_IS_OK;
 		}
-		return data_conversion_convert_raw_value(adc_num, channel_num, raw_value);
+		return data_conversion_convert_raw_value(adc_num,
+												 channel_num,
+												 raw_value);
 	}
 	else
 	{
-		uint16_t raw_value = data_dispatch_peek_acquired_value(adc_num, channel_rank);
+		uint16_t raw_value = data_dispatch_peek_acquired_value(adc_num,
+															   channel_rank);
 
 		float32_t peekValue;
 		if (raw_value != PEEK_NO_VALUE)
 		{
-			peekValue = data_conversion_convert_raw_value(adc_num, channel_num, raw_value);
+			peekValue = data_conversion_convert_raw_value(adc_num,
+														  channel_num,
+														  raw_value);
 		}
 		else
 		{
@@ -841,10 +880,10 @@ adc_t DataAPI::getDefaultAdcForPin(uint8_t pin_number)
 {
 	switch (pin_number)
 	{
-		// These pins allow only ADC 1
+		/* These pins allow only ADC 1 */
 		case 51:
 		case 52:
-		// These pins allow ADC 1 and ADC 2: default to ADC 1
+		/* These pins allow ADC 1 and ADC 2: default to ADC 1 */
 		case 1:
 		case 24:
 		case 25:
@@ -852,12 +891,12 @@ adc_t DataAPI::getDefaultAdcForPin(uint8_t pin_number)
 		case 27:
 		case 29:
 		case 30:
-		// These pins allow ADC 1 and ADC 3: default to ADC 1
+		/* These pins allow ADC 1 and ADC 3: default to ADC 1 */
 		case 31:
 		case 37:
 			return ADC_1;
 			break;
-		// These pins allow only ADC 2
+		/* These pins allow only ADC 2 */
 		case 32:
 		case 34:
 		case 35:
@@ -865,19 +904,19 @@ adc_t DataAPI::getDefaultAdcForPin(uint8_t pin_number)
 		case 43:
 		case 44:
 		case 45:
-		// This pin allows ADC 2 and ADC 4: default to ADC 2
+		/* This pin allows ADC 2 and ADC 4: default to ADC 2 */
 		case 5:
 			return ADC_2;
 			break;
-		// This pin allows only ADC 3
+		/* This pin allows only ADC 3 */
 		case 4:
 			return ADC_3;
 			break;
-		// This pin allows only ADC 4
+		/* This pin allows only ADC 4 */
 		case 2:
 			return ADC_4;
 			break;
-		// This pin allows only ADC 5
+		/* This pin allows only ADC 5 */
 		case 12:
 		case 14:
 			return ADC_5;

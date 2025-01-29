@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 LAAS-CNRS
+ * Copyright (c) 2021-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -38,10 +38,10 @@
 #define TU_DEFAULT_PERIOD (27200U) /* default period for 200kHz in bits */
 
 /**
- * @brief   HRTIM have 5 or 6 timing units
+ * @brief   HRTIM has 5 or 6 timing units
  */
 #ifdef HRTIM_MCR_TFCEN
-#define HRTIM_STU_NUMOF (6U) /**< number of slave timing units */
+#define HRTIM_STU_NUMOF (6U) /* number of slave timing units */
 #else
 #define HRTIM_STU_NUMOF (5U)
 #endif
@@ -52,7 +52,7 @@ extern "C"
 #endif
 
 /**
- * @brief   Timinig unit configuration - aggregates all the structures.
+ * @brief   Timing unit configuration - aggregates all the structures.
  */
 typedef struct
 {
@@ -66,8 +66,9 @@ typedef struct
 
 extern timer_hrtim_t *tu_channel[HRTIM_STU_NUMOF];
 
-/////////////////////////////
-////// fUNCTIONS
+/**
+ *  Functions
+ */
 
 /**
  * @brief   Gets the APB2 clock
@@ -75,8 +76,10 @@ extern timer_hrtim_t *tu_channel[HRTIM_STU_NUMOF];
 int hrtim_get_apb2_clock();
 
 /**
- * @brief this function initalize all the default parameters for each timing unit structure
- * @warning this function must be called before changing any timing unit parameters (frequency, phase_shift)
+ * @brief This function initialize all the default parameters
+ *        for each timing unit structure
+ * @warning This function must be called before
+ *          changing any timing unit parameters (frequency, phase_shift)
  */
 void hrtim_init_default_all();
 
@@ -121,7 +124,7 @@ hrtim_tu_ON_OFF_t hrtim_get_status(hrtim_tu_number_t tu_number);
 void hrtim_tu_gpio_init(hrtim_tu_number_t tu_number);
 
 /**
- * @brief   Disables the output of a given timingg unit
+ * @brief   Disables the output of a given timing unit
  *
  * @param[in] tu_number        Timing unit number:
  *            @arg @ref PWMA
@@ -303,7 +306,8 @@ uint32_t hrtim_get_min_frequency(hrtim_tu_number_t tu_number);
  *            @arg @ref PWMx1
  *            @arg @ref PWMx2
  */
-void hrtim_set_switch_convention(hrtim_tu_number_t tu_number, hrtim_switch_convention_t convention);
+void hrtim_set_switch_convention(hrtim_tu_number_t tu_number,
+                                 hrtim_switch_convention_t convention);
 
 /**
  * @brief   Gets the switching convention of a given timing unit
@@ -319,7 +323,9 @@ void hrtim_set_switch_convention(hrtim_tu_number_t tu_number, hrtim_switch_conve
  *            @arg @ref HIGH = 0,
  *            @arg @ref LOW = 1
  */
-hrtim_switch_convention_t hrtim_get_switch_convention(hrtim_tu_number_t tu_number);
+hrtim_switch_convention_t hrtim_get_switch_convention(
+    hrtim_tu_number_t tu_number
+);
 
 /**
  * @brief   Activates OUT 1 (switch H) with a given switching convention
@@ -413,7 +419,9 @@ uint32_t hrtim_period_Master_get_us();
  *            @arg @ref CMP4xR = 4
  * @param[in] value        Comparator new value to set:
  */
-void hrtim_tu_cmp_set(hrtim_tu_number_t tu_number, hrtim_cmp_t cmp, uint16_t value);
+void hrtim_tu_cmp_set(hrtim_tu_number_t tu_number,
+                      hrtim_cmp_t cmp,
+                      uint16_t value);
 
 /**
  * @brief   Sets one of the four comparators of the HRTIM master timer
@@ -441,7 +449,9 @@ void hrtim_master_cmp_set(hrtim_cmp_t cmp, uint16_t value);
  * @param[in] rise_ns        The desired dead time of the rising edge in nano second
  * @param[in] fall_ns        The desired dead time of the falling edge in nano second
  */
-void hrtim_dt_set(hrtim_tu_number_t tu_number, uint16_t rise_ns, uint16_t fall_ns);
+void hrtim_dt_set(hrtim_tu_number_t tu_number,
+                  uint16_t rise_ns,
+                  uint16_t fall_ns);
 
 /**
  * @brief   Updates the duty cycle of a timing unit
@@ -589,7 +599,8 @@ void hrtim_rst_evt_dis(hrtim_tu_number_t tu_number, hrtim_reset_trig_t evt);
  *
  * @param[in] ps_ratio  Post scaler ratio (0 = no post scaler, default)
  */
-void hrtim_adc_trigger_set_postscaler(hrtim_tu_number_t tu_number, uint32_t ps_ratio);
+void hrtim_adc_trigger_set_postscaler(hrtim_tu_number_t tu_number,
+                                      uint32_t ps_ratio);
 
 /**
  * @brief   Configures and enables an ADC trigger event.
@@ -633,7 +644,8 @@ void hrtim_adc_trigger_dis(hrtim_tu_number_t tu_number);
  *            @arg @ref EdgeTrigger_down
  *            @arg @ref EdgeTrigger_Both
  */
-void hrtim_adc_rollover_set(hrtim_tu_number_t tu_number, hrtim_adc_edgetrigger_t adc_rollover);
+void hrtim_adc_rollover_set(hrtim_tu_number_t tu_number,
+                            hrtim_adc_edgetrigger_t adc_rollover);
 
 /**
  * @brief   Returns the adc rollover mode
@@ -669,7 +681,9 @@ hrtim_adc_edgetrigger_t hrtim_adc_rollover_get(hrtim_tu_number_t tu_number);
  * @param callback Pointer to a void(void) function that will be called
  *        when the event is triggerred.
  */
-void hrtim_PeriodicEvent_configure(hrtim_tu_t tu, uint32_t repetition, hrtim_callback_t callback);
+void hrtim_PeriodicEvent_configure(hrtim_tu_t tu,
+                                   uint32_t repetition,
+                                   hrtim_callback_t callback);
 
 /**
  * @brief Enables interrupt on repetition counter for the chosen timing unit.
@@ -778,7 +792,8 @@ hrtim_pwm_mode_t hrtim_pwm_mode_get(hrtim_tu_number_t tu_number);
  *            @arg @ref ADCTRIG_3
  *            @arg @ref ADCTRIG_4
  */
-void hrtim_adc_triger_set(hrtim_tu_number_t tu_number, hrtim_adc_trigger_t adc_trig);
+void hrtim_adc_trigger_set(hrtim_tu_number_t tu_number,
+                           hrtim_adc_trigger_t adc_trig);
 
 /**
  * @brief Returns the adc trigger
@@ -788,7 +803,7 @@ void hrtim_adc_triger_set(hrtim_tu_number_t tu_number, hrtim_adc_trigger_t adc_t
  *            @arg @ref ADCTRIG_3 = ADC trigger 3,
  *            @arg @ref ADCTRIG_4 = ADC trigger 4
  */
-hrtim_adc_trigger_t hrtim_adc_triger_get(hrtim_tu_number_t tu_number);
+hrtim_adc_trigger_t hrtim_adc_trigger_get(hrtim_tu_number_t tu_number);
 
 /**
  * @brief Sets the external event used in current mode for a timing unit
@@ -832,12 +847,13 @@ hrtim_external_trigger_t hrtim_eev_get(hrtim_tu_number_t tu_number);
 /**
  * @brief Change the frequency/period after it has been initialized.
  * @param[in] new_frequency The new frequency in Hz
- * @warning the new frequency can't be inferior to the the one set in the initialization step
-*/
+ * @warning The new frequency can't be inferior to the the one set
+ *          in the initialization step.
+ */
 void hrtim_change_frequency(uint32_t new_frequency);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // HRTIM_H_
+#endif /* HRTIM_H_ */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 LAAS-CNRS
+ * Copyright (c) 2021-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -37,8 +37,9 @@
 extern "C" {
 #endif
 
-/////
-// Init, enable, start, stop
+/**
+ *  Init, enable, start, stop
+ */
 
 /**
  * @brief ADC initialization procedure for
@@ -72,8 +73,9 @@ void adc_core_start(uint8_t adc_num, uint8_t sequence_length);
 void adc_core_stop(uint8_t adc_num);
 
 
-/////
-// Configuration functions
+/**
+ * Configuration functions
+ */
 
 /**
  * @brief ADC DMA mode configuration.
@@ -94,7 +96,9 @@ void adc_core_configure_dma_mode(uint8_t adc_num, bool use_dma);
  * @param trigger_source Source of the trigger as defined
  *        in stm32gxx_ll_adc.h (LL_ADC_REG_TRIG_***).
  */
-void adc_core_configure_trigger_source(uint8_t adc_num, uint32_t external_trigger_edge, uint32_t trigger_source);
+void adc_core_configure_trigger_source(uint8_t adc_num,
+                                       uint32_t external_trigger_edge,
+                                       uint32_t trigger_source);
 
 /**
  * @brief  Configures the discontinuous mode for an ADC.
@@ -103,7 +107,8 @@ void adc_core_configure_trigger_source(uint8_t adc_num, uint32_t external_trigge
  * @param discontinuous_count Number of channels to acquire on each
  *        trigger event. 0 to disable discontinuous mode (default).
  */
-void adc_core_configure_discontinuous_mode(uint8_t adc_num, uint32_t discontinuous_count);
+void adc_core_configure_discontinuous_mode(uint8_t adc_num,
+                                           uint32_t discontinuous_count);
 
 /**
  * @brief ADC differential channel set-up:
@@ -116,7 +121,9 @@ void adc_core_configure_discontinuous_mode(uint8_t adc_num, uint32_t discontinuo
  *        false to disable it (default).
  *
  */
-void adc_core_set_channel_differential(uint8_t adc_num, uint8_t channel, bool enable_differential);
+void adc_core_set_channel_differential(uint8_t adc_num,
+                                       uint8_t channel,
+                                       bool enable_differential);
 
 /**
  * @brief Configures an ADC channel acquisition.
@@ -135,4 +142,4 @@ void adc_core_configure_channel(uint8_t adc_num, uint8_t channel, uint8_t rank);
 }
 #endif
 
-#endif // ADC_CORE_H_
+#endif /* ADC_CORE_H_ */

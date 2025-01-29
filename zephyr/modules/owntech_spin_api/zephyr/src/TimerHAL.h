@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 LAAS-CNRS
+ * Copyright (c) 2022-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -26,13 +26,13 @@
 #ifndef TIMERHAL_H_
 #define TIMERHAL_H_
 
-// Stdlib
+/* Stdlib */
 #include <stdint.h>
 
-// ARM lib
+/* ARM lib */
 #include <arm_math.h>
 
-// OwnTech API
+/* OwnTech API */
 #include "timer.h"
 
 
@@ -41,7 +41,8 @@
 /**
  * @brief  Handles timer 4 for the SPIN board
  *
- * @note   Use this element to initialize timer 4 and use it with an incremental encoder
+ * @note   Use this element to initialize timer 4 and use it with
+ * 		   an incremental encoder
  */
 class TimerHAL
 {
@@ -54,7 +55,8 @@ public:
 
 	/**
 	 * @brief Gets the encoder step value.
-	 * @return An uint32 value of the counter which corresponds to the step of the system.
+	 * @return An uint32 value of the counter which corresponds to the
+	 * 		   step of the system.
 	 */
 	uint32_t getTimer4IncrementalEncoderValue();
 
@@ -67,7 +69,7 @@ private:
 	 */
 	void timer4Initialize();
 
-	// Variables
+	/* Variables */
 	static bool timer4init;
 	static bool timer4started;
 
@@ -76,4 +78,4 @@ private:
 
 
 
-#endif // TIMERHAL_H_
+#endif /* TIMERHAL_H_ */
