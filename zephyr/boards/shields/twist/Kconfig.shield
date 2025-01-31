@@ -19,7 +19,3 @@ config SHIELD_TWIST_V1_3_0
 
 config SHIELD_TWIST_V1_2_0
 	def_bool $(shields_list_contains,twist_v1_2_0)
-
-config HAS_POWER_SHIELD
-	default y
-	bool "Twist is a Power Shield"

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 LAAS-CNRS
+ * Copyright (c) 2024-present LAAS-CNRS
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -33,21 +33,32 @@ LOG_MODULE_REGISTER(ts_can, CONFIG_THINGSET_SDK_LOG_LEVEL);
 
 extern struct thingset_context ts;
 
-void can_control_rx_handler(uint16_t data_id, const uint8_t *value, size_t value_len,
-                                 uint8_t source_addr)
+void can_control_rx_handler(uint16_t data_id,
+                            const uint8_t *value,
+                            size_t value_len,
+                            uint8_t source_addr)
 {
-    // control data items use IDs >= 0x8000
+    /* Control data items use IDs >= 0x8000 */
     if (data_id >= 0x8000) {
-        uint8_t buf[4 + CAN_MAX_DLEN]; // ThingSet bin headers + CAN frame payload
-        buf[0] = 0xA1;      // CBOR: map with 1 element
-        buf[1] = 0x19;      // CBOR: uint16 follows
+        /* ThingSet bin headers + CAN frame payload */
+        uint8_t buf[4 + CAN_MAX_DLEN];
+        /* CBOR: map with 1 element */
+        buf[0] = 0xA1;
+        /* CBOR: uint16 follows */
+        buf[1] = 0x19;
         buf[2] = data_id >> 8;
         buf[3] = data_id;
         memcpy(&buf[4], value, value_len);
 
-        LOG_DBG("received control msg with id 0x%X from addr 0x%X", data_id, source_addr);
+        LOG_DBG("received control msg with id 0x%X from addr 0x%X",
+                data_id,
+                source_addr);
 
-        thingset_import_data(&ts, buf, 4 + value_len, THINGSET_WRITE_MASK, THINGSET_BIN_IDS_VALUES);
+        thingset_import_data(&ts,
+                             buf,
+                             4 + value_len,
+                             THINGSET_WRITE_MASK,
+                             THINGSET_BIN_IDS_VALUES);
     }
 }
 
