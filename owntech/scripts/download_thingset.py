@@ -10,12 +10,24 @@ Import("env")
 
 # Specify fixed commits for ThingSet libraries to make builds reproducible
 thingset_node_rev = "68c7544830df2ba23f67e31bad91e124377827a3"
-thingset_sdk_rev = "48740769cea0d9666fc9132cd8923f9ce2c088f9"
+thingset_sdk_rev = "e57447bbeb7c165e14a273242e8495343c1c6f54"
 
 ####
 # Determine if thingset must be downloaded
 
 do_download=False
+
+if os.path.exists("src/app.conf"):
+	with open("src/app.conf", 'r') as file:
+		conf_content = file.readlines()
+		for line in conf_content:
+			if line.startswith("#"):
+				None
+			else:
+				if "CONFIG_OWNTECH_COMMUNICATION_ENABLE_CAN=y" in line:
+					do_download=True
+					break
+
 with open("zephyr/prj.conf", 'r') as file:
 	conf_content = file.readlines()
 	for line in conf_content:
@@ -57,7 +69,7 @@ if do_download:
 		try:
 			repo.git.fetch('origin', rev)  # Ensure the commit is available
 			repo.git.checkout(rev)
-		except GitCommandError:
+		except:
 			print(f"Error: Unable to checkout on commit {rev}.\n")
 
 
