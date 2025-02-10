@@ -44,28 +44,32 @@ void can_control_rx_handler(uint16_t data_id,
         uint8_t buf[4 + CAN_MAX_DLEN];
         /* CBOR: map with 1 element */
         buf[0] = 0xA1;
-        /* CBOR: uint16 follows */
+        /* CBOR: uint16 follows (object ID is 2 bytes) */
         buf[1] = 0x19;
+        /* High byte of data ID */
         buf[2] = data_id >> 8;
+        /* Low byte of data ID */
         buf[3] = data_id;
+
         memcpy(&buf[4], value, value_len);
 
-        LOG_DBG("received control msg with id 0x%X from addr 0x%X",
+        LOG_INF("received control msg with id 0x%X from addr 0x%X",
                 data_id,
                 source_addr);
 
-        thingset_import_data(&ts,
-                             buf,
-                             4 + value_len,
-                             THINGSET_WRITE_MASK,
-                             THINGSET_BIN_IDS_VALUES);
+        LOG_HEXDUMP_INF(buf, 4 + value_len, "Thingset frame:");
+
+        // thingset_import_data(&ts,
+        //                      buf,
+        //                      4 + value_len,
+        //                      THINGSET_WRITE_MASK,
+        //                      THINGSET_BIN_IDS_VALUES);
     }
 }
 
 static int can_control_init()
 {
     thingset_can_set_item_rx_callback(can_control_rx_handler);
-
     return 0;
 }
 
