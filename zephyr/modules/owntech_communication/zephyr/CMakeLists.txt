@@ -17,9 +17,8 @@ if(CONFIG_OWNTECH_COMMUNICATION)
 
   if (CONFIG_OWNTECH_COMMUNICATION_ENABLE_CAN)
     zephyr_library_sources(
-      src/data_objects.cpp
-      src/thingset_can.c
       src/CanCommunication.cpp
+      src/thingset_can.c
     )
   endif()
 

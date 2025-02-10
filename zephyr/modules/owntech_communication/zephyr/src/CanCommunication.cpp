@@ -28,26 +28,34 @@
 /* Header */
 #include "CanCommunication.h"
 #include "data_objects.h"
+#include <thingset.h>
+#include <thingset/can.h>
+#include <thingset/sdk.h>
 
-/* Zephyr driver */
-#include <zephyr/drivers/gpio.h>
+struct thingset_can *CanCommunication::ts_can_inst = thingset_can_get_inst();
 
+/**
+ * Extern variables coming from sdk.c
+ **/
+
+#ifdef CONFIG_THINGSET_SUBSET_LIVE_METRICS
+/** Boolean to set or unset CAN broadcasting */
+extern bool live_reporting_enable;
+/** Integer used to set broadcasting period */
+extern uint32_t live_reporting_period;
+#endif
 /**
  * Extern variable defined in this module
  */
 
-extern uint16_t broadcast_time;
-extern uint16_t control_time;
+#ifdef CONFIG_THINGSET_CAN_CONTROL_REPORTING
 
-
-uint16_t CanCommunication::getCanNodeAddr()
-{
-    return can_node_addr;
-}
+extern bool      start_stop;
+extern float32_t reference_value;
 
 bool CanCommunication::getCtrlEnable()
 {
-    return ctrl_enable;
+    return ts_can_inst->control_enable;
 }
 
 float32_t CanCommunication::getCtrlReference()
@@ -55,25 +63,19 @@ float32_t CanCommunication::getCtrlReference()
     return reference_value;
 }
 
-uint16_t CanCommunication::getBroadcastPeriod()
+float32_t CanCommunication::getStartStopState()
 {
-    return broadcast_time;
+    return start_stop;
 }
 
 uint16_t CanCommunication::getControlPeriod()
 {
-    return control_time;
-}
-
-
-void CanCommunication::setCanNodeAddr(uint16_t addr)
-{
-    can_node_addr = addr;
+    return ts_can_inst->control_period;
 }
 
 void CanCommunication::setCtrlEnable(bool enable)
 {
-    ctrl_enable = enable;
+    ts_can_inst->control_enable = enable;
 }
 
 void CanCommunication::setCtrlReference(float32_t reference)
@@ -81,12 +83,53 @@ void CanCommunication::setCtrlReference(float32_t reference)
     reference_value = reference;
 }
 
-void CanCommunication::setBroadcastPeriod(uint16_t time_100_ms)
+void CanCommunication::stopSlaveDevice()
 {
-    broadcast_time = time_100_ms;
+    start_stop = 0;
 }
 
-void CanCommunication::setControlPeriod(uint16_t time_100_ms)
+void CanCommunication::startSlaveDevice()
 {
-    control_time = time_100_ms;
+    start_stop = 1;
 }
+
+void CanCommunication::setControlPeriod(uint16_t time_ms)
+{
+    ts_can_inst->control_period = time_ms;
+}
+
+#endif /* CONFIG_THINGSET_CAN_CONTROL_REPORTING */
+
+uint16_t CanCommunication::getCanNodeAddr()
+{
+    return ts_can_inst->node_addr;
+}
+
+void CanCommunication::setCanNodeAddr(uint16_t addr)
+{
+    ts_can_inst->node_addr = addr;
+}
+
+#ifdef CONFIG_THINGSET_SUBSET_LIVE_METRICS
+
+bool CanCommunication::getBroadcastEnable()
+{
+    return live_reporting_enable;
+}
+
+uint16_t CanCommunication::getBroadcastPeriod()
+{
+    return live_reporting_period;
+}
+
+void CanCommunication::setBroadcastEnable(bool enable)
+{
+    live_reporting_enable = enable;
+}
+
+void CanCommunication::setBroadcastPeriod(uint16_t time_s)
+{
+    live_reporting_period = time_s;
+}
+
+#endif /* CONFIG_THINGSET_SUBSET_LIVE_METRICS */
