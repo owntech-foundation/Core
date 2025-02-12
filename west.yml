@@ -1,0 +1,90 @@
+# This west manifest replace default west manifest located in
+# .platformio/packages/framework-zephyr/west.yml. Genuine
+# default version is backup as west.yml.bak in the same folder
+#
+# This file defines the module dependencies of Zephyr RTOS.
+# A script located in owntech/scripts/pre_west.py makes sure
+# the local (project based) west.yml file supplant the default
+# one.
+#
+# A power user can change dependencies version or add new ones
+# at his will using the manifest below.
+
+manifest:
+  defaults:
+    remote: upstream
+
+  remotes:
+    - name: upstream
+      url-base: https://github.com/zephyrproject-rtos
+    - name: owntech
+      url-base: https://github.com/owntech-foundation
+    - name: thingset
+      url-base: https://github.com/thingset
+
+  group-filter: [-optional]
+
+  #
+  # Please add items below based on alphabetical order
+  projects:
+    - name: cmsis
+      revision: 4b96cbb174678dcd3ca86e11e1f24bc5f8726da0
+      path: modules/hal/cmsis
+      groups:
+        - hal
+    - name: cmsis-dsp
+      revision: 6489e771e9c405f1763b52d64a3f17a1ec488ace
+      path: modules/lib/cmsis-dsp
+    - name: fatfs
+      revision: 427159bf95ea49b7680facffaa29ad506b42709b
+      path: modules/fs/fatfs
+      groups:
+        - fs
+    # Use owntech fork of hal_stm32 that only ships STM32G4XX files
+    # to reduce install size and time.
+    - name: hal_stm32
+      remote: owntech
+      revision: 2e5897379cc6f69d33ea1f52f46f99cbe360a45d
+      path: modules/hal/stm32
+      groups:
+        - hal
+    - name: littlefs
+      path: modules/fs/littlefs
+      groups:
+        - fs
+      revision: 009bcff0ed4853a53df8256039fa815bda6854dd
+    - name: mcuboot
+      revision: f74b77cf7808919837c0ed14c2ead3918c546349
+      path: bootloader/mcuboot
+    - name: segger
+      revision: 798f95ea9304e5ed8165a661081443051f210733
+      path: modules/debug/segger
+      groups:
+        - debug
+    - name: tinycrypt
+      revision: 1012a3ebee18c15ede5efc8332ee2fc37817670f
+      path: modules/crypto/tinycrypt
+      groups:
+        - crypto
+    # zcbor version changed to match thingset-node-c requirements
+    - name: zcbor
+      revision: 47f34dd7f5284e8750b5a715dee7f77c6c5bdc3f
+      path: modules/lib/zcbor
+    - name: thingset-zephyr-sdk
+      remote: thingset
+      revision: e57447bbeb7c165e14a273242e8495343c1c6f54
+      path: thingset-zephyr-sdk
+      import:
+        name-allowlist:
+          - thingset-node-c
+          - zcbor
+    - name: thingset-node-c
+      remote: thingset
+      revision: 68c7544830df2ba23f67e31bad91e124377827a3
+      path: modules/thingset-node-c
+      import: true
+
+  self:
+    path: zephyr
+    west-commands: scripts/west-commands.yml
+    import: submanifests
