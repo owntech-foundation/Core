@@ -13,11 +13,11 @@
   ],
   "debug": {
     "default_tools": [
-        "stlink"
+        "custom"
       ],
       "jlink_device": "STM32G474RE",
       "onboard_tools": [
-        "stlink"
+        "custom"
       ],
       "openocd_target": "stm32g4x",
       "svd_path": "STM32G474xx.svd"
