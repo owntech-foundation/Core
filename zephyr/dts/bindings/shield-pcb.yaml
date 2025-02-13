@@ -1,0 +1,14 @@
+description: Describes the shield PCB, name and version.
+
+compatible: "shield-pcb"
+
+properties:
+  shield-name:
+    type: string
+    required: true
+    description: Power Shield name
+
+  shield-version:
+    type: string
+    required: true
+    description: Power Shield version

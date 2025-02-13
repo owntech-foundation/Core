@@ -5,7 +5,3 @@ config SHIELD_OWNVERTER
 	def_bool $(shields_list_contains,ownverter_v1_0_0) || \
 			 $(shields_list_contains,ownverter_v0_9_0) || \
 			 $(shields_list_contains,ownverter)
-
-config HAS_POWER_SHIELD
-	default y
-	bool "Ownverter is a Power Shield"

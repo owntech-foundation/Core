@@ -16,6 +16,22 @@ MACRO(SUBDIRLIST result curdir)
   SET(${result} ${dirlist})
 ENDMACRO()
 
+
+# Macro to list all subdirectories containing a Zephyr module in a specified directory
+MACRO(THIRDPARTYSUBDIRLIST result curdir)
+  FILE(GLOB children RELATIVE ${curdir} ${curdir}/*)
+  SET(dirlist "")
+  FOREACH(child ${children})
+    IF(EXISTS ${curdir}/${child}/CMakeLists.txt)
+      LIST(APPEND dirlist ${curdir}/${child})
+    ENDIF()
+  ENDFOREACH()
+  # Make sure modules are always in the same order for incremental compilation
+  LIST(SORT dirlist)
+  SET(${result} ${dirlist})
+ENDMACRO()
+
+
 # This macro check for app.extension in curdir folder, where curdir and extension
 # are given as inputs. If found it returns the absolute path of app.extension.
 MACRO(FILELIST result curdir extension)
@@ -67,7 +83,7 @@ set(EXTRA_DTC_OVERLAY_FILE ${EXTRA_OVERLAY_APP_FILE})
 
 # Check for third party modules
 if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/third_party_modules)
-  SUBDIRLIST(THIRDPARTY ${CMAKE_CURRENT_SOURCE_DIR}/third_party_modules)
+  THIRDPARTYSUBDIRLIST(THIRDPARTY ${CMAKE_CURRENT_SOURCE_DIR}/third_party_modules)
   list(APPEND ZEPHYR_EXTRA_MODULES ${THIRDPARTY})
 endif()
 
