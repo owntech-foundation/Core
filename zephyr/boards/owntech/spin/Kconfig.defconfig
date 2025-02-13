@@ -15,4 +15,7 @@ config SPI_STM32_INTERRUPT
 	default y
 	depends on SPI
 
+config HAS_POWER_SHIELD
+	def_bool SHIELD_O2 || SHIELD_OWNVERTER || SHIELD_TWIST
+
 endif # BOARD_SPIN

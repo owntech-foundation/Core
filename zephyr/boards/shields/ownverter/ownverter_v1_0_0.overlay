@@ -9,6 +9,12 @@
 		zephyr,can-primary = &fdcan2;
 	};
 
+	pcb: pcb{
+		compatible= "shield-pcb";
+		shield-name = "OWNVERTER";
+		shield-version = "v1.0.0";
+	};
+
 	powershield: power-shield{
         compatible = "power-leg";
         default-frequency = <200000>;

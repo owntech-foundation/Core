@@ -7,6 +7,13 @@
 / {
 	choosen{
 		zephyr,can-primary = &fdcan2;
+		thingset,can = &fdcan2;
+	};
+
+	pcb: pcb{
+		compatible= "shield-pcb";
+		shield-name = "TWIST";
+		shield-version = "v1.4.1";
 	};
 
 	powershield: power-shield{
