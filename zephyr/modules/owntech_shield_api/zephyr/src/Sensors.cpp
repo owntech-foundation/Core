@@ -317,11 +317,11 @@ void SensorsAPI::enableDefaultOwnverterSensors()
 	 * 					They are mainly used for non-real-time measurements,
 	 * 					such as temperature
 	 */
-	spin.data.configureTriggerSource(ADC_1, hrtim_ev1);
-	spin.data.configureTriggerSource(ADC_2, hrtim_ev3);
-	spin.data.configureTriggerSource(ADC_3, software);
-	spin.data.configureTriggerSource(ADC_4, software);
-	spin.data.configureTriggerSource(ADC_5, software);
+	spin.data.configureTriggerSource(ADC_1, TRIG_PWM);
+	spin.data.configureTriggerSource(ADC_2, TRIG_PWM);
+	spin.data.configureTriggerSource(ADC_3, TRIG_SOFTWARE);
+	spin.data.configureTriggerSource(ADC_4, TRIG_SOFTWARE);
+	spin.data.configureTriggerSource(ADC_5, TRIG_SOFTWARE);
 
 	/**
 	 * Defines ADC 1 and ADC 2 measurements as discontinuous.
