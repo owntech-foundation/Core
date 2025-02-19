@@ -431,7 +431,7 @@ After channels have been enabled (and optionnally conversion parameters have bee
         spin.pwm.startDualOutput(PWMA);
 
         /* ADC initialization */
-        spin.data.configureTriggerSource(ADC_1, hrtim_eev1); // ADC 1 ; HRTIM event 1
+        spin.data.configureTriggerSource(ADC_1, TRIG_PWM); // ADC 1 ; HRTIM event 1
         spin.data.configureDiscontinuousMode(ADC_1, 1); // ADC 1 ; acquire 1 pin at each event
         spin.data.enableAcquisition(5, ADC_1); // Pin 5 using ADC 1
         spin.data.start();
