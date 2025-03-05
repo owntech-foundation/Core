@@ -65,6 +65,11 @@ Create an empty folder in which you will work throughout the tutorials.
 
 [Download ](https://code.visualstudio.com/#alt-downloads) and install Visual Studio Code (“VS Code” for short).
 
+!!! warning 
+    === "Windows"
+        Make sure you have the **System Version of VSCode** installed in your computer, as shown in the image below.
+        ![alt text](images/system_installer.png)
+
 An overview of VS Code user interface is available in their official [Get Started / User Interface](https://code.visualstudio.com/docs/getstarted/userinterface) documentation.
 
 
