@@ -257,6 +257,10 @@ uint16_t PwmHAL::getPeriodMin(hrtim_tu_number_t pwmX)
 
 void PwmHAL::setAdcTriggerPostScaler(hrtim_tu_number_t pwmX, uint32_t ps_ratio)
 {
+	if (!hrtim_get_status(pwmX))
+	/* Initialize default parameters before */
+		hrtim_init_default_all();
+
 	hrtim_adc_trigger_set_postscaler(pwmX, ps_ratio);
 }
 
@@ -279,6 +283,10 @@ void PwmHAL::enableAdcTrigger(hrtim_tu_number_t pwmX)
 
 void PwmHAL::setAdcTriggerInstant(hrtim_tu_number_t pwmX, float32_t trig_val)
 {
+	if (!hrtim_get_status(pwmX))
+	/* Initialize default parameters before */
+		hrtim_init_default_all();
+
 	uint16_t trigger_value_int = trig_val * hrtim_period_get(pwmX);
 	hrtim_tu_cmp_set(pwmX, CMP3xR, trigger_value_int);
 }
@@ -424,6 +432,10 @@ hrtim_external_trigger_t PwmHAL::getEev(hrtim_tu_number_t pwmX)
 
 void PwmHAL::setAdcDecimation(hrtim_tu_number_t pwmX, uint32_t decimation)
 {
+	if (!hrtim_get_status(pwmX))
+	/* Initialize default parameters before */
+		hrtim_init_default_all();
+
 	if (decimation > 32)
 		decimation = 32;
 	else if (decimation < 1)
@@ -433,6 +445,10 @@ void PwmHAL::setAdcDecimation(hrtim_tu_number_t pwmX, uint32_t decimation)
 
 void PwmHAL::setFrequency(uint32_t frequency_update)
 {
+	if (!hrtim_get_status(PWMA))
+	/* Initialize default parameters before */
+		hrtim_init_default_all();
+
 	hrtim_change_frequency(frequency_update);
 }
 
