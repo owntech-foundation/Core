@@ -163,16 +163,21 @@ void PwmHAL::stopSingleOutput(hrtim_tu_number_t tu,
 void PwmHAL::setModulation(hrtim_tu_number_t pwmX, hrtim_cnt_t modulation)
 {
 	if (!hrtim_get_status(pwmX))
-		/* Initialize default parameters before */
-		hrtim_init_default_all();
+	{
+		hrtim_init_default_all(); /* Initialize default parameters before */
+	}
+
 	hrtim_set_modulation(pwmX, modulation);
 }
 
 void PwmHAL::setSwitchConvention(hrtim_tu_number_t pwmX,
-                                 hrtim_switch_convention_t convention) {
+                                 hrtim_switch_convention_t convention) 
+{
 	if (!hrtim_get_status(pwmX))
-		/* Initialize default parameters before */
-		hrtim_init_default_all();
+	{
+		hrtim_init_default_all(); /* Initialize default parameters before */
+	}
+
 	hrtim_set_switch_convention(pwmX, convention);
 }
 
@@ -198,8 +203,10 @@ void PwmHAL::setDeadTime(hrtim_tu_number_t pwmX,
 						 uint16_t fall_ns)
 {
 	if (!hrtim_get_status(pwmX))
-		/*Initialize default parameters before */
-		hrtim_init_default_all();
+	{
+		hrtim_init_default_all(); /* Initialize default parameters before */
+	}
+
 	hrtim_dt_set(pwmX, rise_ns, fall_ns);
 }
 
@@ -257,6 +264,12 @@ uint16_t PwmHAL::getPeriodMin(hrtim_tu_number_t pwmX)
 
 void PwmHAL::setAdcTriggerPostScaler(hrtim_tu_number_t pwmX, uint32_t ps_ratio)
 {
+	
+	if (!hrtim_get_status(pwmX))
+	{
+		hrtim_init_default_all(); /* Initialize default parameters before */
+	}
+
 	hrtim_adc_trigger_set_postscaler(pwmX, ps_ratio);
 }
 
@@ -279,6 +292,11 @@ void PwmHAL::enableAdcTrigger(hrtim_tu_number_t pwmX)
 
 void PwmHAL::setAdcTriggerInstant(hrtim_tu_number_t pwmX, float32_t trig_val)
 {
+	if (!hrtim_get_status(pwmX))
+	{
+		hrtim_init_default_all(); /* Initialize default parameters before */
+	}
+
 	uint16_t trigger_value_int = trig_val * hrtim_period_get(pwmX);
 	hrtim_tu_cmp_set(pwmX, CMP3xR, trigger_value_int);
 }
@@ -324,8 +342,10 @@ void PwmHAL::setAdcEdgeTrigger(hrtim_tu_number_t pwmX,
 							   hrtim_adc_edgetrigger_t adc_edge_trigger)
 {
 	if (!hrtim_get_status(pwmX))
-		/* Initialize default parameters before */
-		hrtim_init_default_all();
+	{
+		hrtim_init_default_all(); /* Initialize default parameters before */
+	}
+
 	hrtim_adc_rollover_set(pwmX, adc_edge_trigger);
 }
 
@@ -362,9 +382,9 @@ void PwmHAL::setAdcTrigger(hrtim_tu_number_t pwmX, adc_t adc)
 			return;
 	}
 
-	if (!hrtim_get_status(pwmX)){
-		/* Initialize default parameters before */
-		hrtim_init_default_all();
+	if (!hrtim_get_status(pwmX))
+	{
+		hrtim_init_default_all(); /* Initialize default parameters before */
 	}
 
 	hrtim_adc_trigger_set(pwmX, adc_trig);
@@ -399,8 +419,10 @@ adc_t PwmHAL::getAdcTrigger(hrtim_tu_number_t pwmX)
 void PwmHAL::setMode(hrtim_tu_number_t pwmX, hrtim_pwm_mode_t mode)
 {
 	if (!hrtim_get_status(pwmX))
-		/* Initialize default parameters before */
-		hrtim_init_default_all();
+	{
+		hrtim_init_default_all(); /* Initialize default parameters before */
+	}
+
 	hrtim_pwm_mode_set(pwmX, mode);
 }
 
@@ -412,8 +434,10 @@ hrtim_pwm_mode_t PwmHAL::getMode(hrtim_tu_number_t pwmX)
 void PwmHAL::setEev(hrtim_tu_number_t pwmX, hrtim_external_trigger_t eev)
 {
 	if (!hrtim_get_status(pwmX))
-		/* Initialize default parameters before */
-		hrtim_init_default_all();
+	{
+		hrtim_init_default_all(); /* Initialize default parameters before */
+	}
+
 	hrtim_eev_set(pwmX, eev);
 }
 
@@ -424,6 +448,12 @@ hrtim_external_trigger_t PwmHAL::getEev(hrtim_tu_number_t pwmX)
 
 void PwmHAL::setAdcDecimation(hrtim_tu_number_t pwmX, uint32_t decimation)
 {
+	if (!hrtim_get_status(pwmX))
+	{
+		hrtim_init_default_all(); /* Initialize default parameters before */
+	}
+
+
 	if (decimation > 32)
 		decimation = 32;
 	else if (decimation < 1)
@@ -433,6 +463,10 @@ void PwmHAL::setAdcDecimation(hrtim_tu_number_t pwmX, uint32_t decimation)
 
 void PwmHAL::setFrequency(uint32_t frequency_update)
 {
+	if (!hrtim_get_status(PWMA))
+	/* Initialize default parameters before */
+		hrtim_init_default_all();
+
 	hrtim_change_frequency(frequency_update);
 }
 
