@@ -212,10 +212,10 @@ int8_t safety_store_threshold_in_nvs(sensor_t sensor);
  *
  * @note 	 The data structure saved to the NVS is as follows:
  *	        - 1 byte indicating the sensor descriptor string size
- *	        - The sensor descriptor string (should be max. 23 bytes in current version)
- *          - 1 byte to store the sensor number (in the order in the device tree)
- *	        - 4 byte to store the sensor threshold min
- *	        - 4 byte to store the sensor threshold max
+ *	        - The sensor descriptor string (max. 23 bytes in current version)
+ *          - 1 byte to store sensor number (in the order in the device tree)
+ *	        - 4 byte to store sensor threshold min
+ *	        - 4 byte to store sensor threshold max
  */
 int8_t  safety_retrieve_threshold_in_nvs(sensor_t sensor);
 
