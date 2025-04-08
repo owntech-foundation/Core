@@ -30,7 +30,30 @@
 extern "C" {
 #endif
 
+/**
+ * @brief Initialize comparator COMP3 with predefined settings.
+ *
+ * This function configures GPIO and comparator settings for COMP3:
+ * - Sets PC1 as the positive input (COMP3_INP) in analog mode.
+ * - Routes DAC1 Channel 1 as the negative input.
+ * - Configures non-inverting output, no hysteresis, and no blanking source.
+ * - Disables related EXTI line (line 29) events and interrupts.
+ * - Applies voltage scaler stabilization delay.
+ * - Enables the comparator.
+ */
 void comparator_comp1_init();
+
+/**
+ * @brief Initialize comparator COMP3 with predefined settings.
+ *
+ * This function configures GPIO and comparator settings for COMP3:
+ * - Sets PC1 as the positive input (COMP3_INP) in analog mode.
+ * - Routes DAC1 Channel 1 as the negative input.
+ * - Configures non-inverting output, no hysteresis, and no blanking source.
+ * - Disables related EXTI line (line 29) events and interrupts.
+ * - Applies voltage scaler stabilization delay.
+ * - Enables the comparator.
+ */
 void comparator_comp3_init();
 
 #ifdef __cplusplus
