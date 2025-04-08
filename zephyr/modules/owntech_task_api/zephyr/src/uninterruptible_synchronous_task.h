@@ -33,16 +33,54 @@
 #include "TaskAPI.h"
 
 
+/**
+ * @brief Set the interrupt source used for the uninterruptible synchronous task.
+ *
+ * This determines whether the task will be triggered using a hardware timer
+ * (e.g., TIM6) or HRTIM. Must be called before defining the task.
+ *
+ * @param int_source Interrupt source to use (e.g., source_tim6 or source_hrtim).
+ */
 void scheduling_set_uninterruptible_synchronous_task_interrupt_source(
                                     scheduling_interrupt_source_t int_source);
 
+                                    /**
+ * @brief Define a periodic task to be run in an uninterruptible synchronous context.
+ *
+ * Registers a user-defined periodic task to be triggered by a hardware timer.
+ * The period must be compatible with the selected interrupt source.
+ * 
+ * - For TIM6: configures a timer to trigger the task.
+ * - For HRTIM: configures a periodic event tied to the HRTIM master period.
+ *
+ * @param periodic_task Pointer to the task function (must not be NULL).
+ * @param task_period_us Task execution period in microseconds.
+ *
+ * @return 0 on success, -1 on failure (invalid period, task already defined, etc.).
+ */
 int8_t scheduling_define_uninterruptible_synchronous_task(
                                     task_function_t periodic_task,
                                     uint32_t task_period_us);
 
+                                    /**
+ * @brief Start the uninterruptible synchronous task.
+ *
+ * Enables the periodic task previously defined using the selected interrupt source.
+ * Optionally starts data acquisition if not already active and configures it
+ * for external triggering and synchronized dispatching.
+ *
+ * @param manage_data_acquisition Set to true if data acquisition should be managed
+ *                                automatically during task execution.
+ */
 void scheduling_start_uninterruptible_synchronous_task(
                                     bool manage_data_acquisition);
 
+/**
+ * @brief Stop the currently running uninterruptible synchronous task.
+ *
+ * Disables the interrupt source triggering the task (either TIM6 or HRTIM)
+ * and updates the task status accordingly.
+ */
 void scheduling_stop_uninterruptible_synchronous_task();
 
 
