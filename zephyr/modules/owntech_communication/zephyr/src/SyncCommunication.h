@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2024
  *
  * @author Luiz Villa <luiz.villa@laas.fr>
@@ -45,13 +45,13 @@ class SyncCommunication
 public:
 
 	/**
-	 * @brief Initialization synchronization as MASTER,
+	 * @brief Initialization synchronization as `MASTER`,
 	 * 		  the master send the synchronization pulse.
 	 */
 	static void initMaster();
 
 	/**
-	 * @brief Initialization synchronization as SLAVE,
+	 * @brief Initialization synchronization as `SLAVE`,
 	 * 		  the slave receive the synchronization pulse.
 	 */
 	static void initSlave();

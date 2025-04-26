@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2024
  *
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
@@ -31,6 +31,21 @@
 #include "../src/Rs485Communication.h"
 #include "../src/SyncCommunication.h"
 
+/**
+ * @brief Main communication API interface.
+ *
+ * This class provides access to all supported communication interfaces,
+ * including analog, CAN, RS485, and real-time synchronization protocols.
+ *
+ * - `analog`: provides analog communication functions.
+ *
+ * - `can`: provides CAN bus communication functions.
+ *
+ * - `rs485`: provides RS485 serial communication functions.
+ *
+ * - `sync`: provides real-time synchronization functions.
+ *
+ */
 class CommunicationAPI
 {
     public :
