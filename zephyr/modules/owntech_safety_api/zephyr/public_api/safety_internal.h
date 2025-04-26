@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date 2024
  *
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
@@ -34,12 +34,13 @@
 #include "arm_math.h"
 
 /**
- * @brief This function first watch the measure from the monitored channels,
- *        and compare it with the threshold values max/min to detect faults.
- *        If an error was detected, the switches will
- *        either in open-circuit mode or in short-circuit mode.
+ * @brief This function first watches the measure from the monitored channels,
+ *    and then compares it with the threshold values max/min to detect faults.
+ *        
+ * If an error was detected, the switches will either in 
+ * open-circuit mode or in short-circuit mode.
  *
- * @return 0 if we did not detect any error, -1 else
+ * @return `0` if no error was detected, `-1` else
 */
 int8_t safety_task();
 
