@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2024
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
@@ -35,15 +35,20 @@
 extern "C" {
 #endif
 
-/**
- *  Types definition
- */
+/* Types definition */
 
 /**
- *  NVS categories must be on the upper half
- *  of the 2-bytes value, hence end with 00
+ * @brief Defines the NVS categories 
+ * 
+ * - `VERSION`          = 0x0100
+ * 
+ * - `ADC_CALIBRATION`  = 0x0200
+ * 
+ * - `MEASURE_THRESHOLD` = 0x0300
+ * 
+ * 
+ * @note Must be on the upper half of the 2-bytes value, hence end with 00
  */
-
 typedef enum
 {
 	VERSION          = 0x0100,
@@ -52,13 +57,10 @@ typedef enum
 }nvs_category_t;
 
 /**
- *  API
- */
-
- /**
  * @brief Store a data item in non-volatile storage (NVS).
  *
  * Stores a block of data under a given identifier (data_id) in flash memory.
+ * 
  * If the data already exists, it is overwritten. Useful for persisting configuration.
  *
  * @param data_id     Identifier for the data item.
@@ -100,6 +102,7 @@ int8_t nvs_storage_clear_all_stored_data();
  * @brief Get the current in-code version of the NVS layout.
  *
  * This version corresponds to the structure of data expected by the firmware.
+ * 
  * Used to detect incompatibility between NVS layout and firmware logic.
  *
  * @return Current version defined in code.

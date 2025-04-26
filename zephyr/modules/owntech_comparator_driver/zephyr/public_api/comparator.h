@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @author  Clément Foucher <clement.foucher@laas.fr>
  * @author  Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
@@ -30,27 +30,39 @@ extern "C" {
 #endif
 
 /**
- * @brief Initialize comparator COMP1 with predefined settings.
+ * @brief Initialize comparator `COMP1` with predefined settings.
  *
- * This function configures GPIO and comparator settings for COMP1:
- * - Sets PA1 as the positive input (COMP1_INP) in analog mode.
- * - Routes DAC3 Channel 1 as the negative input.
+ * This function configures `GPIO` and comparator settings for `COMP1`:
+ * 
+ * - Sets `PA1` as the positive input (`COMP1_INP`) in analog mode.
+ * 
+ * - Routes `DAC3` Channel 1 as the negative input.
+ * 
  * - Configures non-inverting output, no hysteresis, and no blanking source.
+ * 
  * - Disables related EXTI line (line 21) events and interrupts.
+ * 
  * - Applies voltage scaler stabilization delay.
+ * 
  * - Enables the comparator.
  */
 void comparator1_init();
 
 /**
- * @brief Initialize comparator COMP3 with predefined settings.
+ * @brief Initialize comparator `COMP3` with predefined settings.
  *
- * This function configures GPIO and comparator settings for COMP3:
- * - Sets PC1 as the positive input (COMP3_INP) in analog mode.
- * - Routes DAC1 Channel 1 as the negative input.
+ * This function configures `GPIO` and comparator settings for `COMP3`:
+ * 
+ * - Sets `PC1` as the positive input (`COMP3_INP`) in analog mode.
+ * 
+ * - Routes `DAC1` Channel 1 as the negative input.
+ * 
  * - Configures non-inverting output, no hysteresis, and no blanking source.
+ * 
  * - Disables related EXTI line (line 29) events and interrupts.
+ * 
  * - Applies voltage scaler stabilization delay.
+ * 
  * - Enables the comparator.
  */
 void comparator3_init();

@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @file
  * @brief   PWM management layer by inverter leg
  * @date    2023
@@ -33,84 +33,91 @@
 #include "assert.h"
 #include "hrtim.h"
 
-/* variables for ISR */
+/** @brief Defines the HRTIM IRQ Number */
 static const uint8_t HRTIM_IRQ_NUMBER = 67;
+/** @brief Defines the HRTIM IRQ Priority (Maximum) */
 static const uint8_t HRTIM_IRQ_PRIO = 0;
+/** @brief Defines the HRTIM IRQ Flag */
 static const uint8_t HRTIM_IRQ_FLAGS = 0;
+/** @brief Defines the HRTIM Clock Resolution in pico seconds */
 static float32_t HRTIM_CLK_RESOLUTION = 184e-6;
+/** @brief Defines the HRTIM Clock Minimum Defaulf Frenquency to 200kHz */
 static uint32_t HRTIM_MINIM_FREQUENCY = TU_DEFAULT_FREQ;
 
-/* User callback for ISR */
+/** @brief User callback for ISR */
 static hrtim_callback_t user_callback = NULL;
 
 /* Default values to initialize all the timer */
 
-/* listing all timing unit */
+/** @brief Listing all timing units, TIMA to TIMF */
 static hrtim_tu_t list_tu[HRTIM_STU_NUMOF] =
     {TIMA, TIMB, TIMC, TIMD, TIME, TIMF};
 
-/* All timing units phase shift are referenced to the master,
+/** @brief Sets the default phase shifts for all timing unist. 
+ * 
+ * All timing units phase shift are referenced to the master,
    with the exception of TIMF */
 static hrtim_tu_t phase_shift_compare_units[HRTIM_STU_NUMOF] =
     {MSTR, MSTR, MSTR, MSTR, MSTR, TIMA};
 
-/* phase shift trigger source */
+/** @brief Sets default phase shift trigger source */
 static hrtim_reset_trig_t phase_shift_reset_trig[HRTIM_STU_NUMOF] =
     {MSTR_PER, PWMA_CMP2, MSTR_CMP2, MSTR_CMP3, MSTR_CMP4, MSTR_CMP1};
 
-/* PWM output high side */
+/** @brief Sets the default PWM output high side */
 static hrtim_output_units_t tu_output_high[HRTIM_STU_NUMOF] =
     {PWMA1, PWMB1, PWMC1, PWMD1, PWME1, PWMF1};
 
-/* PWM output low side */
+/** @brief Sets the default PWM output low side */
 static hrtim_output_units_t tu_output_low[HRTIM_STU_NUMOF] =
     {PWMA2, PWMB2, PWMC2, PWMD2, PWME2, PWMF2};
 
-/* The GPIO structure to which the TU pins belong */
+/** @brief Sets the GPIO structure to which the TU pins belong */
 static GPIO_TypeDef *unit[HRTIM_STU_NUMOF] =
     {GPIOA, GPIOA, GPIOB, GPIOB, GPIOC, GPIOC};
 
-/* gpio clock */
+/** @brief Associates the gpio clock of each timing unit */
 static hrtim_gpio_clock_number_t clk_gpio[HRTIM_STU_NUMOF] =
     {CLK_GPIOA, CLK_GPIOA, CLK_GPIOB, CLK_GPIOB, CLK_GPIOC, CLK_GPIOC};
 
-/* gpio pin high side */
+/** @brief Sets the gpio pin of the high side */
 static uint32_t switch_H_pin[HRTIM_STU_NUMOF] =
     {LL_GPIO_PIN_8, LL_GPIO_PIN_10, LL_GPIO_PIN_12,
      LL_GPIO_PIN_14, LL_GPIO_PIN_8, LL_GPIO_PIN_6};
 
-/* gpio pin low side */
+/** @brief Sets the gpio pin of the low side */
 static uint32_t switch_L_pin[HRTIM_STU_NUMOF] =
     {LL_GPIO_PIN_9, LL_GPIO_PIN_11, LL_GPIO_PIN_13,
      LL_GPIO_PIN_15, LL_GPIO_PIN_9, LL_GPIO_PIN_7};
 
-/* alternate functions */
+/** @brief Sets the default alternate functions for each PWM pin*/
 static uint32_t alternate_function[HRTIM_STU_NUMOF] =
     {LL_GPIO_AF_13, LL_GPIO_AF_13, LL_GPIO_AF_13,
      LL_GPIO_AF_13, LL_GPIO_AF_3, LL_GPIO_AF_13};
 
-/* ADC trigger update source */
+/** @brief Sets the ADC trigger update source for each PWM unit */
 static hrtim_adc_trigger_t tu_adc_trigger[HRTIM_STU_NUMOF] =
     {ADCTRIG_3, ADCTRIG_2, ADCTRIG_1, ADCTRIG_2, ADCTRIG_2, ADCTRIG_2};
 
+/** @brief Sets the ADC event related to the ADC for each timing unit*/
 static hrtim_adc_event_t tu_adc_events[HRTIM_STU_NUMOF] =
     {PWMA_UPDT, PWMB_UPDT, PWMC_UPDT, PWMD_UPDT, PWME_UPDT, PWMF_UPDT};
 
-/* ADC trigger source */
+/** @brief Sets the ADC trigger source linked to each timing unit */
 static hrtim_adc_source_t tu_adc_source[HRTIM_STU_NUMOF] =
     {TIMA_CMP3, TIMB_CMP3, TIMC_CMP3, TIMD_CMP3, TIME_CMP3, TIMF_CMP3};
 
+/** @brief Sets the external event trigger for each timing unit*/
 static hrtim_external_trigger_t tu_external_trig[HRTIM_STU_NUMOF] =
     {EEV4, EEV1, EEV5, EEV1, EEV1, EEV1};
 
-/**
- *  PWMx1 : setting high-side switch convention
- *  PWMx2 : setting low-side switch convention
- */
+
+/** @brief Sets a variable to hold the switch convention high-side (BUCK) */
 static hrtim_switch_convention_t conv_PWMx1 = PWMx1;
+/** @brief Sets a variable to hold the switch convention low-side (BOOST) */
 static hrtim_switch_convention_t conv_PWMx2 = PWMx2;
 
-/* master timer structure initialization */
+/** @brief Master timer unit structure */
 timer_hrtim_t timerMaster = {
     .pwm_conf.frequency = TU_DEFAULT_FREQ,
     .pwm_conf.unit_on = UNIT_OFF,
@@ -128,20 +135,45 @@ timer_hrtim_t timerMaster = {
     .phase_shift.reset_trig = MSTR_PER,
 };
 
+/** @brief timer unit A structure */
 timer_hrtim_t timerA;
+/** @brief timer unit B structure */
 timer_hrtim_t timerB;
+/** @brief timer unit C structure */
 timer_hrtim_t timerC;
+/** @brief timer unit D structure */
 timer_hrtim_t timerD;
+/** @brief timer unit E structure */
 timer_hrtim_t timerE;
+/** @brief timer unit F structure */
 timer_hrtim_t timerF;
 
+/** @brief Aggregates all timing units into a single structure */
 timer_hrtim_t *tu_channel[HRTIM_STU_NUMOF] =
     {&timerA, &timerB, &timerC, &timerD, &timerE, &timerF};
 
-/**
- *  Private Functions
- */
+/* Private functions */
 
+/**
+ * @brief PRIVATE FUNCTION - Initialize the HRTIM clock and calibration logic.
+ *
+ * This function performs the low-level clock setup for the High-Resolution 
+ * Timer (HRTIM) peripheral. It must be called before any HRTIM configuration 
+ * is applied.
+ *
+ * - Enables the appropriate PLL output as the clock source (on STM32F3 only).
+ *
+ * - Enables the APB2 clock for the HRTIM peripheral.
+ *
+ * - Issues a Data Synchronization Barrier (`__DSB`) to ensure all memory 
+ *   operations complete.
+ *
+ * - Configures the HRTIM DLL (Delay Locked Loop) for continuous calibration 
+ *   with a 14μs period.
+ *
+ * - Waits for the calibration to complete before returning.
+ *
+ */
 static inline void _clk_init()
 {
 #if defined(CPU_FAM_STM32F3) || defined(CONFIG_SOC_SERIES_STM32F3X)
@@ -170,12 +202,68 @@ static inline void _clk_init()
     }
 }
 
+/**
+ * @brief PRIVATE FUNCTION - Return the position of the most significant set 
+ *        bit in an unsigned integer.
+ *
+ * This function computes the index (zero-based) of the most significant bit 
+ * (MSB) set to 1 in the given unsigned integer.
+ *
+ * - Uses the `__builtin_clz` GCC intrinsic to count leading zeros.
+ *
+ * - Returns `(8 * sizeof(v)) - __builtin_clz(v) - 1`, which corresponds to 
+ *   the MSB position.
+ *
+ * @param v The input unsigned integer.
+ *
+ * @return The zero-based index of the highest set bit.
+ *         Behavior is undefined if `v == 0`.
+ *
+ */
 static inline unsigned _msb(unsigned v)
 {
     /* Return the most significant bit */
     return 8 * sizeof(v) - __builtin_clz(v) - 1;
 }
 
+/**
+ * @brief PRIVATE FUNCTION - Compute the HRTIM period and prescaler 
+ *        configuration from a target frequency.
+ *
+ * This function calculates the required timer period and prescaler value to 
+ * match a target frequency using the high-resolution timer (HRTIM). It updates 
+ * the given timer unit's configuration structure and returns the actual 
+ * achievable frequency.
+ *
+ * - Computes `f_hrtim` from the `APB2` clock (adjusted per STM32 family).
+ *
+ * - Calculates the ideal period in HRTIM resolution units with preserved 
+ *   accuracy.
+ *
+ * - Determines the maximum allowed period based on the HRTIM minimum frequency.
+ *
+ * - Computes the necessary prescaler (`ckpsc`) using the most significant 
+ *   bit of the period.
+ *
+ * - Synchronizes the prescaler with the master timer to ensure aligned PWM 
+ *   timing units.
+ *
+ * - Divides the period by the prescaler to get the effective period for the 
+ *   timer.
+ *
+ * - Ensures the period falls within the minimum and maximum hardware-supported 
+ *   range.
+ *
+ * - Adjusts prescaler and period if required to meet constraints.
+ *
+ * - Stores the final computed period into `tu->pwm_conf.period`.
+ *
+ * @param freq Desired output frequency in Hz.
+ * @param tu Pointer to the timer unit configuration structure to update.
+ *
+ * @return The actual frequency achieved after applying prescaler and rounding.
+ *
+ */
 static inline uint32_t _period_ckpsc(uint32_t freq, timer_hrtim_t *tu)
 {
 #if defined(CONFIG_SOC_SERIES_STM32F3X)
@@ -207,12 +295,13 @@ static inline uint32_t _period_ckpsc(uint32_t freq, timer_hrtim_t *tu)
     period /= (1 << tu->pwm_conf.ckpsc);
 
     /* From the f334 reference manual :
-     * The period and compare values must be within a lower and an upper
+     * - The period and compare values must be within a lower and an upper
      * limit related to the high-resolution implementation and listed in
+     * 
      * Table 82:
-     * • The minimum value must be greater than or equal to 3 periods of
+     *   - The minimum value must be greater than or equal to 3 periods of
      * the f HRTIM clock
-     * • The maximum value must be less than or equal to 0xFFFF - 1
+     *   - The maximum value must be less than or equal to 0xFFFF - 1
      * periods of the f HRTIM clock */
     uint16_t min_period = tu->pwm_conf.ckpsc < 5 ?
         (96 >> tu->pwm_conf.ckpsc) : 0x3;
@@ -246,7 +335,31 @@ static inline uint32_t _period_ckpsc(uint32_t freq, timer_hrtim_t *tu)
     return frequency;
 }
 
-/* callback for interruption on repetition counter */
+/**
+ * @brief PRIVATE FUNCTION - Handle HRTIM synchronization events and user 
+ *        callback triggering.
+ *
+ * This function manages various HRTIM (High-Resolution Timer) synchronization 
+ * conditions and clears the corresponding hardware flags. It also temporarily 
+ * switches a GPIO pin mode to generate a synchronization pulse if required, 
+ * and finally calls a user-defined callback if one is set.
+ *
+ * - Clears the master repetition flag if no synchronization input is configured.
+ *
+ * - Clears the synchronization flag if an external synchronization event is 
+ *   detected.
+ *
+ * - If synchronization output is configured as a positive pulse:
+ *
+ *   - Temporarily switches `PB1` to alternate function mode to emit a pulse.
+ *
+ *   - Waits briefly (1μs) to complete the pulse.
+ *
+ *   - Restores `PB1` to output mode.
+ *
+ * - Executes the user-defined callback if it is not `NULL`.
+ *
+ */
 void _hrtim_callback()
 {
     if (LL_HRTIM_GetSyncInSrc(HRTIM1) == LL_HRTIM_SYNCIN_SRC_NONE)
@@ -277,6 +390,25 @@ void _hrtim_callback()
     }
 }
 
+/**
+ * @brief PRIVATE FUNCTION - Initialize external events for comparator-triggered 
+ *        synchronization used in the current-mode control.
+ *
+ * This function configures the HRTIM external event inputs (`EEV4` and `EEV5`)
+ * to respond to the outputs of comparators `COMP1` and `COMP3`, respectively.
+ * These external events are used to implement the current-mode control.
+ *
+ * - Configures external event 4 (`EEV4`) to be sourced from `COMP1` output.
+ *
+ * - Sets `EEV4` polarity to active high, sensitivity to level, and disables 
+ *   fastvmode.
+ *
+ * - Configures external event 5 (`EEV5`) to be sourced from `COMP3` output.
+ *
+ * - Sets `EEV5` polarity to active high, sensitivity to level, and disables 
+ *   fast mode.
+ *
+ */
 void _CM_init_EEV(void)
 {
     /* Initialization of external event 4 linked to COMP1 output */
@@ -311,7 +443,27 @@ void _CM_init_EEV(void)
                             LL_HRTIM_EE_FASTMODE_DISABLE);
 }
 
-/* HRTIM master initialization */
+/**
+ * @brief PRIVATE FUNCTION - Initialize the HRTIM master timer.
+ *
+ * This function performs full initialization of the master timer used
+ * in the high-resolution timer (HRTIM) block.
+ *
+ * - Calls the clock setup routine for enabling HRTIM clocks.
+ *
+ * - Computes and sets the timer prescaler and period for the desired
+ *   output frequency.
+ *
+ * - Configures the master timer in continuous mode with preload enabled
+ *   and updates triggered on repetition events.
+ *
+ * - Sets the period registers to define the PWM frequency.
+ *
+ * - Enables the master timer counter.
+ *
+ * - Flags the unit as active in the configuration structure.
+ *
+ */
 void _init_master()
 {
     /* HRTIM clock initialization */
@@ -350,9 +502,7 @@ void _init_master()
     timerMaster.pwm_conf.unit_on = UNIT_ON;
 }
 
-/**
- *  Public Functions
- */
+/* Public functions */
 
 /* return bus clock prescaler */
 int hrtim_get_apb2_clock()

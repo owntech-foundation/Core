@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date 2023
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
@@ -34,17 +34,37 @@
 #include <stm32_ll_bus.h>
 
 
-/**
- *  Constants
- */
-
+/** @brief Defines the number of ADCs */
 #define NUMBER_OF_ADCS 5
 
 
-/**
- *  Helper functions
+/*
+  Helper functions
  */
 
+ /**
+ * @brief Retrieve the ADC peripheral instance corresponding to its number.
+ *
+ * This function maps a given ADC number to the corresponding STM32 ADC
+ * peripheral base address.
+ *
+ * - Returns `ADC1` for number 1.
+ *
+ * - Returns `ADC2` for number 2.
+ *
+ * - Returns `ADC3` for number 3.
+ *
+ * - Returns `ADC4` for number 4.
+ *
+ * - Returns `ADC5` for number 5.
+ *
+ * - Returns NULL if the number does not match any available ADC.
+ *
+ * @param adc_number ADC number between 1 and 5.
+ *
+ * @return Pointer to the corresponding ADC peripheral, or `NULL` if invalid.
+ *
+ */
 ADC_TypeDef* _get_adc_by_number(uint8_t adc_number)
 {
 	ADC_TypeDef* adc = NULL;
@@ -64,9 +84,28 @@ ADC_TypeDef* _get_adc_by_number(uint8_t adc_number)
 }
 
 /**
- * Function to convert ADC decimal rank to literal.
- * Sadly, there seems to be no equivalent to
- * __LL_ADC_DECIMAL_NB_TO_CHANNEL() for ranks...
+ * @brief Convert a decimal ADC rank number to the corresponding LL constant.
+ *
+ * This function maps a decimal rank between 1 and 16 to the corresponding
+ * STM32 Low Layer (LL) ADC register rank constant.
+ *
+ * - Returns `LL_ADC_REG_RANK_1` for decimal 1.
+ *
+ * - Returns `LL_ADC_REG_RANK_2` for decimal 2.
+ *
+ * - ...
+ *
+ * - Returns `LL_ADC_REG_RANK_16` for decimal 16.
+ *
+ * - Returns 0 if the input rank is invalid.
+ *
+ * @param decimal_rank The ADC channel rank number (1 to 16).
+ * 
+ * @note   Sadly, there seems to be no equivalent to 
+ *         __LL_ADC_DECIMAL_NB_TO_CHANNEL() for ranks...
+ *
+ * @return The corresponding `LL_ADC_REG_RANK_x` constant or 0 if invalid.
+ *
  */
 uint32_t _adc_decimal_nb_to_rank(uint8_t decimal_rank)
 {
@@ -128,13 +167,26 @@ uint32_t _adc_decimal_nb_to_rank(uint8_t decimal_rank)
 }
 
 
-/**
- *  Private functions
- */
+/* Private functions */
 
 /**
- * ADC wake-up.
- * Refer to RM 21.4.6
+ * @brief Wake up the specified ADC core from deep power-down mode.
+ *
+ * This function handles the wake-up sequence for an ADC instance by
+ * disabling deep power-down mode, enabling the internal voltage regulator,
+ * and waiting for the regulator to stabilize.
+ *
+ * - Disables the ADC deep power-down mode.
+ *
+ * - Enables the ADC internal voltage regulator.
+ *
+ * - Waits for the regulator stabilization time.
+ *
+ * @param adc_num ADC number (1 to 5) to wake up.
+ *
+ * @note Refer to Reference Manual (RM) section 21.4.6 for additional
+ *       details on ADC wake-up procedure.
+ *
  */
 static void _adc_core_wakeup(uint8_t adc_num)
 {
@@ -151,8 +203,22 @@ static void _adc_core_wakeup(uint8_t adc_num)
 }
 
 /**
- * ADC calibration.
- * Refer to RM 21.4.8
+ * @brief Perform calibration of the specified ADC core.
+ *
+ * This function calibrates the ADC for both single-ended and differential
+ * input modes to ensure accurate conversion results.
+ *
+ * - Starts calibration in single-ended mode and waits for completion.
+ *
+ * - Introduces a short delay between calibrations (empirical requirement).
+ *
+ * - Starts calibration in differential mode and waits for completion.
+ *
+ * @param adc_num ADC number (1 to 5) to calibrate.
+ *
+ * @note Refer to Reference Manual (RM) section 21.4.8 for details on the
+ *       ADC calibration procedure.
+ *
  */
 static void _adc_core_calibrate(uint8_t adc_num)
 {
@@ -172,9 +238,7 @@ static void _adc_core_calibrate(uint8_t adc_num)
 }
 
 
-/**
- *  Public API
- */
+/* Public API */
 
 void adc_core_enable(uint8_t adc_num)
 {
@@ -272,10 +336,10 @@ void adc_core_configure_discontinuous_mode(uint8_t adc_num,
 }
 
 
-/**
- * ADC differential channel set-up:
- * Applies differential mode to specified channel.
- * Refer to RM 21.4.7
+/*
+  ADC differential channel set-up:
+  Applies differential mode to specified channel.
+  Refer to RM 21.4.7
  */
 void adc_core_set_channel_differential(uint8_t adc_num,
 									   uint8_t channel,

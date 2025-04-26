@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2024
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
@@ -52,6 +52,14 @@ extern "C" {
  *  Public enums
  */
 
+/**
+ * @brief Defines types of hrtim events to which the ADC connects: 
+ *        
+ * - software - software events
+ *        
+ * - `hrtim_ev1` to `hrtim_ev9` - hrtim driven events
+ * 
+ */
 typedef enum
 {
 	software  = 0,

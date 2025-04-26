@@ -32,9 +32,7 @@
 #include "owntech_ngnd_driver.h"
 
 
-/**
- *  Private Functions
- */
+/* Private functions */
 
 static struct owntech_ngnd_driver_dev_data
 {

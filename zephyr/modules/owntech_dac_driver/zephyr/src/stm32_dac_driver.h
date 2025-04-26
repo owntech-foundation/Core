@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2022
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
@@ -42,7 +42,18 @@
 extern "C" {
 #endif
 
-
+/**
+ * @brief Enumeration for DAC operating modes.
+ *
+ * This enum defines the available operation modes for the DAC peripheral.
+ *
+ * - `dac_mode_unset`: indicates that no mode has been selected.
+ *
+ * - `dac_mode_constant`: sets the DAC output to a constant value.
+ *
+ * - `dac_mode_function`: generates a waveform function such as a ramp.
+ *
+ */
 typedef enum
 {
 	dac_mode_unset,
@@ -50,6 +61,22 @@ typedef enum
 	dac_mode_function
 } dac_mode_t;
 
+/**
+ * @brief Runtime data structure for the STM32 DAC driver.
+ *
+ * This structure holds the internal state and configuration for a DAC
+ * peripheral instance.
+ *
+ * - `dac_struct`: points to the hardware DAC instance registers.
+ *
+ * - `dac_mode`: stores the operating mode for each DAC channel.
+ *
+ * - `started`: flags indicate whether each DAC channel is active.
+ *
+ * - `dac_config`: stores either a constant value or a function configuration
+ *   for each DAC channel.
+ *
+ */
 struct stm32_dac_driver_data
 {
 	DAC_TypeDef* dac_struct;
@@ -67,7 +94,9 @@ struct stm32_dac_driver_data
  * @brief Initialize the STM32 DAC hardware and bind it to the Zephyr device.
  *
  * This function enables peripheral clocks, configures the DAC registers,
- * and prepares the device for analog output. It is typically called
+ * and prepares the device for analog output. 
+ * 
+ * It is typically called
  * automatically by Zephyr during system initialization.
  *
  * @param dev Pointer to the DAC device instance.

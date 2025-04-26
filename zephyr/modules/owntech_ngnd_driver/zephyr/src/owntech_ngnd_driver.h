@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2022
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
@@ -40,6 +40,24 @@ extern "C" {
 #endif
 
 
+/**
+ * @brief Initialize the NGND (Neutral to Ground) switch.
+ *
+ * This function retrieves the GPIO specification from the device tree,
+ * stores it in the driver's internal data structure, and configures the
+ * pin as an active output.
+ *
+ * - Extracts the NGND GPIO specification from the device tree.
+ *
+ * - Saves the GPIO descriptor to the driver's runtime data.
+ *
+ * - Configures the pin as an output and sets it to active.
+ *
+ * @param dev Pointer to the device structure.
+ *
+ * @return Always returns 0.
+ *
+ */
 static int ngnd_init(const struct device* dev);
 
 

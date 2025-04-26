@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2024
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
@@ -54,9 +54,7 @@ static uint32_t
 		enabled_channels[NUMBER_OF_ADCS][NUMBER_OF_CHANNELS_PER_ADC] = {0};
 
 
-/**
- *  Public API
- */
+/* Public API */
 
 void adc_configure_trigger_source(uint8_t adc_number,
 								  adc_ev_src_t trigger_source)
