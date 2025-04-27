@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2022
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
@@ -42,13 +42,15 @@
  *
  * Registers a user-defined task routine that can be run asynchronously
  * using a dedicated thread. Each task is assigned a unique task number.
- * The number of definable tasks is limited by CONFIG_OWNTECH_TASK_MAX_ASYNCHRONOUS_TASKS.
+ * The number of definable tasks is limited by 
+ * `CONFIG_OWNTECH_TASK_MAX_ASYNCHRONOUS_TASKS`.
  *
- * @param routine Pointer to the function that defines the asynchronous task behavior.
- *                The function should be of type `task_function_t` and run an infinite loop
- *                or yield regularly via `k_yield()`.
+ * @param routine Pointer to the function that defines the asynchronous task 
+ *                behavior. The function should be of type `task_function_t` 
+ *                and run an infinite loop or yield regularly via `k_yield()`.
  *
- * @return The task number (>= 0) on success, or -1 if the task limit has been reached.
+ * @return The task number (`>= 0`) on success, 
+ *          or `-1` if the task limit has been reached.
  */
 int8_t scheduling_define_asynchronous_task(task_function_t routine);
 

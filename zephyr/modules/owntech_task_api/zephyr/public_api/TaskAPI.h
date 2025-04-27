@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2023
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
@@ -52,34 +52,43 @@ class TaskAPI
 public:
 	/**
 	 * @brief Creates a time critical task.
+	 * 
 	 *        A critical task is an Uninterruptible Synchronous Task
 	 *        that uses a precise timer to execute a periodic,
 	 *        non-interruptable user task.
+	 * 
 	 *        Use this function to define such a task.
+	 * 
 	 *        Only one task of this kind can be defined.
+	 * 
 	 *        This function can be used to redefine (replace) a
 	 *        previously defined uninterruptible synchronous task,
 	 *        but the previously defined task must have been suspended
 	 *        (or never started). An error will be returned if the
 	 *        previously defined task is still running.
-	 * @note  If the HRTIM is used to trigger the task (which is the
-	 *        default behavior), then the HRTIM must have been
+	 * 
+	 * @note  If the `HRTIM` is used to trigger the task (which is the
+	 *        default behavior), then the `HRTIM` must have been
 	 *        configured *before* calling this function.
 	 *
 	 * @param periodic_task Pointer to the void(void) function
 	 *        to be executed periodically.
+	 * 
 	 * @param task_period_us Period of the function in µs.
 	 *        Allowed range: 1 to 6553 µs.
-	 *        If interrupt source is HRTIM, this value *must* be an
-	 *        integer multiple of the HRTIM period.
+	 *        If interrupt source is `HRTIM`, this value *must* be an
+	 *        integer multiple of the `HRTIM` period.
+	 * 
 	 * @param int_source Interrupt source that triggers the task.
-	 *        By default, the HRTIM is the source, but this optional
+	 *        By default, the `HRTIM` is the source, but this optional
 	 *        parameter can be provided to set TIM6 as the source in
-	 *        case the HRTIM is not used or if the task can't be
-	 *        correlated to an HRTIM event.
+	 *        case the `HRTIM` is not used or if the task can't be
+	 *        correlated to an `HRTIM` event.
 	 *        Allowed values are source_hrtim and source_tim6.
-	 * @return 0 if everything went well,
-	 *         -1 if there was an error defining the task.
+	 * 
+	 * @return `0` if everything went well,
+	 *         `-1` if there was an error defining the task.
+	 * 
 	 *         An error can occur notably when an uninterruptible
 	 *         task has already been defined previously.
 	 */

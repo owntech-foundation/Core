@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2022
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
@@ -66,7 +66,8 @@ typedef struct
  *
  * @param task_info   Reference to the task information structure.
  *                    Must contain valid stack, size, priority, and routine.
- * @param entry_point Function to run as the thread entry (typically a loop dispatcher).
+ * @param entry_point Function to run as the thread entry (typically a loop 
+ * 					  dispatcher).
  */
 void scheduling_common_start_task(task_information_t& task_info,
 								  k_thread_entry_t entry_point);
@@ -77,7 +78,8 @@ void scheduling_common_start_task(task_information_t& task_info,
  * Suspends the task associated with the provided task info. The task
  * must be in a running state.
  *
- * @param task_info Reference to the task information structure for the task to suspend.
+ * @param task_info Reference to the task information structure for the task 
+ * 					to suspend.
  */
 void scheduling_common_suspend_task(task_information_t& task_info);
 
@@ -87,7 +89,8 @@ void scheduling_common_suspend_task(task_information_t& task_info);
  *
  * Resumes a task that was suspended using `scheduling_common_suspend_task()`.
  *
- * @param task_info Reference to the task information structure for the task to resume.
+ * @param task_info Reference to the task information structure for the task 
+ * 					to resume.
  */
 void scheduling_common_resume_task(task_information_t& task_info);
 
