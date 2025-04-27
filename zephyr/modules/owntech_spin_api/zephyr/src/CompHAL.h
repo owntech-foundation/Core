@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2023
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
@@ -42,10 +42,15 @@ public:
 	 * @brief  Initializes a comparator for the current mode control.
 	 *
 	 * @note   Current mode control deploys a comparator together with a DAC.
+	 * 
      *         This function must be called after setting up the DAC linked
-	 * 		   to the comparator. Note that comparator 1 is linked with DAC3
-	 *         and comparator 3 with DAC1. Comparator 1 is linked with ilow1
-	 * 		   and comparator 3 is linked with ilow2.
+	 * 		   to the comparator. 
+	 * 
+	 * 		   Note that: 
+	 * 		   
+	 * 		   - comparator 1 is linked with `DAC3` and `I_LOW1` 
+	 * 
+	 * 		   - comparator 3 is linked with `DAC1` and `I_LOW2`
 	 *
 	 * @param  comparator_number can be either 1 or 3
 	 */

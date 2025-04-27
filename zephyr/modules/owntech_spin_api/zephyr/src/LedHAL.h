@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2023
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
@@ -49,6 +49,7 @@ public:
      * @brief Toggle the LED state.
      *
      * Changes the LED state from on to off or vice versa.
+	 * 
      * Performs lazy initialization if not already done.
      */
 	void toggle();
@@ -58,6 +59,7 @@ private:
      * @brief Initialize the LED hardware.
      *
      * Configures GPIO or peripheral resources used by the LED.
+	 * 
      * This method is called internally by public functions and is guarded
      * by the `ledInitialized` flag.
      */

@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2024
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
@@ -78,9 +78,8 @@ typedef struct
 
 static dma_user_data_t user_data[5] = {0};
 
-/**
- *  Private API
- */
+/* Private API */
+
 
 /**
  * DMA callback
@@ -117,9 +116,7 @@ static void _dma_callback(const struct device* dev,
 	}
 }
 
-/**
- *  Public API
- */
+/* Public API */
 
 void dma_configure_adc_acquisition(uint8_t adc_number,
 								   bool disable_interrupts,

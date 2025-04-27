@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2023
  * @author Luiz Villa <luiz.villa@laas.fr>
  * @author Clément Foucher <clement.foucher@laas.fr>
