@@ -54,9 +54,7 @@ static int ngnd_init(const struct device* dev)
 }
 
 
-/**
- *  Public API
- */
+/* Public API */
 
 void ngnd_set(const struct device* dev, int value)
 {
