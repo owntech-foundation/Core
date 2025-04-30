@@ -881,6 +881,7 @@ void hrtim_cmpl_pwm_out(hrtim_tu_number_t tu_number)
 void hrtim_frequency_set(uint32_t frequency_set, uint32_t frequency_min)
 {
     HRTIM_MINIM_FREQUENCY = frequency_min;
+
     timerMaster.pwm_conf.frequency = frequency_set;
     tu_channel[PWMA]->pwm_conf.frequency = frequency_set;
     tu_channel[PWMB]->pwm_conf.frequency = frequency_set;
@@ -888,6 +889,14 @@ void hrtim_frequency_set(uint32_t frequency_set, uint32_t frequency_min)
     tu_channel[PWMD]->pwm_conf.frequency = frequency_set;
     tu_channel[PWME]->pwm_conf.frequency = frequency_set;
     tu_channel[PWMF]->pwm_conf.frequency = frequency_set;
+
+    timerMaster.pwm_conf.min_frequency = frequency_min;
+    tu_channel[PWMA]->pwm_conf.min_frequency = frequency_min;
+    tu_channel[PWMB]->pwm_conf.min_frequency = frequency_min;
+    tu_channel[PWMC]->pwm_conf.min_frequency = frequency_min;
+    tu_channel[PWMD]->pwm_conf.min_frequency = frequency_min;
+    tu_channel[PWME]->pwm_conf.min_frequency = frequency_min;
+    tu_channel[PWMF]->pwm_conf.min_frequency = frequency_min;
 }
 
 inline uint16_t hrtim_period_Master_get()
@@ -1482,7 +1491,7 @@ void DualDAC_init(hrtim_tu_number_t tu_number)
 void hrtim_change_frequency(uint32_t new_frequency)
 {
 
-    if(new_frequency >= HRTIM_MINIM_FREQUENCY)
+    if(new_frequency >= timerMaster.pwm_conf.min_frequency)
     {
 
         #if defined(CONFIG_SOC_SERIES_STM32F3X)
@@ -1552,7 +1561,7 @@ void hrtim_change_frequency(uint32_t new_frequency)
 
 
     }else{
-        printk("Minimum frequency = %d \n", HRTIM_MINIM_FREQUENCY);
+        printk("Minimum frequency = %d \n", timerMaster.pwm_conf.min_frequency);
     }
 }
 
