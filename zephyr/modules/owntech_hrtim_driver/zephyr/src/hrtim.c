@@ -1584,5 +1584,27 @@ void hrtim_output_hot_swap(hrtim_tu_number_t tu_number){
     }
 }
 
+uint32_t hrtim_get_resolution_ps(hrtim_tu_number_t tu_number)
+{
+    return tu_channel[tu_number]->pwm_conf.resolution;
+}
 
+uint16_t hrtim_get_max_period(hrtim_tu_number_t tu_number)
+{
+    return tu_channel[tu_number]->pwm_conf.max_period;
+}
 
+uint16_t hrtim_get_min_period(hrtim_tu_number_t tu_number)
+{
+    return tu_channel[tu_number]->pwm_conf.min_period;
+}
+
+uint32_t hrtim_get_max_frequency(hrtim_tu_number_t tu_number)
+{
+    return tu_channel[tu_number]->pwm_conf.max_frequency;
+}
+
+uint32_t hrtim_get_min_frequency(hrtim_tu_number_t tu_number)
+{
+    return tu_channel[tu_number]->pwm_conf.min_frequency;
+}
