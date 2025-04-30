@@ -18,92 +18,164 @@
  */
 
 /**
- * @brief  This file it the main entry point of the
- *         OwnTech Power API. Please check the OwnTech
- *         documentation for detailed information on
- *         how to use Power API: https://docs.owntech.org/
+ * @brief  This examples shows how to use SpinAPI to define fast and precise
+ *         PWM signals.
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
-/*--------------OWNTECH APIs---------------------------------- */
-#include "TaskAPI.h"
-#include "ShieldAPI.h"
-#include "SpinAPI.h"
+/* --------------Zephyr---------------------------------------- */
+#include <zephyr/console/console.h>
 
-/*--------------SETUP FUNCTIONS DECLARATION------------------- */
+/* --------------OWNTECH APIs---------------------------------- */
+#include "SpinAPI.h"
+#include "TaskAPI.h"
+
+
+/* --------------SETUP FUNCTIONS DECLARATION------------------- */
 /* Setups the hardware and software of the system */
 void setup_routine();
 
-/*--------------LOOP FUNCTIONS DECLARATION-------------------- */
-
+/* --------------LOOP FUNCTIONS DECLARATION-------------------- */
+/* Code to be executed in the slow communication task */
+void loop_communication_task();
 /* Code to be executed in the background task */
-void loop_background_task();
-/* Code to be executed in real time in the critical task */
+void loop_application_task();
+/* Code to be executed in real time in the critical task  */
 void loop_critical_task();
 
-/*--------------USER VARIABLES DECLARATIONS------------------- */
+/* --------------USER VARIABLES DECLARATIONS------------------- */
+uint8_t received_serial_char;
 
+float32_t duty_cycle = 0.3;
+float32_t frequency_min = 50000;
+float32_t frequency = 200000;
 
+/* --------------------------------------------------------------- */
 
-/*--------------SETUP FUNCTIONS------------------------------- */
+/* List of possible modes for the OwnTech Board. */
+enum serial_interface_menu_mode
+{
+    IDLEMODE = 0,
+    POWERMODE
+};
+
+uint8_t mode = IDLEMODE;
+
+/* --------------SETUP FUNCTIONS------------------------------- */
 
 /**
  * This is the setup routine.
- * It is used to call functions that will initialize your hardware and tasks.
- *
- * In this default main, we only spawn two tasks
- *  - A background task.
- *  - A critical task is defined but not started.
- *
- * NOTE: It is important to follow the steps and initialize the hardware first
- * and the tasks second.
+ * Here we define a simple PWM signal on PWMA and we spawn three tasks.
  */
 void setup_routine()
 {
-    /* STEP 1 - SETUP THE HARDWARE */
+    /* Set frequency of PWM */
+    spin.pwm.initVariableFrequency(frequency,frequency_min);
+    /* Timer initialization */
 
-    /* STEP 2 - SETUP THE TASKS */
+    spin.pwm.setModulation(PWMA,UpDwn);
+    spin.pwm.setModulation(PWMC,UpDwn);
+    spin.pwm.setModulation(PWMD,UpDwn);
+    spin.pwm.setModulation(PWME,UpDwn);
+    spin.pwm.setModulation(PWMF,UpDwn);
 
-    uint32_t background_task_number =
-                            task.createBackground(loop_background_task);
+    spin.pwm.setSwitchConvention(PWMA,PWMx1);
+    spin.pwm.setSwitchConvention(PWMC,PWMx1);
+    spin.pwm.setSwitchConvention(PWMD,PWMx1);
+    spin.pwm.setSwitchConvention(PWME,PWMx1);
+    spin.pwm.setSwitchConvention(PWMF,PWMx1);
 
-    /* Uncomment the following line if you use the critical task */
-    /* task.createCritical(loop_critical_task, 500); */
+    spin.pwm.initUnit(PWMA);
+    spin.pwm.initUnit(PWMC);
+    spin.pwm.initUnit(PWMD);
+    spin.pwm.initUnit(PWME);
+    spin.pwm.initUnit(PWMF);
 
-    /* STEP 3 - LAUNCH THE TASKS */
-    task.startBackground(background_task_number);
+    /* Start PWM */
+    spin.pwm.startDualOutput(PWMA);
+    spin.pwm.startDualOutput(PWMC);
+    spin.pwm.startDualOutput(PWMD);
+    spin.pwm.startDualOutput(PWME);
+    spin.pwm.startDualOutput(PWMF);
 
-    /* Uncomment the following line if you use the critical task */
-    /* task.startCritical(); */
+    /* Then we declare tasks */
+    uint32_t app_task_number = task.createBackground(loop_application_task);
+    uint32_t com_task_number = task.createBackground(loop_communication_task);
+    task.createCritical(loop_critical_task, 100);
+
+    /* Finally, we start tasks */
+    task.startBackground(app_task_number);
+    task.startBackground(com_task_number);
+    task.startCritical();
 }
 
-/*--------------LOOP FUNCTIONS-------------------------------- */
+/* --------------LOOP FUNCTIONS-------------------------------- */
+
+/**
+ * Here we implement a minimalistic USB serial interface.
+ * Duty cycle can be controlled by pressing U and D keys.
+ * This will respectively Increase or Decrease PWM duty cycle.
+ */
+void loop_communication_task()
+{
+    received_serial_char = console_getchar();
+    switch (received_serial_char)
+    {
+    case 'h':
+        /* ----------SERIAL INTERFACE MENU----------------------- */
+        printk(" ________________________________________ \n"
+               "|     ------- MENU ---------             |\n"
+               "|     press u : duty cycle UP            |\n"
+               "|     press d : duty cycle DOWN          |\n"
+               "|________________________________________|\n\n");
+        /* ------------------------------------------------------ */
+        break;
+    case 'u':
+        duty_cycle += 0.05;
+        break;
+    case 'd':
+        duty_cycle -= 0.05;
+        break;
+    case 'r':
+        frequency += 1000;
+        spin.pwm.setFrequency(frequency);
+        break;
+    case 'f':
+        frequency -= 1000;
+        spin.pwm.setFrequency(frequency);
+        break;
+    default:
+        break;
+    }
+}
 
 /**
  * This is the code loop of the background task
- * You can use it to execute slow code such as state-machines.
- * The pause define its pseudo-periodicity.
+ * Here the task is sending the duty cycle that have been set
+ * on the USB serial console every second.
  */
-void loop_background_task()
+void loop_application_task()
 {
-    printk("Hello World! \n");
-    spin.led.toggle();
+    /* Task content */
+    printk("%f\n", (double)duty_cycle);
 
-    /* This pauses the task for 1000 milli seconds */
+    /* Pause between two runs of the task */
     task.suspendBackgroundMs(1000);
+
 }
 
 /**
  * This is the code loop of the critical task
- * It is executed every 500 micro-seconds defined in the setup_routine function.
- * You can use it to execute an ultra-fast code with the highest priority which
- * cannot be interrupted.
+ * In this task than runs periodically in Real Time at 10kHz, we simply
+ * update the duty cycle provided through the serial communication.
  */
 void loop_critical_task()
 {
-    /* This task is left empty in this default main */
+    spin.pwm.setDutyCycle(PWMC, duty_cycle);
+    spin.pwm.setDutyCycle(PWMA, duty_cycle);
 }
 
 /**
