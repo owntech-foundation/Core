@@ -37,6 +37,10 @@
 #define TIMER4_INTERRUPT_LINE DT_IRQN(TIMER4_NODE)
 #define TIMER4_INTERRUPT_PRIO DT_IRQ_BY_IDX(TIMER4_NODE, 0, priority)
 
+#define TIMER3_NODE           DT_NODELABEL(timers3)
+#define TIMER3_INTERRUPT_LINE DT_IRQN(TIMER3_NODE)
+#define TIMER3_INTERRUPT_PRIO DT_IRQ_BY_IDX(TIMER3_NODE, 0, priority)
+
 #define TIMER6_NODE           DT_NODELABEL(timers6)
 #define TIMER6_INTERRUPT_LINE DT_IRQN(TIMER6_NODE)
 #define TIMER6_INTERRUPT_PRIO DT_IRQ_BY_IDX(TIMER6_NODE, 0, priority)
@@ -184,6 +188,7 @@ void timer_stm32_clear(const struct device* dev);
  * - Enables the encoder index feature.
  *
  */
+void init_timer_3();
 void init_timer_4();
 
 
