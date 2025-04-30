@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2023
  * @author Antoine Boche <antoine.boche@laas.fr>
  * @author Clément Foucher <clement.foucher@laas.fr>
@@ -144,10 +144,14 @@ int8_t data_conversion_store_channel_parameters_in_nvs(uint8_t adc_num,
  *
  * @return 0 if parameters were correctly retrieved, negative value
  * 		     if there was an error:
- *         -1: NVS is empty
- *         -2: NVS contains data, but their version doesn't match current version
- *         -3: NVS data is corrupted
- *         -4: NVS contains data, but not for the requested channel
+ * 
+ * - `-1`: NVS is empty
+ * 
+ * - `-2`: NVS contains data, but their version doesn't match current version
+ * 
+ * - `-3`: NVS data is corrupted
+ * 
+ * - `-4`: NVS contains data, but not for the requested channel
  */
 int8_t data_conversion_retrieve_channel_parameters_from_nvs(uint8_t adc_num,
 															uint8_t channel_num);

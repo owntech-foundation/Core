@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date 2023
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
@@ -37,29 +37,31 @@
 extern "C" {
 #endif
 
-/**
- *  Init, enable, start, stop
- */
+/* Init, enable, start, stop */
 
 /**
- * @brief ADC initialization procedure for
- *        ADC 1, ADC 2, ADC 3 and ADC 4.
+ * @brief ADC initialization procedure for : `ADC 1`,`ADC 2`,`ADC 3`,`ADC 4`
+ * 
  */
 void adc_core_init();
 
 /**
- * @brief ADC enable.
- *        Refer to RM 21.4.9
- *
- * @param adc_num Number of the ADC to enable.
+ * @brief ADC enable. 
+ * 
+ * @note Refer to Reference Manual (RM) section 21.4.9 for details on the
+ *       ADC core enable procedure.
+ * 
+ * @param adc_num Number of the ADC (`1` to `5`) to enable
  */
 void adc_core_enable(uint8_t adc_num);
 
 /**
  * @brief ADC start.
- *        Refer to RM 21.4.15
- *
- * @param adc_num Number of the ADC to start.
+ * 
+* @note Refer to Reference Manual (RM) section 21.4.15 for details on the
+ *       ADC core start.
+  *
+ * @param adc_num Number of the ADC (`1` to `5`) to start.
  * @param sequence_length Length of the sequence configured
  *        on that ADC.
  */
@@ -68,20 +70,19 @@ void adc_core_start(uint8_t adc_num, uint8_t sequence_length);
 /**
  * @brief ADC stop.
  *
- * @param adc_num Number of the ADC to stop.
+ * @param adc_num Number of the ADC (`1` to `5`) to stop.
  */
 void adc_core_stop(uint8_t adc_num);
 
 
-/**
- * Configuration functions
- */
+/* Configuration functions */
 
 /**
  * @brief ADC DMA mode configuration.
+ * 
  *        Enables DMA in circular mode on an ADC.
  *
- * @param adc_num Number of the ADC on which to enable DMA.
+ * @param adc_num Number of the ADC (`1` to `5`) on which to enable DMA.
  * @param use_dma Set to true to use DMA for this ADC,
  *        false to not use it (default).
  */
@@ -90,11 +91,11 @@ void adc_core_configure_dma_mode(uint8_t adc_num, bool use_dma);
 /**
  * @brief Defines the trigger source for an ADC.
  *
- * @param adc_num Number of the ADC to configure.
+ * @param adc_num Number of the ADC (`1` to `5`) to configure.
  * @param external_trigger_edge Edge of the trigger as defined
- *        in stm32gxx_ll_adc.h (LL_ADC_REG_TRIG_***).
+ *        in stm32gxx_ll_adc.h (`LL_ADC_REG_TRIG_***`).
  * @param trigger_source Source of the trigger as defined
- *        in stm32gxx_ll_adc.h (LL_ADC_REG_TRIG_***).
+ *        in stm32gxx_ll_adc.h (`LL_ADC_REG_TRIG_***`).
  */
 void adc_core_configure_trigger_source(uint8_t adc_num,
                                        uint32_t external_trigger_edge,
@@ -103,19 +104,23 @@ void adc_core_configure_trigger_source(uint8_t adc_num,
 /**
  * @brief  Configures the discontinuous mode for an ADC.
  *
- * @param adc_num Number of the ADC to configure.
+ * @param adc_num Number of the ADC (`1` to `5`) to configure.
  * @param discontinuous_count Number of channels to acquire on each
- *        trigger event. 0 to disable discontinuous mode (default).
+ *        trigger event. 
+ *        0 to disable discontinuous mode (default).
  */
 void adc_core_configure_discontinuous_mode(uint8_t adc_num,
                                            uint32_t discontinuous_count);
 
 /**
  * @brief ADC differential channel set-up:
- *        Applies differential mode to specified channel.
- *        Refer to RM 21.4.7
+ * 
+ * - Applies differential mode to specified channel.
+ * 
+ * @note Refer to Reference Manual (RM) section 21.4.7 for details on how to 
+ *       set the ADC in differential mode.
  *
- * @param adc_num Number of the ADC to configure.
+ * @param adc_num Number of the ADC (`1` to `5`) to configure.
  * @param channel Number of the channel to configure.
  * @param enable_differential Set true to enable differential mode,
  *        false to disable it (default).
@@ -127,10 +132,12 @@ void adc_core_set_channel_differential(uint8_t adc_num,
 
 /**
  * @brief Configures an ADC channel acquisition.
+ * 
  *        Acquisition rank is provided as a parameter.
+ * 
  *        Channel sampling time is set to 12.5 cycles.
  *
- * @param adc_num Number of the ADC to configure.
+ * @param adc_num Number of the ADC (`1` to `5`) to configure.
  * @param channel Number of the channel to configure.
  * @param rank Acquisition rank.
  *

@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2023
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
@@ -34,13 +34,16 @@ extern "C"
 {
 #endif
 
-    /**
-     *  @brief callback function
-     */
+    /** @brief callback function  */
     typedef void (*hrtim_callback_t)();
 
+    /** @brief Number of HRTIM channels */
     static const uint8_t HRTIM_CHANNELS = 6;
 
+    /**
+     * @brief Resolution of the HRTIM prescaler in pico-seconds.     * 
+     * `values[8] = [184, 368, 735,1470, 2940, 5880,11760,23530]`
+     */
     static const uint32_t HRTIM_PRESCALER_RESOLUTION_PS[8] = {184,
                                                               368,
                                                               735,
@@ -196,8 +199,10 @@ extern "C"
 
     /**
      * @brief   HRTIM ADC Event Number and its associated source
+     * 
      *          There are a huge number of possibilities,
      *          for now this code explores only a few.
+     * 
      * @warning Please Prioritize cmp3, because cmp4 and cmp2
      *          might be used for current mode, and cmp1 is used for duty cycle
      */
@@ -237,9 +242,11 @@ extern "C"
     } hrtim_out_t;
 
     /**
-     * @brief   HRTIM TU switch convention
-     *  PWMx1 : control high-side mosfet
-     *  PWMx2 : control low-side mosfet
+     * @brief   HRTIM TU switch convention 
+     * 
+     * - `PWMx1=0`: high-side mosfet`,
+     *          
+     * - `PWMx2=1`: low-side mosfet`
      */
     typedef enum
     {
@@ -248,7 +255,9 @@ extern "C"
     } hrtim_switch_convention_t;
 
     /**
-     * comparator usage for a timing unit
+     * @brief comparator usage for a timing unit
+     * - `USED=true`
+     * - `FREE=false`
      */
     typedef enum
     {
@@ -258,6 +267,10 @@ extern "C"
 
     /**
      * @brief describe if a timing unit has been initialized
+     * 
+     * - `UNIT_ON=true`
+     * 
+     * - `UNIT_OFF=false`
      */
     typedef enum
     {
@@ -267,6 +280,14 @@ extern "C"
 
     /**
      * @brief   HRTIM ADC trigger registers definition
+     * 
+     * - `ADC1R = 1`,
+     * 
+     * - `ADC2R = 2`,
+     * 
+     * - `ADC3R = 3`,
+     * 
+     * - `ADC4R = 4`
      */
     typedef enum
     {
@@ -276,6 +297,15 @@ extern "C"
         ADC4R = 4
     } hrtim_adc_t;
 
+    /**
+     * @brief   Edge Trigger behavior
+     * 
+     *   `EdgeTrigger_up` = `LL_HRTIM_ROLLOVER_MODE_PER`,
+     * 
+     *   `EdgeTrigger_down` = `LL_HRTIM_ROLLOVER_MODE_RST`,
+     * 
+     *   `EdgeTrigger_Both` = `LL_HRTIM_ROLLOVER_MODE_BOTH`
+     */
     typedef enum
     {
         EdgeTrigger_up = LL_HRTIM_ROLLOVER_MODE_PER,
@@ -285,6 +315,25 @@ extern "C"
 
     /**
      * @brief External eventcoming from comparator used for current mode
+     * 
+     * - `EEV1` = `LL_HRTIM_OUTPUTRESET_EEV_1`
+     * 
+     * - `EEV2` = `LL_HRTIM_OUTPUTRESET_EEV_2`
+     * 
+     * - `EEV3` = `LL_HRTIM_OUTPUTRESET_EEV_3`
+     * 
+     * - `EEV4` = `LL_HRTIM_OUTPUTRESET_EEV_4`
+     * 
+     * - `EEV5` = `LL_HRTIM_OUTPUTRESET_EEV_5`
+     * 
+     * - `EEV6` = `LL_HRTIM_OUTPUTRESET_EEV_6`
+     * 
+     * - `EEV7` = `LL_HRTIM_OUTPUTRESET_EEV_7`
+     * 
+     * - `EEV8` = `LL_HRTIM_OUTPUTRESET_EEV_8`
+     * 
+     * - `EEV9` = `LL_HRTIM_OUTPUTRESET_EEV_9`
+     *      
      */
     typedef enum
     {
@@ -301,6 +350,11 @@ extern "C"
 
     /**
      * @brief  HRTIM counting mode setting
+     * 
+     * - `Lft_aligned` = `LL_HRTIM_COUNTING_MODE_UP`
+     * 
+     * - `UpDwn` = `LL_HRTIM_COUNTING_MODE_UP_DOWN` = Center Aligned
+     *  
      */
     typedef enum
     {
@@ -311,6 +365,19 @@ extern "C"
 
     /**
      * @brief  HRTIM burst mode clock setting
+     * 
+     * - `BURST_TIMA` = `LL_HRTIM_BM_CLKSRC_TIMER_A`
+     * 
+     * - `BURST_TIMB` = `LL_HRTIM_BM_CLKSRC_TIMER_B`
+     * 
+     * - `BURST_TIMC` = `LL_HRTIM_BM_CLKSRC_TIMER_C`
+     * 
+     * - `BURST_TIMD` = `LL_HRTIM_BM_CLKSRC_TIMER_D`
+     * 
+     * - `BURST_TIME` = `LL_HRTIM_BM_CLKSRC_TIMER_E`
+     * 
+     * - `BURST_TIMF` = `LL_HRTIM_BM_CLKSRC_TIMER_F`
+     * 
      */
     typedef enum
     {
@@ -332,23 +399,23 @@ extern "C"
      */
     typedef struct
     {
-        hrtim_tu_t pwm_tu;                       /* Timing Unit associated with the PWM */
-        uint16_t rise_dead_time;                 /* Rising Edge Dead time */
-        uint16_t fall_dead_time;                 /* Falling Edge Dead time */
-        uint16_t duty_cycle;                     /* Current value of its duty cycle */
-        uint16_t period;                         /* Period used by the unit */
-        uint16_t max_period;                     /* Max Period used by the unit */
-        uint16_t min_period;                     /* Min Period used by the unit */
-        uint32_t frequency;                      /* Frequency used by the unit */
-        uint32_t max_frequency;                  /* Max frequency used by the unit */
-        uint32_t min_frequency;                  /* Min frequency used by the unit */
-        hrtim_cnt_t modulation;                  /* Type of modulation used for this unit */
-        hrtim_tu_ON_OFF_t unit_on;               /* State of the time unit (ON/OFF) */
-        uint8_t ckpsc;                           /* Holds the clock pre-scaler of the timing unit */
-        uint32_t resolution;                     /* Holds the resolution of the timing unit  */
-        hrtim_pwm_mode_t pwm_mode;                 /* pwm mode for voltage mode or current mode */
-        hrtim_external_trigger_t external_trigger; /* external trigger event for current mode */
-        hrtim_burst_clk_t burst_clk;               /* clock source for burst mode generator*/
+        hrtim_tu_t pwm_tu;                         /* Timing Unit associated with the PWM */                     
+        uint16_t rise_dead_time;                   /* Rising Edge Dead time */                                      
+        uint16_t fall_dead_time;                   /* Falling Edge Dead time */                                     
+        uint16_t duty_cycle;                       /* Current value of its duty cycle */                                    
+        uint16_t period;                           /* Period used by the unit */                                    
+        uint16_t max_period;                       /* Max Period used by the unit */                                    
+        uint16_t min_period;                       /* Min Period used by the unit */                                    
+        uint32_t frequency;                        /* Frequency used by the unit */                                    
+        uint32_t max_frequency;                    /* Max frequency used by the unit */                                    
+        uint32_t min_frequency;                    /* Min frequency used by the unit */                                    
+        hrtim_cnt_t modulation;                    /* Type of modulation used for this unit */                                    
+        hrtim_tu_ON_OFF_t unit_on;                 /* State of the time unit (ON/OFF) */                                    
+        uint8_t ckpsc;                             /* Holds the clock pre-scaler of the timing unit */                                    
+        uint32_t resolution;                       /* Holds the resolution of the timing unit  */                                    
+        hrtim_pwm_mode_t pwm_mode;                 /* pwm mode for voltage mode or current mode */                                    
+        hrtim_external_trigger_t external_trigger; /* external trigger event for current mode */                                    
+        hrtim_burst_clk_t burst_clk;               /* clock source for burst mode generator*/                                    
     } pwm_conf_t;
 
     /**

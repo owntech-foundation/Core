@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date 2024
  *
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
@@ -31,8 +31,10 @@
 
 /**
  * two types of reactions :
- *  - Open_Circuit : Open both high-side and low-side switches
- *  - Short_Circuit : Open high-side switch and close low-side switch,
+ * 
+ *  - `Open_Circuit`: Open both high-side and low-side switches
+ * 
+ *  - `Short_Circuit`: Open high-side switch and close low-side switch,
  *                    maintaining output in short circuit.
  */
 typedef enum

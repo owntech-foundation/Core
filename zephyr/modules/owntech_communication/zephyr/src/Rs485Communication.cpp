@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2024
  *
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>

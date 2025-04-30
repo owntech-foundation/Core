@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2023
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
@@ -35,13 +35,15 @@ public:
 
 	/**
 	 * @brief Turns the NGND switch ON.
+	 * 
 	 *        It is used with versions of the TWIST board prior to 1.4.
 	 */
 	void turnOn();
 
 	/**
 	 * @brief Turns the NGND switch OFF.
-	 *        It is used with versions of the TWIST board prior to 1.4.
+	 * 
+	 *  	  It is used with versions of the TWIST board prior to 1.4.
 	 */
 	void turnOff();
 

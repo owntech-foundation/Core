@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2024
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
@@ -67,9 +67,8 @@ static uint32_t task_period = 0;
 /* Safety */
 static bool safety_alert = false;
 
-/**
- *  Private API
- */
+/* Private API */
+
 
 void thread_error(void *, void *, void *)
 {
@@ -119,9 +118,7 @@ void user_task_proxy()
 	user_periodic_task();
 }
 
-/**
- *  Public API
- */
+/* Public API */
 
 void scheduling_set_uninterruptible_synchronous_task_interrupt_source(
 									scheduling_interrupt_source_t int_source)

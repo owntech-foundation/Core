@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2023
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
@@ -34,8 +34,6 @@
 /* Current file header */
 #include "comparator_driver.h"
 
-
-/* TODO : use Zephyr gpio_pin_configure */
 
 void comparator_comp1_init()
 {

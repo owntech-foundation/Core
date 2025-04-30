@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2024
  *
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
@@ -32,30 +32,28 @@
 #include <arm_math.h>
 
 
-/**
- * Static class definition
- */
+/* Static class definition */
 
 class AnalogCommunication
 {
 
 public:
 	/**
-	 * @brief Initializing analog communication (ADC and DAC)
+	 * @brief Initializing analog communication (`ADC` and `DAC`)
 	 */
 	static void init();
 
 	/**
 	 * @brief Get the analog value
 	 *
-	 * @return Analog value (A value between 0 and 4096)
+	 * @return Analog value (A value between `0` and `4096`)
 	 */
 	static float32_t getAnalogCommValue();
 
 	/**
-	 * @brief Set the analog value, the DAC output
+	 * @brief Set the analog value, the `DAC` output
 	 *
-	 * @param analog_bus_value  A value between 0 and 4096
+	 * @param analog_bus_value  A value between `0` and `4096`
 	 */
 	static void setAnalogCommValue(uint32_t analog_bus_value);
 };

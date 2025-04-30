@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2022
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
@@ -57,10 +57,41 @@ typedef struct
 	task_status_t status;
 } task_information_t;
 
+/**
+ * @brief Start a new Zephyr thread for an asynchronous task.
+ *
+ * This function creates a thread for the given task using its stack,
+ * priority, and entry point. The entry point will receive the task routine
+ * as its first argument.
+ *
+ * @param task_info   Reference to the task information structure.
+ *                    Must contain valid stack, size, priority, and routine.
+ * @param entry_point Function to run as the thread entry (typically a loop 
+ * 					  dispatcher).
+ */
 void scheduling_common_start_task(task_information_t& task_info,
 								  k_thread_entry_t entry_point);
 
+/**
+ * @brief Suspend an active Zephyr thread.
+ *
+ * Suspends the task associated with the provided task info. The task
+ * must be in a running state.
+ *
+ * @param task_info Reference to the task information structure for the task 
+ * 					to suspend.
+ */
 void scheduling_common_suspend_task(task_information_t& task_info);
+
+
+/**
+ * @brief Resume a previously suspended Zephyr thread.
+ *
+ * Resumes a task that was suspended using `scheduling_common_suspend_task()`.
+ *
+ * @param task_info Reference to the task information structure for the task 
+ * 					to resume.
+ */
 void scheduling_common_resume_task(task_information_t& task_info);
 
 

@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2024
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
@@ -58,9 +58,7 @@ adc_t DataAPI::current_adc[PIN_COUNT] = {DEFAULT_ADC};
  *  Public functions accessible only when using a power shield
  */
 
-/**
- *  Public functions
- */
+/* Public functions */
 
 int8_t DataAPI::enableAcquisition(uint8_t pin_num, adc_t adc_num)
 {
@@ -463,9 +461,7 @@ void DataAPI::configureTriggerSource(adc_t adc_number,
 	}
 }
 
-/**
- *  Private Functions
- */
+/* Private functions */
 
 void DataAPI::initializeAllAdcs()
 {

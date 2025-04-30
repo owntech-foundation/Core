@@ -45,9 +45,17 @@ extern "C" {
 
 
 /**
- *  API
+ * @brief Set the state of the NGND (Neutral Ground) switch.
+ *
+ * This function controls the activation state of the NGND hardware line.
+ * 
+ * Passing a non-zero value activates (connects) NGND to the GND of the O2 board.
+ * 
+ * Zero disconnects the NGND from the GND.
+ *
+ * @param dev   Pointer to the NGND device structure.
+ * @param value Desired state: `1` to activate, `0` to deactivate.
  */
-
 void ngnd_set(const struct device* dev, int value);
 
 

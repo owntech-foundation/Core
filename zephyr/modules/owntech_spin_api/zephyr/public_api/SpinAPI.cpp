@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2024
  *
  * @author Jean Alinei <jean.alinei@owntech.org>

@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2023
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
@@ -43,9 +43,7 @@ const int TaskAPI::DEFAULT_PRIORITY = 5;
 
 TaskAPI task;
 
-/**
- *  Public API
- */
+/* Public API */
 
 /* Non-interruptable control task */
 int8_t TaskAPI::createCritical(task_function_t periodic_task,

@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2022
  * @author Clément Foucher <clement.foucher@laas.fr>
  *
@@ -30,8 +30,10 @@
  *         at becoming more generic over time.
  *
  *         This version supports:
+ * 
  *         * Timer 6 and Timer 7: Periodic call of a callback function
  * 			 with period ranging from 2 to 6553 µs.
+ * 
  *         * Timer 4: Incremental coder acquisition with pinout:
  * 			 reset=PB3; CH1=PB6; CH2=PB7.
  */
@@ -63,6 +65,19 @@ extern "C" {
 
 typedef void (*timer_callback_t)();
 
+/**
+ * @brief Enumeration for GPIO pin pull configurations.
+ *
+ * This enum defines the available pull modes that can be applied to a
+ * GPIO input pin.
+ *
+ * - `no_pull` disables pull-up or pull-down resistors.
+ *
+ * - `pull_up` enables an internal pull-up resistor.
+ *
+ * - `pull_down` enables an internal pull-down resistor.
+ *
+ */
 typedef enum
 {
 	no_pull,
@@ -71,13 +86,15 @@ typedef enum
 } pin_mode_t;
 
 /**
- * timer_enable_irq    : set to 1 to enable interrupt on timer overflow.
+ * @brief Timer_enable_irq    : set to 1 to enable interrupt on timer overflow.
  * timer_enable_encoder: set to 1 for timer to act as an incremental coder counter.
  *
  * *** IRQ mode (ignored if timer_enable_irq=0) ***
  * - timer_irq_callback    : pointer to a void(void) function that will be
  *                           called on timer overflow.
+ * 
  * - timer_irq_t_usec      : period of the interrupt in microsecond (2 to 6553 µs)
+ * 
  * - timer_use_zero_latency: for tasks, use zero-latency interrupts.
  *                           Only used by Task API,
  * 							 end-user should set this one to false.
@@ -85,11 +102,13 @@ typedef enum
  * *** Incremental encoder mode (ignored if timer_enable_encoder=0) ***
  * - timer_pin_mode : Pin mode for incremental coder interface.
  *
- * NOTE: At this time, only irq mode is supported on TIM6/TIM7, and
- * only incremental coder mode is supported on TIM4, which makes this
- * configuration structure almost pointless (except for callback definition).
- * However, it is built this way with future evolutions of the driver
- * in mind.
+ * @note At this time, only irq mode is supported on TIM6/TIM7, and
+ * only incremental coder mode is supported on TIM4.
+ * 
+ * This limitation makes this configuration structure almost pointless 
+ * (except for callback definition).
+ * 
+ * However, it is built this way with future evolutions of the driver in mind.
  */
 struct timer_config_t
 {
@@ -108,14 +127,66 @@ struct timer_config_t
  *  API
  */
 
+ /**
+ * @brief Function pointer type for timer configuration.
+ *
+ * This function configures the hardware timer using the provided settings.
+ *
+ * @param dev Pointer to the timer device.
+ * @param config Pointer to the timer configuration structure.
+ */
 typedef void     (*timer_api_config)(
 						const struct device* dev,
 						const struct timer_config_t* config
 				  );
+
+/**
+ * @brief Function pointer type for starting the timer.
+ *
+ * This function starts the timer associated with the given device.
+ *
+ * @param dev Pointer to the timer device.
+ */
 typedef void     (*timer_api_start)    (const struct device* dev);
+
+/**
+ * @brief Function pointer type for stopping the timer.
+ *
+ * This function stops the timer associated with the given device.
+ *
+ * @param dev Pointer to the timer device.
+ */
 typedef void     (*timer_api_stop)     (const struct device* dev);
+
+/**
+ * @brief Function pointer type for reading the timer count value.
+ *
+ * This function returns the current counter value of the timer.
+ *
+ * @param dev Pointer to the timer device.
+ *
+ * @return The current timer count.
+ */
 typedef uint32_t (*timer_api_get_count)(const struct device* dev);
 
+/**
+ * @brief Driver API structure for timer devices.
+ *
+ * This structure defines the interface that a timer driver must implement
+ * to integrate with the OwnTech timer subsystem.
+ *
+ * - `config` is the function used to configure the timer.
+ *
+ * - `start` starts the timer operation.
+ *
+ * - `stop` stops the timer operation.
+ *
+ * - `get_count` retrieves the current timer counter value.
+ *
+ * This structure is registered as a Zephyr subsystem using the
+ * `__subsystem` keyword.
+ *
+ */
 __subsystem struct timer_driver_api
 {
 	timer_api_config    config;
@@ -126,7 +197,7 @@ __subsystem struct timer_driver_api
 
 
 /**
- * Configure the timer dev using given configuration structure config.
+ * @brief Configure the timer dev using given configuration structure config.
  *
  * @param dev    Zephyr device representing the timer.
  * @param config Configuration holding the timer configuration.
@@ -141,7 +212,9 @@ static inline void timer_config(const struct device* dev,
 }
 
 /**
- * Start the timer dev. If timer is configured to provide a periodic
+ * @brief Start the timer dev. 
+ * 
+ * If timer is configured to provide a periodic
  * interrupt, it will also enable it.
  *
  * @param dev Zephyr device representing the timer.
@@ -155,7 +228,9 @@ static inline void timer_start(const struct device* dev)
 }
 
 /**
- * Stop the timer dev. If timer is configured to provide a periodic
+ * @brief Stop the timer dev. 
+ * 
+ * If timer is configured to provide a periodic
  * interrupt, it will also disable it.
  *
  * @param dev Zephyr device representing the timer.
@@ -169,7 +244,7 @@ static inline void timer_stop(const struct device* dev)
 }
 
 /**
- * Get the current timer counter value.
+ * @brief Get the current timer counter value.
  *
  * @param  dev Zephyr device representing the timer.
  * @return     Current value of the timer internal counter.

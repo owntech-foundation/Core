@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2023
  *
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
@@ -31,6 +31,14 @@
 
 typedef void (*dma_callbackRXfunc_t)();
 
+/**
+ * @brief Defines the USART oversampling: 
+ *        
+ * - `OVER8` - Oversampling of 8
+ *        
+ * - `OVER16` - Oversampling of 16
+ * 
+ */
 typedef enum{
     OVER8 = LL_USART_OVERSAMPLING_8,
     OVER16 = LL_USART_OVERSAMPLING_16
@@ -76,13 +84,15 @@ void serial_init(void);
 
 /**
  * @brief Initialize Driver Enable mode for RS485 hardware flowcontrol.
- *        pin B14 is set to level high when data is transmitted.
+ * 
+ *        PIN B14 is set to level high when data is transmitted.
  */
 void init_DEmode(void);
 
 /**
  * @brief Set oversampling which is by default oversampling_16.
- *        With oversampling_8 we increase speed by 2
+ * 
+ *        With oversampling_8 we increase speed by 2 
  *        but we decrease USART sampling by half,
  *        making it more sensitive to noise.
  *

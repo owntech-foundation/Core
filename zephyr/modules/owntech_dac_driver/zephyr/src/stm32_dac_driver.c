@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2023
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
@@ -35,9 +35,7 @@
 /* Current file header */
 #include "stm32_dac_driver.h"
 
-/**
- *  Init function
- */
+/* Init function */
 
 static int dac_stm32_init(const struct device* dev)
 {
@@ -61,9 +59,7 @@ static int dac_stm32_init(const struct device* dev)
 }
 
 
-/**
- *  API
- */
+/* API */
 
 static const struct dac_driver_api dac_funcs =
 {
@@ -320,9 +316,7 @@ static void dac_stm32_stop(const struct device* dev, uint8_t channel)
 }
 
 
-/**
- *  Devices Definition
- */
+/* Devices Definition */
 
 /* DAC 1 */
 #if DT_NODE_HAS_STATUS(DAC1_NODE, okay)
