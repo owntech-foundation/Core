@@ -87,7 +87,13 @@ void PowerAPI::initMode(leg_t leg,
     for (int8_t i = startIndex; i < endIndex; i++)
     {
         /* Configure PWM frequency */
-        spin.pwm.initFixedFrequency(timer_frequency);
+        if (timer_frequency != timer_min_frequency){
+            /* If minimum frequency equal to than maximum, then fixed frequency */
+            spin.pwm.initFixedFrequency(timer_frequency);
+        }else{
+            /* If minimum frequency different than maximum, then variable frequency */
+            spin.pwm.initVariableFrequency(timer_frequency, timer_min_frequency);
+        }
 
         /* Set modulation */
         spin.pwm.setModulation(spinNumberToTu(dt_pwm_pin[i]),
@@ -205,13 +211,13 @@ void PowerAPI::initMode(leg_t leg,
 void PowerAPI::setDutyCycle(leg_t leg, float32_t duty_leg)
 {
     /* Clamp the duty cycle to be within the range 0.1 to 0.9 */
-    if (duty_leg > 0.9)
+    if (duty_leg > duty_cycle_max)
     {
-        duty_leg = 0.9;
+        duty_leg = duty_cycle_max;
     }
-    else if (duty_leg < 0.1)
+    else if (duty_leg < duty_cycle_min)
     {
-        duty_leg = 0.1;
+        duty_leg = duty_cycle_min;
     }
 
     int8_t startIndex = 0;
@@ -566,6 +572,19 @@ void PowerAPI::setDeadTime(leg_t leg,
     }
 }
 
+
+void PowerAPI::setDutyCycleMin(float32_t duty_cycle){
+    if (duty_cycle <= 1.0 && duty_cycle >=0.0){
+        duty_cycle_min = duty_cycle;
+    }
+
+}
+
+void PowerAPI::setDutyCycleMax(float32_t duty_cycle){
+    if (duty_cycle <= 1.0 && duty_cycle >=0.0){
+        duty_cycle_max = duty_cycle;
+    }
+}
 
 void PowerAPI::setAdcDecim(leg_t leg, uint16_t adc_decim)
 {

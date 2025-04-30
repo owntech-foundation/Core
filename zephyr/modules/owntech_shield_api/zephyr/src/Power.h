@@ -56,6 +56,7 @@ private:
 	/* return timing unit from spin pin number */
 	hrtim_tu_number_t spinNumberToTu(uint16_t spin_number);
 
+
 public:
 	/**
 	 * @brief Initialize the power mode for a given leg.
@@ -201,6 +202,34 @@ public:
 					 uint16_t ns_falling_dt);
 
 	/**
+	 * @brief sets the Minimum Duty Cycle Limit
+	 *
+	 * @param duty_cycle    - new minimum duty cycle value between 0.0 and 1.0
+	*/
+	void setDutyCycleMin(float32_t duty_cycle);
+
+	/**
+	 * @brief sets the Maximum Duty Cycle Limit
+	 *
+	 * @param duty_cycle    - new maximum duty cycle value between 0.0 and 1.0
+	*/
+	void setDutyCycleMax(float32_t duty_cycle);
+
+	/**
+	 * @brief sets the Minimum Duty Cycle Limit
+	 *
+	 * @param duty_cycle    - new minimum duty cycle value between 0.0 and 1.0
+	*/
+	void setDutyCycleMin(float32_t duty_cycle);
+
+	/**
+	 * @brief sets the Maximum Duty Cycle Limit
+	 *
+	 * @param duty_cycle    - new maximum duty cycle value between 0.0 and 1.0
+	*/
+	void setDutyCycleMax(float32_t duty_cycle);
+
+	/**
 	 * @brief Sets ADC decimator for a leg
 	 *
 	 * This function sets the number of event which will be ignored between
@@ -234,6 +263,10 @@ public:
 	 * @param leg Leg to initialize: `LEG1` to `ALL`
 	 */
 	void initBoost(leg_t leg);
+
+	float32_t duty_cycle_min = 0.1;
+	float32_t duty_cycle_max = 0.9;
+
 
 };
 

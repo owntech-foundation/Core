@@ -10,6 +10,12 @@ properties :
     required : true
     description : Switching frequency in Hz (this frequency must be same for all the timer !)
 
+  min-frequency :
+    type : int
+    required : false
+    description : Minimum switching frequency in Hz (this frequency will be be same for all the timers !)
+
+
 child-binding:
 
   description : In power electronics, a "leg" typically refers to a section of a power converter
