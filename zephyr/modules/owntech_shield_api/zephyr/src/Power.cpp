@@ -204,6 +204,14 @@ void PowerAPI::initMode(leg_t leg,
 
 void PowerAPI::setDutyCycle(leg_t leg, float32_t duty_leg)
 {
+    uint16_t period;
+    uint16_t value;
+    uint8_t swap_state;
+    hrtim_tu_number_t leg_tu;
+
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
+
     /* Clamp the duty cycle to be within the range 0.1 to 0.9 */
     if (duty_leg > duty_cycle_max)
     {
@@ -213,9 +221,6 @@ void PowerAPI::setDutyCycle(leg_t leg, float32_t duty_leg)
     {
         duty_leg = duty_cycle_min;
     }
-
-    int8_t startIndex = 0;
-    int8_t endIndex = 0;
 
     /*  If ALL is selected, loop through all legs */
     if (leg == ALL)
@@ -232,15 +237,28 @@ void PowerAPI::setDutyCycle(leg_t leg, float32_t duty_leg)
 
     for (int8_t i = startIndex; i < endIndex; i++)
     {
-        uint16_t period = 
-            tu_channel[spinNumberToTu(dt_pwm_pin[i])]->pwm_conf.period;
-        uint16_t value =
-            duty_leg * period;
+        leg_tu = spinNumberToTu(dt_pwm_pin[i]);
+        
+        period = tu_channel[leg_tu]->pwm_conf.period;
+        value = duty_leg * period;
+        swap_state = tu_channel[leg_tu]->pwm_conf.duty_swap;
 
-        if (value >= period - 3)
-            value = tu_channel[spinNumberToTu(dt_pwm_pin[i])]->pwm_conf.duty_max;    
-
-        hrtim_duty_cycle_set(spinNumberToTu(dt_pwm_pin[i]), value);
+        /* Implements a logic that allows for a duty cycle of 100% */
+        if (value >= period-3){
+            value = 0;
+            hrtim_duty_cycle_set(leg_tu, value);
+        
+            if(swap_state == false) hrtim_output_hot_swap(leg_tu);        
+        }
+        else
+        {    
+            if(swap_state == true) {
+                hrtim_duty_cycle_set(leg_tu, value);
+                hrtim_output_hot_swap(leg_tu);
+            }else{
+                hrtim_duty_cycle_set(leg_tu, value);
+            }
+        }
     }
 }
 
