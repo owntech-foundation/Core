@@ -213,10 +213,10 @@ void PwmHAL::setDeadTime(hrtim_tu_number_t pwmX,
 void PwmHAL::setDutyCycle(hrtim_tu_number_t pwmX, float32_t duty_cycle)
 {
 	uint16_t period = tu_channel[pwmX]->pwm_conf.period;
-	uint16_t previous_value = tu_channel[pwmX]->pwm_conf.duty_cycle;
 	uint16_t value = duty_cycle * period;
 	uint8_t swap_state = tu_channel[pwmX]->pwm_conf.duty_swap;
-	
+
+	/* Implements a logic that allows a duty cycle of 100% */
 	if (value >= period-3){
 		value = 0;
 		hrtim_duty_cycle_set(pwmX, value);
@@ -226,7 +226,6 @@ void PwmHAL::setDutyCycle(hrtim_tu_number_t pwmX, float32_t duty_cycle)
 	}else{
 
 		if(swap_state == true) {
-			// uint16_t value = (1-duty_cycle) * period;
 			hrtim_duty_cycle_set(pwmX, value);
 			hrtim_output_hot_swap(pwmX);
 		}else{
