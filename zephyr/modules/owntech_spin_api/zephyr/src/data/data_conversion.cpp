@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2023
  * @author Antoine Boche <antoine.boche@laas.fr>
  * @author Clément Foucher <clement.foucher@laas.fr>
@@ -81,9 +81,7 @@ static uint8_t _data_conversion_get_parameters_count(conversion_type_t type)
 	return parameters_count;
 }
 
-/**
- *  Public Functions
- */
+/* Public functions */
 
 void data_conversion_init()
 {

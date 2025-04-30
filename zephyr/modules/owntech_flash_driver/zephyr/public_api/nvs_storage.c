@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2023
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
@@ -44,7 +44,7 @@
 
 
 /* Constants and variables */
-static const uint16_t current_storage_version = 0x0001;
+static const uint16_t current_storage_version = 0x0001; 
 static uint16_t storage_version_in_nvs = 0;
 static bool initialized = false;
 
@@ -52,17 +52,33 @@ static bool initialized = false;
 #define NVS_PARTITION storage_partition
 #define STORAGE_NODE  DT_NODE_BY_FIXED_PARTITION_LABEL(NVS_PARTITION)
 
-/* Flash memory file system */
+/** @brief Flash memory file system */
 static struct nvs_fs fs =
 {
 	.offset       = FIXED_PARTITION_OFFSET(NVS_PARTITION),
 	.flash_device = FIXED_PARTITION_DEVICE(NVS_PARTITION)
 };
 
-/**
- *  Private Functions
- */
 
+/**
+ * @brief PRIVATE FUNCTION - Store the current NVS (Non-Volatile Storage) 
+ *        version if needed.
+ *
+ * This function ensures that the storage version recorded in NVS is consistent
+ * with the current API's storage version.
+ *
+ * - If the stored version matches the current version, nothing is done.
+ *
+ * - If no version exists in NVS (first use), it writes the current version into
+ *   NVS.
+ *
+ * - If a different version exists, it treats the mismatch as an error and
+ *   signals that manual clearing is required.
+ *
+ * @return `0` if version is already correct or successfully written, 
+ *         `-1` on failure.
+ *
+ */
 static int8_t _nvs_storage_store_version()
 {
 	if (storage_version_in_nvs == current_storage_version)
@@ -94,6 +110,26 @@ static int8_t _nvs_storage_store_version()
 	}
 }
 
+/**
+ * @brief PRIVATE FUNCTION - Initialize the NVS (Non-Volatile Storage) subsystem.
+ *
+ * This function sets up the flash storage environment used to store ADC parameters.
+ *
+ * - Verifies if initialization has already been completed.
+ *
+ * - Checks if the flash device is ready for operations.
+ *
+ * - Retrieves flash page information to determine sector size and count.
+ *
+ * - Mounts the NVS file system.
+ *
+ * - Checks and validates the stored version against the current module version.
+ *
+ * @return `0` if initialization succeeds,
+ *         `-1` if initialization fails,
+ *         `-2` if a version mismatch is detected.
+ *
+ */
 static int8_t _nvs_storage_init()
 {
 	if (initialized == true)
@@ -155,9 +191,8 @@ static int8_t _nvs_storage_init()
 	return 0;
 }
 
-/**
- *  Public Functions
- */
+
+/* Public functions */
 
 int8_t nvs_storage_store_data(uint16_t data_id,
 							  const void* data,

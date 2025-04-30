@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2023
  *
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
@@ -86,9 +86,7 @@ static uint16_t dma_buffer_size;
 /* User function to call in RX callback */
 static dma_callbackRXfunc_t user_fnc = NULL;
 
-/**
- *  Private functions
- */
+/* Private functions */
 
 /**
  *  DMA callback TX clear transmission flag, and disabled DMA channel TX.
@@ -121,9 +119,7 @@ static void _dma_callback_rx()
     }
 }
 
-/**
- *  Public functions
- */
+/* Public functions */
 
 
 /**

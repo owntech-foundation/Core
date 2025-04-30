@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2024
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Jean	Alinei <jean.alinei@laas.fr>
@@ -45,10 +45,16 @@
 
 static const struct device* dac2 = DEVICE_DT_GET(DAC2_DEVICE);
 
-/**
- *  Functions to be run
- */
+/* Functions to be run */
 
+/**
+ * @brief Initialize the internal voltage reference buffer (VREFBUF).
+ *
+ * Enables the SYSCFG clock, configures the voltage scaling, disables
+ * high-impedance mode, and activates the VREFBUF output.
+ *
+ * @return Always returns 0 (success).
+ */
 static int _vrefbuf_init()
 {
 	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SYSCFG);
@@ -59,6 +65,14 @@ static int _vrefbuf_init()
 	return 0;
 }
 
+/**
+ * @brief Initialize DAC2 in constant voltage mode.
+ *
+ * If DAC2 is ready, this function sets an output value of 2048 (mid-scale),
+ * configures it for external output, and starts the DAC.
+ *
+ * @return Always returns 0 (success).
+ */
 static int _dac2_init()
 {
 	if (device_is_ready(dac2) == true)
@@ -71,6 +85,13 @@ static int _dac2_init()
 	return 0;
 }
 
+/**
+ * @brief Initialize the console backend (e.g., UART).
+ *
+ * Calls the console_init function defined elsewhere in the system.
+ *
+ * @return Always returns 0 (success).
+ */
 static int _console_init()
 {
 	console_init();
@@ -81,6 +102,15 @@ static int _console_init()
 #ifdef CONFIG_BOOTLOADER_MCUBOOT
 #include <zephyr/kernel.h>
 #include <zephyr/dfu/mcuboot.h>
+
+/**
+ * @brief Validate and confirm the current firmware image in MCUBoot.
+ *
+ * If the image is not yet confirmed, this function writes the confirmation flag.
+ * Useful in MCUboot-based systems to prevent rollback after boot.
+ *
+ * @return Always returns 0 (success).
+ */
 static int _img_validation()
 {
 	if (boot_is_img_confirmed() == false)
@@ -103,6 +133,14 @@ static int _img_validation()
 
 #include <zephyr/retention/bootmode.h>
 #include <zephyr/sys/reboot.h>
+
+/**
+ * @brief Submit a warm reboot into bootloader mode.
+ *
+ * Called by the 1200 baud callback to initiate a soft reset into DFU mode.
+ *
+ * @param work Pointer to work item (unused).
+ */
 void reboot_bootloader_task(struct k_work* work)
 {
 	bootmode_set(BOOT_MODE_TYPE_BOOTLOADER);
@@ -110,6 +148,14 @@ void reboot_bootloader_task(struct k_work* work)
 }
 
 K_WORK_DEFINE(reboot_bootloader_work, reboot_bootloader_task);
+
+/**
+ * @brief Register the CDC ACM baud rate callback.
+ *
+ * Used in USB bootloader entry mechanism (e.g., Arduino-style 1200bps trick).
+ *
+ * @return Always returns 0 (success).
+ */
 void _cdc_rate_callback(const struct device* dev, uint32_t rate)
 {
 	if (rate == 1200)
@@ -121,6 +167,14 @@ void _cdc_rate_callback(const struct device* dev, uint32_t rate)
 #include <zephyr/drivers/uart/cdc_acm.h>
 #define CDC_ACM_DEVICE DT_NODELABEL(cdc_acm_uart0)
 static const struct device* cdc_acm_console = DEVICE_DT_GET(CDC_ACM_DEVICE);
+
+/**
+ * @brief Register the CDC ACM baud rate callback.
+ *
+ * Used in USB bootloader entry mechanism (e.g., Arduino-style 1200bps trick).
+ *
+ * @return Always returns 0 (success).
+ */
 static int _register_cdc_rate_callback()
 {
 	cdc_acm_dte_rate_callback_set(cdc_acm_console, _cdc_rate_callback);
@@ -134,6 +188,15 @@ static int _register_cdc_rate_callback()
 
 #ifdef CONFIG_SHIELD_O2
 #include <stm32_ll_lpuart.h>
+/**
+ * @brief Swap TX and RX lines for USART1 (LPUART1).
+ *
+ * Disables the LPUART1 peripheral, swaps the TX/RX pins, and re-enables it.
+ * 
+ * Used with the O2 board. 
+ *
+ * @return Always returns 0 (success).
+ */
 static int _swap_usart1_tx_rx()
 {
 	LL_LPUART_Disable(LPUART1);

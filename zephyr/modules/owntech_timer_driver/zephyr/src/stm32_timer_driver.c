@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2022
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
@@ -31,9 +31,6 @@
 /* Current file header */
 #include "stm32_timer_driver.h"
 
-/**
- *  Init function
- */
 
 static int timer_stm32_init(const struct device* dev)
 {
@@ -53,9 +50,21 @@ static int timer_stm32_init(const struct device* dev)
 }
 
 /**
- *  Callback
+ * @brief Callback function triggered by a timer interrupt.
+ *
+ * This function is called when the hardware timer generates an interrupt.
+ * It clears the interrupt flag and calls the user-defined callback if it
+ * has been set.
+ *
+ * - Casts the generic argument to a device pointer.
+ *
+ * - Clears the hardware timer interrupt flag.
+ *
+ * - Invokes the registered callback function, if available.
+ *
+ * @param arg Pointer to the timer device (cast from a generic void pointer).
+ *
  */
-
 static void timer_stm32_callback(const void* arg)
 {
 	const struct device* timer_dev = (const struct device*)arg;
@@ -71,10 +80,7 @@ static void timer_stm32_callback(const void* arg)
 }
 
 
-/**
- *  API
- */
-
+/** @brief Defines a structure to hold the timer functions   */
 static const struct timer_driver_api timer_funcs =
 {
 	.config    = timer_stm32_config,
@@ -252,9 +258,7 @@ uint32_t timer_stm32_get_count(const struct device* dev)
 	return LL_TIM_GetCounter(tim_dev);
 }
 
-/**
- *  Per-timer inits
- */
+/* Per-timer inits */
 
 void init_timer_4()
 {
@@ -337,13 +341,12 @@ void init_timer_7()
 	LL_TIM_DisableMasterSlaveMode(TIM7);
 }
 
-/**
- *  Device definitions
- */
+/* Device definitions */
 
 /* Timer4 */
 #if DT_NODE_HAS_STATUS(TIMER4_NODE, okay)
 
+/** @brief Structure that holds the timer 4 data  */
 struct stm32_timer_driver_data timer4_data =
 {
 	.timer_struct       = TIM4,
@@ -352,6 +355,21 @@ struct stm32_timer_driver_data timer4_data =
 	.timer_irq_callback = NULL
 };
 
+/**
+ * @brief Define and initialize the STM32 timer device for TIM4.
+ *
+ * This macro registers the TIM4 timer as a Zephyr device using the device
+ * tree node specified by `TIMER4_NODE`.
+ *
+ * - Registers the device with the STM32 timer driver init function.
+ *
+ * - Associates static device data with the driver.
+ *
+ * - Uses `PRE_KERNEL_1` initialization level with a configurable priority.
+ *
+ * - Provides the function pointer table `timer_funcs` for driver API access.
+ *
+ */
 DEVICE_DT_DEFINE(TIMER4_NODE,
                  timer_stm32_init,
                  NULL,
@@ -367,6 +385,7 @@ DEVICE_DT_DEFINE(TIMER4_NODE,
 /* Timer 6 */
 #if DT_NODE_HAS_STATUS(TIMER6_NODE, okay)
 
+/** @brief Structure that holds the timer 7 data  */
 struct stm32_timer_driver_data timer6_data =
 {
 	.timer_struct       = TIM6,
@@ -375,6 +394,22 @@ struct stm32_timer_driver_data timer6_data =
 	.timer_irq_callback = NULL
 };
 
+
+/**
+ * @brief Define and initialize the STM32 timer device for TIM6.
+ *
+ * This macro registers the TIM6 timer as a Zephyr device using the device
+ * tree node specified by `TIMER6_NODE`.
+ *
+ * - Registers the device with the STM32 timer driver init function.
+ *
+ * - Associates static device data with the driver.
+ *
+ * - Uses `PRE_KERNEL_1` initialization level with a configurable priority.
+ *
+ * - Provides the function pointer table `timer_funcs` for driver API access.
+ *
+ */
 DEVICE_DT_DEFINE(TIMER6_NODE,
                  timer_stm32_init,
                  NULL,
@@ -390,6 +425,7 @@ DEVICE_DT_DEFINE(TIMER6_NODE,
 /* Timer 7 */
 #if DT_NODE_HAS_STATUS(TIMER7_NODE, okay)
 
+/** @brief Structure that holds the timer 7 data  */
 struct stm32_timer_driver_data timer7_data =
 {
 	.timer_struct       = TIM7,
@@ -398,6 +434,21 @@ struct stm32_timer_driver_data timer7_data =
 	.timer_irq_callback = NULL
 };
 
+/**
+ * @brief Define and initialize the STM32 timer device for TIM7.
+ *
+ * This macro registers the TIM7 timer as a Zephyr device using the device
+ * tree node specified by `TIMER7_NODE`.
+ *
+ * - Registers the device with the STM32 timer driver init function.
+ *
+ * - Associates static device data with the driver.
+ *
+ * - Uses `PRE_KERNEL_1` initialization level with a configurable priority.
+ *
+ * - Provides the function pointer table `timer_funcs` for driver API access.
+ *
+ */
 DEVICE_DT_DEFINE(TIMER7_NODE,
                  timer_stm32_init,
                  NULL,

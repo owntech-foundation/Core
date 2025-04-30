@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: LGPL-2.1
  */
 
-/**
+/*
  * @date   2023
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
@@ -48,7 +48,16 @@ extern "C" {
 /**
  *  Configuration types
  */
-
+/**
+ * @brief Defines the possible speeds for the RS485: 
+ *        
+ * - `dac_function_noise`: Creates noise on the DAC
+ *        
+ * - `dac_function_triangle`: Creates a triangle waveform
+ * 
+ * - `dac_function_sawtooth`: Creates a sawtooth waveform
+ * 
+ */
 typedef enum
 {
 	dac_function_noise,
@@ -56,12 +65,26 @@ typedef enum
 	dac_function_sawtooth
 } dac_function_t;
 
+/**
+ * @brief Defines the DAC polarity: 
+ *        
+ * - `dac_polarity_decrement`: Decrements the DAC counter
+ *        
+ * - `dac_polarity_increment`: Increments the DAC counter
+ * 
+ */
 typedef enum
 {
 	dac_polarity_decrement,
 	dac_polarity_increment
 } dac_polarity_t;
 
+/**
+ * @brief Defines the triggers of the DAC: 
+ *        
+ * - `hrtim_trig1` to `hrtim_trig6`: HRTIM driven triggers
+ *        
+ */
 typedef enum
 {
 	hrtim_trig1,
@@ -72,6 +95,11 @@ typedef enum
 	hrtim_trig6
 } dac_trigger_t;
 
+
+/**
+ * @brief Defines the DAC configuration structure 
+ * 
+ */
 typedef struct
 {
 	dac_function_t dac_function;
@@ -82,6 +110,16 @@ typedef struct
 	uint32_t       step_data;
 } dac_function_config_t;
 
+/**
+ * @brief Defines the types of pin configuration of the DAC: 
+ *        
+ * - `dac_pin_internal`
+ * 
+ * - `dac_pin_external`
+ * 
+ * - `dac_pin_internal_and_external`
+ *        
+ */
 typedef enum
 {
 	dac_pin_internal,
@@ -89,9 +127,7 @@ typedef enum
 	dac_pin_internal_and_external
 } dac_pin_config_t;
 
-/**
- *  API
- */
+/* API */
 
 typedef void (*dac_api_setconstvalue)(
 	const struct device* dev,
