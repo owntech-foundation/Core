@@ -87,13 +87,7 @@ void PowerAPI::initMode(leg_t leg,
     for (int8_t i = startIndex; i < endIndex; i++)
     {
         /* Configure PWM frequency */
-        if (timer_frequency != timer_min_frequency){
-            /* If minimum frequency different than maximum, then variable frequency */
-            spin.pwm.initVariableFrequency(timer_frequency, timer_min_frequency);
-        }else{
-            /* If minimum frequency equal to than maximum, then fixed frequency */
-            spin.pwm.initFixedFrequency(timer_frequency);
-        }
+        spin.pwm.initVariableFrequency(timer_frequency, timer_min_frequency);
 
         /* Set modulation */
         spin.pwm.setModulation(spinNumberToTu(dt_pwm_pin[i]),
@@ -238,8 +232,13 @@ void PowerAPI::setDutyCycle(leg_t leg, float32_t duty_leg)
 
     for (int8_t i = startIndex; i < endIndex; i++)
     {
+        uint16_t period = 
+            tu_channel[spinNumberToTu(dt_pwm_pin[i])]->pwm_conf.period;
         uint16_t value =
-            duty_leg * tu_channel[spinNumberToTu(dt_pwm_pin[i])]->pwm_conf.period;
+            duty_leg * period;
+
+        if (value >= period - 3)
+            value = tu_channel[spinNumberToTu(dt_pwm_pin[i])]->pwm_conf.duty_max;    
 
         hrtim_duty_cycle_set(spinNumberToTu(dt_pwm_pin[i]), value);
     }

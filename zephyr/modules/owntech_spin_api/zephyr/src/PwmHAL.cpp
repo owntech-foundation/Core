@@ -212,7 +212,12 @@ void PwmHAL::setDeadTime(hrtim_tu_number_t pwmX,
 
 void PwmHAL::setDutyCycle(hrtim_tu_number_t pwmX, float32_t duty_cycle)
 {
-	uint16_t value = duty_cycle * tu_channel[pwmX]->pwm_conf.period;
+	uint16_t period = tu_channel[pwmX]->pwm_conf.period;
+	uint16_t value = duty_cycle * period;
+	
+	if (value >= period - 3)
+		value = tu_channel[pwmX]->pwm_conf.duty_max;
+
 	hrtim_duty_cycle_set(pwmX, value);
 }
 
