@@ -216,20 +216,6 @@ public:
 	void setDutyCycleMax(float32_t duty_cycle);
 
 	/**
-	 * @brief sets the Minimum Duty Cycle Limit
-	 *
-	 * @param duty_cycle    - new minimum duty cycle value between 0.0 and 1.0
-	*/
-	void setDutyCycleMin(float32_t duty_cycle);
-
-	/**
-	 * @brief sets the Maximum Duty Cycle Limit
-	 *
-	 * @param duty_cycle    - new maximum duty cycle value between 0.0 and 1.0
-	*/
-	void setDutyCycleMax(float32_t duty_cycle);
-
-	/**
 	 * @brief Sets ADC decimator for a leg
 	 *
 	 * This function sets the number of event which will be ignored between
