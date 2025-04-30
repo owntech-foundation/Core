@@ -88,11 +88,11 @@ void PowerAPI::initMode(leg_t leg,
     {
         /* Configure PWM frequency */
         if (timer_frequency != timer_min_frequency){
-            /* If minimum frequency equal to than maximum, then fixed frequency */
-            spin.pwm.initFixedFrequency(timer_frequency);
-        }else{
             /* If minimum frequency different than maximum, then variable frequency */
             spin.pwm.initVariableFrequency(timer_frequency, timer_min_frequency);
+        }else{
+            /* If minimum frequency equal to than maximum, then fixed frequency */
+            spin.pwm.initFixedFrequency(timer_frequency);
         }
 
         /* Set modulation */
