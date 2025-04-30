@@ -434,6 +434,7 @@ extern "C"
         uint32_t resolution;        /* Resolution of the timing unit */
         uint16_t duty_min;          /* Minimum duty cycle for the pre-scaler */
         uint16_t duty_max;          /* Maximum duty cycle for the pre-scaler */
+        uint8_t duty_swap;          /* Detects if the duty has been swapped */
         hrtim_pwm_mode_t pwm_mode;  /* voltage mode or current mode */
         hrtim_external_trigger_t external_trigger;  /* event for current mode */
         hrtim_burst_clk_t burst_clk;/* clock source for burst mode generator*/

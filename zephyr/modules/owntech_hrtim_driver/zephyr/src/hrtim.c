@@ -1555,3 +1555,34 @@ void hrtim_change_frequency(uint32_t new_frequency)
         printk("Minimum frequency = %d \n", HRTIM_MINIM_FREQUENCY);
     }
 }
+
+void hrtim_output_hot_swap(hrtim_tu_number_t tu_number){
+    
+    hrtim_switch_convention_t convention = tu_channel[tu_number]->switch_conv.convention;
+    uint8_t current_swap_state = tu_channel[tu_number]->pwm_conf.duty_swap;
+
+    if(current_swap_state == false){
+        if(convention == conv_PWMx1){
+            LL_HRTIM_EnableSwapOutputs(HRTIM1, tu_channel[tu_number]->pwm_conf.pwm_tu);
+            tu_channel[tu_number]->pwm_conf.duty_swap = 1;    
+        }
+        else
+        {
+            LL_HRTIM_DisableSwapOutputs(HRTIM1, tu_channel[tu_number]->pwm_conf.pwm_tu);
+            tu_channel[tu_number]->pwm_conf.duty_swap = 1;        
+        }
+    }else{
+        if(convention == conv_PWMx1){
+            LL_HRTIM_DisableSwapOutputs(HRTIM1, tu_channel[tu_number]->pwm_conf.pwm_tu);
+            tu_channel[tu_number]->pwm_conf.duty_swap = 0;    
+        }
+        else
+        {
+            LL_HRTIM_EnableSwapOutputs(HRTIM1, tu_channel[tu_number]->pwm_conf.pwm_tu);
+            tu_channel[tu_number]->pwm_conf.duty_swap = 0;        
+        }
+    }
+}
+
+
+
