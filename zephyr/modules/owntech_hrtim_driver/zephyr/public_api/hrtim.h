@@ -251,20 +251,14 @@ hrtim_switch_convention_t hrtim_get_switch_convention(
 );
 
 /**
- * @brief   Activates OUT 1 (switch H) with a given switching convention
+ * @brief   Activates OUT 1 and 2 (switch H and L) with 
+ *          a given switching convention
  *
  * @param[in] tu_number        Timing unit number:
  *                  `MSTR`, `TIMA`, `TIMB`, `TIMC`, `TIMD`, `TIME`, `TIMF`
  */
-void hrtim_cmpl_pwm_out1(hrtim_tu_number_t tu_number);
+void hrtim_cmpl_pwm_out(hrtim_tu_number_t tu_number);
 
-/**
- * @brief   Activates OUT 2 (switch L) with a given switching convention
- *
- * @param[in] tu_number        Timing unit number:
- *                  `MSTR`, `TIMA`, `TIMB`, `TIMC`, `TIMD`, `TIME`, `TIMF`
- */
-void hrtim_cmpl_pwm_out2(hrtim_tu_number_t tu_number);
 
 /**
  * @brief   Sets the frequency of a given timing unit in Hz

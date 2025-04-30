@@ -328,10 +328,15 @@ static inline uint32_t _period_ckpsc(uint32_t freq, timer_hrtim_t *tu)
 
     tu->pwm_conf.period = (uint16_t)period;
 
+    /* Stores the maximum and minimum duty cycle for the timing unit */
+    tu->pwm_conf.duty_max = HRTIM_MAX_PER_and_CMP_REG_VALUES[tu->pwm_conf.ckpsc];
+    tu->pwm_conf.duty_min = HRTIM_MIN_PER_and_CMP_REG_VALUES[tu->pwm_conf.ckpsc];
+
+
     /* Compute and return the effective frequency */
     uint32_t frequency =
         ((f_hrtim / period) * 32
-        + (f_hrtim % period) * 32 / period) / (1 << tu->pwm_conf.ckpsc);
+        + (f_hrtim % period) * 32 / period) / (1 << tu->pwm_conf.ckpsc);    
     return frequency;
 }
 
@@ -595,15 +600,10 @@ void hrtim_init_default_all()
             tu_channel[tu_count]->gpio_conf.unit = unit[tu_count];
 
             /* sets up the switching convention variables of the timing units */
-            tu_channel[tu_count]->switch_conv.set_H[conv_PWMx1] = SET_PER;
-            tu_channel[tu_count]->switch_conv.reset_H[conv_PWMx1] = RST_CMP1;
-            tu_channel[tu_count]->switch_conv.set_L[conv_PWMx1] = SET_CMP1;
-            tu_channel[tu_count]->switch_conv.reset_L[conv_PWMx1] = RST_PER;
-
-            tu_channel[tu_count]->switch_conv.set_H[conv_PWMx2] = SET_CMP1;
-            tu_channel[tu_count]->switch_conv.reset_H[conv_PWMx2] = RST_PER;
-            tu_channel[tu_count]->switch_conv.set_L[conv_PWMx2] = SET_PER;
-            tu_channel[tu_count]->switch_conv.reset_L[conv_PWMx2] = RST_CMP1;
+            tu_channel[tu_count]->switch_conv.set_H   = SET_PER;
+            tu_channel[tu_count]->switch_conv.reset_H = RST_CMP1;
+            tu_channel[tu_count]->switch_conv.set_L   = SET_CMP1;
+            tu_channel[tu_count]->switch_conv.reset_L = RST_PER;
 
             tu_channel[tu_count]->switch_conv.convention = conv_PWMx1;
 
@@ -678,15 +678,10 @@ uint16_t hrtim_tu_init(hrtim_tu_number_t tu_number)
             tu_channel[tu_number]->pwm_conf.pwm_mode == VOLTAGE_MODE)
     {
         /* If we are in voltage mode AND Center aligned */
-        tu_channel[tu_number]->switch_conv.set_H[conv_PWMx1] = SET_NONE;
-        tu_channel[tu_number]->switch_conv.reset_H[conv_PWMx1] = RST_CMP1;
-        tu_channel[tu_number]->switch_conv.set_L[conv_PWMx1] = SET_CMP1;
-        tu_channel[tu_number]->switch_conv.reset_L[conv_PWMx1] = RST_NONE;
-
-        tu_channel[tu_number]->switch_conv.set_H[conv_PWMx2] = SET_CMP1;
-        tu_channel[tu_number]->switch_conv.reset_H[conv_PWMx2] = RST_NONE;
-        tu_channel[tu_number]->switch_conv.set_L[conv_PWMx2] = SET_NONE;
-        tu_channel[tu_number]->switch_conv.reset_L[conv_PWMx2] = RST_CMP1;
+        tu_channel[tu_number]->switch_conv.set_H   = SET_NONE;
+        tu_channel[tu_number]->switch_conv.reset_H = RST_CMP1;
+        tu_channel[tu_number]->switch_conv.set_L   = SET_CMP1;
+        tu_channel[tu_number]->switch_conv.reset_L = RST_NONE;
     }
 
     else if (tu_channel[tu_number]->pwm_conf.pwm_mode == CURRENT_MODE)
@@ -728,22 +723,16 @@ uint16_t hrtim_tu_init(hrtim_tu_number_t tu_number)
                                  1088);
         tu_channel[tu_number]->comp_usage.cmp4 = USED;
 
-        tu_channel[tu_number]->switch_conv.set_H[conv_PWMx1] = SET_CMP4;
-        tu_channel[tu_number]->switch_conv.reset_H[conv_PWMx1] =
+        tu_channel[tu_number]->switch_conv.set_H = SET_CMP4;
+        tu_channel[tu_number]->switch_conv.reset_H =
             (RST_CMP1 | tu_channel[tu_number]->pwm_conf.external_trigger);
-        tu_channel[tu_number]->switch_conv.set_L[conv_PWMx1] =
+        tu_channel[tu_number]->switch_conv.set_L =
             (SET_CMP1 | tu_channel[tu_number]->pwm_conf.external_trigger);
-        tu_channel[tu_number]->switch_conv.reset_L[conv_PWMx1] = RST_CMP4;
-
-        tu_channel[tu_number]->switch_conv.set_H[conv_PWMx2] =
-            (SET_CMP1 | tu_channel[tu_number]->pwm_conf.external_trigger);
-        tu_channel[tu_number]->switch_conv.reset_H[conv_PWMx2] = RST_CMP4;
-        tu_channel[tu_number]->switch_conv.set_L[conv_PWMx2] = SET_CMP4;
-        tu_channel[tu_number]->switch_conv.reset_L[conv_PWMx2] =
-            (RST_CMP1 | tu_channel[tu_number]->pwm_conf.external_trigger);
+        tu_channel[tu_number]->switch_conv.reset_L = RST_CMP4;
     }
 
-    hrtim_cmpl_pwm_out1(tu_number);
+    hrtim_cmpl_pwm_out(tu_number);
+
     /* returns the period of the timing unit */
     return tu_channel[tu_number]->pwm_conf.period;
 }
@@ -854,26 +843,37 @@ hrtim_switch_convention_t hrtim_get_switch_convention(hrtim_tu_number_t tu_numbe
     return tu_channel[tu_number]->switch_conv.convention;
 }
 
-void hrtim_cmpl_pwm_out1(hrtim_tu_number_t tu_number)
+void hrtim_cmpl_pwm_out(hrtim_tu_number_t tu_number)
 {
+    /* Sets the events for the upper switch and bottom switch as reversed 
+       This enables changing conventions by swapping. */
+
     LL_HRTIM_OUT_SetOutputSetSrc(HRTIM1,
         tu_channel[tu_number]->gpio_conf.OUT_H,
-        tu_channel[tu_number]->switch_conv.set_H[tu_channel[tu_number]->switch_conv.convention]);
+        tu_channel[tu_number]->switch_conv.set_H);
 
     LL_HRTIM_OUT_SetOutputResetSrc(HRTIM1,
         tu_channel[tu_number]->gpio_conf.OUT_H,
-        tu_channel[tu_number]->switch_conv.reset_H[tu_channel[tu_number]->switch_conv.convention]);
-}
+        tu_channel[tu_number]->switch_conv.reset_H);
 
-void hrtim_cmpl_pwm_out2(hrtim_tu_number_t tu_number)
-{
     LL_HRTIM_OUT_SetOutputSetSrc(HRTIM1,
         tu_channel[tu_number]->gpio_conf.OUT_L,
-        tu_channel[tu_number]->switch_conv.set_L[tu_channel[tu_number]->switch_conv.convention]);
+        tu_channel[tu_number]->switch_conv.set_L);
+
     LL_HRTIM_OUT_SetOutputResetSrc(HRTIM1,
         tu_channel[tu_number]->gpio_conf.OUT_L,
-        tu_channel[tu_number]->switch_conv.reset_L[tu_channel[tu_number]->switch_conv.convention]);
+        tu_channel[tu_number]->switch_conv.reset_L);    
+
+    /* The base convention (no swap) is the upper switch  */
+    if(tu_channel[tu_number]->switch_conv.convention == PWMx1){
+        LL_HRTIM_DisableSwapOutputs(HRTIM1,
+            tu_channel[tu_number]->pwm_conf.pwm_tu);
+    }else{
+        LL_HRTIM_EnableSwapOutputs(HRTIM1,
+            tu_channel[tu_number]->pwm_conf.pwm_tu);
+    }    
 }
+
 
 void hrtim_frequency_set(uint32_t frequency_set, uint32_t frequency_min)
 {
