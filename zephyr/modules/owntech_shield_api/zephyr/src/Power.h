@@ -83,10 +83,25 @@ public:
 	 * leg.
 	 *
 	 * @param leg The leg for which to set the duty cycle: `LEG1` to `ALL` 
-	 * @param duty_leg The duty cycle value to set
+	 * @param duty_value The duty cycle value to set
 	 * 				   (a floating-point number between `0.1` and `0.9`).
 	 */
-	void setDutyCycle(leg_t leg, float32_t duty_leg);
+	void setDutyCycle(leg_t leg, float32_t duty_value);
+
+	/**
+	 * @brief Set the duty cycle for a specific leg's power control.
+	 *
+	 * This function sets the duty cycle for the power control of a specified 
+	 * leg. 
+	 * 
+	 * The duty cycle determines the ON/OFF time ratio of the power signal 
+	 * for the leg.
+	 *
+	 * @param leg The leg for which to set the duty cycle: `LEG1` to `ALL` 
+	 * @param duty_value The duty cycle value to set an unsigned integer number 
+	 * 				   between `duty_cycle_min_raw` and `duty_cycle_max_raw`.
+	 */
+	void setDutyCycleRaw(leg_t leg, uint16_t duty_value);
 
 
 	/**
@@ -204,16 +219,75 @@ public:
 	/**
 	 * @brief sets the Minimum Duty Cycle Limit
 	 *
+	 * @param leg the leg for which to set dead time value: `LEG1` to `ALL`
 	 * @param duty_cycle    - new minimum duty cycle value between 0.0 and 1.0
 	*/
-	void setDutyCycleMin(float32_t duty_cycle);
+	void setDutyCycleMin(leg_t leg, float32_t duty_cycle);
+
+	/**
+	 * @brief sets the Minimum Duty Cycle Limit as an unsigned int
+	 *
+	 * @param leg the leg for which to set dead time value: `LEG1` to `ALL`
+	 * @param duty_cycle - new minimum duty cycle value between `0` and `period`
+	*/
+	void setDutyCycleMinRaw(leg_t leg, uint16_t duty_cycle);
+
+	/**
+	 * @brief sets the Maximum Duty Cycle Limit as an unsigned int
+	 *
+	 * @param leg the leg for which to set dead time value: `LEG1` to `ALL`
+	 * @param duty_cycle - new minimum duty cycle value between `0` and `period`
+	*/
+	void setDutyCycleMaxRaw(leg_t leg, uint16_t duty_cycle);
 
 	/**
 	 * @brief sets the Maximum Duty Cycle Limit
 	 *
+	 * @param leg the leg for which to set dead time value: `LEG1` to `ALL`
 	 * @param duty_cycle    - new maximum duty cycle value between 0.0 and 1.0
 	*/
-	void setDutyCycleMax(float32_t duty_cycle);
+	void setDutyCycleMax(leg_t leg, float32_t duty_cycle);
+
+	/**
+	 * @brief gets the Maximum Duty Cycle Limit as a float
+	 *
+	 * @param leg the leg for which to set dead time value: `LEG1` to `LEG5`.
+	 * @warning `ALL` is NOT supported !
+	*/
+	float32_t getDutyCycleMax(leg_t leg);
+
+	/**
+	 * @brief gets the Maximum Duty Cycle Limit as an unsigned integer.
+	 *
+	 * @param leg the leg for which to set dead time value: `LEG1` to `LEG5`.
+	 * @warning `ALL` is NOT supported !
+	*/
+	uint16_t getDutyCycleMaxRaw(leg_t leg);
+
+	/**
+	 * @brief gets the Minimum Duty Cycle Limit as a float
+	 *
+	 * @param leg the leg for which to set dead time value: `LEG1` to `LEG5`.
+	 * @warning `ALL` is NOT supported !
+	*/
+	float32_t getDutyCycleMin(leg_t leg);
+
+	/**
+	 * @brief gets the Minimum Duty Cycle Limit as an unsigned integer.
+	 *
+	 * @param leg the leg for which to set dead time value: `LEG1` to `LEG5`.
+	 * @warning `ALL` is NOT supported !
+	*/
+	uint16_t getDutyCycleMinRaw(leg_t leg);
+
+	/**
+	 * @brief returns the value of the leg period as an unsigned integer
+	 *
+	 * @param leg the leg for which to set dead time value: `LEG1` to `LEG5`.
+	 * @warning `ALL` is NOT supported !
+	*/
+	uint16_t getPeriod(leg_t leg);
+
 
 	/**
 	 * @brief Sets ADC decimator for a leg
@@ -249,10 +323,6 @@ public:
 	 * @param leg Leg to initialize: `LEG1` to `ALL`
 	 */
 	void initBoost(leg_t leg);
-
-	float32_t duty_cycle_min = 0.1;
-	float32_t duty_cycle_max = 0.9;
-
 
 };
 

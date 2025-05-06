@@ -333,6 +333,12 @@ static inline uint32_t _period_ckpsc(uint32_t freq, timer_hrtim_t *tu)
     tu->pwm_conf.duty_max = HRTIM_MAX_PER_and_CMP_REG_VALUES[tu->pwm_conf.ckpsc];
     tu->pwm_conf.duty_min = HRTIM_MIN_PER_and_CMP_REG_VALUES[tu->pwm_conf.ckpsc];
 
+    /* Stores the maximum and minimum duty cycle for the user */
+    tu->pwm_conf.duty_max_user = tu->pwm_conf.period * 0.9;
+    tu->pwm_conf.duty_min_user = tu->pwm_conf.period * 0.1;
+    tu->pwm_conf.duty_max_user_float = 0.9;
+    tu->pwm_conf.duty_min_user_float = 0.1;
+
 
     /* Compute and return the effective frequency */
     uint32_t frequency =
@@ -698,11 +704,9 @@ uint16_t hrtim_tu_init(hrtim_tu_number_t tu_number)
         DualDAC_init(tu_number);
 
         /* Set the duty_cycle max with comparator 1  */
-        uint32_t duty_cycle_max = tu_channel[tu_number]->pwm_conf.period * 0.9;
-
         LL_HRTIM_TIM_SetCompare1(HRTIM1,
                                  tu_channel[tu_number]->pwm_conf.pwm_tu,
-                                 duty_cycle_max);
+                                 tu_channel[tu_number]->pwm_conf.duty_max_user);
 
         tu_channel[tu_number]->comp_usage.cmp1 = USED;
 
@@ -938,9 +942,10 @@ void hrtim_tu_cmp_set(hrtim_tu_number_t tu_number, hrtim_cmp_t cmp, uint16_t val
     case CMP1xR:
         if (tu_channel[tu_number]->pwm_conf.pwm_mode != CURRENT_MODE)
         {
-            LL_HRTIM_TIM_SetCompare1(HRTIM1,
-                                     tu_channel[tu_number]->pwm_conf.pwm_tu,
-                                     value);
+            HRTIM1->sTimerxRegs[tu_number].CMP1xR = value;
+            // LL_HRTIM_TIM_SetCompare1(HRTIM1,
+            //                          tu_channel[tu_number]->pwm_conf.pwm_tu,
+            //                          value);
             tu_channel[tu_number]->comp_usage.cmp1 = USED;
             tu_channel[tu_number]->comp_usage.cmp1_value = value;
         }
@@ -948,26 +953,29 @@ void hrtim_tu_cmp_set(hrtim_tu_number_t tu_number, hrtim_cmp_t cmp, uint16_t val
     case CMP2xR:
         if (tu_channel[tu_number]->pwm_conf.pwm_mode != CURRENT_MODE)
         {
-            LL_HRTIM_TIM_SetCompare2(HRTIM1,
-                                     tu_channel[tu_number]->pwm_conf.pwm_tu,
-                                     value);
+            HRTIM1->sTimerxRegs[tu_number].CMP2xR = value;
+            // LL_HRTIM_TIM_SetCompare2(HRTIM1,
+            //                          tu_channel[tu_number]->pwm_conf.pwm_tu,
+            //                          value);
             tu_channel[tu_number]->comp_usage.cmp2 = USED;
             tu_channel[tu_number]->comp_usage.cmp2_value = value;
         }
         break;
     case CMP3xR:
-        LL_HRTIM_TIM_SetCompare3(HRTIM1,
-                                 tu_channel[tu_number]->pwm_conf.pwm_tu,
-                                 value);
+        HRTIM1->sTimerxRegs[tu_number].CMP3xR = value;
+        // LL_HRTIM_TIM_SetCompare3(HRTIM1,
+        //                          tu_channel[tu_number]->pwm_conf.pwm_tu,
+        //                          value);
         tu_channel[tu_number]->comp_usage.cmp3 = USED;
         tu_channel[tu_number]->comp_usage.cmp3_value = value;
         break;
     case CMP4xR:
         if (tu_channel[tu_number]->pwm_conf.pwm_mode != CURRENT_MODE)
         {
-            LL_HRTIM_TIM_SetCompare4(HRTIM1,
-                                     tu_channel[tu_number]->pwm_conf.pwm_tu,
-                                     value);
+            HRTIM1->sTimerxRegs[tu_number].CMP4xR = value;
+            // LL_HRTIM_TIM_SetCompare4(HRTIM1,
+            //                          tu_channel[tu_number]->pwm_conf.pwm_tu,
+            //                          value);
             tu_channel[tu_number]->comp_usage.cmp4 = USED;
             tu_channel[tu_number]->comp_usage.cmp4_value = value;
         }

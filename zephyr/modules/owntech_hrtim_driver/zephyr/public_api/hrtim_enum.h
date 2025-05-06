@@ -418,26 +418,30 @@ extern "C"
      */
     typedef struct
     {
-        hrtim_tu_t pwm_tu;          /* Timing Unit associated with the PWM */
-        uint16_t rise_dead_time;    /* Rising Edge Dead time */
-        uint16_t fall_dead_time;    /* Falling Edge Dead time */
-        uint16_t duty_cycle;        /* Current value of its duty cycle */
-        uint16_t period;            /* Period used by the unit */
-        uint16_t max_period;        /* Max Period used by the unit */
-        uint16_t min_period;        /* Min Period used by the unit */
-        uint32_t frequency;         /* Frequency used by the unit */
-        uint32_t max_frequency;     /* Max frequency used by the unit */
-        uint32_t min_frequency;     /* Min frequency used by the unit */
-        hrtim_cnt_t modulation;     /* Type of modulation used for this unit */
-        hrtim_tu_ON_OFF_t unit_on;  /* State of the time unit (ON/OFF) */
-        uint8_t ckpsc;              /* Clock pre-scaler of the timing unit */
-        uint32_t resolution;        /* Resolution of the timing unit */
-        uint16_t duty_min;          /* Minimum duty cycle for the pre-scaler */
-        uint16_t duty_max;          /* Maximum duty cycle for the pre-scaler */
-        uint8_t duty_swap;          /* Detects if the duty has been swapped */
-        hrtim_pwm_mode_t pwm_mode;  /* voltage mode or current mode */
+        hrtim_tu_t pwm_tu;             /* Timing Unit associated with the PWM */
+        uint16_t rise_dead_time;       /* Rising Edge Dead time */
+        uint16_t fall_dead_time;       /* Falling Edge Dead time */
+        uint16_t duty_cycle;           /* Current value of its duty cycle */
+        uint16_t period;               /* Period used by the unit */
+        uint16_t max_period;           /* Absolute Max Period used by the unit */
+        uint16_t min_period;           /* Absolute Min Period used by the unit */
+        uint32_t frequency;            /* Frequency used by the unit */
+        uint32_t max_frequency;        /* Max frequency used by the unit */
+        uint32_t min_frequency;        /* Min frequency used by the unit */
+        hrtim_cnt_t modulation;        /* Type of modulation used for this unit */
+        hrtim_tu_ON_OFF_t unit_on;     /* State of the time unit (ON/OFF) */
+        uint8_t ckpsc;                 /* Clock pre-scaler of the timing unit */
+        uint32_t resolution;           /* Resolution of the timing unit */
+        uint16_t duty_min;             /* Absolute Minimum duty cycle for the timing unit */
+        uint16_t duty_max;             /* Absolute Maximum duty cycle for the timing unit */
+        uint16_t duty_min_user;        /* Minimum duty cycle set by the user */
+        uint16_t duty_max_user;        /* Maximum duty cycle set by the user */
+        float32_t duty_min_user_float; /* Minimum duty cycle set by the user in float */
+        float32_t duty_max_user_float; /* Maximum duty cycle set by the user in float */
+        uint8_t duty_swap;             /* Detects if the duty has been swapped */
+        hrtim_pwm_mode_t pwm_mode;     /* voltage mode or current mode */
         hrtim_external_trigger_t external_trigger;  /* event for current mode */
-        hrtim_burst_clk_t burst_clk;/* clock source for burst mode generator*/
+        hrtim_burst_clk_t burst_clk;   /* clock source for burst mode generator*/
     } pwm_conf_t;
 
     /**
