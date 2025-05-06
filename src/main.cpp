@@ -18,92 +18,90 @@
  */
 
 /**
- * @brief  This file it the main entry point of the
- *         OwnTech Power API. Please check the OwnTech
- *         documentation for detailed information on
- *         how to use Power API: https://docs.owntech.org/
+ * @brief  This example shows how to blink the onboard LED of the Spin board.
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  * @author Luiz Villa <luiz.villa@laas.fr>
+ * @author Ayoub Farah Hassan <ayoub.farah-hassan@laas.fr>
  */
 
-/*--------------OWNTECH APIs---------------------------------- */
-#include "TaskAPI.h"
-#include "ShieldAPI.h"
+/* --------------OWNTECH APIs---------------------------------- */
 #include "SpinAPI.h"
+#include "TaskAPI.h"
 
-/*--------------SETUP FUNCTIONS DECLARATION------------------- */
+/* --------------SETUP FUNCTIONS DECLARATION------------------- */
+
 /* Setups the hardware and software of the system */
 void setup_routine();
 
-/*--------------LOOP FUNCTIONS DECLARATION-------------------- */
+/* --------------LOOP FUNCTIONS DECLARATION-------------------- */
 
 /* Code to be executed in the background task */
 void loop_background_task();
 /* Code to be executed in real time in the critical task */
 void loop_critical_task();
 
-/*--------------USER VARIABLES DECLARATIONS------------------- */
+/* --------------USER VARIABLES DECLARATIONS------------------- */
 
 
 
-/*--------------SETUP FUNCTIONS------------------------------- */
+/* --------------SETUP FUNCTIONS------------------------------- */
 
 /**
  * This is the setup routine.
- * It is used to call functions that will initialize your hardware and tasks.
+ * It is used to call functions that will initialize your spin, power shields
+ * and tasks.
  *
- * In this default main, we only spawn two tasks
- *  - A background task.
- *  - A critical task is defined but not started.
- *
- * NOTE: It is important to follow the steps and initialize the hardware first
- * and the tasks second.
+ * In this example, we spawn a background task.
+ * An optional critical task can be initialized by uncommenting the two
+ * commented lines.
  */
 void setup_routine()
 {
-    /* STEP 1 - SETUP THE HARDWARE */
-
-    /* STEP 2 - SETUP THE TASKS */
-
+    /* Declare task */
     uint32_t background_task_number =
                             task.createBackground(loop_background_task);
 
-    /* Uncomment the following line if you use the critical task */
+    /* Uncomment following line if you use the critical task */
     /* task.createCritical(loop_critical_task, 500); */
 
-    /* STEP 3 - LAUNCH THE TASKS */
+    /* Finally, start tasks */
     task.startBackground(background_task_number);
-
-    /* Uncomment the following line if you use the critical task */
+    /* Uncomment following line if you use the critical task */
     /* task.startCritical(); */
 }
 
-/*--------------LOOP FUNCTIONS-------------------------------- */
+/* --------------LOOP FUNCTIONS-------------------------------- */
 
 /**
  * This is the code loop of the background task
- * You can use it to execute slow code such as state-machines.
- * The pause define its pseudo-periodicity.
+ * It runs perpetually. Here a `suspendBackgroundMs` is used to pause during
+ * 1000ms between each LED toggles.
+ * Hence we expect the LED to blink each second.
  */
 void loop_background_task()
 {
-    printk("Hello World! \n");
+    /* Task content */
     spin.led.toggle();
 
-    /* This pauses the task for 1000 milli seconds */
+    /* Pause between two runs of the task */
     task.suspendBackgroundMs(1000);
 }
 
 /**
+ * Uncomment lines in setup_routine() to use critical task.
+ *
  * This is the code loop of the critical task
- * It is executed every 500 micro-seconds defined in the setup_routine function.
- * You can use it to execute an ultra-fast code with the highest priority which
- * cannot be interrupted.
+ * It is executed every 500 micro-seconds defined in the setup_software
+ * function. You can use it to execute an ultra-fast code with
+ * the highest priority which cannot be interrupted by the background tasks.
+ *
+ * In the critical task, you can implement your control algorithm that will
+ * run in Real Time and control your power flow.
  */
 void loop_critical_task()
 {
-    /* This task is left empty in this default main */
+
 }
 
 /**

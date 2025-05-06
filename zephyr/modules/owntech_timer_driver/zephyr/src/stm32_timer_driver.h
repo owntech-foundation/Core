@@ -37,6 +37,10 @@
 #define TIMER4_INTERRUPT_LINE DT_IRQN(TIMER4_NODE)
 #define TIMER4_INTERRUPT_PRIO DT_IRQ_BY_IDX(TIMER4_NODE, 0, priority)
 
+#define TIMER3_NODE           DT_NODELABEL(timers3)
+#define TIMER3_INTERRUPT_LINE DT_IRQN(TIMER3_NODE)
+#define TIMER3_INTERRUPT_PRIO DT_IRQ_BY_IDX(TIMER3_NODE, 0, priority)
+
 #define TIMER6_NODE           DT_NODELABEL(timers6)
 #define TIMER6_INTERRUPT_LINE DT_IRQN(TIMER6_NODE)
 #define TIMER6_INTERRUPT_PRIO DT_IRQ_BY_IDX(TIMER6_NODE, 0, priority)
@@ -159,6 +163,32 @@ uint32_t timer_stm32_get_count(const struct device* dev);
  * @param dev Pointer to the timer device.
  */
 void timer_stm32_clear(const struct device* dev);
+
+
+/**
+ * @brief Initialize `TIM3` in incremental encoder mode.
+ *
+ * This function configures TIM3 as a quadrature encoder interface using
+ * STM32 LL (Low Layer) drivers. It sets up input capture channels, filters,
+ * polarity, encoder mode, and index signal behavior.
+ *
+ * - Enables the peripheral clock for `TIM3`.
+ *
+ * - Initializes `TIM3` with no prescaler and 16-bit auto-reload.
+ *
+ * - Sets encoder mode to X4 using both TI1 and TI2 signals.
+ *
+ * - Configures input capture channels CH1 and CH2 for rising edge detection,
+ *   filter settings, and direct input mapping.
+ *
+ * - Disables master/slave mode and trigger output.
+ *
+ * - Configures the external trigger and index signal parameters.
+ *
+ * - Enables the encoder index feature.
+ *
+ */
+void init_timer_3();
 
 
 /**

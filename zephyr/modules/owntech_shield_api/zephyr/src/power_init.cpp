@@ -29,6 +29,8 @@
 
 uint32_t timer_frequency = DT_PROP(POWER_SHIELD_ID, default_frequency);
 
+uint32_t timer_min_frequency = DT_PROP(POWER_SHIELD_ID, min_frequency);
+
 uint16_t dt_pwm_pin[] =
     {DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_PWM_PIN)};
 

@@ -187,6 +187,16 @@ public:
      void setDutyCycle(hrtim_tu_number_t pwmX, float32_t duty_cycle);
 
      /**
+      * @brief Sets the duty cycle for the selected timing unit using an 
+      *        unsigned integer
+      *
+      * @param[in] pwmX  PWM Unit: `PWMA`,`PWMB`,`PWMC`,`PWMD`,`PWME`,`PWMF`
+      * @param[in] value duty cycle value as an unsigned integer
+      */
+     void setDutyCycleRaw(hrtim_tu_number_t pwmX, uint16_t duty_cycle);
+
+
+     /**
       * @brief This function sets the phase shift in respect to timer A
       *        for the selected timing unit
       *
@@ -536,6 +546,12 @@ public:
       *
       */
      void deInitBurstMode();
+
+private:
+
+     bool swap_state[HRTIM_CHANNELS] = {false};
+     uint16_t period[HRTIM_CHANNELS] = {0};
+
 };
 
 #endif /* PWMHAL_H_ */

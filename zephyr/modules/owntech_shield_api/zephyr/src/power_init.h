@@ -166,11 +166,25 @@ typedef enum{
     CM_DAC3 = 30,
 }cm_dac_t;
 
+
 /**
  * Define a variable `timer_frequency` and initialize it with the `frequency`
  * property from the Device Tree node with the ID `POWER_SHIELD_ID`.
  */
 extern uint32_t timer_frequency;
+
+/** Define a variable 'timer_min_frequency' and initialize it with the 'min-frequency'
+ * property from the Device Tree node with the ID 'POWER_SHIELD_ID'.
+ */
+extern uint32_t timer_min_frequency;
+
+
+/** 
+ * Define a variable 'timer_min_frequency' and initialize it with the 'min-frequency'
+ * property from the Device Tree node with the ID 'POWER_SHIELD_ID'.
+ */
+extern uint32_t timer_min_frequency;
+
 
 /**
  * Define an array `dt_pwm_pin` of type `hrtim_tu_number_t` and initialize it

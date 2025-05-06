@@ -29,53 +29,102 @@
 
 
 static const struct device* timer4 = DEVICE_DT_GET(TIMER4_DEVICE);
+static const struct device* timer3 = DEVICE_DT_GET(TIMER3_DEVICE);
 
 bool TimerHAL::timer4init    = false;
 bool TimerHAL::timer4started = false;
+bool TimerHAL::timer3init    = false;
+bool TimerHAL::timer3started = false;
 
 
-void TimerHAL::timer4Initialize()
+void TimerHAL::Initialize(timernumber_t timer_number)
 {
-	if (device_is_ready(timer4) == true)
-	{
-		/* Configure timer */
-		struct timer_config_t timer_cfg =
-		{
-			.timer_enable_irq = 0,
-			.timer_enable_encoder = 1,
-			.timer_enc_pin_mode = pull_up
-
-		};
-		timer_config(timer4, &timer_cfg);
-		timer4init = true;
-	}
-}
-
-void TimerHAL::startLogTimer4IncrementalEncoder()
-{
-	if (timer4init == false)
-	{
-		timer4Initialize();
-	}
-
-	if (timer4started == false)
-	{
+	if (timer_number == TIMER4){
 		if (device_is_ready(timer4) == true)
 		{
-			timer_start(timer4);
-			timer4started = true;
+			/* Configure timer */
+			struct timer_config_t timer_cfg =
+			{
+				.timer_enable_irq = 0,
+				.timer_enable_encoder = 1,
+				.timer_enc_pin_mode = pull_up
+
+			};
+			timer_config(timer4, &timer_cfg);
+			timer4init = true;
 		}
+	}else{
+		if (device_is_ready(timer3) == true)
+		{
+			/* Configure timer */
+			struct timer_config_t timer_cfg =
+			{
+				.timer_enable_irq = 0,
+				.timer_enable_encoder = 1,
+				.timer_enc_pin_mode = pull_up
+
+			};
+			timer_config(timer3, &timer_cfg);
+			timer3init = true;
+		}
+
 	}
 }
 
-uint32_t TimerHAL::getTimer4IncrementalEncoderValue()
+void TimerHAL::startLogIncrementalEncoder(timernumber_t timer_number)
 {
-	if (timer4started == true)
-	{
-		return timer_get_count(timer4);
+	if(timer_number == TIMER4){
+		if (timer4init == false)
+		{
+			Initialize(TIMER4);
+		}
+
+		if (timer4started == false)
+		{
+			if (device_is_ready(timer4) == true)
+			{
+				timer_start(timer4);
+				timer4started = true;
+			}
+		}
+	}else{
+		if (timer3init == false)
+		{
+			Initialize(TIMER3);
+		}
+
+		if (timer3started == false)
+		{
+			if (device_is_ready(timer3) == true)
+			{
+				timer_start(timer3);
+				timer3started = true;
+			}
+		}
+
 	}
-	else
-	{
-		return 0;
+}
+
+uint32_t TimerHAL::getIncrementalEncoderValue(timernumber_t timer_number)
+{
+	if(timer_number == TIMER4){
+		if (timer4started == true)
+		{
+			return timer_get_count(timer4);
+		}
+		else
+		{
+			return 0;
+		}
+	}else{
+		if (timer3started == true)
+		{
+			return timer_get_count(timer3);
+		}
+		else
+		{
+			return 0;
+		}
+
 	}
 }
