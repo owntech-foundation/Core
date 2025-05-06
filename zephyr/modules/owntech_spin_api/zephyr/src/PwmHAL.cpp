@@ -33,7 +33,7 @@
 
 void PwmHAL::initUnit(hrtim_tu_number_t pwmX)
 {
-	hrtim_tu_init(pwmX);
+	period[pwmX] = hrtim_tu_init(pwmX);
 }
 
 void PwmHAL::startDualOutput(hrtim_tu_number_t pwmX)
@@ -214,26 +214,43 @@ void PwmHAL::setDutyCycle(hrtim_tu_number_t pwmX, float32_t duty_cycle)
 {
 	uint16_t period = tu_channel[pwmX]->pwm_conf.period;
 	uint16_t value = duty_cycle * period;
-	uint8_t swap_state = tu_channel[pwmX]->pwm_conf.duty_swap;
 
-	/* Implements a logic that allows a duty cycle of 100% */
-	if (value >= period-3){
-		value = 0;
-		hrtim_duty_cycle_set(pwmX, value);
-	
-		if(swap_state == false) hrtim_output_hot_swap(pwmX);
-	
-	}else{
-
-		if(swap_state == true) {
-			hrtim_duty_cycle_set(pwmX, value);
-			hrtim_output_hot_swap(pwmX);
-		}else{
-			hrtim_duty_cycle_set(pwmX, value);
-		}
-	}
+	setDutyCycleRaw(pwmX,value);
 
 }
+
+void PwmHAL::setDutyCycleRaw(hrtim_tu_number_t pwmX, uint16_t duty_cycle)
+{
+    timer_hrtim_t *tu = tu_channel[pwmX]; /* Get pointer to timer unit config */
+    uint16_t previous_duty_cycle = tu->pwm_conf.duty_cycle; 
+    /* Store previously set duty cycle */
+
+    if (previous_duty_cycle == duty_cycle) {
+        return; /* Skip update if duty cycle has not changed */
+    }
+
+    uint16_t period = tu->pwm_conf.period;         /* Get PWM period */
+    bool swap_state = tu->pwm_conf.duty_swap;      /* Get output swap state */
+
+    /* True if near 100% duty */
+    bool over_limit = (duty_cycle >= period - 3); 
+
+    /* Force 0% to avoid glitches near 100% */
+    duty_cycle = over_limit ? 0 : duty_cycle; 
+
+    /* Flip outputs only if needed to preserve polarity */
+    bool force_swap = swap_state ^ over_limit; 
+
+    /* Write new duty cycle to HRTIM registers */
+    hrtim_duty_cycle_set(pwmX, duty_cycle); 
+
+    if (force_swap) {
+        hrtim_output_hot_swap(pwmX); 
+        /* Flip the outputs (high ↔ low) */
+    }
+}
+
+
 
 void PwmHAL::setPhaseShift(hrtim_tu_number_t pwmX, int16_t shift)
 {

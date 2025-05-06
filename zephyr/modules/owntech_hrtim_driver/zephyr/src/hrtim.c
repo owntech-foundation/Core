@@ -691,6 +691,8 @@ uint16_t hrtim_tu_init(hrtim_tu_number_t tu_number)
         tu_channel[tu_number]->switch_conv.reset_H = RST_CMP1;
         tu_channel[tu_number]->switch_conv.set_L   = SET_CMP1;
         tu_channel[tu_number]->switch_conv.reset_L = RST_NONE;
+        tu_channel[tu_number]->comp_usage.cmp1 = USED;
+
     }
 
     else if (tu_channel[tu_number]->pwm_conf.pwm_mode == CURRENT_MODE)
@@ -908,7 +910,7 @@ inline uint16_t hrtim_period_Master_get()
     return timerMaster.pwm_conf.period;
 }
 
-inline uint16_t hrtim_period_get(hrtim_tu_number_t tu_number)
+inline uint16_t  hrtim_period_get(hrtim_tu_number_t tu_number)
 {
     return tu_channel[tu_number]->pwm_conf.period;
 }
@@ -1088,18 +1090,11 @@ void hrtim_dt_set(hrtim_tu_number_t tu_number, uint16_t rise_ns, uint16_t fall_n
                                rise_dt);
 }
 
-/* Duty_cycle should not be set if we are in current mode */
-void hrtim_duty_cycle_set(hrtim_tu_number_t tu_number, uint16_t value)
+inline void hrtim_duty_cycle_set(hrtim_tu_number_t tu_number, uint16_t value)
 {
-    if (value != tu_channel[tu_number]->pwm_conf.duty_cycle &&
-        tu_channel[tu_number]->pwm_conf.pwm_mode != CURRENT_MODE)
-    {
-        tu_channel[tu_number]->pwm_conf.duty_cycle = value;
-        /* Set comparator for duty cycle */
-        hrtim_tu_cmp_set(tu_number, CMP1xR, value);
-    }
+    tu_channel[tu_number]->pwm_conf.duty_cycle = value;
+    HRTIM1->sTimerxRegs[tu_number].CMP1xR = value;
 }
-
 
 
 void hrtim_phase_shift_set(hrtim_tu_number_t tu_number, uint16_t shift)
