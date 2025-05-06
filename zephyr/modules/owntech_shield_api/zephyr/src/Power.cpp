@@ -68,6 +68,7 @@ void PowerAPI::initMode(leg_t leg,
 {
     int8_t startIndex = 0;
     int8_t endIndex = 0;
+    uint16_t period = 0;
 
    /*  If ALL is selected, loop through all legs */
     if (leg == ALL)
@@ -87,7 +88,7 @@ void PowerAPI::initMode(leg_t leg,
     for (int8_t i = startIndex; i < endIndex; i++)
     {
         /* Configure PWM frequency */
-        spin.pwm.initFixedFrequency(timer_frequency);
+        spin.pwm.initVariableFrequency(timer_frequency, timer_min_frequency);
 
         /* Set modulation */
         spin.pwm.setModulation(spinNumberToTu(dt_pwm_pin[i]),
@@ -202,20 +203,27 @@ void PowerAPI::initMode(leg_t leg,
 }
 
 
-void PowerAPI::setDutyCycle(leg_t leg, float32_t duty_leg)
+void PowerAPI::setDutyCycle(leg_t leg, float32_t duty_value)
 {
-    /* Clamp the duty cycle to be within the range 0.1 to 0.9 */
-    if (duty_leg > 0.9)
-    {
-        duty_leg = 0.9;
-    }
-    else if (duty_leg < 0.1)
-    {
-        duty_leg = 0.1;
-    }
+    uint16_t period;
+    uint16_t value;
+
+    period = tu_channel[spinNumberToTu(dt_pwm_pin[leg])]->pwm_conf.period;
+    value = duty_value * period;
+
+    setDutyCycleRaw(leg, value);
+}
+
+void PowerAPI::setDutyCycleRaw(leg_t leg, uint16_t duty_value)
+{
+    uint16_t period;
+    uint8_t swap_state;
+    hrtim_tu_number_t leg_tu;
+    uint16_t duty_cycle_max_raw;
+    uint16_t duty_cycle_min_raw;
 
     int8_t startIndex = 0;
-    int8_t endIndex = 0;
+    int8_t endIndex = 0;    
 
     /*  If ALL is selected, loop through all legs */
     if (leg == ALL)
@@ -232,10 +240,42 @@ void PowerAPI::setDutyCycle(leg_t leg, float32_t duty_leg)
 
     for (int8_t i = startIndex; i < endIndex; i++)
     {
-        uint16_t value =
-            duty_leg * tu_channel[spinNumberToTu(dt_pwm_pin[i])]->pwm_conf.period;
+        leg_tu = spinNumberToTu(dt_pwm_pin[i]);
 
-        hrtim_duty_cycle_set(spinNumberToTu(dt_pwm_pin[i]), value);
+        duty_cycle_max_raw = tu_channel[leg_tu]->pwm_conf.duty_max_user;
+        duty_cycle_min_raw = tu_channel[leg_tu]->pwm_conf.duty_min_user;
+
+        /* Clamp the duty cycle to be within the range min to max */
+        if (duty_value > duty_cycle_max_raw)
+        {
+            duty_value = duty_cycle_max_raw;
+        }
+        else if (duty_value < duty_cycle_min_raw)
+        {
+            duty_value = duty_cycle_min_raw;
+        }
+        
+        period = tu_channel[leg_tu]->pwm_conf.period;
+        swap_state = tu_channel[leg_tu]->pwm_conf.duty_swap;
+
+        /* Implements a logic that allows for a duty cycle of 100% */
+        if (duty_value >= period-3){
+            duty_value = 0;
+            hrtim_duty_cycle_set(leg_tu, duty_value);
+        
+            if(swap_state == false){ 
+                hrtim_output_hot_swap(leg_tu);
+            }        
+        }
+        else
+        {    
+            if(swap_state == true) {
+                hrtim_duty_cycle_set(leg_tu, duty_value);
+                hrtim_output_hot_swap(leg_tu);
+            }else{
+                hrtim_duty_cycle_set(leg_tu, duty_value);
+            }
+        }
     }
 }
 
@@ -400,8 +440,8 @@ void PowerAPI::connectDriver(leg_t leg)
 
     for (int8_t i = startIndex; i < endIndex; i++)
     {
-        if(dt_pin_driver[leg] != 0) {
-            spin.gpio.setPin(dt_pin_driver[leg]);
+        if(dt_pin_driver[i] != 0) {
+            spin.gpio.setPin(dt_pin_driver[i]);
         }
     }
 }
@@ -428,8 +468,8 @@ void PowerAPI::disconnectDriver(leg_t leg)
 
     for (int8_t i = startIndex; i < endIndex; i++)
     {
-        if(dt_pin_driver[leg] != 0) {
-            spin.gpio.setPin(dt_pin_driver[leg]);
+        if(dt_pin_driver[i] != 0) {
+            spin.gpio.setPin(dt_pin_driver[i]);
         }
     }
 }
@@ -564,6 +604,163 @@ void PowerAPI::setDeadTime(leg_t leg,
         spin.pwm.setDeadTime(spinNumberToTu(dt_pwm_pin[i]),
                              ns_rising_dt, ns_falling_dt);
     }
+}
+
+
+void PowerAPI::setDutyCycleMin(leg_t leg, float32_t duty_cycle){
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
+    hrtim_tu_number_t leg_tu;
+
+    /*  If ALL is selected, loop through all legs */
+    if(leg == ALL)
+    {
+        startIndex = 0;
+        /* retrieves the total number of legs */
+        endIndex = dt_leg_count;
+    }
+    else
+    {
+        /* Treat `leg` as the specific leg index */
+        startIndex = leg;
+        /* Only iterate for this specific leg */
+        endIndex = leg + 1;
+    }
+
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        if (duty_cycle <= 1.0 && duty_cycle >=0.0){
+            leg_tu = spinNumberToTu(dt_pwm_pin[i]);
+            uint16_t period = tu_channel[leg_tu]->pwm_conf.period;
+            tu_channel[leg_tu]->pwm_conf.duty_min_user = duty_cycle * period;
+            tu_channel[leg_tu]->pwm_conf.duty_min_user_float = duty_cycle;
+        }
+    }
+}
+
+void PowerAPI::setDutyCycleMax(leg_t leg, float32_t duty_cycle){
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
+    hrtim_tu_number_t leg_tu;
+
+    /*  If ALL is selected, loop through all legs */
+    if(leg == ALL)
+    {
+        startIndex = 0;
+        /* retrieves the total number of legs */
+        endIndex = dt_leg_count;
+    }
+    else
+    {
+        /* Treat `leg` as the specific leg index */
+        startIndex = leg;
+        /* Only iterate for this specific leg */
+        endIndex = leg + 1;
+    }
+
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        if (duty_cycle <= 1.0 && duty_cycle >=0.0){
+            leg_tu = spinNumberToTu(dt_pwm_pin[i]);
+            uint16_t period = tu_channel[leg_tu]->pwm_conf.period;
+            tu_channel[leg_tu]->pwm_conf.duty_max_user = duty_cycle * period;
+            tu_channel[leg_tu]->pwm_conf.duty_max_user_float = duty_cycle;
+        }
+    }
+}
+
+void PowerAPI::setDutyCycleMinRaw(leg_t leg, uint16_t duty_cycle){
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
+    hrtim_tu_number_t leg_tu;
+
+    /*  If ALL is selected, loop through all legs */
+    if(leg == ALL)
+    {
+        startIndex = 0;
+        /* retrieves the total number of legs */
+        endIndex = dt_leg_count;
+    }
+    else
+    {
+        /* Treat `leg` as the specific leg index */
+        startIndex = leg;
+        /* Only iterate for this specific leg */
+        endIndex = leg + 1;
+    }
+
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        if (duty_cycle <= 0){
+            duty_cycle = 0;
+        }
+        leg_tu = spinNumberToTu(dt_pwm_pin[i]);
+        tu_channel[leg_tu]->pwm_conf.duty_min_user = duty_cycle;
+        uint16_t period = tu_channel[leg_tu]->pwm_conf.period;
+        tu_channel[leg_tu]->pwm_conf.duty_min_user_float = 
+                                            (float32_t)(duty_cycle/period);
+        
+    }
+
+}
+
+void PowerAPI::setDutyCycleMaxRaw(leg_t leg,uint16_t duty_cycle){
+
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
+    hrtim_tu_number_t leg_tu;
+    uint16_t period;
+    /*  If ALL is selected, loop through all legs */
+    if(leg == ALL)
+    {
+        startIndex = 0;
+        /* retrieves the total number of legs */
+        endIndex = dt_leg_count;
+    }
+    else
+    {
+        /* Treat `leg` as the specific leg index */
+        startIndex = leg;
+        /* Only iterate for this specific leg */
+        endIndex = leg + 1;
+    }
+
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        leg_tu = spinNumberToTu(dt_pwm_pin[i]);
+        period = tu_channel[leg_tu]->pwm_conf.period;
+        if (duty_cycle >= period){
+            duty_cycle = period; 
+        }    
+        tu_channel[leg_tu]->pwm_conf.duty_max_user = duty_cycle;
+        tu_channel[leg_tu]->pwm_conf.duty_max_user_float = 
+                                                (float32_t)(duty_cycle/period);
+    }
+}
+
+float32_t PowerAPI::getDutyCycleMax(leg_t leg){
+    hrtim_tu_number_t leg_tu = spinNumberToTu(dt_pwm_pin[leg]);
+    return  tu_channel[leg_tu]->pwm_conf.duty_max_user_float; 
+}
+
+uint16_t PowerAPI::getDutyCycleMaxRaw(leg_t leg){
+    hrtim_tu_number_t leg_tu = spinNumberToTu(dt_pwm_pin[leg]);
+    return  tu_channel[leg_tu]->pwm_conf.duty_max_user; 
+}
+
+float32_t PowerAPI::getDutyCycleMin(leg_t leg){
+    hrtim_tu_number_t leg_tu = spinNumberToTu(dt_pwm_pin[leg]);
+    return  tu_channel[leg_tu]->pwm_conf.duty_min_user_float; 
+}
+
+uint16_t PowerAPI::getDutyCycleMinRaw(leg_t leg){
+    hrtim_tu_number_t leg_tu = spinNumberToTu(dt_pwm_pin[leg]);
+    return  tu_channel[leg_tu]->pwm_conf.duty_min_user; 
+}
+
+uint16_t PowerAPI::getPeriod(leg_t leg){
+    hrtim_tu_number_t leg_tu = spinNumberToTu(dt_pwm_pin[leg]);
+    return  tu_channel[leg_tu]->pwm_conf.period; 
 }
 
 

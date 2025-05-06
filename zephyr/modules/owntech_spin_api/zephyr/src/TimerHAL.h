@@ -36,6 +36,11 @@
 #include "timer.h"
 
 
+typedef enum
+{
+     TIMER3,
+     TIMER4
+} timernumber_t;
 
 
 /**
@@ -51,14 +56,14 @@ public:
 	/**
 	 * @brief Launches the timer4 which is adapted for reading an encoder.
 	 */
-	void startLogTimer4IncrementalEncoder();
+	void startLogIncrementalEncoder(timernumber_t timer_number);
 
 	/**
 	 * @brief Gets the encoder step value.
 	 * @return An uint32 value of the counter which corresponds to the
 	 * 		   step of the system.
 	 */
-	uint32_t getTimer4IncrementalEncoderValue();
+	uint32_t getIncrementalEncoderValue(timernumber_t timer_number);
 
 
 
@@ -67,11 +72,13 @@ private:
 	/**
 	 * @brief Initializes timer 4.
 	 */
-	void timer4Initialize();
+	void Initialize(timernumber_t timer_number);
 
 	/* Variables */
 	static bool timer4init;
 	static bool timer4started;
+	static bool timer3init;
+	static bool timer3started;
 
 
 };
