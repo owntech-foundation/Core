@@ -32,6 +32,7 @@
 #include "hrtim.h"
 #include "SpinAPI.h"
 
+#ifdef CONFIG_OWNTECH_SAFETY_API
 #include "safety_internal.h"
 #include "SafetyAPI.h"
 
@@ -43,6 +44,8 @@ void thread_error(void *, void *, void *);
 
 K_THREAD_DEFINE(thread_error_id, STACKSIZE, thread_error, NULL, NULL, NULL,
 				PRIORITY, 0, 0);
+
+#endif
 
 /**
  *  Local variables and constants
@@ -69,7 +72,7 @@ static bool safety_alert = false;
 
 /* Private API */
 
-
+#ifdef CONFIG_OWNTECH_SAFETY_API
 void thread_error(void *, void *, void *)
 {
 	while (1)
@@ -99,6 +102,7 @@ void thread_error(void *, void *, void *)
 		k_msleep(200);
 	}
 }
+#endif
 
 void user_task_proxy()
 {
