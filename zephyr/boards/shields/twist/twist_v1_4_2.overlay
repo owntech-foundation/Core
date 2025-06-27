@@ -1,0 +1,348 @@
+/*
+ * Copyright (c) 2023-2024 OwnTech.
+ *
+ * SPDX-License-Identifier: LGPL-2.1
+ */
+
+/ {
+	choosen{
+		zephyr,can-primary = &fdcan2;
+		thingset,can = &fdcan2;
+	};
+
+	pcb: pcb{
+		compatible= "shield-pcb";
+		shield-name = "TWIST";
+		shield-version = "v1.4.2";
+	};
+
+	powershield: power-shield{
+        compatible = "power-leg";
+        default-frequency = <200000>;
+        min-frequency = <50000>;
+        leg1: leg1{
+            leg-name = "LEG1";
+			pwms = <&pwma 1 0>, <&pwma 2 0>;
+            pwm-pin-num = <12 14>;
+            capa-pin-num = <7>;
+            driver-pin-num = <19>;
+            current-pin-num = <30>;
+            default-adc = "ADC_1";
+            default-adc-decim = <1>;
+            default-edge-trigger = "EdgeTrigger_up";
+            default-dead-time = <100 100>;
+            default-modulation = "UpDwn";
+            default-phase-shift = <0>;
+			status = "okay";
+        };
+
+        leg2: leg2{
+            leg-name = "LEG2";
+			pwms = <&pwmc 1 0>, <&pwmc 2 0>;
+            pwm-pin-num = <2 4>;
+            capa-pin-num = <56>;
+            driver-pin-num = <22>;
+            current-pin-num = <25>;
+            default-adc = "ADC_2";
+            default-adc-decim = <1>;
+            default-edge-trigger = "EdgeTrigger_up";
+            default-dead-time = <100 100>;
+            default-modulation = "UpDwn";
+            default-phase-shift = <0>;
+			status = "okay";
+        };
+    };
+
+	shield-sensors {
+		/* Voltage channels */
+		v1low: v1-low {
+			compatible = "shield-sensors";
+			sensor-name = "V1_LOW";
+			default-gain = <0x3d3851ec>;
+			default-offset = <0xc2b867f0>;
+			sensor-conv-type = "LINEAR";
+			v1-low-adc1 {
+				io-channels = <&adc1 1>;
+				spin-pin = <29>;
+			};
+			v1-low-adc2 {
+				io-channels = <&adc2 1>;
+				spin-pin = <29>;
+			};
+			status = "okay";
+		};
+
+		v2low: v2-low {
+			compatible = "shield-sensors";
+			sensor-name = "V2_LOW";
+			default-gain = <0x3d3851ec>;
+			default-offset = <0xc2b867f0>;
+			sensor-conv-type = "LINEAR";
+			v2-low-adc1 {
+				io-channels = <&adc1 6>;
+				spin-pin = <24>;
+			};
+			v2-low-adc2 {
+				io-channels = <&adc2 6>;
+				spin-pin = <24>;
+			};
+			status = "okay";
+		};
+
+		vhigh: v-high {
+			compatible = "shield-sensors";
+			sensor-name = "V_HIGH";
+			default-gain = <0x3cf57710>;
+			default-offset = <0x00000000>;
+			sensor-conv-type = "LINEAR";
+			v-high-adc1 {
+				io-channels = <&adc1 9>;
+				spin-pin = <27>;
+			};
+			v-high-adc2 {
+				io-channels = <&adc2 9>;
+				spin-pin = <27>;
+			};
+			status = "okay";
+		};
+
+		/* Current channels */
+
+		i1low: i1-low {
+			compatible = "shield-sensors";
+			sensor-name = "I1_LOW";
+			default-gain = <0x3ba3d70a>;
+			default-offset = <0xc1200000>;
+			sensor-conv-type = "LINEAR";
+			i1-low-adc1 {
+				io-channels = <&adc1 2>;
+				spin-pin = <30>;
+			};
+			i1-low-adc2 {
+				io-channels = <&adc2 2>;
+				spin-pin = <30>;
+			};
+			status = "okay";
+		};
+
+		i2low: i2-low {
+			compatible = "shield-sensors";
+			sensor-name = "I2_LOW";
+			default-gain = <0x3ba3d70a>;
+			default-offset = <0xc1200000>;
+			sensor-conv-type = "LINEAR";
+			i2-low-adc1 {
+				io-channels = <&adc1 7>;
+				spin-pin = <25>;
+			};
+			i2-low-adc2 {
+				io-channels = <&adc2 7>;
+				spin-pin = <25>;
+			};
+			status = "okay";
+		};
+
+		ihigh: i-high {
+			compatible = "shield-sensors";
+			sensor-name = "I_HIGH";
+			default-gain = <0x3ba3d70a>;
+			default-offset = <0xc1200000>;
+			sensor-conv-type = "LINEAR";
+			i-high-adc1 {
+				io-channels = <&adc1 8>;
+				spin-pin = <26>;
+			};
+			i-high-adc2 {
+				io-channels = <&adc2 8>;
+				spin-pin = <26>;
+			};
+			status = "okay";
+		};
+
+		/* Other channels */
+
+		temp1: temp-sensor-1 {
+			compatible = "shield-sensors";
+			sensor-name = "TEMP_SENSOR_1";
+			default-r0 = <0x461c4000>;
+			default-b = <0x4557a000>;
+			default-rdiv = <0x469c4000>;
+			default-t0 = <0x43951333>;
+			sensor-conv-type = "THERMISTANCE";
+			analog-comm-adc4 {
+				io-channels = <&adc4 5>;
+				spin-pin = <6>;
+			};
+			status = "okay";
+		};
+
+		temp2: temp-sensor-2 {
+			compatible = "shield-sensors";
+			sensor-name = "TEMP_SENSOR_2";
+			default-r0 = <0x461c4000>;
+			default-b = <0x4557a000>;
+			default-rdiv = <0x469c4000>;
+			default-t0 = <0x43951333>;
+			sensor-conv-type = "THERMISTANCE";
+			temp-sensor-adc3 {
+				io-channels = <&adc3 12>;
+				spin-pin = <31>;
+			};
+			status = "okay";
+		};
+
+		analog: analog-comm {
+			compatible = "shield-sensors";
+			sensor-name = "ANALOG_COMM";
+			default-gain = <0x3f800000>;
+			default-offset = <0x00000000>;
+			sensor-conv-type = "LINEAR";
+			extra-sensor-adc2 {
+				io-channels = <&adc2 5>;
+				spin-pin = <35>;
+			};
+			status = "okay";
+		};
+	};
+
+	shield-safety-thresholds {
+
+		/* Voltage thresholds */
+
+		v1lowtd: v1-low-td {
+			compatible = "safety-thresholds";
+			sensor-name = "V1_LOW";
+			threshold-name = "V1_LOW_TD";
+			threshold-high = <0x428c0000>; /* 70.0 */
+			threshold-low = <0xc1200000>; /* -10.0 */
+			status = "okay";
+		};
+
+		v2lowtd: v2-low-td {
+			compatible = "safety-thresholds";
+			sensor-name = "V2_LOW";
+			threshold-name = "V2_LOW_TD";
+			threshold-high = <0x428c0000>; /* 70.0 */
+			threshold-low = <0xc1200000>; /* -10.0 */
+			status = "okay";
+		};
+
+		vhightd: v-high-td {
+			compatible = "safety-thresholds";
+			sensor-name = "V_HIGH";
+			threshold-name = "V_HIGH_TD";
+			threshold-high = <0x42c80000>; /* 100.0 */
+			threshold-low = <0x41200000>; /* 10.0 */
+			status = "okay";
+		};
+
+		/* Current thresholds */
+
+		i1lowtd: i1-low-td {
+			compatible = "safety-thresholds";
+			sensor-name = "I1_LOW";
+			threshold-name = "I1_LOW_TD";
+			threshold-high = <0x40e00000>; /* 7.0 */
+			threshold-low = <0xc0e00000>; /* -7.0 */
+			status = "okay";
+		};
+
+		i2lowtd: i2-low-td {
+			compatible = "safety-thresholds";
+			sensor-name = "I2_LOW";
+			threshold-name = "I2_LOW_TD";
+			threshold-high = <0x40e00000>; /* 7.0 */
+			threshold-low = <0xc0e00000>; /* -7.0 */
+			status = "okay";
+		};
+
+		ihightd: i-high-td {
+			compatible = "safety-thresholds";
+			sensor-name = "I_HIGH";
+			threshold-name = "I_HIGH_TD";
+			threshold-high = <0x40e00000>; /* 7.0 */
+			threshold-low = <0xc0e00000>; /* -7.0 */
+			status = "okay";
+		};
+
+		/* Other channels thresholds */
+
+		temptd1: temp-sensor-1-td {
+			compatible = "safety-thresholds";
+			sensor-name = "TEMP_SENSOR_1";
+			threshold-name = "TEMP_SENSOR_1_TD";
+			threshold-high = <0x428c0000>;  /*  70C */
+			threshold-low = <0xc1a00000>;	/* -20C */
+			status = "disabled";
+		};
+
+		temptd2: temp-sensor-2-td {
+			compatible = "safety-thresholds";
+			sensor-name = "TEMP_SENSOR_2";
+			threshold-name = "TEMP_SENSOR_2_TD";
+			threshold-high = <0x428c0000>;	/*  70C */
+			threshold-low = <0xc1a00000>;	/* -20C */
+			status = "disabled";
+		};
+
+
+		analogtd: analog-comm-td {
+			compatible = "safety-thresholds";
+			sensor-name = "ANALOG_COMM";
+			threshold-name = "ANALOG_COMM_TD";
+			threshold-high = <0x00000000>;
+			threshold-low = <0x00000000>;
+			status = "disabled";
+		};
+	};
+};
+
+// UART / RS485 transceiver
+
+&usart3 {
+	pinctrl-0 = < &usart3_tx_pc10 &usart3_rx_pc11 >;
+	pinctrl-names = "default";
+	current-speed = <10625000>;
+	status = "okay";
+};
+
+// CAN
+
+&fdcan2 {
+	pinctrl-0 = <&fdcan2_rx_pb5 &fdcan2_tx_pb6>;
+	pinctrl-names = "default";
+	bitrate = <500000>;
+	sample-point = <875>;
+	bitrate-data = <2000000>;
+	sample-point-data = <875>;
+	status = "okay";
+};
+
+&pwma {
+	status = "okay";
+};
+
+&pwmc {
+	status = "okay";
+};
+
+&pwmd {
+	status = "disabled";
+};
+
+&pwme {
+	status = "disabled";
+};
+
+&pwmf {
+	status = "disabled";
+};
+
+&hrtim1 {
+	scin: scin {
+		pinctrl-0 = <&hrtim1_scin_pb2>;
+	};
+	scout: scout {
+		pinctrl-0 = <&hrtim1_scout_pb1>;
+	};
+};
