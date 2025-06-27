@@ -13,7 +13,7 @@ To work with Shield API, include the following file in your code:
     ![TWIST schema](images/TWIST_illustration.svg){ width=200 align=left }
     - **Versatile Control Modes**: The API supports both voltage and peak current control modes, allowing you to choose the best option for your specific application.
     - **Independent Leg Operation**: Each of the two legs can operate independently with different topologies, such as boost or buck, offering greater flexibility in power management.
-    - **Configure different paramaters** for power electronics (dead time, phase shift)
+    - **Configure different parameters** for power electronics (dead time, phase shift)
     - **Simplified ADC value retrieval**
     - Refer to [TWIST hardware specifications](https://github.com/owntech-foundation/TWIST) for more detail on TWIST board.
 
@@ -58,7 +58,7 @@ To work with Shield API, include the following file in your code:
         4\. Set the phase shift in degree [`shield.power.setPhaseShift(ALL, ps_degree)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-setphaseshift)
         </details>
 
-        5\. Enable the ADC acquisition for twist to get voltage and current measures [`shield.sensors.enableDefaultTwistSensors()`]#function-enabledefaulttwistsensors)
+        5\. Enable the ADC acquisition for twist to get voltage and current measures [`shield.sensors.enableDefaultTwistSensors()`](#function-enabledefaulttwistsensors)
         6\. Set the slope compensation to control the output current[`shield.power.setSlopeCompensation(ALL, 1.4, 1.0)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-setslopecompensation)
         7\. Then start the converters [`shield.power.start(ALL)`](https://owntech-foundation.github.io/Documentation/1.0.0/powerAPI/classPowerAPI/#function-start)
 
@@ -165,7 +165,7 @@ On the TWIST board, a voltage value of 1.024V on the ADC corresponds to a curren
     shield.power.start(ALL);
 ```
 
-#### 2 independant leg operations
+#### 2 independent leg operations
 
 
 === " Connection "

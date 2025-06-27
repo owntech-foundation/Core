@@ -55,10 +55,10 @@ At the end of all the hardware configuration (including other modules), the Data
 
 After the Data API has been started, it becomes possible to get data obtained from the enabled pins. Depending on the trigger source (see [detailed section below](#triggering-the-acquisition)), you'll have to trigger the acquisition then read the value, or directly read the value.
 
-If software-trigged is used for an ADC (default configuration), the acquisition must first be triggered, then the value read. If the acquisition is configured to be periodic for ann ADC, directly read the value.
+If software-triggered is used for an ADC (default configuration), the acquisition must first be triggered, then the value read. If the acquisition is configured to be periodic for an ADC, directly read the value.
 
 !!! note
-    === "Sofware-triggered acquisition"
+    === "Software-triggered acquisition"
         ```
         spin.data.triggerAcquisition(ADC_2); // Trigger acquisitions of all pins linked to ADC 2
         spin.data.getLatestValue(35); // Get value read on pin 35
@@ -131,7 +131,7 @@ These function act similarly, except for the conversion part: they are called wi
 Each ADC unit can measure multiple analog signal. This works by defining an acquisition sequence.
 
 !!! tip
-    By default the aquisition sequence is in continuous mode. It means than one trigger will trigger all the sequence of acquisition.
+    By default the acquisition sequence is in continuous mode. It means that one trigger will start the entire acquisition sequence.
     This can be changed using [Discontinuous Mode](#continuous-discontinuous-sequence)
 
 !!! example
@@ -188,7 +188,7 @@ The data acquisition can be triggered by two sources:
 
     ```C++
     spin.data.configureTriggerSource(ADC_2, TRIG_SOFTWARE); // ADC 2 configured in software mode
-    sing.data.triggerAcquisition(ADC_2); // Send an adc trigger to ADC2 to start conversion
+    spin.data.triggerAcquisition(ADC_2); // Send an ADC trigger to ADC2 to start conversion
     adc_value = data.getLatest(35); // Get the acquired data
     ```
 
@@ -206,7 +206,7 @@ Sometimes measurement have to be taken at a specific time, in interaction with t
     This kind of acquisition have a side benefit. It operates in the background and does not interfer with software.
     It means that periodical sampling will not interrupt code execution.
 
-The trigger is the PWM peripheral, the ADC performs the conversion and place the result in an output buffer, the output buffer is directly placed in memory by a DMA. A rather complex software mechanics execute periodically and serve each measurement in a dedicated memory space. The periodical routine is executed at the beggining of the controlTask.
+The trigger is the PWM peripheral: the ADC performs the conversion and places the result in an output buffer, which is directly stored in memory by a DMA. A rather complex software mechanism executes periodically and serves each measurement in a dedicated memory space. The periodical routine is executed at the beginning of the controlTask.
 
 !!! info
     Synchronous measurement require having a controlTask running.
@@ -342,7 +342,7 @@ Trigger timing can be defined or changed dynamically.
         spin.pwm.setAdcTriggerPostScaler(PWMA, 4);
     ```
 
-=== "Without interuptions"
+=== "Without interruptions"
     ![left_aligned_continuous_sampling](images/left_aligned_continuous_sampling.svg){ width=800 }
 
     ```c++
@@ -361,7 +361,7 @@ When using the control task (critical task) data are dispatched at the start, wh
 
 ![data dispatch](images/data_dispatch.svg)
 
-Data dispatching is an internal mechanism of Data API, that transfers Data from the internal buffers controlled by the DMA to user-level buffers that can be retreived by the ``get***()`` functions. If dispatching is not done, the user will not be able to retrive values, and the ``get***()`` functions will return no value.
+Data dispatching is an internal mechanism of Data API that transfers data from the internal buffers controlled by the DMA to user-level buffers that can be retrieved by the ``get***()`` functions. If dispatching is not done, the user will not be able to retrieve values, and the ``get***()`` functions will return no value.
 
 The dispatch is done automatically and the in most cases, the user does not have to worry about it. However, in some cases, the user may want to know when this is done.
 
@@ -389,7 +389,7 @@ If you want specific ADC behavior (trigger sources, discontinuous mode, etc.), y
 
 After channels have been enabled, the conversion parameters can be set so that raw values can be automatically converted to the relevant unit. This is done using the `spin.data.setParameters()` function.
 
-After channels have been enabled (and optionnally conversion parameters have been set), there are two ways of starting the API, depending on your use of other OwnTech APIs. If your code uses an [uninterruptible task](task_introduction.md), nothing more is required, the Data API will be started automatically when task is started. However, if you do not have an uninterruptible task in your code, you need to manually start the API by calling `spin.data.start()`.
+After channels have been enabled (and optionally conversion parameters have been set), there are two ways of starting the API, depending on your use of other OwnTech APIs. If your code uses an [uninterruptible task](task_introduction.md), nothing more is required; the Data API will be started automatically when the task is started. However, if you do not have an uninterruptible task in your code, you need to manually start the API by calling `spin.data.start()`.
 
 !!! Note
 
