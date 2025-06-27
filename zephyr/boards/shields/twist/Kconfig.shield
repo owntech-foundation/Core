@@ -2,11 +2,15 @@
 # SPDX-License-Identifier: LGPL-2.1
 
 config SHIELD_TWIST
-	def_bool $(shields_list_contains,twist_v1_4_1) || \
+	def_bool $(shields_list_contains,twist_v1_4_2) || \
+			 $(shields_list_contains,twist_v1_4_1) || \
 			 $(shields_list_contains,twist_v1_4_0) || \
 			 $(shields_list_contains,twist_v1_3_0) || \
 			 $(shields_list_contains,twist_v1_2_0) || \
 			 $(shields_list_contains,twist)
+
+config SHIELD_TWIST_V1_4_2
+	def_bool $(shields_list_contains,twist_v1_4_2)
 
 config SHIELD_TWIST_V1_4_1
 	def_bool $(shields_list_contains,twist_v1_4_1)
