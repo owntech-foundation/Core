@@ -7,7 +7,7 @@ It will use a “Blinky” (blinking LED) example which requires no other hardwa
 
 Before we start, make sure your machine meets all the requirements below.
 
-!!! tips "Required software"
+!!! tip "Required software"
     === "Windows"
         - **Git:** If you do not have git installed, get it here [git for Windows](https://gitforwindows.org)
         - **Python3:** If you do not have python3 installed, get it here [Python3 Installers](https://www.python.org/downloads/windows)
@@ -109,7 +109,7 @@ to open PlatformIO in the Primary Side Bar. It should contain:
 
 ### Step 5 - Clone our Core repository
 
-In PlatformIO's “Quick Access” view, select the “Miscelleanous / Clone Git Project” action.
+In PlatformIO's “Quick Access” view, select the “Miscellaneous / Clone Git Project” action.
 This will open a field in which you should enter the following Git repository address:
 
 ```
@@ -238,7 +238,7 @@ Check the list below of possible issues
         - **Python3:** If you do not have python3 installed, get it here [Python3 Installers](https://www.python.org/downloads/windows)
         - **CMake:** If you do not have CMake installed, get it here [CMake Installer](https://cmake.org/download/)
         - Make sure that you have **administrator privileges** on the folder where you clone your repository.
-        - Check that you are working on a **path that is not liked to OneDrive**
+        - Check that you are working on a **path that is not linked to OneDrive**
         - Check that you **do not have any spaces in the path** of your project
         - Check that the **length of your project** path is smaller than 256 characters.
         - You should preferably have your project folder as close as possible to the root
