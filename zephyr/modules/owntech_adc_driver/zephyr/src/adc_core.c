@@ -18,7 +18,7 @@
  */
 
 /*
- * @date 2023
+ * @date 2025
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
@@ -33,6 +33,7 @@
 /* STM32 LL */
 #include <stm32_ll_bus.h>
 
+#include "adc_core.h"
 
 /** @brief Defines the number of ADCs */
 #define NUMBER_OF_ADCS 5
@@ -100,8 +101,8 @@ ADC_TypeDef* _get_adc_by_number(uint8_t adc_number)
  * - Returns 0 if the input rank is invalid.
  *
  * @param decimal_rank The ADC channel rank number (1 to 16).
- * 
- * @note   Sadly, there seems to be no equivalent to 
+ *
+ * @note   Sadly, there seems to be no equivalent to
  *         __LL_ADC_DECIMAL_NB_TO_CHANNEL() for ranks...
  *
  * @return The corresponding `LL_ADC_REG_RANK_x` constant or 0 if invalid.
@@ -335,7 +336,6 @@ void adc_core_configure_discontinuous_mode(uint8_t adc_num,
 	LL_ADC_REG_SetSequencerDiscont(adc, discontinuous_mode);
 }
 
-
 /*
   ADC differential channel set-up:
   Applies differential mode to specified channel.
@@ -356,7 +356,93 @@ void adc_core_set_channel_differential(uint8_t adc_num,
 	LL_ADC_SetChannelSingleDiff(adc, ll_channel, diff);
 }
 
-void adc_core_configure_channel(uint8_t adc_num, uint8_t channel, uint8_t rank)
+/** Set channels sampling time
+ *
+ * 000: 2.5 ADC clock cycles
+ * 001: 6.5 ADC clock cycles
+ * 010: 12.5 ADC clock cycles
+ * 011: 24.5 ADC clock cycles
+ * 100: 47.5 ADC clock cycles
+ * 101: 92.5 ADC clock cycles
+ * 110: 247.5 ADC clock cycles
+ * 111: 640.5 ADC clock cycles
+ *
+ * Vrefint minimum sampling time : 4us
+ *
+ * Vts minimum sampling time : 5us
+ *
+ * For 0b110:
+ * Tadc_clk = 1 / 42.5 MHz = 23.5 ns
+ * Tsar = 12.5 * Tadc_clk = 293.75 ns
+ * Tsmpl = 247.5 * Tadc_clk = 5816.25 ns
+ * Tconv = Tsmpl + Tsar = 6.11 us
+ * -> Fconv up to 163.6 KSPS for 1 channel per ADC
+ * Fconv up to 27.2 KSPS with the 6 channels actually
+ * used on the ADC1
+ *
+ * For 0b001 (ok for voltage):
+ * Tadc_clk = 1 / 42.5 MHz = 23.5 ns
+ * Tsar = 12.5 * Tadc_clk = 293.75 ns
+ * Tsmpl = 6.5 * Tadc_clk = 152.75 ns
+ * Tconv = Tsmpl + Tsar = 446.4 ns
+ * -> Fconv up to 2239 KSPS for 1 channel per ADC
+ * Fconv up to 373 KSPS with the 6 channels actually
+ * used on the ADC1
+ *
+ * For 0b101 (ok for current):
+ * Tadc_clk = 1 / 42.5 MHz = 23.5 ns
+ * Tsar = 12.5 * Tadc_clk = 293.75 ns
+ * Tsmpl = 92.5 * Tadc_clk = 2173.75 ns
+ * Tconv = Tsmpl + Tsar = 2.47 µs
+ * -> Fconv up to 404 KSPS for 1 channel per ADC
+ * Fconv up to 134 KSPS for 3 channels actually
+ * used on each ADC
+ */
+void adc_core_set_channel_sampling_time(uint8_t adc_num,
+                                        uint8_t channel,
+                                        adc_sampling_time_t sampling_time)
+{
+	uint32_t sampling_config = LL_ADC_SAMPLINGTIME_12CYCLES_5;
+
+	switch (sampling_time)
+	{
+		case adc_st_59ns:
+			sampling_config = LL_ADC_SAMPLINGTIME_2CYCLES_5;
+			break;
+		case adc_st_153ns:
+			sampling_config = LL_ADC_SAMPLINGTIME_6CYCLES_5;
+			break;
+		case adc_st_294ns:
+			sampling_config = LL_ADC_SAMPLINGTIME_12CYCLES_5;
+			break;
+		case adc_st_576ns:
+			sampling_config = LL_ADC_SAMPLINGTIME_24CYCLES_5;
+			break;
+		case adc_st_1116ns:
+			sampling_config = LL_ADC_SAMPLINGTIME_47CYCLES_5;
+			break;
+		case adc_st_2174ns:
+			sampling_config = LL_ADC_SAMPLINGTIME_92CYCLES_5;
+			break;
+		case adc_st_5817ns:
+			sampling_config = LL_ADC_SAMPLINGTIME_247CYCLES_5;
+			break;
+		case adc_st_15052ns:
+			sampling_config = LL_ADC_SAMPLINGTIME_640CYCLES_5;
+			break;
+		case adc_st_default:
+			// This should not happen, but handle it anyway.
+	}
+
+	ADC_TypeDef* adc = _get_adc_by_number(adc_num);
+	uint32_t ll_channel = __LL_ADC_DECIMAL_NB_TO_CHANNEL(channel);
+
+	LL_ADC_SetChannelSamplingTime(adc,
+	                              ll_channel,
+	                              sampling_config);
+}
+
+void adc_core_set_channel_rank(uint8_t adc_num, uint8_t channel, uint8_t rank)
 {
 	ADC_TypeDef* adc = _get_adc_by_number(adc_num);
 
@@ -365,52 +451,6 @@ void adc_core_configure_channel(uint8_t adc_num, uint8_t channel, uint8_t rank)
 
 	/* Set regular sequence */
 	LL_ADC_REG_SetSequencerRanks(adc, ll_rank, ll_channel);
-
-	/** Set channels sampling time
-	 *
-	 * 000: 2.5 ADC clock cycles
-	 * 001: 6.5 ADC clock cycles
-	 * 010: 12.5 ADC clock cycles
-	 * 011: 24.5 ADC clock cycles
-	 * 100: 47.5 ADC clock cycles
-	 * 101: 92.5 ADC clock cycles
-	 * 110: 247.5 ADC clock cycles
-	 * 111: 640.5 ADC clock cycles
-	 *
-	 * Vrefint minimum sampling time : 4us
-	 *
-	 * Vts minimum sampling time : 5us
-	 *
-	 * For 0b110:
-	 * Tadc_clk = 1 / 42.5 MHz = 23.5 ns
-	 * Tsar = 12.5 * Tadc_clk = 293.75 ns
-	 * Tsmpl = 247.5 * Tadc_clk = 5816.25 ns
-	 * Tconv = Tsmpl + Tsar = 6.11 us
-	 * -> Fconv up to 163.6 KSPS for 1 channel per ADC
-	 * Fconv up to 27.2 KSPS with the 6 channels actually
-	 * used on the ADC1
-	 *
-	 * For 0b001 (ok for voltage):
-	 * Tadc_clk = 1 / 42.5 MHz = 23.5 ns
-	 * Tsar = 12.5 * Tadc_clk = 293.75 ns
-	 * Tsmpl = 6.5 * Tadc_clk = 152.75 ns
-	 * Tconv = Tsmpl + Tsar = 446.4 ns
-	 * -> Fconv up to 2239 KSPS for 1 channel per ADC
-	 * Fconv up to 373 KSPS with the 6 channels actually
-	 * used on the ADC1
-	 *
-	 * For 0b101 (ok for current):
-	 * Tadc_clk = 1 / 42.5 MHz = 23.5 ns
-	 * Tsar = 12.5 * Tadc_clk = 293.75 ns
-	 * Tsmpl = 92.5 * Tadc_clk = 2173.75 ns
-	 * Tconv = Tsmpl + Tsar = 2.47 µs
-	 * -> Fconv up to 404 KSPS for 1 channel per ADC
-	 * Fconv up to 134 KSPS for 3 channels actually
-	 * used on each ADC
-	 */
-	LL_ADC_SetChannelSamplingTime(adc,
-								  ll_channel,
-								  LL_ADC_SAMPLINGTIME_12CYCLES_5);
 }
 
 void adc_core_init()

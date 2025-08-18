@@ -18,7 +18,7 @@
  */
 
 /*
- * @date   2024
+ * @date   2025
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  */
@@ -45,10 +45,11 @@
  *  Local variables
  */
 
-static adc_ev_src_t adc_trigger_sources[NUMBER_OF_ADCS]    = {0};
-static uint32_t     adc_discontinuous_mode[NUMBER_OF_ADCS] = {0};
-static uint32_t     enabled_channels_count[NUMBER_OF_ADCS] = {0};
-static bool         enable_dma[NUMBER_OF_ADCS]             = {0};
+static adc_ev_src_t        adc_trigger_sources[NUMBER_OF_ADCS]    = {0};
+static uint32_t            adc_discontinuous_mode[NUMBER_OF_ADCS] = {0};
+static adc_sampling_time_t adc_sampling_times[NUMBER_OF_ADCS]     = {0};
+static uint32_t            enabled_channels_count[NUMBER_OF_ADCS] = {0};
+static bool                enable_dma[NUMBER_OF_ADCS]             = {0};
 
 static uint32_t
 		enabled_channels[NUMBER_OF_ADCS][NUMBER_OF_CHANNELS_PER_ADC] = {0};
@@ -73,6 +74,15 @@ void adc_configure_discontinuous_mode(uint8_t adc_number,
 		return;
 
 	adc_discontinuous_mode[adc_number-1] = discontinuous_count;
+}
+
+void adc_configure_sampling_time(uint8_t adc_number,
+                                 adc_sampling_time_t sampling_time)
+{
+	if ( (adc_number == 0) || (adc_number > NUMBER_OF_ADCS) )
+		return;
+
+	adc_sampling_times[adc_number-1] = sampling_time;
 }
 
 void adc_add_channel(uint8_t adc_number, uint8_t channel)
@@ -156,6 +166,13 @@ void adc_start()
 	for (uint8_t adc_num = 1 ; adc_num <= NUMBER_OF_ADCS ; adc_num++)
 	{
 		uint8_t adc_index = adc_num-1;
+
+		adc_sampling_time_t sampling_time = adc_sampling_times[adc_index];
+		if (sampling_time == adc_st_default)
+		{
+			sampling_time = adc_st_294ns;
+		}
+
 		if (enabled_channels_count[adc_index] > 0)
 		{
 			for (int channel_index = 0;
@@ -165,10 +182,15 @@ void adc_start()
 				if (enabled_channels[adc_index][channel_index] == 0)
 					break;
 
-				adc_core_configure_channel(
+				adc_core_set_channel_rank(
 					adc_num,
 					enabled_channels[adc_index][channel_index],
 					channel_index+1);
+
+				adc_core_set_channel_sampling_time(
+					adc_num,
+					enabled_channels[adc_index][channel_index],
+					sampling_time);
 			}
 		}
 	}
