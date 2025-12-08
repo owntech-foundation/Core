@@ -35,6 +35,26 @@ Before we start, make sure your machine meets all the requirements below.
         - Write permission for the serial port (`/dev/ttyACM0`): See PlatformIO documentation which provides a [udev rules file](https://docs.platformio.org/en/latest/core/installation/udev-rules.html)
         - **Internet connection**
 
+    === "RaspberryPi"
+
+        - **Git:** If you do not have git installed, get it here [git for Linux](https://git-scm.com/download/linux)
+        - **Python3:** If you do not have python3 installed, get it here [Python3 Installers](https://docs.python-guide.org/starting/install3/linux/)
+            - The [pip](https://pip.pypa.io/en/stable/) package installer is needed. If using the system Python (`/usr/bin/python3`), `pip` may not be installed by default.
+              See [Installing pip with Linux Package Managers](https://packaging.python.org/en/latest/guides/installing-using-linux-tools/).
+            - The [venv](https://docs.python.org/3/library/venv.html) module is needed.
+              Warning if using the system Python: although `venv` is part of the Python Standard Library, some Linux distributions such as Debian and Ubuntu don't install it by default.
+              In that case, make sure that the `python3-venv` package is installed.
+        - **CMake:** If you do not have CMake installed, get it here [CMake Installer](https://cmake.org/download/)
+        - 64 bit Linux distribution
+        - Write permission for the serial port (`/dev/ttyACM0`): See PlatformIO documentation which provides a [udev rules file](https://docs.platformio.org/en/latest/core/installation/udev-rules.html)
+        - **Internet connection**
+        - From v5 onward you will need to install the following libraries  
+        ```
+        sudo dpkg --add-architecture armhf
+        sudo apt update
+        sudo apt install libc6:armhf libstdc++6:armhf
+        ```
+
 
 ## Setup your work environment
 

@@ -29,7 +29,6 @@
 #include "Power.h"
 #include "SpinAPI.h"
 
-
 hrtim_tu_number_t PowerAPI::spinNumberToTu(uint16_t spin_number)
 {
     if(spin_number == 12 || spin_number == 14)
@@ -218,6 +217,7 @@ void PowerAPI::setDutyCycleRaw(leg_t leg, uint16_t duty_value)
 {
     uint16_t period;
     uint8_t swap_state;
+    uint16_t max_period;
     hrtim_tu_number_t leg_tu;
     uint16_t duty_cycle_max_raw;
     uint16_t duty_cycle_min_raw;
@@ -257,9 +257,10 @@ void PowerAPI::setDutyCycleRaw(leg_t leg, uint16_t duty_value)
         
         period = tu_channel[leg_tu]->pwm_conf.period;
         swap_state = tu_channel[leg_tu]->pwm_conf.duty_swap;
+        max_period = tu_channel[leg_tu]->pwm_conf.max_period;
 
         /* Implements a logic that allows for a duty cycle of 100% */
-        if (duty_value >= period-3){
+        if (duty_value >= max_period){
             duty_value = 0;
             hrtim_duty_cycle_set(leg_tu, duty_value);
         

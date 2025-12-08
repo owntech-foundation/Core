@@ -230,10 +230,11 @@ void PwmHAL::setDutyCycleRaw(hrtim_tu_number_t pwmX, uint16_t duty_cycle)
     }
 
     uint16_t period = tu->pwm_conf.period;         /* Get PWM period */
+    uint16_t max_period = tu->pwm_conf.max_period;         /* Get PWM period */
     bool swap_state = tu->pwm_conf.duty_swap;      /* Get output swap state */
 
     /* True if near 100% duty */
-    bool over_limit = (duty_cycle >= period - 3); 
+    bool over_limit = (duty_cycle >= max_period); 
 
     /* Force 0% to avoid glitches near 100% */
     duty_cycle = over_limit ? 0 : duty_cycle; 

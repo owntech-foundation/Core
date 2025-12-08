@@ -70,6 +70,15 @@ extern "C"
                                                                  0xFFFD,
                                                                  0xFFFD,
                                                                  0xFFFD};
+
+    static const uint32_t SWAP_WINDOW[8] =                      {0x0020,
+                                                                 0x0010,
+                                                                 0x0008,
+                                                                 0x0004,
+                                                                 0x0002,
+                                                                 0x0002,
+                                                                 0x0002,
+                                                                 0x0002};
                                                                     
 
     /**
@@ -439,6 +448,7 @@ extern "C"
         float32_t duty_min_user_float; /* Minimum duty cycle set by the user in float */
         float32_t duty_max_user_float; /* Maximum duty cycle set by the user in float */
         uint8_t duty_swap;             /* Detects if the duty has been swapped */
+        uint16_t swap_window;          /* Defines the swap window based on the pre-scaler */
         hrtim_pwm_mode_t pwm_mode;     /* voltage mode or current mode */
         hrtim_external_trigger_t external_trigger;  /* event for current mode */
         hrtim_burst_clk_t burst_clk;   /* clock source for burst mode generator*/

@@ -328,10 +328,14 @@ static inline uint32_t _period_ckpsc(uint32_t freq, timer_hrtim_t *tu)
      * dead-time generator which have a 868ps resolution... */
 
     tu->pwm_conf.period = (uint16_t)period;
+    tu->pwm_conf.swap_window = SWAP_WINDOW[tu->pwm_conf.ckpsc];
+    tu->pwm_conf.max_period = period - SWAP_WINDOW[tu->pwm_conf.ckpsc];
+    tu->pwm_conf.min_period = min_period;
 
     /* Stores the maximum and minimum duty cycle for the timing unit */
     tu->pwm_conf.duty_max = HRTIM_MAX_PER_and_CMP_REG_VALUES[tu->pwm_conf.ckpsc];
     tu->pwm_conf.duty_min = HRTIM_MIN_PER_and_CMP_REG_VALUES[tu->pwm_conf.ckpsc];
+
 
     /* Stores the maximum and minimum duty cycle for the user */
     tu->pwm_conf.duty_max_user = tu->pwm_conf.period * 0.9;
