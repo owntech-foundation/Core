@@ -1,0 +1,9 @@
+description: Default motor configuration shared by position sensors
+
+compatible: "motor-config"
+
+properties:
+  pole-pairs:
+    type: int
+    required: false
+    description: Number of motor pole pairs.

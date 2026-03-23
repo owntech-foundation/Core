@@ -1,0 +1,49 @@
+description: Hall position sensor wiring and default configuration exposed by a shield
+
+compatible: "shield-position-hall"
+
+properties:
+  position-sensor-name:
+    type: string
+    required: true
+    description: Name under which the position sensor is referred to in user code.
+
+  motor:
+    type: phandle
+    required: false
+    description: Optional reference to the default motor configuration node.
+
+  direction-sign:
+    type: int
+    required: false
+    description: Direction convention used by this position sensor, typically 1 or -1.
+
+  electrical-offset:
+    type: int
+    required: false
+    description: Electrical offset for this position sensor, stored as an IEEE754 float32 bit pattern.
+
+  hall-a-gpios:
+    type: phandle-array
+    required: true
+    description: Hall channel A GPIO.
+
+  hall-b-gpios:
+    type: phandle-array
+    required: true
+    description: Hall channel B GPIO.
+
+  hall-c-gpios:
+    type: phandle-array
+    required: true
+    description: Hall channel C GPIO.
+
+  hall-sector-table:
+    type: array
+    required: false
+    description: Hall-state to sector mapping table with 6 entries for raw states 001 to 110. Invalid states 000 and 111 are handled by the driver.
+
+  hall-interpolation:
+    type: string
+    required: false
+    description: Default Hall interpolation mode.
