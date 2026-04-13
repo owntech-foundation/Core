@@ -44,19 +44,46 @@ try:
 except ImportError:
     env.Execute("$PYTHONEXE -m pip install numpy")
 try:
-    import PyQt6
-except ImportError:
-    env.Execute("$PYTHONEXE -m pip install PyQt6")
-try:
-    import matplotlib.pyplot as plt
     import matplotlib
-    matplotlib.use('QtAgg')
 except ImportError:
     env.Execute("$PYTHONEXE -m pip install matplotlib")
+    import matplotlib
 try:
     import pandas as pd
 except ImportError:
     env.Execute("$PYTHONEXE -m pip install pandas")
+
+
+def has_graphical_display():
+    """Return True when a desktop session is available for interactive plots."""
+    return bool(os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY"))
+
+
+def configure_matplotlib_backend():
+    """Prefer Qt on desktop sessions unless GUI plotting is explicitly disabled."""
+    requested_backend = os.environ.get("MATPLOTLIB_BACKEND")
+    if requested_backend:
+        matplotlib.use(requested_backend)
+        return requested_backend
+
+    gui_setting = os.environ.get("OWNTECH_PLOT_GUI", "").lower()
+    gui_disabled = gui_setting in ("0", "false", "no")
+    gui_enabled = gui_setting in ("1", "true", "yes")
+
+    if not gui_disabled and (gui_enabled or has_graphical_display()):
+        try:
+            import PyQt6  # pylint: disable=unused-import
+        except ImportError:
+            env.Execute("$PYTHONEXE -m pip install PyQt6")
+        matplotlib.use("QtAgg")
+        return "QtAgg"
+
+    matplotlib.use("Agg")
+    return "Agg"
+
+
+MATPLOTLIB_BACKEND = configure_matplotlib_backend()
+import matplotlib.pyplot as plt
 
 
 def extract_timestamp(filename):
@@ -167,7 +194,17 @@ if "plot-record" in COMMAND_LINE_TARGETS:
                                         records[record_number]))
         fig = plot_df(df)
         fig.suptitle(records[record_number])
-        plt.show()
+        if MATPLOTLIB_BACKEND == "Agg":
+            output_path = os.path.join(
+                ".",
+                "src",
+                "Data_records",
+                records[record_number].replace(".txt", ".png"),
+            )
+            fig.savefig(output_path)
+            print(style.SUCCESS + f"Plot saved to {output_path}")
+        else:
+            plt.show()
 
         exit(0)
     else :
