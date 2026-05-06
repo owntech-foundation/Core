@@ -1319,11 +1319,11 @@ void hrtim_burst_mode_init(void){
 }
 
 void hrtim_burst_set(int bm_cmp, int bm_per){
-        /* Set the number of period active in burst mode*/
-    LL_HRTIM_BM_SetCompare(HRTIM1, bm_cmp);
+        /* Set the number of period inactive in burst mode*/
+    LL_HRTIM_BM_SetCompare(HRTIM1, bm_cmp - 1 );
     /* Set the number of period of the burst pattern
     (active + inactive periods)*/
-    LL_HRTIM_BM_SetPeriod(HRTIM1, bm_per);
+    LL_HRTIM_BM_SetPeriod(HRTIM1, bm_per - 1);
 }
 
 void hrtim_burst_start(void){
