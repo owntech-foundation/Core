@@ -114,6 +114,27 @@ void hrtim_init_default_all();
 uint16_t hrtim_tu_init(hrtim_tu_number_t tu_number);
 
 /**
+ * @brief   Deinitializes a given timing unit
+ *
+ * This function disables both outputs, stops the timing unit counter, clears
+ * the output/reset/ADC trigger configuration, and marks the timing unit as
+ * reusable by hrtim_tu_init().
+ *
+ * @param[in] tu_number        Timing unit number:
+ *                  `PWMA`, `PWMB`, `PWMC`, `PWMD`, `PWME`, `PWMF`
+ */
+void hrtim_tu_deinit(hrtim_tu_number_t tu_number);
+
+/**
+ * @brief   Deinitializes the whole HRTIM peripheral
+ *
+ * This function disables all HRTIM outputs and counters, disables the HRTIM
+ * interrupt/burst mode, resets the peripheral registers, and restores the
+ * software state so a later initialization can choose a new prescaler.
+ */
+void hrtim_deinit(void);
+
+/**
  * @brief Returns if the timer was initialized with default value or not
  * @param[in] tu_number        Timing unit number:
  *                  `MSTR`, `TIMA`, `TIMB`, `TIMC`, `TIMD`, `TIME`, `TIMF`

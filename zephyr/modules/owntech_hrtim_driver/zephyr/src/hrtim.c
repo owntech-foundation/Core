@@ -746,6 +746,120 @@ uint16_t hrtim_tu_init(hrtim_tu_number_t tu_number)
     return tu_channel[tu_number]->pwm_conf.period;
 }
 
+void hrtim_tu_deinit(hrtim_tu_number_t tu_number)
+{
+    hrtim_tu_t tu = tu_channel[tu_number]->pwm_conf.pwm_tu;
+
+    if (timerMaster.pwm_conf.unit_on == UNIT_OFF)
+    {
+        tu_channel[tu_number]->pwm_conf.unit_on = UNIT_OFF;
+        return;
+    }
+
+    hrtim_out_dis(tu_number);
+    hrtim_adc_trigger_dis(tu_number);
+    hrtim_cnt_dis(tu_number);
+
+    LL_HRTIM_TIM_SetResetTrig(HRTIM1, tu, LL_HRTIM_RESETTRIG_NONE);
+    LL_HRTIM_OUT_SetOutputSetSrc(HRTIM1,
+                                 tu_channel[tu_number]->gpio_conf.OUT_H,
+                                 LL_HRTIM_OUTPUTSET_NONE);
+    LL_HRTIM_OUT_SetOutputResetSrc(HRTIM1,
+                                   tu_channel[tu_number]->gpio_conf.OUT_H,
+                                   LL_HRTIM_OUTPUTRESET_NONE);
+    LL_HRTIM_OUT_SetOutputSetSrc(HRTIM1,
+                                 tu_channel[tu_number]->gpio_conf.OUT_L,
+                                 LL_HRTIM_OUTPUTSET_NONE);
+    LL_HRTIM_OUT_SetOutputResetSrc(HRTIM1,
+                                   tu_channel[tu_number]->gpio_conf.OUT_L,
+                                   LL_HRTIM_OUTPUTRESET_NONE);
+    LL_HRTIM_DisableSwapOutputs(HRTIM1, tu);
+
+    LL_HRTIM_TIM_SetCompare1(HRTIM1, tu, 0);
+    LL_HRTIM_TIM_SetCompare2(HRTIM1, tu, 0);
+    LL_HRTIM_TIM_SetCompare3(HRTIM1, tu, 0);
+    LL_HRTIM_TIM_SetCompare4(HRTIM1, tu, 0);
+
+    tu_channel[tu_number]->pwm_conf.duty_cycle = 0;
+    tu_channel[tu_number]->pwm_conf.duty_swap = false;
+    tu_channel[tu_number]->phase_shift.value = 0;
+    tu_channel[tu_number]->comp_usage.cmp1 = FREE;
+    tu_channel[tu_number]->comp_usage.cmp1_value = 0;
+    tu_channel[tu_number]->comp_usage.cmp2 = FREE;
+    tu_channel[tu_number]->comp_usage.cmp2_value = 0;
+    tu_channel[tu_number]->comp_usage.cmp3 = FREE;
+    tu_channel[tu_number]->comp_usage.cmp3_value = 0;
+    tu_channel[tu_number]->comp_usage.cmp4 = FREE;
+    tu_channel[tu_number]->comp_usage.cmp4_value = 0;
+    tu_channel[tu_number]->pwm_conf.unit_on = UNIT_OFF;
+}
+
+void hrtim_deinit(void)
+{
+    irq_disable(HRTIM_IRQ_NUMBER);
+    user_callback = NULL;
+
+    if (timerMaster.pwm_conf.unit_on == UNIT_OFF)
+    {
+        for (uint8_t tu_count = 0; tu_count < HRTIM_CHANNELS; tu_count++)
+        {
+            tu_channel[tu_count]->pwm_conf.unit_on = UNIT_OFF;
+            tu_channel[tu_count]->pwm_conf.frequency = TU_DEFAULT_FREQ;
+            tu_channel[tu_count]->pwm_conf.min_frequency = TU_DEFAULT_FREQ;
+        }
+
+        HRTIM_MINIM_FREQUENCY = TU_DEFAULT_FREQ;
+        timerMaster.pwm_conf.frequency = TU_DEFAULT_FREQ;
+        timerMaster.pwm_conf.min_frequency = TU_DEFAULT_FREQ;
+        timerMaster.pwm_conf.period = TU_DEFAULT_PERIOD;
+        timerMaster.pwm_conf.ckpsc = 0;
+        return;
+    }
+
+    for (uint8_t tu_count = 0; tu_count < HRTIM_CHANNELS; tu_count++)
+    {
+        hrtim_out_dis(tu_count);
+    }
+
+    hrtim_burst_dis();
+
+    for (uint8_t tu_count = 0; tu_count < HRTIM_CHANNELS; tu_count++)
+    {
+        hrtim_tu_deinit(tu_count);
+        tu_channel[tu_count]->pwm_conf.frequency = TU_DEFAULT_FREQ;
+        tu_channel[tu_count]->pwm_conf.min_frequency = TU_DEFAULT_FREQ;
+    }
+
+    LL_HRTIM_DisableIT_REP(HRTIM1, LL_HRTIM_TIMER_MASTER);
+    LL_HRTIM_TIM_CounterDisable(HRTIM1, LL_HRTIM_TIMER_MASTER);
+
+    LL_APB2_GRP1_ForceReset(LL_APB2_GRP1_PERIPH_HRTIM1);
+    LL_APB2_GRP1_ReleaseReset(LL_APB2_GRP1_PERIPH_HRTIM1);
+    LL_APB2_GRP1_DisableClock(LL_APB2_GRP1_PERIPH_HRTIM1);
+
+    HRTIM_MINIM_FREQUENCY = TU_DEFAULT_FREQ;
+
+    timerMaster.pwm_conf.frequency = TU_DEFAULT_FREQ;
+    timerMaster.pwm_conf.min_frequency = TU_DEFAULT_FREQ;
+    timerMaster.pwm_conf.period = TU_DEFAULT_PERIOD;
+    timerMaster.pwm_conf.ckpsc = 0;
+    timerMaster.pwm_conf.duty_cycle = 0;
+    timerMaster.pwm_conf.duty_swap = false;
+    timerMaster.pwm_conf.unit_on = UNIT_OFF;
+
+    timerMaster.comp_usage.cmp1 = FREE;
+    timerMaster.comp_usage.cmp1_value = 0;
+    timerMaster.comp_usage.cmp2 = FREE;
+    timerMaster.comp_usage.cmp2_value = 0;
+    timerMaster.comp_usage.cmp3 = FREE;
+    timerMaster.comp_usage.cmp3_value = 0;
+    timerMaster.comp_usage.cmp4 = FREE;
+    timerMaster.comp_usage.cmp4_value = 0;
+    timerMaster.phase_shift.value = 0;
+    timerMaster.phase_shift.compare_tu = MSTR;
+    timerMaster.phase_shift.reset_trig = MSTR_PER;
+}
+
 hrtim_tu_ON_OFF_t hrtim_get_status(hrtim_tu_number_t tu_number)
 {
     return tu_channel[tu_number]->pwm_conf.unit_on;
