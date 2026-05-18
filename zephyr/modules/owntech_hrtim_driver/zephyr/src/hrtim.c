@@ -48,6 +48,15 @@ static uint32_t HRTIM_MINIM_FREQUENCY = TU_DEFAULT_FREQ;
 /** @brief User callback for ISR */
 static hrtim_callback_t user_callback = NULL;
 
+/** @brief Last configured periodic-event callback */
+static hrtim_callback_t saved_periodic_event_callback = NULL;
+/** @brief Last configured periodic-event repetition counter */
+static uint32_t saved_periodic_event_repetition = 0;
+/** @brief Last configured periodic-event timer */
+static hrtim_tu_t saved_periodic_event_tu = MSTR;
+/** @brief Saved periodic-event enable state */
+static bool saved_periodic_event_enabled = false;
+
 /* Default values to initialize all the timer */
 
 /** @brief Listing all timing units, TIMA to TIMF */
@@ -475,6 +484,8 @@ void _CM_init_EEV(void)
  *
  * - Flags the unit as active in the configuration structure.
  *
+ * - Restores the saved periodic-event configuration, if one exists.
+ *
  */
 void _init_master()
 {
@@ -512,6 +523,19 @@ void _init_master()
     LL_HRTIM_TIM_CounterEnable(HRTIM1, LL_HRTIM_TIMER_MASTER);
 
     timerMaster.pwm_conf.unit_on = UNIT_ON;
+
+    if ((saved_periodic_event_callback != NULL) &&
+        (saved_periodic_event_repetition > 0))
+    {
+        hrtim_PeriodicEvent_configure(saved_periodic_event_tu,
+                                      saved_periodic_event_repetition,
+                                      saved_periodic_event_callback);
+
+        if (saved_periodic_event_enabled == true)
+        {
+            hrtim_PeriodicEvent_en(saved_periodic_event_tu);
+        }
+    }
 }
 
 /* Public functions */
@@ -750,12 +774,7 @@ void hrtim_tu_deinit(hrtim_tu_number_t tu_number)
 {
     hrtim_tu_t tu = tu_channel[tu_number]->pwm_conf.pwm_tu;
 
-    if (timerMaster.pwm_conf.unit_on == UNIT_OFF)
-    {
-        tu_channel[tu_number]->pwm_conf.unit_on = UNIT_OFF;
-        return;
-    }
-
+    /* Local timing-unit deinit only.*/
     hrtim_out_dis(tu_number);
     hrtim_adc_trigger_dis(tu_number);
     hrtim_cnt_dis(tu_number);
@@ -796,25 +815,12 @@ void hrtim_tu_deinit(hrtim_tu_number_t tu_number)
 
 void hrtim_deinit(void)
 {
+    /* Global HRTIM reset/deinit. */
+    LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_HRTIM1);
+    __DSB();
+
     irq_disable(HRTIM_IRQ_NUMBER);
     user_callback = NULL;
-
-    if (timerMaster.pwm_conf.unit_on == UNIT_OFF)
-    {
-        for (uint8_t tu_count = 0; tu_count < HRTIM_CHANNELS; tu_count++)
-        {
-            tu_channel[tu_count]->pwm_conf.unit_on = UNIT_OFF;
-            tu_channel[tu_count]->pwm_conf.frequency = TU_DEFAULT_FREQ;
-            tu_channel[tu_count]->pwm_conf.min_frequency = TU_DEFAULT_FREQ;
-        }
-
-        HRTIM_MINIM_FREQUENCY = TU_DEFAULT_FREQ;
-        timerMaster.pwm_conf.frequency = TU_DEFAULT_FREQ;
-        timerMaster.pwm_conf.min_frequency = TU_DEFAULT_FREQ;
-        timerMaster.pwm_conf.period = TU_DEFAULT_PERIOD;
-        timerMaster.pwm_conf.ckpsc = 0;
-        return;
-    }
 
     for (uint8_t tu_count = 0; tu_count < HRTIM_CHANNELS; tu_count++)
     {
@@ -831,6 +837,7 @@ void hrtim_deinit(void)
     }
 
     LL_HRTIM_DisableIT_REP(HRTIM1, LL_HRTIM_TIMER_MASTER);
+    LL_HRTIM_DisableIT_SYNC(HRTIM1);
     LL_HRTIM_TIM_CounterDisable(HRTIM1, LL_HRTIM_TIMER_MASTER);
 
     LL_APB2_GRP1_ForceReset(LL_APB2_GRP1_PERIPH_HRTIM1);
@@ -1538,8 +1545,19 @@ hrtim_adc_edgetrigger_t hrtim_adc_rollover_get(hrtim_tu_number_t tu_number)
 void hrtim_PeriodicEvent_configure(hrtim_tu_t tu, uint32_t repetition,
                                    hrtim_callback_t callback)
 {
-    /* Memorize user callback */
-    user_callback = callback;
+    /* Save the last configured event so it can be restored after HRTIM reset. */
+    saved_periodic_event_callback = callback;
+    saved_periodic_event_repetition = repetition;
+    saved_periodic_event_tu = tu;
+
+    if (timerMaster.pwm_conf.unit_on == UNIT_OFF)
+    {
+        user_callback = NULL;
+        return;
+    }
+
+    /* Active callback used by the ISR while the periodic event is enabled. */
+    user_callback = saved_periodic_event_enabled == true ? callback : NULL;
 
     /* Set repetition counter to repetition-1 so that an event
      * is triggered every "repetition" number of periods.
@@ -1549,6 +1567,16 @@ void hrtim_PeriodicEvent_configure(hrtim_tu_t tu, uint32_t repetition,
 
 void hrtim_PeriodicEvent_en(hrtim_tu_t tu)
 {
+    saved_periodic_event_enabled = true;
+
+    if (timerMaster.pwm_conf.unit_on == UNIT_OFF)
+    {
+        user_callback = NULL;
+        return;
+    }
+
+    user_callback = saved_periodic_event_callback;
+
     if (LL_HRTIM_GetSyncInSrc(HRTIM1) == LL_HRTIM_SYNCIN_SRC_NONE)
     {
         /* Enabling the interrupt on repetition counter event*/
@@ -1573,13 +1601,31 @@ void hrtim_PeriodicEvent_en(hrtim_tu_t tu)
 
 void hrtim_PeriodicEvent_dis(hrtim_tu_t tu)
 {
+    saved_periodic_event_enabled = false;
+
     irq_disable(HRTIM_IRQ_NUMBER);
+    user_callback = NULL;
+
+    if (timerMaster.pwm_conf.unit_on == UNIT_OFF)
+    {
+        return;
+    }
+
     /* Disabling the interrupt on repetition counter event */
     LL_HRTIM_DisableIT_REP(HRTIM1, tu);
+    LL_HRTIM_DisableIT_SYNC(HRTIM1);
 }
 
 void hrtim_PeriodicEvent_SetRep(hrtim_tu_t tu, uint32_t repetition)
 {
+    saved_periodic_event_repetition = repetition;
+    saved_periodic_event_tu = tu;
+
+    if (timerMaster.pwm_conf.unit_on == UNIT_OFF)
+    {
+        return;
+    }
+
     /* Set repetition counter to repetition-1 so that an event
      * is triggered every "repetition" number of periods.
      */
@@ -1588,6 +1634,16 @@ void hrtim_PeriodicEvent_SetRep(hrtim_tu_t tu, uint32_t repetition)
 
 uint32_t hrtim_PeriodicEvent_GetRep(hrtim_tu_t tu)
 {
+    if (timerMaster.pwm_conf.unit_on == UNIT_OFF)
+    {
+        if (tu == saved_periodic_event_tu)
+        {
+            return saved_periodic_event_repetition;
+        }
+
+        return 0;
+    }
+
     return LL_HRTIM_TIM_GetRepetition(HRTIM1, tu) + 1;
 }
 

@@ -114,11 +114,13 @@ void hrtim_init_default_all();
 uint16_t hrtim_tu_init(hrtim_tu_number_t tu_number);
 
 /**
- * @brief   Deinitializes a given timing unit
+ * @brief   Deinitializes one local timing unit
  *
- * This function disables both outputs, stops the timing unit counter, clears
- * the output/reset/ADC trigger configuration, and marks the timing unit as
- * reusable by hrtim_tu_init().
+ * This function disables both HRTIM outputs, stops the timing unit counter,
+ * clears the output/reset/ADC trigger configuration, and marks only this
+ * timing unit as reusable by hrtim_tu_init(). It does not reset the HRTIM
+ * master timer, the global frequency/min-frequency state, or fully
+ * deconfigure the timing unit GPIO pins.
  *
  * @param[in] tu_number        Timing unit number:
  *                  `PWMA`, `PWMB`, `PWMC`, `PWMD`, `PWME`, `PWMF`
@@ -126,11 +128,12 @@ uint16_t hrtim_tu_init(hrtim_tu_number_t tu_number);
 void hrtim_tu_deinit(hrtim_tu_number_t tu_number);
 
 /**
- * @brief   Deinitializes the whole HRTIM peripheral
+ * @brief   Globally resets and deinitializes the whole HRTIM peripheral
  *
- * This function disables all HRTIM outputs and counters, disables the HRTIM
- * interrupt/burst mode, resets the peripheral registers, and restores the
- * software state so a later initialization can choose a new prescaler.
+ * This function disables all HRTIM outputs, deinitializes all timing units,
+ * disables the HRTIM interrupt/burst mode and master timer, resets the
+ * peripheral registers, and restores the global software state so a later
+ * initialization can run the master setup and choose a new prescaler.
  */
 void hrtim_deinit(void);
 
@@ -500,6 +503,10 @@ hrtim_adc_edgetrigger_t hrtim_adc_rollover_get(hrtim_tu_number_t tu_number);
 
 /**
  * @brief Configures interrupt on repetition counter for the chosen timing unit
+ *
+ * The last configured callback, repetition counter, and timing unit are saved
+ * so a full HRTIM deinit/reinit can restore the periodic event configuration.
+ *
  * @param tu_src timing unit which will be the source for the ISR:
  *                  `MSTR`, `TIMA`, `TIMB`, `TIMC`, `TIMD`, `TIME`, `TIMF`
  * @param repetition value between 1 and 256 for the repetition counter:
@@ -515,6 +522,7 @@ void hrtim_PeriodicEvent_configure(hrtim_tu_t tu,
 /**
  * @brief Enables interrupt on repetition counter for the chosen timing unit.
  *        The periodic event configuration must have been done previously.
+ *        The enabled state is saved for restoration after a full HRTIM reinit.
  * @param tu_src timing unit which will be the source for the ISR:
  *                  `MSTR`, `TIMA`, `TIMB`, `TIMC`, `TIMD`, `TIME`, `TIMF`
  */
@@ -522,6 +530,7 @@ void hrtim_PeriodicEvent_en(hrtim_tu_t tu);
 
 /**
  * @brief Disables interrupt on repetition counter for the chosen timing unit
+ *        and saves the periodic event as disabled.
  * @param tu_src timing unit which will be the source for the ISR:
  *                  `MSTR`, `TIMA`, `TIMB`, `TIMC`, `TIMD`, `TIME`, `TIMF`
  */
