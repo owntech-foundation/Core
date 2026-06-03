@@ -102,6 +102,23 @@
 #endif
 
 
+#define SENSOR_DEFAULT_ADC(node_id)   DT_STRING_TOKEN(node_id, default_adc),
+#define SENSOR_DEFAULT_ORDER(node_id) DT_PROP(node_id, default_order),
+
+/* Compile-time arrays used by enableDefaultSensors(). */
+static const sensor_t dt_default_sensor_names[] = {
+	DT_FOREACH_STATUS_OKAY(shield_sensors, SENSOR_TOKEN)
+};
+
+static const adc_t dt_default_adcs[] = {
+	DT_FOREACH_STATUS_OKAY(shield_sensors, SENSOR_DEFAULT_ADC)
+};
+
+static const uint8_t dt_default_orders[] = {
+	DT_FOREACH_STATUS_OKAY(shield_sensors, SENSOR_DEFAULT_ORDER)
+};
+
+
 /**
  *  Variables
  */
@@ -305,52 +322,39 @@ int8_t SensorsAPI::storeParametersInMemory(sensor_t sensor_name)
 			);
 }
 
-#ifdef CONFIG_SHIELD_OWNVERTER
-
-void SensorsAPI::enableDefaultOwnverterSensors()
+void SensorsAPI::enableDefaultSensors()
 {
-	/**
-	 * Defines the triggers of all ADCs.
-	 * 	ADC 1 - Triggered by HRTIM C, which is linked to event 3
-	 * 	ADC 2 - Triggered by HRTIM A, which is linked to event 1
-	 * 	ADC 3, 4 and 5 - Triggered by software
-	 * 					They are mainly used for non-real-time measurements,
-	 * 					such as temperature
-	 */
 	spin.data.configureTriggerSource(ADC_1, TRIG_PWM);
 	spin.data.configureTriggerSource(ADC_2, TRIG_PWM);
 	spin.data.configureTriggerSource(ADC_3, TRIG_SOFTWARE);
 	spin.data.configureTriggerSource(ADC_4, TRIG_SOFTWARE);
 	spin.data.configureTriggerSource(ADC_5, TRIG_SOFTWARE);
 
-	/**
-	 * Defines ADC 1 and ADC 2 measurements as discontinuous.
-	 * This is specially helpful for creating synchronous measurements.
-	 * Each measurement is done once per period of HRTIM at a precise moment
-	 */
 	spin.data.configureDiscontinuousMode(ADC_1, 1);
 	spin.data.configureDiscontinuousMode(ADC_2, 1);
 
-	/* Creates the list of measurements of the ADC 1 */
-	this->enableSensor(V1_LOW, ADC_1);
-	this->enableSensor(V2_LOW, ADC_1);
-	this->enableSensor(I3_LOW, ADC_1);
-	this->enableSensor(V_HIGH, ADC_1);
-	this->enableSensor(V_NEUTR, ADC_1);
+	/* Enable sensors per ADC in slot order. ADC_1 and ADC_2 fire
+	 * simultaneously, so sensors sharing the same default-order value
+	 * on different ADCs are acquired at the same trigger instant. */
+	uint8_t n = DT_PARENT_SENSORS_COUNT;
+	for (adc_t adc = ADC_1; adc <= ADC_5; adc = (adc_t)(adc + 1)) {
+		for (uint8_t slot = 0; slot < n; slot++) {
+			for (uint8_t i = 0; i < n; i++) {
+				if (dt_default_adcs[i] == adc && dt_default_orders[i] == slot) {
+					this->enableSensor(dt_default_sensor_names[i], adc);
+					break;
+				}
+			}
+		}
+	}
 
-	/* Creates the list of measurements of the ADC 2 */
-	this->enableSensor(I1_LOW, ADC_2);
-	this->enableSensor(I2_LOW, ADC_2);
-	this->enableSensor(V3_LOW, ADC_2);
-	this->enableSensor(I_HIGH, ADC_2);
-	this->enableSensor(TEMP_SENSOR, ADC_2);
-
-	/* Configure the pins of the temperature MUX */
-	spin.gpio.configurePin(temp_mux_in_1,OUTPUT);
-	spin.gpio.configurePin(temp_mux_in_2,OUTPUT);
-
-
+#ifdef CONFIG_SHIELD_OWNVERTER
+	spin.gpio.configurePin(temp_mux_in_1, OUTPUT);
+	spin.gpio.configurePin(temp_mux_in_2, OUTPUT);
+#endif
 }
+
+#ifdef CONFIG_SHIELD_OWNVERTER
 
 void SensorsAPI::setOwnverterTempMeas(ownverter_temp_sensor_t temperature_sensor)
 {
@@ -370,49 +374,6 @@ void SensorsAPI::setOwnverterTempMeas(ownverter_temp_sensor_t temperature_sensor
 #endif
 
 #ifdef CONFIG_SHIELD_TWIST
-
-void SensorsAPI::enableDefaultTwistSensors()
-{
-	/**
-	 * Defines the triggers of all ADCs.
-	 *  ADC 1 - Triggered by HRTIM C, which is linked to event 3
-	 *  ADC 2 - Triggered by HRTIM A, which is linked to event 1
-	 *  ADC 3, 4 and 5 - Triggered by software
-	 * 					They are mainly used for non-real-time measurements,
-	 * 					such as temperature
-	 */
-	spin.data.configureTriggerSource(ADC_1, TRIG_PWM);
-	spin.data.configureTriggerSource(ADC_2, TRIG_PWM);
-	spin.data.configureTriggerSource(ADC_3, TRIG_SOFTWARE);
-	spin.data.configureTriggerSource(ADC_4, TRIG_SOFTWARE);
-	spin.data.configureTriggerSource(ADC_5, TRIG_SOFTWARE);
-
-	/**
-	 * Defines ADC 1 and ADC 2 measurements as discontinuous.
-	 * This is specially helpful for creating synchronous measurements.
-	 * Each measurement is done once per period of HRTIM at a precise moment
-	 */
-	uint32_t num_discontinuous_meas = 1;
-	spin.data.configureDiscontinuousMode(ADC_1, num_discontinuous_meas);
-	spin.data.configureDiscontinuousMode(ADC_2, num_discontinuous_meas);
-
-	/* Creates the list of measurements of the ADC 1 */
-	this->enableSensor(I1_LOW, ADC_1);
-	this->enableSensor(V1_LOW, ADC_1);
-	this->enableSensor(V_HIGH, ADC_1);
-
-	/* Creates the list of measurements of the ADC 2 */
-	this->enableSensor(I2_LOW, ADC_2);
-	this->enableSensor(V2_LOW, ADC_2);
-	this->enableSensor(I_HIGH, ADC_2);
-
-	/* Creates the list of measurements of the ADC 3 */
-	int8_t test = this->enableSensor(TEMP_SENSOR_1, ADC_4);
-
-	/* Creates the list of measurements of the ADC 4 */
-	test = this->enableSensor(TEMP_SENSOR_2, ADC_3);
-
-}
 
 void SensorsAPI::triggerTwistTempMeas(sensor_t temperature_sensor)
 {
