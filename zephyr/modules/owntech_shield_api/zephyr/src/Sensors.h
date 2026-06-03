@@ -46,9 +46,12 @@
 /* Other modules public API */
 #include "SpinAPI.h"
 
-/* Device-tree related macro */
+/* Device-tree related macros */
 
-#define SENSOR_TOKEN(node_id) DT_STRING_TOKEN(node_id, sensor_name),
+#define SENSOR_TOKEN(node_id)      DT_STRING_TOKEN(node_id, sensor_name),
+#define SENSOR_PARENT_COUNT(node_id) +1
+#define DT_PARENT_SENSORS_COUNT \
+	(0 DT_FOREACH_STATUS_OKAY(shield_sensors, SENSOR_PARENT_COUNT))
 
 
 /* Type definitions */
@@ -409,32 +412,6 @@ public:
 #ifdef CONFIG_SHIELD_OWNVERTER
 
 	/**
-	 * @brief This function is used to enable acquisition of all voltage/current
-	 *        sensors on the OwnVerter shield.
-	 * 
-	 * @note  ADCs are triggered simultaneously.
-	 * 
-	 * @note  Sensors are attributed to ADC1 and ADC2 as follows: 
-	 * 
-	 * - `ADC1_LIST[5]`: [`V1_LOW`,`V2_LOW`, `I3_LOW`, `V_HIGH`, `V_NEUTR`    ]  
-	 *      
-	 * - `ADC2_LIST[5]`: [`I1_LOW`,`I2_LOW`, `V3_LOW`, `I_HIGH`, `TEMP_SENSOR`]
-	 *        
-	 * This function will configure ADC 1 and 2 to be automatically triggered 
-	 * by the HRTIM, so the board must be configured as a power converted to 
-	 * enable HRTIM events.
-	 * 
-	 * All other ADCs remain software triggered, thus will only be acquired 
-	 * when triggerAcquisition() is called.
-	 * 
-	 * It also configures the gpios that control the MUX that chooses which
-	 * temperature will be measured.
-	 *
-	 * @note  This function must be called *before* ADC is started.
-	 */
-	void enableDefaultOwnverterSensors();
-
-	/**
 	 * @brief This function sets the GPIOs attached to the MUX to control which
 	 * 		  temperature sensor will be measured.
 	 * 
@@ -459,31 +436,18 @@ public:
 	void setOwnverterTempMeas(ownverter_temp_sensor_t temperature_sensor);
 #endif
 
-#ifdef CONFIG_SHIELD_TWIST
-
 	/**
-	 * @brief This function is used to enable acquisition of all voltage/current
-	 *        sensors on the Twist shield.
-	 * 
-	 * @note  ADCs are triggered simultaneously.
-	 * 
-	 * @note  Sensors are attributed to ADC1 and ADC2 as follows: 
-	 * 
-	 * - `ADC1_LIST[3]`: [`V1_LOW`,`V2_LOW`,`V_HIGH`]  
-	 *      
-	 * - `ADC2_LIST[3]`: [`I1_LOW`,`I2_LOW`,`I_HIGH`]
+	 * @brief Enables acquisition for all sensors that have a `default-adc`
+	 *        property set in the device tree (i.e. not `UNKNOWN_ADC`).
 	 *
-	 * 	This function will configure ADC 1 and 2 to be automatically
-	 *  triggered by the HRTIM, so the board must be configured as
-	 *  a power converted to enable HRTIM events.
-	 * 
-	 *  All other ADCs remain software triggered, thus will only be
-	 *  acquired when triggerAcquisition() is called.
-	 * 
+	 * ADC1 and ADC2 are configured as PWM-triggered (synchronous with HRTIM).
+	 * ADC3-5 are software-triggered.
 	 *
-	 * @warning  This function must be called `before` ADC is started.
+	 * @note  This function must be called `before` ADC is started.
 	 */
-	void enableDefaultTwistSensors();
+	void enableDefaultSensors();
+
+#ifdef CONFIG_SHIELD_TWIST
 
 	/**
 	 * @brief Manually set parameters values using console. You will be directed

@@ -12,6 +12,8 @@
 		v1low: v1-low {
 			compatible = "shield-sensors";
 			sensor-name = "V1_LOW";
+			default-adc = "ADC_1";
+			default-order = <1>;
 			default-gain = <0x3d3851ec>;
 			default-offset = <0xc2b867f0>;
 			v1-low-adc1 {
@@ -27,6 +29,8 @@
 		v2low: v2-low {
 			compatible = "shield-sensors";
 			sensor-name = "V2_LOW";
+			default-adc = "ADC_2";
+			default-order = <1>;
 			default-gain = <0x3d3851ec>;
 			default-offset = <0xc2b867f0>;
 			v2-low-adc1 {
@@ -42,6 +46,8 @@
 		vhigh: v-high {
 			compatible = "shield-sensors";
 			sensor-name = "V_HIGH";
+			default-adc = "ADC_1";
+			default-order = <2>;
 			default-gain = <0x3cf57710>;
 			default-offset = <0x00000000>;
 			v-high-adc1 {
@@ -59,6 +65,8 @@
 		i1low: i1-low {
 			compatible = "shield-sensors";
 			sensor-name = "I1_LOW";
+			default-adc = "ADC_1";
+			default-order = <0>;
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
 			i1-low-adc1 {
@@ -74,6 +82,8 @@
 		i2low: i2-low {
 			compatible = "shield-sensors";
 			sensor-name = "I2_LOW";
+			default-adc = "ADC_2";
+			default-order = <0>;
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
 			i2-low-adc1 {
@@ -89,6 +99,8 @@
 		ihigh: i-high {
 			compatible = "shield-sensors";
 			sensor-name = "I_HIGH";
+			default-adc = "ADC_2";
+			default-order = <2>;
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
 			i-high-adc1 {

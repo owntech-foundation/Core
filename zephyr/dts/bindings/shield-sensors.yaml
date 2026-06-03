@@ -54,10 +54,33 @@ properties:
     description: PIN IN 1 used in the mux for temperature sensor on the Ownverter. 
 
 
+  default-adc:
+    type: string
+    required: false
+    default: "UNKNOWN_ADC"
+    enum:
+      - "UNKNOWN_ADC"
+      - "ADC_1"
+      - "ADC_2"
+      - "ADC_3"
+      - "ADC_4"
+      - "ADC_5"
+    description: Default ADC used for acquisition by enableDefaultSensors().
+                 UNKNOWN_ADC means the sensor is not enabled by default.
+
+  default-order:
+    type: int
+    required: false
+    default: 255
+    description: Position in the enableDefaultSensors() acquisition sequence.
+                 Lower values are enabled first, determining the per-ADC channel
+                 order. Only meaningful when default-adc is not UNKNOWN_ADC.
+                 Sensors without this property (default 255) are not ordered.
+
   sensor-conv-type:
     type: string
     required: false
-    description: Type of conversion performed by the sensor. Typically LINEAR or LOG. 
+    description: Type of conversion performed by the sensor. Typically LINEAR or LOG.
 
 
 child-binding:

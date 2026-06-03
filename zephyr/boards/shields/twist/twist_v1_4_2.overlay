@@ -58,6 +58,8 @@
 		v1low: v1-low {
 			compatible = "shield-sensors";
 			sensor-name = "V1_LOW";
+			default-adc = "ADC_1";
+			default-order = <1>;
 			default-gain = <0x3d3851ec>;
 			default-offset = <0xc2b867f0>;
 			sensor-conv-type = "LINEAR";
@@ -75,6 +77,8 @@
 		v2low: v2-low {
 			compatible = "shield-sensors";
 			sensor-name = "V2_LOW";
+			default-adc = "ADC_2";
+			default-order = <1>;
 			default-gain = <0x3d3851ec>;
 			default-offset = <0xc2b867f0>;
 			sensor-conv-type = "LINEAR";
@@ -92,6 +96,8 @@
 		vhigh: v-high {
 			compatible = "shield-sensors";
 			sensor-name = "V_HIGH";
+			default-adc = "ADC_1";
+			default-order = <2>;
 			default-gain = <0x3cf57710>;
 			default-offset = <0x00000000>;
 			sensor-conv-type = "LINEAR";
@@ -111,6 +117,8 @@
 		i1low: i1-low {
 			compatible = "shield-sensors";
 			sensor-name = "I1_LOW";
+			default-adc = "ADC_1";
+			default-order = <0>;
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
 			sensor-conv-type = "LINEAR";
@@ -128,6 +136,8 @@
 		i2low: i2-low {
 			compatible = "shield-sensors";
 			sensor-name = "I2_LOW";
+			default-adc = "ADC_2";
+			default-order = <0>;
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
 			sensor-conv-type = "LINEAR";
@@ -145,6 +155,8 @@
 		ihigh: i-high {
 			compatible = "shield-sensors";
 			sensor-name = "I_HIGH";
+			default-adc = "ADC_2";
+			default-order = <2>;
 			default-gain = <0x3ba3d70a>;
 			default-offset = <0xc1200000>;
 			sensor-conv-type = "LINEAR";
@@ -164,6 +176,8 @@
 		temp1: temp-sensor-1 {
 			compatible = "shield-sensors";
 			sensor-name = "TEMP_SENSOR_1";
+			default-adc = "ADC_4";
+			default-order = <0>;
 			default-r0 = <0x461c4000>;
 			default-b = <0x4557a000>;
 			default-rdiv = <0x469c4000>;
@@ -179,6 +193,8 @@
 		temp2: temp-sensor-2 {
 			compatible = "shield-sensors";
 			sensor-name = "TEMP_SENSOR_2";
+			default-adc = "ADC_3";
+			default-order = <0>;
 			default-r0 = <0x461c4000>;
 			default-b = <0x4557a000>;
 			default-rdiv = <0x469c4000>;
