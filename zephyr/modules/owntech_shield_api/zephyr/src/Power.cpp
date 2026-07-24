@@ -623,6 +623,15 @@ void PowerAPI::setDeadTime(leg_t leg,
 void PowerAPI::setFrequency(uint32_t frequency)
 {
     spin.pwm.setFrequency(frequency);
+
+    /* spin.pwm.setFrequency() clamps below timer_min_frequency, so mirror
+     * that clamping here to keep timer_frequency consistent with the
+     * frequency actually applied to the PWM. */
+    if (frequency < timer_min_frequency)
+    {
+        frequency = timer_min_frequency;
+    }
+
     timer_frequency = frequency;
 
     for (int8_t i = 0; i < dt_leg_count; i++)
