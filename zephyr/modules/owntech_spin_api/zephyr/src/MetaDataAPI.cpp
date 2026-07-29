@@ -49,8 +49,13 @@ enum : uint16_t
 
 static const uint16_t VERSION_FIELD_LEN = 3; /* major, minor, rev */
 
-int8_t MetaDataAPI::setSpinSerialNumber(const char* serial)
+int8_t MetaDataAPI::setSpinSerialNumber(const char* serial, uint8_t serial_size)
 {
+	if (serial_size != SPIN_SERIAL_LEN)
+	{
+		return -2;
+	}
+
 	int ret = nvs_storage_store_data(BOARD_METADATA | META_SPIN_SERIAL,
 	                                  serial, SPIN_SERIAL_LEN);
 	return (ret < 0) ? -1 : 0;
@@ -68,8 +73,13 @@ int8_t MetaDataAPI::getSpinSerialNumber(char* buffer, uint8_t buffer_size)
 	return (ret < 0) ? -1 : ret;
 }
 
-int8_t MetaDataAPI::setShieldSerialNumber(const char* serial)
+int8_t MetaDataAPI::setShieldSerialNumber(const char* serial, uint8_t serial_size)
 {
+	if (serial_size != SHIELD_SERIAL_LEN)
+	{
+		return -2;
+	}
+
 	int ret = nvs_storage_store_data(BOARD_METADATA | META_SHIELD_SERIAL,
 	                                  serial, SHIELD_SERIAL_LEN);
 	return (ret < 0) ? -1 : 0;
@@ -139,8 +149,13 @@ int8_t MetaDataAPI::getShieldVersion(uint8_t* major, uint8_t* minor, uint8_t* re
 	return 0;
 }
 
-int8_t MetaDataAPI::setShieldPassword(const char* password)
+int8_t MetaDataAPI::setShieldPassword(const char* password, uint8_t password_size)
 {
+	if (password_size != SHIELD_PASSWORD_LEN)
+	{
+		return -2;
+	}
+
 	int ret = nvs_storage_store_data(BOARD_METADATA | META_SHIELD_PASSWORD,
 	                                  password, SHIELD_PASSWORD_LEN);
 	return (ret < 0) ? -1 : 0;

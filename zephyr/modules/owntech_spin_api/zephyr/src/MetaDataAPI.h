@@ -68,17 +68,24 @@ public:
 	/**
 	 * @brief Store the Spin board serial number in persistent memory.
 	 *
-	 * @param[in] serial Pointer to a buffer of exactly `SPIN_SERIAL_LEN`
-	 *                    (13) raw ASCII bytes. The buffer does not need to
-	 *                    be null-terminated, and no null terminator is
-	 *                    written; if fewer than 13 meaningful characters
-	 *                    are needed, the caller must pad the buffer itself
-	 *                    (e.g. with spaces or zeros) up to 13 bytes.
+	 * @param[in] serial      Pointer to a buffer of exactly
+	 *                        `SPIN_SERIAL_LEN` (13) raw ASCII bytes. The
+	 *                        buffer does not need to be null-terminated,
+	 *                        and no null terminator is written; if fewer
+	 *                        than 13 meaningful characters are needed, the
+	 *                        caller must pad the buffer itself (e.g. with
+	 *                        spaces or zeros) up to 13 bytes.
+	 * @param[in] serial_size Size of `serial` in bytes, must be exactly
+	 *                        `SPIN_SERIAL_LEN` (13).
 	 *
-	 * @return `0` if the serial number was correctly stored,
-	 *         `-1` if there was an underlying storage error.
+	 * @return `0` if the serial number was correctly stored, negative
+	 *         value on error:
+	 *
+	 * - `-1`: underlying storage error,
+	 *
+	 * - `-2`: `serial_size` is not exactly `SPIN_SERIAL_LEN`.
 	 */
-	int8_t setSpinSerialNumber(const char* serial);
+	int8_t setSpinSerialNumber(const char* serial, uint8_t serial_size);
 
 	/**
 	 * @brief Retrieve the Spin board serial number from persistent memory.
@@ -99,14 +106,20 @@ public:
 	/**
 	 * @brief Store the shield serial number in persistent memory.
 	 *
-	 * @param[in] serial Pointer to a buffer of exactly `SHIELD_SERIAL_LEN`
-	 *                    (13) raw ASCII bytes. Same padding rules as
-	 *                    `setSpinSerialNumber()`.
+	 * @param[in] serial      Pointer to a buffer of exactly
+	 *                        `SHIELD_SERIAL_LEN` (13) raw ASCII bytes.
+	 *                        Same padding rules as `setSpinSerialNumber()`.
+	 * @param[in] serial_size Size of `serial` in bytes, must be exactly
+	 *                        `SHIELD_SERIAL_LEN` (13).
 	 *
-	 * @return `0` if the serial number was correctly stored,
-	 *         `-1` if there was an underlying storage error.
+	 * @return `0` if the serial number was correctly stored, negative
+	 *         value on error:
+	 *
+	 * - `-1`: underlying storage error,
+	 *
+	 * - `-2`: `serial_size` is not exactly `SHIELD_SERIAL_LEN`.
 	 */
-	int8_t setShieldSerialNumber(const char* serial);
+	int8_t setShieldSerialNumber(const char* serial, uint8_t serial_size);
 
 	/**
 	 * @brief Retrieve the shield serial number from persistent memory.
@@ -180,13 +193,19 @@ public:
 	 *       plain form to flash, retrievable via `getShieldPassword()`.
 	 *       It is only meant to gate casual shield/board mismatches.
 	 *
-	 * @param[in] password Pointer to a buffer of exactly
-	 *                      `SHIELD_PASSWORD_LEN` (3) raw ASCII bytes.
+	 * @param[in] password      Pointer to a buffer of exactly
+	 *                          `SHIELD_PASSWORD_LEN` (3) raw ASCII bytes.
+	 * @param[in] password_size Size of `password` in bytes, must be
+	 *                          exactly `SHIELD_PASSWORD_LEN` (3).
 	 *
-	 * @return `0` if the password was correctly stored,
-	 *         `-1` if there was an underlying storage error.
+	 * @return `0` if the password was correctly stored, negative value
+	 *         on error:
+	 *
+	 * - `-1`: underlying storage error,
+	 *
+	 * - `-2`: `password_size` is not exactly `SHIELD_PASSWORD_LEN`.
 	 */
-	int8_t setShieldPassword(const char* password);
+	int8_t setShieldPassword(const char* password, uint8_t password_size);
 
 	/**
 	 * @brief Retrieve the shield password from persistent memory.
