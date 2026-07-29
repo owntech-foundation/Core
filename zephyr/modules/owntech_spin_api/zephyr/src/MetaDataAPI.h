@@ -245,13 +245,16 @@ public:
 	 *
 	 * @param[in] index       Slot index, in `[0, METADATA_EXTRA_COUNT - 1]`.
 	 * @param[in] buffer      Buffer to receive the stored data.
-	 * @param[in] buffer_size Size of `buffer` in bytes.
+	 * @param[in] buffer_size Size of `buffer` in bytes, must be at least
+	 *                        `METADATA_EXTRA_MAX_LEN` (16), since the
+	 *                        actual stored size for this slot is not
+	 *                        known ahead of the read.
 	 *
 	 * @return Number of bytes read on success, negative value on error:
 	 *
 	 * - `-1`: underlying storage error,
 	 *
-	 * - `-2`: provided buffer is smaller than the stored data,
+	 * - `-2`: `buffer_size` is smaller than `METADATA_EXTRA_MAX_LEN`,
 	 *
 	 * - `-3`: `index` is out of range.
 	 */

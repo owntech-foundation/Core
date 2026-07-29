@@ -197,6 +197,11 @@ int8_t MetaDataAPI::getExtraData(uint8_t index, uint8_t* buffer, uint8_t buffer_
 		return -3;
 	}
 
+	if (buffer_size < METADATA_EXTRA_MAX_LEN)
+	{
+		return -2;
+	}
+
 	uint16_t field_id = BOARD_METADATA | (META_EXTRA_0 + index);
 	int ret = nvs_storage_retrieve_data(field_id, buffer, buffer_size);
 	return (ret < 0) ? -1 : ret;
