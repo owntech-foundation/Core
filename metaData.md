@@ -17,7 +17,7 @@ landed.
   `nvs_storage.c`)
 - [x] **Commit 2** — new `MetaDataAPI` class
   (`zephyr/modules/owntech_spin_api/zephyr/src/MetaDataAPI.h`, `.cpp`)
-- [ ] **Commit 3** — wire `MetaDataAPI` into `SpinAPI` as `spin.metaData`
+- [x] **Commit 3** — wire `MetaDataAPI` into `SpinAPI` as `spin.metaData`
   (`SpinAPI.h`, `SpinAPI.cpp`, `zephyr/modules/owntech_spin_api/zephyr/CMakeLists.txt`)
 - [ ] **Commit 4** — test harness `main.cpp` with serial command menu
   (`h`/`w`/`r`/`c`/`f`) (`src/main.cpp`)
@@ -45,4 +45,14 @@ files touched, any deviation from the plan.)
   of the 10 keys individually via `nvs_storage_store_data(id, ptr, 0)`
   (Zephyr's `nvs_write` treats a 0-length write as a delete), so it never
   touches the other modules' data in the shared NVS partition. No
+  deviation from plan.
+- **Commit 3 done**: wired `MetaDataAPI` into `SpinAPI` as `spin.metaData`
+  — added the include + `static MetaDataAPI metaData;` member in
+  `SpinAPI.h`, the `MetaDataAPI SpinAPI::metaData;` definition in
+  `SpinAPI.cpp`, and `src/MetaDataAPI.cpp` to the unconditional
+  `zephyr_library_sources(...)` list in
+  `zephyr/modules/owntech_spin_api/zephyr/CMakeLists.txt`. No new Kconfig
+  needed (`CONFIG_OWNTECH_SPIN_API` already depends on
+  `CONFIG_OWNTECH_FLASH`). Left the pre-existing, unrelated local
+  modification to the top-level `zephyr/CMakeLists.txt` untouched. No
   deviation from plan.

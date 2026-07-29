@@ -34,6 +34,7 @@
 #include "../src/DataAPI.h"
 #include "../src/GpioHAL.h"
 #include "../src/LedHAL.h"
+#include "../src/MetaDataAPI.h"
 #include "../src/PwmHAL.h"
 #include "../src/TimerHAL.h"
 
@@ -98,6 +99,12 @@ public:
 	 * @brief Data acquisition from SPIN ADCs
 	 */
 	static DataAPI data;
+
+	/**
+	 * @brief Persist board/shield identity data (serial numbers,
+	 * 		  versions, shield password, extra slots) to flash.
+	 */
+	static MetaDataAPI metaData;
 
 };
 

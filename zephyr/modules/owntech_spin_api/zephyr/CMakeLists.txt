@@ -18,6 +18,7 @@ if(CONFIG_OWNTECH_SPIN_API)
     src/DacHAL.cpp
     src/DataAPI.cpp
     src/LedHAL.cpp
+    src/MetaDataAPI.cpp
     src/PwmHAL.cpp
     src/TimerHAL.cpp
   )
