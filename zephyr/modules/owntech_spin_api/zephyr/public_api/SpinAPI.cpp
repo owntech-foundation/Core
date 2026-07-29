@@ -40,6 +40,8 @@ DacHAL SpinAPI::dac;
 
 DataAPI SpinAPI::data;
 
+MetaDataAPI SpinAPI::metaData;
+
 CompHAL SpinAPI::comp;
 
 PwmHAL SpinAPI::pwm;
