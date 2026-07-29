@@ -11,7 +11,7 @@ landed.
 
 ## Commits
 
-- [ ] **Commit 1** — flash driver: add `BOARD_METADATA` category to
+- [x] **Commit 1** — flash driver: add `BOARD_METADATA` category to
   `nvs_category_t` + `nvs_storage_get_free_space()` diagnostic
   (`zephyr/modules/owntech_flash_driver/zephyr/public_api/nvs_storage.h`,
   `nvs_storage.c`)
@@ -28,3 +28,9 @@ landed.
 
 (Each commit appends a short entry here when it lands: what was done,
 files touched, any deviation from the plan.)
+
+- **Commit 1 done**: added `BOARD_METADATA = 0x0400` to `nvs_category_t`
+  and a new `nvs_storage_get_free_space()` diagnostic (wraps Zephyr's
+  `nvs_calc_free_space(&fs)`) to
+  `zephyr/modules/owntech_flash_driver/zephyr/public_api/nvs_storage.h`
+  and `nvs_storage.c`. No deviation from plan.

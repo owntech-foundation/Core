@@ -273,3 +273,14 @@ uint16_t nvs_storage_get_version_in_nvs()
 
 	return storage_version_in_nvs;
 }
+
+int32_t nvs_storage_get_free_space()
+{
+	if (initialized == false)
+	{
+		int8_t error = _nvs_storage_init();
+		if (error != 0) return error;
+	}
+
+	return nvs_calc_free_space(&fs);
+}

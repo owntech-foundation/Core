@@ -38,15 +38,17 @@ extern "C" {
 /* Types definition */
 
 /**
- * @brief Defines the NVS categories 
- * 
+ * @brief Defines the NVS categories
+ *
  * - `VERSION`          = 0x0100
- * 
+ *
  * - `ADC_CALIBRATION`  = 0x0200
- * 
+ *
  * - `MEASURE_THRESHOLD` = 0x0300
- * 
- * 
+ *
+ * - `BOARD_METADATA`   = 0x0400
+ *
+ *
  * @note Must be on the upper half of the 2-bytes value, hence end with 00
  */
 typedef enum
@@ -54,6 +56,7 @@ typedef enum
 	VERSION          = 0x0100,
 	ADC_CALIBRATION  = 0x0200,
 	MEASURE_THRESHOLD = 0x0300,
+	BOARD_METADATA   = 0x0400,
 }nvs_category_t;
 
 /**
@@ -117,6 +120,17 @@ uint16_t nvs_storage_get_current_version();
  * @return Stored version value from flash.
  */
 uint16_t nvs_storage_get_version_in_nvs();
+
+/**
+ * @brief Get the amount of free space left in the NVS partition.
+ *
+ * Useful to check how much of the storage budget remains before
+ * writing new data, since the NVS partition is shared by several
+ * modules (ADC calibration, safety thresholds, board metadata, ...).
+ *
+ * @return Free space in bytes on success, negative value on error.
+ */
+int32_t nvs_storage_get_free_space();
 
 
 #ifdef __cplusplus
