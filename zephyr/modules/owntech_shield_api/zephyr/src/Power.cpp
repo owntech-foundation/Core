@@ -205,13 +205,27 @@ void PowerAPI::initMode(leg_t leg,
 
 void PowerAPI::setDutyCycle(leg_t leg, float32_t duty_value)
 {
-    uint16_t period;
-    uint16_t value;
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
 
-    period = tu_channel[spinNumberToTu(dt_pwm_pin[leg])]->pwm_conf.period;
-    value = duty_value * period;
+    if (leg == ALL)
+    {
+        startIndex = 0;
+        endIndex = dt_leg_count;
+    }
+    else
+    {
+        startIndex = leg;
+        endIndex = leg + 1;
+    }
 
-    setDutyCycleRaw(leg, value);
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        hrtim_tu_number_t leg_tu = spinNumberToTu(dt_pwm_pin[i]);
+        uint16_t period = tu_channel[leg_tu]->pwm_conf.period;
+        uint16_t value = duty_value * period;
+        setDutyCycleRaw(static_cast<leg_t>(i), value);
+    }
 }
 
 void PowerAPI::setDutyCycleRaw(leg_t leg, uint16_t duty_value)
@@ -606,6 +620,42 @@ void PowerAPI::setDeadTime(leg_t leg,
     }
 }
 
+void PowerAPI::setFrequency(uint32_t frequency)
+{
+    spin.pwm.setFrequency(frequency);
+
+    /* spin.pwm.setFrequency() clamps below timer_min_frequency, so mirror
+     * that clamping here to keep timer_frequency consistent with the
+     * frequency actually applied to the PWM. */
+    if (frequency < timer_min_frequency)
+    {
+        frequency = timer_min_frequency;
+    }
+
+    timer_frequency = frequency;
+
+    for (int8_t i = 0; i < dt_leg_count; i++)
+    {
+        hrtim_tu_number_t leg_tu = spinNumberToTu(dt_pwm_pin[i]);
+        uint16_t period = tu_channel[leg_tu]->pwm_conf.period;
+
+        tu_channel[leg_tu]->pwm_conf.duty_min_user =
+            tu_channel[leg_tu]->pwm_conf.duty_min_user_float * period;
+        tu_channel[leg_tu]->pwm_conf.duty_max_user =
+            tu_channel[leg_tu]->pwm_conf.duty_max_user_float * period;
+    }
+}
+
+uint32_t PowerAPI::getFrequency()
+{
+    return timer_frequency;
+}
+
+uint32_t PowerAPI::getFrequencyMin()
+{
+    return timer_min_frequency;
+}
+
 
 void PowerAPI::setDutyCycleMin(leg_t leg, float32_t duty_cycle){
     int8_t startIndex = 0;
@@ -698,7 +748,8 @@ void PowerAPI::setDutyCycleMinRaw(leg_t leg, uint16_t duty_cycle){
         tu_channel[leg_tu]->pwm_conf.duty_min_user = duty_cycle;
         uint16_t period = tu_channel[leg_tu]->pwm_conf.period;
         tu_channel[leg_tu]->pwm_conf.duty_min_user_float = 
-                                            (float32_t)(duty_cycle/period);
+                                            (float32_t)duty_cycle /
+                                            (float32_t)period;
         
     }
 
@@ -734,7 +785,8 @@ void PowerAPI::setDutyCycleMaxRaw(leg_t leg,uint16_t duty_cycle){
         }    
         tu_channel[leg_tu]->pwm_conf.duty_max_user = duty_cycle;
         tu_channel[leg_tu]->pwm_conf.duty_max_user_float = 
-                                                (float32_t)(duty_cycle/period);
+                                                (float32_t)duty_cycle /
+                                                (float32_t)period;
     }
 }
 

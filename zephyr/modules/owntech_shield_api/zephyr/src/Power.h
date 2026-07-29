@@ -217,6 +217,30 @@ public:
 					 uint16_t ns_falling_dt);
 
 	/**
+	 * @brief Sets the PWM frequency shared by the shield legs.
+	 *
+	 * This updates the underlying HRTIM period and refreshes duty-cycle
+	 * limits so subsequent duty updates stay aligned with the new period.
+	 *
+	 * @param frequency switching frequency in Hz
+	 */
+	void setFrequency(uint32_t frequency);
+
+	/**
+	 * @brief Gets the currently configured shared PWM frequency in Hz.
+	 *
+	 * @return shared switching frequency in Hz
+	 */
+	uint32_t getFrequency();
+
+	/**
+	 * @brief Gets the minimum allowed shared PWM frequency in Hz.
+	 *
+	 * @return minimum switching frequency in Hz
+	 */
+	uint32_t getFrequencyMin();
+
+	/**
 	 * @brief sets the Minimum Duty Cycle Limit
 	 *
 	 * @param leg the leg for which to set dead time value: `LEG1` to `ALL`
