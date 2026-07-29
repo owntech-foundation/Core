@@ -15,7 +15,7 @@ landed.
   `nvs_category_t` + `nvs_storage_get_free_space()` diagnostic
   (`zephyr/modules/owntech_flash_driver/zephyr/public_api/nvs_storage.h`,
   `nvs_storage.c`)
-- [ ] **Commit 2** — new `MetaDataAPI` class
+- [x] **Commit 2** — new `MetaDataAPI` class
   (`zephyr/modules/owntech_spin_api/zephyr/src/MetaDataAPI.h`, `.cpp`)
 - [ ] **Commit 3** — wire `MetaDataAPI` into `SpinAPI` as `spin.metaData`
   (`SpinAPI.h`, `SpinAPI.cpp`, `zephyr/modules/owntech_spin_api/zephyr/CMakeLists.txt`)
@@ -34,3 +34,15 @@ files touched, any deviation from the plan.)
   `nvs_calc_free_space(&fs)`) to
   `zephyr/modules/owntech_flash_driver/zephyr/public_api/nvs_storage.h`
   and `nvs_storage.c`. No deviation from plan.
+- **Commit 2 done**: added `MetaDataAPI.h`/`.cpp` under
+  `zephyr/modules/owntech_spin_api/zephyr/src/` with the 10-field
+  get/set API (spin/shield serials, spin/shield versions as raw
+  major/minor/rev bytes, shield password, 5 extra slots) plus
+  `clearAllMetaData()`. Field sub-addressing (`META_SPIN_SERIAL`, etc.)
+  is a private enum inside the .cpp, combined with `BOARD_METADATA` as
+  `BOARD_METADATA | field_id`, matching the `ADC_CALIBRATION` bit-packing
+  precedent in `data_conversion.cpp`. `clearAllMetaData()` deletes each
+  of the 10 keys individually via `nvs_storage_store_data(id, ptr, 0)`
+  (Zephyr's `nvs_write` treats a 0-length write as a delete), so it never
+  touches the other modules' data in the shared NVS partition. No
+  deviation from plan.
