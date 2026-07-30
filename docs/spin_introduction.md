@@ -9,6 +9,7 @@ To work with Spin API, include the following file in your code:
 
 ## Detailed documentation on available API classes:
 - [Data API](spin_dataAPI.md)
+- [MetaData API](spin_metaDataAPI.md)
 
 ## Detailed documentation on Hardware Abstraction Layer classes:
 - [Comparator HAL](https://owntech-foundation.github.io/Documentation/powerAPI/classCompHAL)
