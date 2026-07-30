@@ -88,7 +88,7 @@
 #define SUBSENSORS_COUNTER(node_id) \
 					DT_FOREACH_CHILD(node_id, SENSORS_COUNTER)
 
-#define DT_SENSORS_COUNT \
+#define DT_SUBSENSORS_COUNT \
 					DT_FOREACH_STATUS_OKAY(shield_sensors, SUBSENSORS_COUNTER)
 
 
@@ -149,7 +149,7 @@ SensorsAPI::sensor_dt_data_t** SensorsAPI::available_sensors_props[ADC_COUNT] = 
  * enabled, and a valid pointer will point to the structure
  * containing relevant information for this sensor.
  */
-SensorsAPI::sensor_dt_data_t* SensorsAPI::enabled_sensors[DT_SENSORS_COUNT] = {0};
+SensorsAPI::sensor_dt_data_t* SensorsAPI::enabled_sensors[DT_SUBSENSORS_COUNT] = {0};
 
 bool SensorsAPI::initialized = false;
 
@@ -336,7 +336,7 @@ void SensorsAPI::enableDefaultSensors()
 	/* Enable sensors per ADC in slot order. ADC_1 and ADC_2 fire
 	 * simultaneously, so sensors sharing the same default-order value
 	 * on different ADCs are acquired at the same trigger instant. */
-	uint8_t n = DT_PARENT_SENSORS_COUNT;
+	uint8_t n = DT_SENSORS_COUNT;
 	for (adc_t adc = ADC_1; adc <= ADC_5; adc = (adc_t)(adc + 1)) {
 		for (uint8_t slot = 0; slot < n; slot++) {
 			for (uint8_t i = 0; i < n; i++) {
@@ -617,7 +617,7 @@ void SensorsAPI::buildSensorListFromDeviceTree()
 
 	/* Retrieve calibration coefficients for each sensor listed in device tree */
 	for (uint8_t dt_sensor_index = 0 ;
-		 dt_sensor_index < DT_SENSORS_COUNT ;
+		 dt_sensor_index < DT_SUBSENSORS_COUNT ;
 		 dt_sensor_index++)
 	{
 		/* Determine ADC number based on its address */
@@ -814,7 +814,7 @@ void SensorsAPI::buildSensorListFromDeviceTree()
 	/* Populate the channels list for each ADC */
 	uint8_t adc_channels_count[ADC_COUNT] = {0};
 	for (uint8_t dt_sensor_index = 0 ;
-		 dt_sensor_index < DT_SENSORS_COUNT ;
+		 dt_sensor_index < DT_SUBSENSORS_COUNT ;
 		 dt_sensor_index++)
 	{
 		uint8_t adc_index = dt_sensors_props[dt_sensor_index].adc_number - 1;
