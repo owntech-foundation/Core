@@ -370,10 +370,19 @@ void SensorsAPI::setOwnverterTempMeas(ownverter_temp_sensor_t temperature_sensor
 	}
 }
 
+void SensorsAPI::enableDefaultOwnverterSensors()
+{
+	this->enableDefaultSensors();
+}
 
 #endif
 
 #ifdef CONFIG_SHIELD_TWIST
+
+void SensorsAPI::enableDefaultTwistSensors()
+{
+	this->enableDefaultSensors();
+}
 
 void SensorsAPI::triggerTwistTempMeas(sensor_t temperature_sensor)
 {
