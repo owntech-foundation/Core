@@ -44,7 +44,10 @@ enum : uint16_t
 	META_SPIN_VERSION    = 0x02,
 	META_SHIELD_VERSION  = 0x03,
 	META_SHIELD_PASSWORD = 0x04,
-	META_EXTRA_0         = 0x05,
+	META_SPIN_PASSWORD   = 0x05,
+	META_EXTRA_0         = 0x06,
+	/* META_EXTRA_0 .. META_EXTRA_0 + METADATA_EXTRA_COUNT - 1 (0x06-0x0A)
+	 * are reserved for the generic extra slots. */
 };
 
 static const uint16_t VERSION_FIELD_LEN = 3; /* major, minor, rev */
@@ -149,6 +152,30 @@ int8_t MetaDataAPI::getShieldVersion(uint8_t* major, uint8_t* minor, uint8_t* re
 	return 0;
 }
 
+int8_t MetaDataAPI::setSpinPassword(const char* password, uint8_t password_size)
+{
+	if (password_size != SPIN_PASSWORD_LEN)
+	{
+		return -2;
+	}
+
+	int ret = nvs_storage_store_data(BOARD_METADATA | META_SPIN_PASSWORD,
+	                                  password, SPIN_PASSWORD_LEN);
+	return (ret < 0) ? -1 : 0;
+}
+
+int8_t MetaDataAPI::getSpinPassword(char* buffer, uint8_t buffer_size)
+{
+	if (buffer_size < SPIN_PASSWORD_LEN)
+	{
+		return -2;
+	}
+
+	int ret = nvs_storage_retrieve_data(BOARD_METADATA | META_SPIN_PASSWORD,
+	                                     buffer, buffer_size);
+	return (ret < 0) ? -1 : ret;
+}
+
 int8_t MetaDataAPI::setShieldPassword(const char* password, uint8_t password_size)
 {
 	if (password_size != SHIELD_PASSWORD_LEN)
@@ -220,6 +247,7 @@ int8_t MetaDataAPI::clearAllMetaData()
 		META_EXTRA_0 + 2,
 		META_EXTRA_0 + 3,
 		META_EXTRA_0 + 4,
+		META_SPIN_PASSWORD,
 	};
 
 	/* Writing with a size of 0 deletes the entry (see Zephyr's
