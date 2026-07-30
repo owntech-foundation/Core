@@ -434,6 +434,14 @@ public:
 	 * 
 	 */
 	void setOwnverterTempMeas(ownverter_temp_sensor_t temperature_sensor);
+
+	/**
+	 * @brief Deprecated. Use enableDefaultSensors() instead.
+	 *
+	 * @deprecated Kept for backward compatibility with existing user code;
+	 *             simply forwards to enableDefaultSensors().
+	 */
+	void enableDefaultOwnverterSensors();
 #endif
 
 	/**
@@ -448,6 +456,14 @@ public:
 	void enableDefaultSensors();
 
 #ifdef CONFIG_SHIELD_TWIST
+
+	/**
+	 * @brief Deprecated. Use enableDefaultSensors() instead.
+	 *
+	 * @deprecated Kept for backward compatibility with existing user code;
+	 *             simply forwards to enableDefaultSensors().
+	 */
+	void enableDefaultTwistSensors();
 
 	/**
 	 * @brief Manually set parameters values using console. You will be directed
