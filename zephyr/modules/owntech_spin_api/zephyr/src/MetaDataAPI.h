@@ -40,9 +40,10 @@
 static const uint8_t SPIN_SERIAL_LEN = 13;
 static const uint8_t SHIELD_SERIAL_LEN = 13;
 
-/* Fixed length, in bytes, of the shield password field (3 raw ASCII
- * characters, not null-terminated). */
-static const uint8_t SHIELD_PASSWORD_LEN = 3;
+/* Fixed length, in bytes, of the spin and shield password fields (10 raw
+ * ASCII characters, not null-terminated). */
+static const uint8_t SPIN_PASSWORD_LEN = 10;
+static const uint8_t SHIELD_PASSWORD_LEN = 10;
 
 /* Number of generic extra metadata slots, and max size of each. */
 static const uint8_t METADATA_EXTRA_COUNT = 5;
@@ -54,11 +55,11 @@ static const uint8_t METADATA_EXTRA_MAX_LEN = 16;
 
 /**
  * @brief Persist board/shield identity data (serial numbers, versions,
- *        shield password, and generic extra slots) to flash.
+ *        spin/shield passwords, and generic extra slots) to flash.
  *
  * @note This is NOT secure storage: data is written in plain form to the
  *       NVS partition, with no secure element or read-protection involved.
- *       The shield password field is only meant to gate casual shield
+ *       The password fields are only meant to gate casual spin/shield
  *       mismatches, not to protect a real secret.
  */
 class MetaDataAPI
@@ -187,6 +188,42 @@ public:
 	int8_t getShieldVersion(uint8_t* major, uint8_t* minor, uint8_t* rev);
 
 	/**
+	 * @brief Store the Spin board password in persistent memory.
+	 *
+	 * @note This is not a secure secret store: the password is written in
+	 *       plain form to flash, retrievable via `getSpinPassword()`.
+	 *       It is only meant to gate casual spin/shield mismatches.
+	 *
+	 * @param[in] password      Pointer to a buffer of exactly
+	 *                          `SPIN_PASSWORD_LEN` (10) raw ASCII bytes.
+	 * @param[in] password_size Size of `password` in bytes, must be
+	 *                          exactly `SPIN_PASSWORD_LEN` (10).
+	 *
+	 * @return `0` if the password was correctly stored, negative value
+	 *         on error:
+	 *
+	 * - `-1`: underlying storage error,
+	 *
+	 * - `-2`: `password_size` is not exactly `SPIN_PASSWORD_LEN`.
+	 */
+	int8_t setSpinPassword(const char* password, uint8_t password_size);
+
+	/**
+	 * @brief Retrieve the Spin board password from persistent memory.
+	 *
+	 * @param[in]  buffer      Buffer to receive the 10 raw ASCII bytes.
+	 * @param[in]  buffer_size Size of `buffer`, must be at least
+	 *                         `SPIN_PASSWORD_LEN` (10).
+	 *
+	 * @return Number of bytes read (10) on success, negative value on error:
+	 *
+	 * - `-1`: underlying storage error,
+	 *
+	 * - `-2`: provided buffer is smaller than `SPIN_PASSWORD_LEN`.
+	 */
+	int8_t getSpinPassword(char* buffer, uint8_t buffer_size);
+
+	/**
 	 * @brief Store the shield password in persistent memory.
 	 *
 	 * @note This is not a secure secret store: the password is written in
@@ -194,9 +231,9 @@ public:
 	 *       It is only meant to gate casual shield/board mismatches.
 	 *
 	 * @param[in] password      Pointer to a buffer of exactly
-	 *                          `SHIELD_PASSWORD_LEN` (3) raw ASCII bytes.
+	 *                          `SHIELD_PASSWORD_LEN` (10) raw ASCII bytes.
 	 * @param[in] password_size Size of `password` in bytes, must be
-	 *                          exactly `SHIELD_PASSWORD_LEN` (3).
+	 *                          exactly `SHIELD_PASSWORD_LEN` (10).
 	 *
 	 * @return `0` if the password was correctly stored, negative value
 	 *         on error:
@@ -210,11 +247,11 @@ public:
 	/**
 	 * @brief Retrieve the shield password from persistent memory.
 	 *
-	 * @param[in]  buffer      Buffer to receive the 3 raw ASCII bytes.
+	 * @param[in]  buffer      Buffer to receive the 10 raw ASCII bytes.
 	 * @param[in]  buffer_size Size of `buffer`, must be at least
-	 *                         `SHIELD_PASSWORD_LEN` (3).
+	 *                         `SHIELD_PASSWORD_LEN` (10).
 	 *
-	 * @return Number of bytes read (3) on success, negative value on error:
+	 * @return Number of bytes read (10) on success, negative value on error:
 	 *
 	 * - `-1`: underlying storage error,
 	 *
@@ -262,7 +299,7 @@ public:
 
 	/**
 	 * @brief Erase all board/shield metadata fields (serial numbers,
-	 *        versions, password, and all extra slots).
+	 *        versions, passwords, and all extra slots).
 	 *
 	 * @note This only erases the metadata fields owned by this class. It
 	 *       does not affect ADC calibration data or safety thresholds,
