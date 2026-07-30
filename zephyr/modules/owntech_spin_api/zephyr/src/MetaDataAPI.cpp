@@ -241,13 +241,13 @@ int8_t MetaDataAPI::clearAllMetaData()
 		META_SHIELD_SERIAL,
 		META_SPIN_VERSION,
 		META_SHIELD_VERSION,
+		META_SPIN_PASSWORD,
 		META_SHIELD_PASSWORD,
 		META_EXTRA_0 + 0,
 		META_EXTRA_0 + 1,
 		META_EXTRA_0 + 2,
 		META_EXTRA_0 + 3,
 		META_EXTRA_0 + 4,
-		META_SPIN_PASSWORD,
 	};
 
 	/* Writing with a size of 0 deletes the entry (see Zephyr's
