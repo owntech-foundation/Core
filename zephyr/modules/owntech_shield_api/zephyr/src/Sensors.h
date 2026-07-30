@@ -49,9 +49,9 @@
 /* Device-tree related macros */
 
 #define SENSOR_TOKEN(node_id)      DT_STRING_TOKEN(node_id, sensor_name),
-#define SENSOR_PARENT_COUNT(node_id) +1
+#define SENSOR_COUNT(node_id) +1
 #define DT_PARENT_SENSORS_COUNT \
-	(0 DT_FOREACH_STATUS_OKAY(shield_sensors, SENSOR_PARENT_COUNT))
+	(0 DT_FOREACH_STATUS_OKAY(shield_sensors, SENSOR_COUNT))
 
 
 /* Type definitions */
