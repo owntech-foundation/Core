@@ -50,7 +50,7 @@
 
 #define SENSOR_TOKEN(node_id)      DT_STRING_TOKEN(node_id, sensor_name),
 #define SENSOR_COUNT(node_id) +1
-#define DT_PARENT_SENSORS_COUNT \
+#define DT_SENSORS_COUNT \
 	(0 DT_FOREACH_STATUS_OKAY(shield_sensors, SENSOR_COUNT))
 
 
