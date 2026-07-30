@@ -1,0 +1,44 @@
+description: Sin/Cos position sensor wiring and default configuration exposed by a shield
+
+compatible: "shield-position-sincos"
+
+properties:
+  position-sensor-name:
+    type: string
+    required: true
+    description: Name under which the position sensor is referred to in user code.
+
+  motor:
+    type: phandle
+    required: false
+    description: Optional reference to the default motor configuration node.
+
+  direction-sign:
+    type: int
+    required: false
+    description: Direction convention used by this position sensor, typically 1 or -1.
+
+  electrical-offset:
+    type: int
+    required: false
+    description: Electrical offset for this position sensor, stored as an IEEE754 float32 bit pattern.
+
+  sin-spin-pin:
+    type: int
+    required: true
+    description: Spin header pin used for the analog sine channel.
+
+  cos-spin-pin:
+    type: int
+    required: true
+    description: Spin header pin used for the analog cosine channel.
+
+  sin-sensor-name:
+    type: string
+    required: true
+    description: Matching shield sensor name used to acquire the analog sine channel.
+
+  cos-sensor-name:
+    type: string
+    required: true
+    description: Matching shield sensor name used to acquire the analog cosine channel.

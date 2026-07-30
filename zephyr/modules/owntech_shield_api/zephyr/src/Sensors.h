@@ -143,6 +143,21 @@ public:
 	int8_t enableSensor(sensor_t sensor_name, adc_t adc_number);
 
 	/**
+	 * @brief Enable a position-related shield sensor using the first ADC
+	 *        declared in device tree for this semantic sensor name.
+	 *
+	 * @note  This helper is intended for the Position API, where semantic
+	 *        signals such as Sin/Cos are expected to map to a single ADC path.
+	 *        If several ADC mappings exist, the first ADC visited by the
+	 *        internal ADC-order iteration is selected.
+	 *
+	 * @param[in] sensor_name Name of the sensor using enumeration sensor_t.
+	 *
+	 * @return 0 if the sensor was correctly enabled, negative value otherwise.
+	 */
+	int8_t enablePositionSensor(sensor_t sensor_name);
+
+	/**
 	 * @brief Function to access the acquired data for specified sensor.
 	 * 
 	 *        This function provides a buffer in which all data that

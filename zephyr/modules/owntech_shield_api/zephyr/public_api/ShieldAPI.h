@@ -30,6 +30,7 @@
 
 
 #include "../src/Sensors.h"
+#include "../src/Position.h"
 #include "../src/Power.h"
 
 
@@ -43,6 +44,11 @@ public:
 	 * @brief Contains all the functions to interact with shield sensors
 	 */
 	static SensorsAPI sensors;
+
+	/**
+	 * @brief Contains all the functions to interact with shield position sensors
+	 */
+	static PositionAPI position;
 
 	/**
 	 * @brief Contains all the functions to drive shield power capabilities

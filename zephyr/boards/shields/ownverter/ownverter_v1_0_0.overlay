@@ -15,6 +15,17 @@
 		shield-version = "v1.0.0";
 	};
 
+	default_motor: default-motor {
+		/*
+		 * Placeholder motor configuration.
+		 * Applications can override these values from app.overlay without
+		 * changing the shield description.
+		 */
+		compatible = "motor-config";
+		pole-pairs = <1>;
+		status = "okay";
+	};
+
 	powershield: power-shield{
         compatible = "power-leg";
         default-frequency = <200000>;
@@ -272,6 +283,46 @@
 		};
 	};
 
+	shield-position-sensors {
+		hall: hall-sensor {
+			compatible = "shield-position-hall";
+			position-sensor-name = "HALL";
+			motor = <&default_motor>;
+			direction-sign = <1>;
+			electrical-offset = <0x00000000>;
+			hall-a-gpios = <&spin_header 7 GPIO_ACTIVE_HIGH>;
+			hall-b-gpios = <&spin_header 9 GPIO_ACTIVE_HIGH>;
+			hall-c-gpios = <&spin_header 49 GPIO_ACTIVE_HIGH>;
+			hall-sector-table = <5 1 0 3 4 2>;
+			hall-interpolation = "NONE";
+			status = "okay";
+		};
+
+		abz: incremental-encoder {
+			compatible = "shield-position-abz";
+			position-sensor-name = "ABZ";
+			motor = <&default_motor>;
+			direction-sign = <1>;
+			electrical-offset = <0x00000000>;
+			timer = <&timers3>;
+			counts-per-revolution = <1024>;
+			status = "okay";
+		};
+
+		sincos: sin-cos-sensor {
+			compatible = "shield-position-sincos";
+			position-sensor-name = "SINCOS";
+			motor = <&default_motor>;
+			direction-sign = <1>;
+			electrical-offset = <0x00000000>;
+			sin-sensor-name = "ANALOG_SIN";
+			cos-sensor-name = "ANALOG_COS";
+			sin-spin-pin = <43>;
+			cos-spin-pin = <45>;
+			status = "okay";
+		};
+	};
+
 	shield-safety-thresholds {
 
 		/* Voltage thresholds */
@@ -360,6 +411,15 @@
 			threshold-low = <0x00000000>;
 			status = "disabled";
 		};
+	};
+};
+
+&timers3 {
+	status = "okay";
+
+	encoder {
+		pinctrl-0 = <&tim3_etr_pd2 &tim3_ch1_pc6 &tim3_ch2_pc7>;
+		pinctrl-names = "incremental_encoder";
 	};
 };
 

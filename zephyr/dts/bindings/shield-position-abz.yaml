@@ -1,0 +1,34 @@
+description: Incremental encoder wiring and default configuration exposed by a shield
+
+compatible: "shield-position-abz"
+
+properties:
+  position-sensor-name:
+    type: string
+    required: true
+    description: Name under which the position sensor is referred to in user code.
+
+  motor:
+    type: phandle
+    required: false
+    description: Optional reference to the default motor configuration node.
+
+  direction-sign:
+    type: int
+    required: false
+    description: Direction convention used by this position sensor, typically 1 or -1.
+
+  electrical-offset:
+    type: int
+    required: false
+    description: Electrical offset for this position sensor, stored as an IEEE754 float32 bit pattern.
+
+  timer:
+    type: phandle
+    required: true
+    description: Timer instance used in incremental encoder mode.
+
+  counts-per-revolution:
+    type: int
+    required: false
+    description: Counts per revolution of this incremental encoder.

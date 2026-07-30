@@ -180,6 +180,36 @@ int8_t SensorsAPI::enableSensor(sensor_t sensor_name, adc_t adc_num)
 	return DataAPI::enableChannel(sensor_info.adc_num, sensor_info.channel_num);
 }
 
+int8_t SensorsAPI::enablePositionSensor(sensor_t sensor_name)
+{
+	if (initialized == false)
+	{
+		buildSensorListFromDeviceTree();
+	}
+
+	if (sensor_name == UNDEFINED_SENSOR) return ERROR_CHANNEL_NOT_FOUND;
+
+	for (uint8_t adc_index = 0; adc_index < ADC_COUNT; adc_index++)
+	{
+		for (uint8_t sensor = 0;
+			 sensor < available_sensors_count[adc_index];
+			 sensor++)
+		{
+			sensor_dt_data_t* current_sensor =
+							available_sensors_props[adc_index][sensor];
+
+			if (current_sensor->name == sensor_name)
+			{
+				enabled_sensors[((int)sensor_name) - 1] = current_sensor;
+				return DataAPI::enableChannel((adc_t)current_sensor->adc_number,
+											 current_sensor->channel_number);
+			}
+		}
+	}
+
+	return ERROR_CHANNEL_NOT_FOUND;
+}
+
 uint16_t* SensorsAPI::getRawValues(sensor_t sensor_name,
 								   uint32_t& number_of_values_acquired)
 {
@@ -334,15 +364,15 @@ void SensorsAPI::enableDefaultOwnverterSensors()
 	/* Creates the list of measurements of the ADC 1 */
 	this->enableSensor(V1_LOW, ADC_1);
 	this->enableSensor(V2_LOW, ADC_1);
-	this->enableSensor(I3_LOW, ADC_1);
 	this->enableSensor(V_HIGH, ADC_1);
+	this->enableSensor(I_HIGH, ADC_1);
 	this->enableSensor(V_NEUTR, ADC_1);
 
 	/* Creates the list of measurements of the ADC 2 */
 	this->enableSensor(I1_LOW, ADC_2);
 	this->enableSensor(I2_LOW, ADC_2);
+	this->enableSensor(I3_LOW, ADC_2);
 	this->enableSensor(V3_LOW, ADC_2);
-	this->enableSensor(I_HIGH, ADC_2);
 	this->enableSensor(TEMP_SENSOR, ADC_2);
 
 	/* Configure the pins of the temperature MUX */
