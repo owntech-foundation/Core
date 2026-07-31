@@ -23,7 +23,12 @@ Everything else should be used similarly as Data API, just replace ``spin.data``
 
 Moreover, as Shield sensor API is aware of what sensors are available on the shield you use, it provides an auto-configuration that enables acquisition for all the sensors from the shield.
 
-The function is named ``shield.sensors.enableDefault***Sensors()``. For example, for the Twist shield, the function is named ``shield.sensors.enableDefaultTwistSensors()``. Just call this function then start the API, and you're ready to go!
+The function is named ``shield.sensors.enableDefaultSensors()``. Just call this function then start the API, and you're ready to go!
+
+!!! Note Compatibility with older function calls
+    Previous existing functions calls are still supported but are deprecated: 
+    ``shield.sensors.enableDefaultTwistSensors()`` and ``shield.sensors.enableDefaultOwnverterSensors()``. 
+    Both rewire to the new ``shield.sensors.enableDefaultSensors()``. 
 
 ## API Reference
 ::: doxy.powerAPI.class
