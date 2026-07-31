@@ -72,6 +72,26 @@ public:
      void initUnit(hrtim_tu_number_t pwmX);
 
      /**
+      * @brief This function deinitializes a timing unit
+      *
+      * @param[in] pwmX  PWM Unit: `PWMA`,`PWMB`,`PWMC`,`PWMD`,`PWME`,`PWMF`
+      *
+      * @warning Stop power conversion before calling this function. Use
+      *          deInit() instead when changing the HRTIM prescaler.
+      */
+     void deInitUnit(hrtim_tu_number_t pwmX);
+
+     /**
+      * @brief This function deinitializes the HRTIM peripheral
+      *
+      * Use this before reconfiguring the PWM frequency range when the new
+      * range requires a different HRTIM prescaler.
+      *
+      * @warning Stop power conversion before calling this function.
+      */
+     void deInit();
+
+     /**
       * @brief This function starts both outputs of the selected HRTIM channel
       *
       * @param[in] pwmX  PWM Unit: `PWMA`,`PWMB`,`PWMC`,`PWMD`,`PWME`,`PWMF`

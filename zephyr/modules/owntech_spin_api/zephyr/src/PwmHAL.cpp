@@ -36,6 +36,23 @@ void PwmHAL::initUnit(hrtim_tu_number_t pwmX)
 	period[pwmX] = hrtim_tu_init(pwmX);
 }
 
+void PwmHAL::deInitUnit(hrtim_tu_number_t pwmX)
+{
+	hrtim_tu_deinit(pwmX);
+	period[pwmX] = 0;
+}
+
+void PwmHAL::deInit()
+{
+	hrtim_deinit();
+
+	for (uint8_t channel = 0; channel < HRTIM_CHANNELS; channel++)
+	{
+		period[channel] = 0;
+		swap_state[channel] = false;
+	}
+}
+
 void PwmHAL::startDualOutput(hrtim_tu_number_t pwmX)
 {
 	hrtim_out_en(pwmX);
