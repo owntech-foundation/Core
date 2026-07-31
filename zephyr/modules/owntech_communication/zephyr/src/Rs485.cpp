@@ -31,6 +31,7 @@
 /* Zephyr drivers */
 #include <zephyr/drivers/uart.h>
 #include <zephyr/drivers/dma.h>
+#include <zephyr/irq.h>
 
 /* Header */
 #include "Rs485.h"
@@ -89,33 +90,73 @@ static dma_callbackRXfunc_t user_fnc = NULL;
 /* Private functions */
 
 /**
- *  DMA callback TX clear transmission flag, and disabled DMA channel TX.
+ *  DMA callback TX: called by Zephyr DMA driver on transfer completion.
  */
 static void _dma_callback_tx(const struct device *dev,
                              void *user_data,
                              uint32_t channel,
                              int status)
 {
-    /* Disable DMA channel after sending datas */
-    LL_DMA_DisableChannel(DMA_USART, LL_DMA_CHANNEL_TX);
+    ARG_UNUSED(dev);
+    ARG_UNUSED(user_data);
+    ARG_UNUSED(channel);
+    ARG_UNUSED(status);
 
     LL_USART_ClearFlag_TXFE(USART3);
-    /* Clear transmission complete flag USART */
     LL_USART_ClearFlag_TC(USART3);
-    /* Clear transmission complete dma channel TX */
-    LL_DMA_ClearFlag_TC6(DMA_USART);
 }
 
 /**
- *  DMA callback RX clear reception flag, then call user functions
+ *  DMA callback RX direct ISR (ZLI path).
+ *  With cyclic DMA configured through Zephyr, both HT and TC IRQs can be
+ *  raised. We clear HT and only trigger user callback on TC.
  */
-static void _dma_callback_rx()
+ISR_DIRECT_DECLARE(_dma_callback_rx_direct)
 {
-    /* Clear transmission complete flag */
-    LL_DMA_ClearFlag_TC7(DMA_USART);
+    bool is_half_transfer = (LL_DMA_IsActiveFlag_HT7(DMA_USART) != 0U);
+    bool is_transfer_complete = (LL_DMA_IsActiveFlag_TC7(DMA_USART) != 0U);
 
-    if(user_fnc != NULL){
-        user_fnc();
+    if (is_half_transfer)
+    {
+        LL_DMA_ClearFlag_HT7(DMA_USART);
+    }
+
+    if (is_transfer_complete)
+    {
+        LL_DMA_ClearFlag_TC7(DMA_USART);
+
+        if (user_fnc != NULL)
+        {
+            user_fnc();
+        }
+    }
+
+    /* No scheduling decision from this ISR path */
+    return 0;
+}
+
+/**
+ *  DMA callback RX wrapper for Zephyr DMA driver API.
+ *  If IRQ_DIRECT_CONNECT is used for Zephyr DMA RX channel, 
+ *  this callback will not be used and the direct ZLI ISR will 
+ *  be triggered instead. Otherwise, this callback will be used 
+ *  and will call the user function on transfer complete.
+ */
+static void _dma_callback_rx_zephyr(const struct device *dev,
+                                    void *user_data,
+                                    uint32_t channel,
+                                    int status)
+{
+    ARG_UNUSED(dev);
+    ARG_UNUSED(user_data);
+    ARG_UNUSED(channel);
+
+    if (status == DMA_STATUS_COMPLETE)
+    {
+        if (user_fnc != NULL)
+        {
+            user_fnc();
+        }
     }
 }
 
@@ -171,6 +212,7 @@ void serial_init(void)
     uart_configure(uart_dev, &uart_cfg);
 
     LL_USART_ConfigAsyncMode(USART3);
+    LL_USART_EnableOverrunDetect(USART3);
 
     /* Enable DMA request*/
     LL_USART_EnableDMAReq_TX(USART3);
@@ -243,51 +285,30 @@ void oversamp_set(usart_oversampling_t oversampling)
  */
 void dma_channel_init_tx()
 {
-    /* Configure DMA */
+    struct dma_block_config dma_block_config_s = {0};
     struct dma_config dma_config_s = {0};
-    LL_DMA_InitTypeDef DMA_InitStruct = {0};
 
-    /* Callback function set-up */
+    /* Memory-to-peripheral transfer configuration (TX buffer -> USART TDR). */
+    dma_block_config_s.source_address = (uint32_t)(tx_usart_val);
+    dma_block_config_s.dest_address = (uint32_t)(&(USART3->TDR));
+    dma_block_config_s.block_size = dma_buffer_size;
+    dma_block_config_s.source_addr_adj = DMA_ADDR_ADJ_INCREMENT;
+    dma_block_config_s.dest_addr_adj = DMA_ADDR_ADJ_NO_CHANGE;
+    dma_block_config_s.source_reload_en = 0;
+    dma_block_config_s.dest_reload_en = 0;
+
+    dma_config_s.dma_slot = LL_DMAMUX_REQ_USART3_TX;
+    dma_config_s.channel_direction = MEMORY_TO_PERIPHERAL;
+    dma_config_s.channel_priority = 3;
+    dma_config_s.source_data_size = 1;
+    dma_config_s.dest_data_size = 1;
+    dma_config_s.source_burst_length = 1;
+    dma_config_s.dest_burst_length = 1;
+    dma_config_s.block_count = 1;
+    dma_config_s.head_block = &dma_block_config_s;
     dma_config_s.dma_callback = _dma_callback_tx;
-    /* HAL override */
-    dma_config_s.linked_channel = STM32_DMA_HAL_OVERRIDE;
 
-    /* DMA configuration with LL drivers */
-    DMA_InitStruct.Direction = LL_DMA_DIRECTION_MEMORY_TO_PERIPH;
-    DMA_InitStruct.PeriphOrM2MSrcAddress = (uint32_t)(&(USART3->TDR));
-    DMA_InitStruct.MemoryOrM2MDstAddress = (uint32_t)(tx_usart_val);
-    DMA_InitStruct.Mode = LL_DMA_MODE_NORMAL;
-    DMA_InitStruct.MemoryOrM2MDstDataSize = LL_DMA_MDATAALIGN_BYTE;
-    DMA_InitStruct.PeriphOrM2MSrcDataSize = LL_DMA_PDATAALIGN_BYTE;
-    DMA_InitStruct.PeriphOrM2MSrcIncMode = LL_DMA_PERIPH_NOINCREMENT;
-    DMA_InitStruct.MemoryOrM2MDstIncMode = LL_DMA_MEMORY_INCREMENT;
-    DMA_InitStruct.PeriphRequest = LL_DMAMUX_REQ_USART3_TX;
-    DMA_InitStruct.NbData = dma_buffer_size;
-
-    /* Indicates callback function to zephyr driver */
     dma_config(dma1, ZEPHYR_DMA_CHANNEL_TX, &dma_config_s);
-    /* Disabling channel for initial set-up */
-    LL_DMA_DisableChannel(DMA_USART, LL_DMA_CHANNEL_TX);
-
-    /* Initialize DMA */
-
-    /* DMA data size */
-    LL_DMA_SetDataLength(DMA_USART, LL_DMA_CHANNEL_TX, dma_buffer_size);
-    /* DMA channel priority */
-    LL_DMA_SetChannelPriorityLevel(DMA_USART,
-                                   LL_DMA_CHANNEL_TX,
-                                   LL_DMA_PRIORITY_VERYHIGH);
-
-    LL_DMA_Init(DMA_USART, LL_DMA_CHANNEL_TX, &DMA_InitStruct);
-
-    /* Clearing flags */
-    LL_DMA_ClearFlag_TC6(DMA_USART);
-    LL_DMA_ClearFlag_HT6(DMA_USART);
-
-    /* Enable transfer complete interruption */
-    LL_DMA_EnableIT_TC(DMA_USART, LL_DMA_CHANNEL_TX);
-    /* Disable half-transfer interruption */
-    LL_DMA_DisableIT_HT(DMA_USART, LL_DMA_CHANNEL_TX);
 }
 
 
@@ -296,48 +317,40 @@ void dma_channel_init_tx()
  */
 void dma_channel_init_rx()
 {
-    /* Configure DMA */
-    LL_DMA_InitTypeDef DMA_InitStruct = {0};
+    struct dma_block_config dma_block_config_s = {0};
+    struct dma_config dma_config_s = {0};
 
-    /* Initialization of DMA */
-    DMA_InitStruct.Direction = LL_DMA_DIRECTION_PERIPH_TO_MEMORY;
-    DMA_InitStruct.PeriphOrM2MSrcAddress = (uint32_t)(&(USART3->RDR));
-    DMA_InitStruct.MemoryOrM2MDstAddress = (uint32_t)(rx_usart_val);
-    DMA_InitStruct.Mode = LL_DMA_MODE_CIRCULAR;
-    DMA_InitStruct.MemoryOrM2MDstDataSize = LL_DMA_MDATAALIGN_BYTE;
-    DMA_InitStruct.PeriphOrM2MSrcDataSize = LL_DMA_PDATAALIGN_BYTE;
-    DMA_InitStruct.PeriphOrM2MSrcIncMode = LL_DMA_PERIPH_NOINCREMENT;
-    DMA_InitStruct.MemoryOrM2MDstIncMode = LL_DMA_MEMORY_INCREMENT;
-    DMA_InitStruct.PeriphRequest = LL_DMAMUX_REQ_USART3_RX;
-    DMA_InitStruct.NbData = dma_buffer_size;
+    /* Circular peripheral-to-memory transfer configuration */
+    dma_block_config_s.source_address = (uint32_t)(&(USART3->RDR));
+    dma_block_config_s.dest_address = (uint32_t)(rx_usart_val);
+    dma_block_config_s.block_size = dma_buffer_size;
+    dma_block_config_s.source_addr_adj = DMA_ADDR_ADJ_NO_CHANGE;
+    dma_block_config_s.dest_addr_adj = DMA_ADDR_ADJ_INCREMENT;
+    dma_block_config_s.source_reload_en = 1;
+    dma_block_config_s.dest_reload_en = 1;
 
-    IRQ_DIRECT_CONNECT(17, 0, _dma_callback_rx, IRQ_ZERO_LATENCY);
+    dma_config_s.dma_slot = LL_DMAMUX_REQ_USART3_RX;
+    dma_config_s.channel_direction = PERIPHERAL_TO_MEMORY;
+    dma_config_s.channel_priority = 3;
+    dma_config_s.source_data_size = 1;
+    dma_config_s.dest_data_size = 1;
+    dma_config_s.source_burst_length = 1;
+    dma_config_s.dest_burst_length = 1;
+    dma_config_s.block_count = 1;
+    dma_config_s.head_block = &dma_block_config_s;
+    dma_config_s.dma_callback = _dma_callback_rx_zephyr;
+
+    if (dma_config(dma1, ZEPHYR_DMA_CHANNEL_RX, &dma_config_s) != 0)
+    {
+        return;
+    }
+
+    /* Bind DMA1 channel IRQ line (17) to the direct zero-latency ISR. */
+    IRQ_DIRECT_CONNECT(17, 0, _dma_callback_rx_direct, IRQ_ZERO_LATENCY);
     irq_enable(17);
 
-    /* Disabling channel for initial set-up */
-    LL_DMA_DisableChannel(DMA_USART, LL_DMA_CHANNEL_RX);
-
-    /* Initialize DMA */
-
-    /* DMA data size */
-    LL_DMA_SetDataLength(DMA_USART, LL_DMA_CHANNEL_RX, dma_buffer_size);
-    /* DMA channel priority */
-    LL_DMA_SetChannelPriorityLevel(DMA_USART,
-                                   LL_DMA_CHANNEL_RX,
-                                   LL_DMA_PRIORITY_VERYHIGH);
-
-    LL_DMA_Init(DMA_USART, LL_DMA_CHANNEL_RX, &DMA_InitStruct);
-
-    /* Clearing flag */
-    LL_DMA_ClearFlag_TC7(DMA_USART);
-    LL_DMA_ClearFlag_HT7(DMA_USART);
-
-    /* Enabling channel */
-    LL_DMA_EnableChannel(DMA_USART, LL_DMA_CHANNEL_RX);
-    /* Enable transfer complete interruption */
-    LL_DMA_EnableIT_TC(DMA_USART, LL_DMA_CHANNEL_RX);
-    /* Disable half-transfer interruption */
-    LL_DMA_DisableIT_HT(DMA_USART, LL_DMA_CHANNEL_RX);
+    /* Start RX DMA channel through Zephyr API */
+    dma_start(dma1, ZEPHYR_DMA_CHANNEL_RX);
 }
 
 
@@ -347,18 +360,16 @@ void dma_channel_init_rx()
  */
 void serial_tx_on()
 {
-    /* Making sure the flag is cleared before transmission */
-    LL_DMA_ClearFlag_TC6(DMA_USART);
-    /* Disable channel to reload TX buffer */
-    LL_DMA_DisableChannel(DMA_USART, LL_DMA_CHANNEL_TX);
-    /* Reloading TX buffer */
-    LL_DMA_SetMemoryAddress(DMA_USART,
-                            LL_DMA_CHANNEL_TX,
-                            (uint32_t)(tx_usart_val));
+    if (dma_reload(dma1,
+                   ZEPHYR_DMA_CHANNEL_TX,
+                   (uint32_t)(tx_usart_val),
+                   (uint32_t)(&(USART3->TDR)),
+                   dma_buffer_size) != 0)
+    {
+        return;
+    }
 
-    LL_DMA_SetDataLength(DMA_USART, LL_DMA_CHANNEL_TX, dma_buffer_size);
-    /* Re-enable the channel */
-    LL_DMA_EnableChannel(DMA_USART, LL_DMA_CHANNEL_TX);
+    dma_start(dma1, ZEPHYR_DMA_CHANNEL_TX);
 }
 
 /**
@@ -375,4 +386,37 @@ void serial_stop()
 void serial_start()
 {
     LL_USART_Enable(USART3);
+}
+
+/**
+ * This function is used to recover the RX DMA if an overrun error occurs.
+ * It checks if the overrun error flag is set, and if so, it clears the overrun state and 
+ * re-arms the RX DMA channel to continue receiving data. 
+ * See https://github.com/owntech-foundation/MMC/issues/6
+ */
+int8_t reinitialize_rx_dma_if_overrun()
+{
+    if (LL_USART_IsActiveFlag_ORE(USART3) == 0U)
+    {
+        return -1;
+    }
+
+    /* Clear UART RX overrun state first. */
+    LL_USART_RequestRxDataFlush(USART3);
+    LL_USART_ClearFlag_ORE(USART3);
+
+    /* Re-arm circular RX DMA from the beginning */
+    LL_DMA_DisableChannel(DMA_USART, LL_DMA_CHANNEL_RX);
+    LL_DMA_ClearFlag_TC7(DMA_USART);
+    LL_DMA_ClearFlag_HT7(DMA_USART);
+    LL_DMA_ClearFlag_TE7(DMA_USART);
+    LL_DMA_SetMemoryAddress(DMA_USART,
+                            LL_DMA_CHANNEL_RX,
+                            (uint32_t)(rx_usart_val));
+    LL_DMA_SetDataLength(DMA_USART, LL_DMA_CHANNEL_RX, dma_buffer_size);
+    LL_DMA_EnableIT_TC(DMA_USART, LL_DMA_CHANNEL_RX);
+    LL_DMA_DisableIT_HT(DMA_USART, LL_DMA_CHANNEL_RX);
+    LL_DMA_EnableChannel(DMA_USART, LL_DMA_CHANNEL_RX);
+
+    return 0;
 }

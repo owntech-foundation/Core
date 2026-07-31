@@ -128,4 +128,11 @@ void serial_stop();
  */
 void serial_start();
 
+/**
+ * @brief Reinitialize RX DMA if an overrun error occurs.
+ *
+ * @return 0 if the overrun error was handled and RX DMA reinitialized, -1 otherwise.
+ */
+int8_t reinitialize_rx_dma_if_overrun();
+
 #endif /* RS485_H_ */

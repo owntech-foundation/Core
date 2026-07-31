@@ -94,3 +94,8 @@ void Rs485Communication::turnOffCommunication()
 {
     serial_stop();
 }
+
+int8_t Rs485Communication::reinitializeRxDmaIfOverrun()
+{
+    return reinitialize_rx_dma_if_overrun();
+}

@@ -116,6 +116,11 @@ class Rs485Communication
          * @brief Turn off the RS485
          */
         void turnOffCommunication();
+
+        /**
+         * @brief Reinitialize RX DMA if an overrun error occurs.
+         */
+        int8_t reinitializeRxDmaIfOverrun();
 };
 
 #endif /* CONFIG_OWNTECH_COMMUNICATION_ENABLE_RS485 */
