@@ -4,7 +4,7 @@ In this section we will show you how to use our example interface.
 
 ## Requirements
 
-Before you start, please make sure you fullfil the requirements below.
+Before you start, please make sure you fulfill the requirements below.
 
 !!! note "Requirements"
      - Have your [VSCode Environment](environment_setup.md#setup-your-work-environment) already setup
@@ -53,7 +53,7 @@ Here are the steps to use it.
 
     There are multiple folders on the **USB tasks**.
 
-    - From **General to Msciellaneous** are tasks by default that we don not use
+    - From **General to Miscellaneous** are tasks by default that we do not use
     - OwnTech: are tasks that can be used for more advanced users.
     - Examples TWIST: are the examples dedicated to the TWIST board which we will see later.
     - **Examples SPIN:** groups all the examples related to the SPIN board.
@@ -74,7 +74,7 @@ Here are the steps to use it.
      - Setting PWM phase shift: An example for shifting two PWM signals
      - DAC signal: An example for generating an analog signal from digital data
      - Software triggered ADC: An example to activate
-     - HRTIM triggered ADC: An example to active an ADC measuremente using a hardware trigger
+    - HRTIM triggered ADC: An example to activate an ADC measurement using a hardware trigger
      - Incremental encoder: An example on how to interface an incremental encoder to the SPIN board
 
 
@@ -129,7 +129,7 @@ If the build is successful, connect your SPIN board and click on the flash icon.
 
     Once the upload is completed, the LED will stop blinking.
 
-    You can connect to the serial port by cliking on its icon. (1)
+    You can connect to the serial port by clicking on its icon. (1)
     {.annotate}
 
     1. The serial icon looks like this: ![serial icon](images/icon-serial.png)
@@ -141,9 +141,9 @@ If the build is successful, connect your SPIN board and click on the flash icon.
 
 If you click on the terminal and push the `d` key on your keyboard, the value will go `DOWN` and decrease to `0.250000`.
 
-If you push the `u` key on your key board, the value will go `UP` and increase back to `0.300000`.
+If you push the `u` key on your keyboard, the value will go `UP` and increase back to `0.300000`.
 
-Congratulations! you have uploaded your fist example. Do not hesitate to explore more examples either via our interface or our [repository](https://github.com/owntech-foundation/examples).
+Congratulations! you have uploaded your first example. Do not hesitate to explore more examples either via our interface or our [repository](https://github.com/owntech-foundation/examples).
 
 ??? success "List of contributors"
     Here is a short list of contributors to this page:

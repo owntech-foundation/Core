@@ -26,7 +26,7 @@ Generate a 1.024V signal.
 ![dac value](images/dac_value.svg)
 
 !!! example
-    For a pratical example of the DAC see the example : 
+    For a practical example of the DAC see the example :
         - [Signal generation](https://owntech-foundation.github.io/Documentation/examples/SPIN/DAC/signal_generation/)
 
 ## API Reference

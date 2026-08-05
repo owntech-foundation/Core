@@ -21,7 +21,7 @@ Having a periodical code execution is key to real time applications. It is easy 
 
 The control task is synchronous, it means that it is called at fixed period. So we need some kind of timer calling the control, this timer is considered as the **source**. There are two sources :
 - The PWM carrier
-- An independant timer
+- An independent timer
 
 #### The PWM carrier
 
@@ -29,7 +29,7 @@ The carrier has a period called the **switching period**, we can use it to call 
 
 ![PWM control task](images/pwm_source_task.svg)
 
-On the figure above, the switching period is 5µs (200Khz) and we call the control every 10 switching cycle so 50µs (20Khz).
+On the figure above, the switching period is 5µs (200kHz) and we call the control every 10 switching cycles, so 50µs (20kHz).
 
 !!! warning
     There are limitations when using this method :
@@ -47,10 +47,10 @@ A simple timer not related to the PWM can be used to compute the control task pe
 ![timer source](images/timer_source_task.svg)
 
 !!! tip
-    With an independant timer you can choose any value in µs as the control period, there is not the same limitation as the PWM source.
+    With an independent timer you can choose any value in µs as the control period; there is not the same limitation as the PWM source.
 
 !!! warning
-    The disavantage of such method is that since it is independant from the PWM you can't have synchronization between several control task modules.
+    The disadvantage of this method is that, since it is independent from the PWM, you cannot synchronize control tasks across multiple modules.
 
 ### Initialization sequence
 
@@ -80,17 +80,17 @@ A simple timer not related to the PWM can be used to compute the control task pe
 
 ## Non time critical tasks
 
-In the powerAPI, non time critical tasks are refered as background tasks.
+In the powerAPI, non-time-critical tasks are referred to as background tasks.
 
 ### Priority between critical and non-critical task
 
-The control task has priority over any other task. It will preempts any background task. The control task can not be preempted. That is why it is also refered as an uninteruptible task.
+The control task has priority over any other task. It will preempt any background task. The control task cannot be preempted. That is why it is also referred to as an uninterruptible task.
 
 ![task priority](images/task_priority.svg)
 
 ### Pseudo periodicity of non-critical task
 
-Non-critical tasks aren't synchronous, meaning they're not recurring at regular intervals. Instead, they operate in a pseudo-periodic manner: we can temporarily halt them for a specific duration, during which they remain inactive.  Below, in the illustration we suspend the background task for a period of 500ms. After 500ms we can execute again the background task, but we need to end the control task to do that (the critical task is uninteruptible).
+Non-critical tasks aren't synchronous, meaning they're not recurring at regular intervals. Instead, they operate in a pseudo-periodic manner: we can temporarily halt them for a specific duration, during which they remain inactive.  Below, in the illustration we suspend the background task for a period of 500ms. After 500ms we can execute the background task again, but we need to end the control task to do that (the critical task is uninterruptible).
 
 ![](images/task_pseudo_periodic.svg)
 
