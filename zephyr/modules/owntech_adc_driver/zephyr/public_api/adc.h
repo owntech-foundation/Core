@@ -18,7 +18,7 @@
  */
 
 /*
- * @date   2024
+ * @date   2025
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  *
@@ -42,38 +42,13 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+/* Owntech */
+#include "adc_enums.h"
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-
-/**
- *  Public enums
- */
-
-/**
- * @brief Defines types of hrtim events to which the ADC connects: 
- *        
- * - software - software events
- *        
- * - `hrtim_ev1` to `hrtim_ev9` - hrtim driven events
- * 
- */
-typedef enum
-{
-	software  = 0,
-	hrtim_ev1 = 1,
-	hrtim_ev2 = 2,
-	hrtim_ev3 = 3,
-	hrtim_ev4 = 4,
-	hrtim_ev5 = 5,
-	hrtim_ev6 = 6,
-	hrtim_ev7 = 7,
-	hrtim_ev8 = 8,
-	hrtim_ev9 = 9
-} adc_ev_src_t;
-
 
 /* Public API */
 
@@ -103,6 +78,22 @@ void adc_configure_trigger_source(uint8_t adc_number,
  */
 void adc_configure_discontinuous_mode(uint8_t adc_number,
 									  uint32_t discontinuous_count);
+
+/**
+ * @brief Registers the samping time to use for an ADC.
+ *
+ *        This will only be applied when ADC is started.
+ *        If ADC is already started, it must be stopped
+ *        then started again.
+ *
+ *        Default samping time is 294 ns.
+ *
+ * @param adc_number Number of the ADC to configure.
+ * @param discontinuous_count Number of channels to acquire on each
+ *        trigger event. 0 to disable discontinuous mode (default).
+ */
+void adc_configure_sampling_time(uint8_t adc_number,
+                                 adc_sampling_time_t sampling_time);
 
 /**
  * @brief Adds a channel to the list of channels to be acquired

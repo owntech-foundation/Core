@@ -18,7 +18,7 @@
  */
 
 /*
- * @date 2023
+ * @date 2025
  *
  * @author Clément Foucher <clement.foucher@laas.fr>
  *
@@ -32,6 +32,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "adc_enums.h"
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,27 +42,26 @@ extern "C" {
 /* Init, enable, start, stop */
 
 /**
- * @brief ADC initialization procedure for : `ADC 1`,`ADC 2`,`ADC 3`,`ADC 4`
- * 
+ * @brief ADC initialization procedure for : ADC 1 to 5.
  */
 void adc_core_init();
 
 /**
- * @brief ADC enable. 
- * 
+ * @brief ADC enable.
+ *
  * @note Refer to Reference Manual (RM) section 21.4.9 for details on the
  *       ADC core enable procedure.
- * 
+ *
  * @param adc_num Number of the ADC (`1` to `5`) to enable
  */
 void adc_core_enable(uint8_t adc_num);
 
 /**
  * @brief ADC start.
- * 
-* @note Refer to Reference Manual (RM) section 21.4.15 for details on the
+ *
+ * @note Refer to Reference Manual (RM) section 21.4.15 for details on the
  *       ADC core start.
-  *
+ *
  * @param adc_num Number of the ADC (`1` to `5`) to start.
  * @param sequence_length Length of the sequence configured
  *        on that ADC.
@@ -79,7 +80,7 @@ void adc_core_stop(uint8_t adc_num);
 
 /**
  * @brief ADC DMA mode configuration.
- * 
+ *
  *        Enables DMA in circular mode on an ADC.
  *
  * @param adc_num Number of the ADC (`1` to `5`) on which to enable DMA.
@@ -106,7 +107,7 @@ void adc_core_configure_trigger_source(uint8_t adc_num,
  *
  * @param adc_num Number of the ADC (`1` to `5`) to configure.
  * @param discontinuous_count Number of channels to acquire on each
- *        trigger event. 
+ *        trigger event.
  *        0 to disable discontinuous mode (default).
  */
 void adc_core_configure_discontinuous_mode(uint8_t adc_num,
@@ -114,10 +115,10 @@ void adc_core_configure_discontinuous_mode(uint8_t adc_num,
 
 /**
  * @brief ADC differential channel set-up:
- * 
+ *
  * - Applies differential mode to specified channel.
- * 
- * @note Refer to Reference Manual (RM) section 21.4.7 for details on how to 
+ *
+ * @note Refer to Reference Manual (RM) section 21.4.7 for details on how to
  *       set the ADC in differential mode.
  *
  * @param adc_num Number of the ADC (`1` to `5`) to configure.
@@ -131,18 +132,30 @@ void adc_core_set_channel_differential(uint8_t adc_num,
                                        bool enable_differential);
 
 /**
+ * @brief  Configures the sampling time for an ADC channel.
+ *
+ *         If not set, sampling time defaults to 294 ns.
+ *
+ * @param adc_num Number of the ADC (`1` to `5`) to configure.
+ * @param channel Number of the channel to configure.
+ * @param sampling_time Sampling time to apply defined using
+ *         one of LL_ADC_SAMPLINGTIME_* macro.
+ */
+void adc_core_set_channel_sampling_time(uint8_t adc_num,
+                                        uint8_t channel,
+                                        adc_sampling_time_t sampling_time);
+
+/**
  * @brief Configures an ADC channel acquisition.
- * 
+ *
  *        Acquisition rank is provided as a parameter.
- * 
- *        Channel sampling time is set to 12.5 cycles.
  *
  * @param adc_num Number of the ADC (`1` to `5`) to configure.
  * @param channel Number of the channel to configure.
  * @param rank Acquisition rank.
  *
  */
-void adc_core_configure_channel(uint8_t adc_num, uint8_t channel, uint8_t rank);
+void adc_core_set_channel_rank(uint8_t adc_num, uint8_t channel, uint8_t rank);
 
 
 #ifdef __cplusplus
