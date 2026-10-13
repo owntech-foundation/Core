@@ -45,7 +45,7 @@ manifest:
     # to reduce install size and time.
     - name: hal_stm32
       remote: owntech
-      revision: 2e5897379cc6f69d33ea1f52f46f99cbe360a45d
+      revision: ff0e1eef21c69707c152f2900458c9160fdf9116
       path: modules/hal/stm32
       groups:
         - hal
