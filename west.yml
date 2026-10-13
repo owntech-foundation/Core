@@ -27,9 +27,10 @@ manifest:
   #
   # Please add items below based on alphabetical order
   projects:
-    - name: cmsis
-      revision: 4b96cbb174678dcd3ca86e11e1f24bc5f8726da0
-      path: modules/hal/cmsis
+    - name: cmsis_6
+      repo-path: CMSIS_6
+      revision: 06d952b6713a2ca41c9224a62075e4059402a151
+      path: modules/hal/cmsis_6
       groups:
         - hal
     - name: cmsis-dsp
