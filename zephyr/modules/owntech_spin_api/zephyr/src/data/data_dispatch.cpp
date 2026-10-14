@@ -303,46 +303,47 @@ void data_dispatch_do_dispatch(uint8_t adc_num)
 		data_count_in_dma_buffer = dma_get_retrieved_data_count(adc_num);
 	}
 
+	static size_t next_dma_buffer_index[ADC_COUNT] = {0};
+	size_t channel_count = enabled_channels_count[adc_index];
+	size_t dma_buffer_size = (dispatch_type == interrupt) ?
+				channel_count : dma_buffer_sizes[adc_index];
+	size_t dma_buffer_index = (dispatch_type == interrupt) ?
+				0 : next_dma_buffer_index[adc_index];
+	size_t channel_index = dma_buffer_index % channel_count;
+
 	for (size_t dma_index = 0 ;
 		 dma_index < data_count_in_dma_buffer ;
 		 dma_index++)
 	{
-		/* Copy data */
-		size_t dma_buffer_index;
-		if (dispatch_type == interrupt)
-		{
-			dma_buffer_index = dma_index % enabled_channels_count[adc_index];
-		}
-		else
-		{
-			static size_t next_dma_buffer_index[ADC_COUNT] = {0};
-
-			dma_buffer_index = next_dma_buffer_index[adc_index];
-
-			if (next_dma_buffer_index[adc_index] < dma_buffer_sizes[adc_index] - 1)
-			{
-				next_dma_buffer_index[adc_index]++;
-			}
-			else
-			{
-				next_dma_buffer_index[adc_index] = 0;
-			}
-		}
-
 		/* Get info on buffer */
-		size_t channel_index =
-					dma_buffer_index % enabled_channels_count[adc_index];
-
 		uint16_t* active_buffer =
 					_data_dispatch_get_buffer(adc_index, channel_index);
 
 		uint32_t  current_count =
 					_data_dispatch_get_count(adc_index, channel_index);
 
+		/* Copy data */
 		active_buffer[current_count] = dma_buffer[dma_buffer_index];
 
 		/* Increment count */
 		_data_dispatch_increment_count(adc_index, channel_index);
+
+		/* Advance to the next sample and channel */
+		dma_buffer_index++;
+		if (dma_buffer_index == dma_buffer_size)
+		{
+			dma_buffer_index = 0;
+		}
+		channel_index++;
+		if (channel_index == channel_count)
+		{
+			channel_index = 0;
+		}
+	}
+
+	if (dispatch_type != interrupt)
+	{
+		next_dma_buffer_index[adc_index] = dma_buffer_index;
 	}
 }
 
