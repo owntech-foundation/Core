@@ -3,6 +3,7 @@
 
 board:
   name: spin
+  full_name: OwnTech Spin
   vendor: owntech
   socs:
     - name: stm32g474xx
