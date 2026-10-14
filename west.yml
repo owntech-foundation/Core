@@ -34,10 +34,10 @@ manifest:
       groups:
         - hal
     - name: cmsis-dsp
-      revision: 6489e771e9c405f1763b52d64a3f17a1ec488ace
+      revision: 97512610ec92058f0119450b9e743eeb7e95b5c8
       path: modules/lib/cmsis-dsp
     - name: fatfs
-      revision: 427159bf95ea49b7680facffaa29ad506b42709b
+      revision: f4ead3bf4a6dab3a07d7b5f5315795c073db568d
       path: modules/fs/fatfs
       groups:
         - fs
@@ -53,23 +53,19 @@ manifest:
       path: modules/fs/littlefs
       groups:
         - fs
-      revision: 009bcff0ed4853a53df8256039fa815bda6854dd
+      revision: 8f5ca347843363882619d8f96c00d8dbd88a8e79
     - name: mcuboot
-      revision: f74b77cf7808919837c0ed14c2ead3918c546349
+      revision: 6d3b3d2c38ab20c242e5b9abb04d050086383eb2
       path: bootloader/mcuboot
+      groups:
+        - bootloader
     - name: segger
-      revision: 798f95ea9304e5ed8165a661081443051f210733
+      revision: 50892fdbcf2f570e67baa72b8894a66b16946f72
       path: modules/debug/segger
       groups:
         - debug
-    - name: tinycrypt
-      revision: 1012a3ebee18c15ede5efc8332ee2fc37817670f
-      path: modules/crypto/tinycrypt
-      groups:
-        - crypto
-    # zcbor version changed to match thingset-node-c requirements
     - name: zcbor
-      revision: 47f34dd7f5284e8750b5a715dee7f77c6c5bdc3f
+      revision: 9164bd18dcd88ff9d9ef98279501fc1093571017
       path: modules/lib/zcbor
     - name: thingset-zephyr-sdk
       remote: thingset
