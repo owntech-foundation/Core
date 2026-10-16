@@ -146,6 +146,73 @@ This sawtooth signal is then compared with the ADC's current value. When selecti
 
 On the TWIST board, a voltage value of 1.024V on the ADC corresponds to a current of 0A. The system has a gain of 100mV per ampere, meaning that for each ampere increase in current, the voltage value increases by 100 millivolts.
 
+## Duty-cycle sequences (DMA)
+
+A leg can play a sequence of duty cycles, one value per PWM period, repeated until stopped. The values are copied into the timer by DMA, so the control task does not have to change the duty cycle between two of its calls. This allows, for example, a slow trapezoidal or square waveform built from a fast PWM, while the ADC still samples once per PWM period.
+
+Requirements, in `src/app.overlay`:
+
+```
+&dma2 { status = "okay"; };
+
+&leg1 { default-modulation = "Lft_aligned"; };
+&leg2 { default-modulation = "Lft_aligned"; };
+```
+
+```cpp
+    float32_t pattern[10] = {1, 1, 1, 1, 1, 0, 0, 0, 0, 0};
+
+    shield.power.initBuck(ALL);
+    shield.power.setDutyCycleMin(ALL, 0.0);   /* default limits are 0.1 - 0.9 */
+    shield.power.setDutyCycleMax(ALL, 1.0);
+    shield.power.setTriggerValue(ALL, 0.5);   /* sample mid-period */
+
+    shield.power.setDutySequence(LEG1, pattern, 10);
+    shield.power.startDutySequence(LEG1);
+    shield.power.start(LEG1);
+```
+
+- `setDutySequence(leg, duties, length, double_buffered = false)` loads a sequence. `ALL` loads the same sequence on every leg.
+- `startDutySequence(leg)` starts it. With `ALL`, every loaded leg starts on the same PWM period. The call waits for the middle of a PWM period with interrupts locked (up to about two periods), so the first value is always applied the same number of periods after the call.
+- `updateDutySequence(leg, duties)` changes the values while running. With `double_buffered = true` the change is applied on a sequence boundary without stopping the DMA; call it from the critical task.
+- `stopDutySequence(leg)` stops it and sets the leg to the minimum duty cycle.
+- While a sequence runs, `setDutyCycle` is ignored on that leg, `setFrequency` rescales and restarts it, and `stop` ends it.
+
+!!! warning
+    Duty values follow `setDutyCycleMin` / `setDutyCycleMax`. A value of `1.0` keeps the high-side switch on for the whole period: long runs at `1.0` can discharge bootstrap gate-driver supplies.
+
+!!! note
+    Each timing unit uses its own DMA2 channel (`PWMA` channel 1 to `PWMF` channel 6). Sequence length is limited by `CONFIG_OWNTECH_POWER_DUTY_SEQ_MAX_LEN` (default 64).
+
+!!! note
+    `Lft_aligned` is required: one PWM period must be one repetition event of the timer. `setDutySequence` returns `-1` on a center-aligned (`UpDwn`) leg, and when DMA2 is not enabled.
+
+### Single shots
+
+To play a sequence for a known number of periods, with clean first and last periods, start and stop the outputs of several legs at a precise point of the PWM period:
+
+```cpp
+    leg_t legs[2] = {LEG1, LEG2};
+
+    shield.power.setDutySequence(LEG1, pattern, 10);
+    shield.power.setDutySequence(LEG2, pattern, 10);
+    shield.power.startDutySequence(ALL);
+
+    uint32_t outputs = shield.power.prepareStart(legs, 2); /* slow part */
+    shield.power.waitPeriodStart(LEG1);                    /* period boundary */
+    shield.power.startPrepared(outputs);                   /* one register write */
+
+    shield.power.waitPeriodStart(LEG1, 20);                /* 20 periods */
+    shield.power.stop(legs, 2, true);                      /* 2 us before period end */
+```
+
+- `start(legs, count, at_period_start)` and `stop(legs, count, at_period_end)` switch all the outputs with a single register write. With the flag set, they wait for the period boundary (start) or 2 us before the end of the period (stop), so no partial period reaches the outputs. `stop` also ends the sequences.
+- `prepareStart` / `startPrepared` split `start` in two: the preparation takes several microseconds, more than one period at 200 kHz.
+- `waitPeriodMiddle(leg)`, `waitPeriodStart(leg, boundaries)` and `getPeriodCounter(leg)` give reference points within the PWM period.
+
+!!! warning
+    These functions busy-wait (up to about two PWM periods each). Call them from a background task, not from the critical task.
+
 
 ## Snippets examples
 
