@@ -39,6 +39,11 @@
 #define SEQ_CMP_ABOVE_PERIOD 32U
 #define SEQ_CMP_MAX          0xFFDFU
 
+/* stop(legs, count, true) disables outputs this long before period end;
+ * 300 ns let ~0.1 us of the next period through at 50 kHz, 1 us did at
+ * 200 kHz (disable ~1.2 us after the margin point) */
+#define POWER_STOP_MARGIN_NS 2000U
+
 /**
  * Duty-cycle sequences, one per leg (`ALL` is the number of legs).
  *
@@ -89,6 +94,11 @@ static void seq_copy_stage_to_all(int8_t i)
 
 
 hrtim_tu_number_t PowerAPI::spinNumberToTu(uint16_t spin_number)
+{
+    return spinNumberToTuStatic(spin_number);
+}
+
+hrtim_tu_number_t PowerAPI::spinNumberToTuStatic(uint16_t spin_number)
 {
     if(spin_number == 12 || spin_number == 14)
     {
@@ -435,6 +445,129 @@ void PowerAPI::stop(leg_t leg)
         {
             spin.gpio.resetPin(dt_pin_driver[i]);
         }
+    }
+}
+
+/* HRTIM output bits: TIMx output 1 = bit 2x, output 2 = bit 2x+1 */
+static uint32_t legs_output_mask(const leg_t *legs, uint8_t count,
+                                 hrtim_tu_number_t (*to_tu)(uint16_t))
+{
+    uint32_t outputs = 0;
+
+    for (uint8_t k = 0; k < count; k++)
+    {
+        int8_t i = legs[k];
+        if (i < 0 || i >= dt_leg_count)
+        {
+            continue;
+        }
+
+        uint32_t tu = (uint32_t)to_tu(dt_pwm_pin[i]);
+
+        if (!dt_output1_inactive[i])
+        {
+            outputs |= (LL_HRTIM_OUTPUT_TA1 << (2U * tu));
+        }
+        if (!dt_output2_inactive[i])
+        {
+            outputs |= (LL_HRTIM_OUTPUT_TA2 << (2U * tu));
+        }
+    }
+
+    return outputs;
+}
+
+uint32_t PowerAPI::prepareStart(const leg_t *legs, uint8_t count)
+{
+    for (uint8_t k = 0; k < count; k++)
+    {
+        int8_t i = legs[k];
+        /* Only relevant for twist hardware, enables the mosfet drivers */
+        if (i >= 0 && i < dt_leg_count && dt_pin_driver[i] != 0)
+        {
+            spin.gpio.setPin(dt_pin_driver[i]);
+        }
+    }
+    return legs_output_mask(legs, count, spinNumberToTuStatic);
+}
+
+void PowerAPI::startPrepared(uint32_t outputs)
+{
+    hrtim_out_en_single((hrtim_output_units_t)outputs);
+}
+
+void PowerAPI::start(const leg_t *legs, uint8_t count, bool at_period_start)
+{
+    for (uint8_t k = 0; k < count; k++)
+    {
+        int8_t i = legs[k];
+        /* Only relevant for twist hardware, enables the mosfet drivers */
+        if (i >= 0 && i < dt_leg_count && dt_pin_driver[i] != 0)
+        {
+            spin.gpio.setPin(dt_pin_driver[i]);
+        }
+    }
+
+    uint32_t outputs = legs_output_mask(legs, count, spinNumberToTuStatic);
+
+    if (at_period_start && count > 0)
+    {
+        hrtim_wait_period_start(spinNumberToTu(dt_pwm_pin[legs[0]]));
+    }
+
+    hrtim_out_en_single((hrtim_output_units_t)outputs);
+}
+
+void PowerAPI::stop(const leg_t *legs, uint8_t count, bool at_period_end)
+{
+    uint32_t outputs = legs_output_mask(legs, count, spinNumberToTuStatic);
+
+    if (at_period_end && count > 0)
+    {
+        hrtim_wait_period_end(spinNumberToTu(dt_pwm_pin[legs[0]]),
+                              POWER_STOP_MARGIN_NS);
+    }
+
+    /* Outputs first, in one write, then the slower bookkeeping */
+    hrtim_out_dis_single((hrtim_output_units_t)outputs);
+
+    for (uint8_t k = 0; k < count; k++)
+    {
+        int8_t i = legs[k];
+        if (i < 0 || i >= dt_leg_count)
+        {
+            continue;
+        }
+
+        stopDutySequence(legs[k]);
+
+        /* Only relevant for twist hardware, disables the mosfet drivers */
+        if (dt_pin_driver[i] != 0)
+        {
+            spin.gpio.resetPin(dt_pin_driver[i]);
+        }
+    }
+}
+
+void PowerAPI::waitPeriodMiddle(leg_t leg)
+{
+    hrtim_wait_period_middle(spinNumberToTu(dt_pwm_pin[leg]));
+}
+
+uint16_t PowerAPI::getPeriodCounter(leg_t leg)
+{
+    hrtim_tu_number_t leg_tu = spinNumberToTu(dt_pwm_pin[leg]);
+    return (uint16_t)LL_HRTIM_TIM_GetCounter(HRTIM1,
+                                            tu_channel[leg_tu]->pwm_conf.pwm_tu);
+}
+
+void PowerAPI::waitPeriodStart(leg_t leg, uint16_t boundaries)
+{
+    hrtim_tu_number_t leg_tu = spinNumberToTu(dt_pwm_pin[leg]);
+
+    for (uint16_t k = 0; k < boundaries; k++)
+    {
+        hrtim_wait_period_start(leg_tu);
     }
 }
 

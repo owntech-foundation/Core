@@ -55,6 +55,7 @@ class PowerAPI
 private:
 	/* return timing unit from spin pin number */
 	hrtim_tu_number_t spinNumberToTu(uint16_t spin_number);
+	static hrtim_tu_number_t spinNumberToTuStatic(uint16_t spin_number);
 
 	/* convert a duty cycle into a raw sequence value for a leg index */
 	uint32_t dutyToSequenceRaw(int8_t leg_index, float32_t duty);
@@ -128,6 +129,74 @@ public:
 	 * @param leg The leg for which to stop the power output: `LEG1` to `ALL`
 	 */
 	void stop(leg_t leg);
+
+	/**
+	 * @brief Starts the outputs of several legs with a single register
+	 *        write, so that they turn on at the same instant.
+	 *
+	 * @param legs Legs to start: `LEG1` to `LEG5`
+	 * @param count Number of legs
+	 * @param at_period_start `true` to wait for the next PWM period
+	 *        boundary of the first leg before enabling (at most one period),
+	 *        so that no part of the previous period appears on the outputs
+	 */
+	void start(const leg_t *legs, uint8_t count, bool at_period_start = false);
+
+	/**
+	 * @brief Prepares a start of several legs (driver pins, output mask)
+	 *        without enabling anything; enable later with startPrepared().
+	 *        Splits start(legs, count) so that the slow part runs before a
+	 *        time-critical wait (it takes several us, more than a period at
+	 *        200 kHz).
+	 *
+	 * @return mask of the HRTIM outputs to enable
+	 */
+	uint32_t prepareStart(const leg_t *legs, uint8_t count);
+
+	/**
+	 * @brief Enables the outputs prepared by prepareStart(), one register
+	 *        write, no wait.
+	 */
+	void startPrepared(uint32_t outputs);
+
+	/**
+	 * @brief Stops the outputs of several legs with a single register
+	 *        write, then ends their duty-cycle sequences.
+	 *
+	 * @param legs Legs to stop: `LEG1` to `LEG5`
+	 * @param count Number of legs
+	 * @param at_period_end `true` to wait until the first leg is
+	 *        POWER_STOP_MARGIN_NS (2 us) before the end of its PWM period
+	 *        (at most one period), so that no part of the next period
+	 *        appears on the outputs. `Lft_aligned` legs only.
+	 */
+	void stop(const leg_t *legs, uint8_t count, bool at_period_end = false);
+
+	/**
+	 * @brief Busy-waits until the PWM counter of a leg is in the middle of
+	 *        its period ([1/2, 3/4)), at most about two periods. A fixed
+	 *        reference point within the period, away from the boundary.
+	 *
+	 * @param leg Leg: `LEG1` to `LEG5`
+	 */
+	void waitPeriodMiddle(leg_t leg);
+
+	/**
+	 * @brief Busy-waits for `boundaries` PWM period boundaries of a leg
+	 *        (counter wraps), each bounded to about two periods.
+	 *
+	 * @param leg Leg: `LEG1` to `LEG5`
+	 * @param boundaries Number of boundaries to wait for
+	 */
+	void waitPeriodStart(leg_t leg, uint16_t boundaries = 1);
+
+	/**
+	 * @brief Returns the PWM counter of a leg (0 to getPeriod(leg)), e.g.
+	 *        to record where in its period an event happened.
+	 *
+	 * @param leg Leg: `LEG1` to `LEG5`
+	 */
+	uint16_t getPeriodCounter(leg_t leg);
 
 	/**
 	 * @brief Connect the electrolytic capacitor.
