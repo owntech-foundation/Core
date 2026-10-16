@@ -547,6 +547,73 @@ public:
       */
      void deInitBurstMode();
 
+     /**
+      * @brief   Configures a DMA-driven duty-cycle sequence: one raw duty
+      *          value per PWM period, copied by DMA2 from a circular buffer.
+      *
+      * @param[in] pwmX     PWM Unit: `PWMA`,`PWMB`,`PWMC`,`PWMD`,`PWME`,`PWMF`
+      * @param[in] raw_buf  Raw duty values (CMP1), must stay valid while
+      *                     the sequence runs
+      * @param[in] len      Number of values
+      * @param[in] callback Optional half/complete transfer callback,
+      *                     `NULL` by default
+      *
+      * @return `0` if ok, `-1` if DMA2 is disabled, the unit is not
+      *         `Lft_aligned` or a sequence is running.
+      */
+     int8_t initDutySequence(hrtim_tu_number_t pwmX,
+                             uint32_t *raw_buf,
+                             uint16_t len,
+                             hrtim_dma_cmp1_callback_t callback = NULL);
+
+     /**
+      * @brief   Starts the duty-cycle sequences of several PWM units on the
+      *          same PWM period.
+      *
+      * @param[in] pwm_units PWM units, previously initialized
+      * @param[in] count     Number of PWM units
+      *
+      * @return `0` if ok, `-1` otherwise
+      */
+     int8_t startDutySequence(const hrtim_tu_number_t *pwm_units,
+                              uint8_t count);
+
+     /**
+      * @brief   Starts the duty-cycle sequence of one PWM unit.
+      *
+      * @param[in] pwmX     PWM Unit: `PWMA`,`PWMB`,`PWMC`,`PWMD`,`PWME`,`PWMF`
+      */
+     int8_t startDutySequence(hrtim_tu_number_t pwmX);
+
+     /**
+      * @brief   Stops the duty-cycle sequence of a PWM unit, the last duty
+      *          value written stays applied.
+      *
+      * @param[in] pwmX     PWM Unit: `PWMA`,`PWMB`,`PWMC`,`PWMD`,`PWME`,`PWMF`
+      */
+     void stopDutySequence(hrtim_tu_number_t pwmX);
+
+     /**
+      * @brief   Returns true if a duty-cycle sequence runs on the PWM unit.
+      *
+      * @param[in] pwmX     PWM Unit: `PWMA`,`PWMB`,`PWMC`,`PWMD`,`PWME`,`PWMF`
+      */
+     bool isDutySequenceRunning(hrtim_tu_number_t pwmX);
+
+     /**
+      * @brief   Returns the index of the next value the DMA will write.
+      *
+      * @param[in] pwmX     PWM Unit: `PWMA`,`PWMB`,`PWMC`,`PWMD`,`PWME`,`PWMF`
+      */
+     uint16_t getDutySequenceIndex(hrtim_tu_number_t pwmX);
+
+     /**
+      * @brief   Returns the number of DMA transfer errors since the start.
+      *
+      * @param[in] pwmX     PWM Unit: `PWMA`,`PWMB`,`PWMC`,`PWMD`,`PWME`,`PWMF`
+      */
+     uint32_t getDutySequenceErrors(hrtim_tu_number_t pwmX);
+
 private:
 
      bool swap_state[HRTIM_CHANNELS] = {false};

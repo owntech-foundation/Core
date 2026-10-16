@@ -546,3 +546,42 @@ void PwmHAL::deInitBurstMode()
 {
 	hrtim_burst_dis();
 }
+
+int8_t PwmHAL::initDutySequence(hrtim_tu_number_t pwmX,
+                                uint32_t *raw_buf,
+                                uint16_t len,
+                                hrtim_dma_cmp1_callback_t callback)
+{
+	return hrtim_dma_cmp1_init(pwmX, raw_buf, len, callback);
+}
+
+int8_t PwmHAL::startDutySequence(const hrtim_tu_number_t *pwm_units,
+                                 uint8_t count)
+{
+	return hrtim_dma_cmp1_start(pwm_units, count);
+}
+
+int8_t PwmHAL::startDutySequence(hrtim_tu_number_t pwmX)
+{
+	return hrtim_dma_cmp1_start(&pwmX, 1);
+}
+
+void PwmHAL::stopDutySequence(hrtim_tu_number_t pwmX)
+{
+	hrtim_dma_cmp1_stop(pwmX);
+}
+
+bool PwmHAL::isDutySequenceRunning(hrtim_tu_number_t pwmX)
+{
+	return hrtim_dma_cmp1_is_running(pwmX);
+}
+
+uint16_t PwmHAL::getDutySequenceIndex(hrtim_tu_number_t pwmX)
+{
+	return hrtim_dma_cmp1_get_next_index(pwmX);
+}
+
+uint32_t PwmHAL::getDutySequenceErrors(hrtim_tu_number_t pwmX)
+{
+	return hrtim_dma_cmp1_get_error_count(pwmX);
+}

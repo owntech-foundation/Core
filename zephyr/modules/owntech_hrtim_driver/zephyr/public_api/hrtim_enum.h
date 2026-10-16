@@ -104,6 +104,16 @@ extern "C"
     } hrtim_tu_number_t;
 
     /**
+     * @brief Callback called from the DMA interrupt when half of a duty-cycle
+     *        sequence buffer has been read.
+     * @param[in] tu_number   Timing unit of the sequence
+     * @param[in] finished_half `0` when the first half of the buffer has just
+     *                          been read, `1` for the second half
+     */
+    typedef void (*hrtim_dma_cmp1_callback_t)(hrtim_tu_number_t tu_number,
+                                              uint8_t finished_half);
+
+    /**
      * @brief   HRTIM gpio clock units definition
      */
     typedef enum

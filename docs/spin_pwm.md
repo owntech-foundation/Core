@@ -270,6 +270,25 @@ Varying the duty cycle is how to vary the output of the PWM.
         spin.pwm.setDutyCycle(PWMA, 0.28);
     ```
 
+### Duty Cycle Sequence (DMA)
+
+A PWM unit can take one raw duty value (CMP1) per PWM period from a circular buffer, copied by DMA2 on the repetition event of the timer. It needs `&dma2 { status = "okay"; };` in `app.overlay` and a `Lft_aligned` PWM unit. Timing unit `PWMA` to `PWMF` uses DMA2 channel 1 to 6.
+
+```c++
+    static uint32_t raw[4];
+    uint32_t period = spin.pwm.getPeriod(PWMA);
+
+    raw[0] = 0;
+    raw[1] = period / 4;
+    raw[2] = period / 2;
+    raw[3] = (3 * period) / 4;
+
+    spin.pwm.initDutySequence(PWMA, raw, 4);
+    spin.pwm.startDutySequence(PWMA);
+```
+
+The buffer must stay valid while the sequence runs. An optional callback, called on half and complete transfer, allows refreshing one half of the buffer while the DMA plays the other. Prefer the shield `PowerAPI` duty sequences, which take duty cycles between 0 and 1 and handle double buffering, 100 % duty and frequency changes.
+
 !!! Example
     See this examples for more details :
 

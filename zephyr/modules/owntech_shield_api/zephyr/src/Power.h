@@ -55,6 +55,10 @@ class PowerAPI
 private:
 	/* return timing unit from spin pin number */
 	hrtim_tu_number_t spinNumberToTu(uint16_t spin_number);
+	static hrtim_tu_number_t spinNumberToTuStatic(uint16_t spin_number);
+
+	/* convert a duty cycle into a raw sequence value for a leg index */
+	uint32_t dutyToSequenceRaw(int8_t leg_index, float32_t duty);
 
 
 public:
@@ -125,6 +129,74 @@ public:
 	 * @param leg The leg for which to stop the power output: `LEG1` to `ALL`
 	 */
 	void stop(leg_t leg);
+
+	/**
+	 * @brief Starts the outputs of several legs with a single register
+	 *        write, so that they turn on at the same instant.
+	 *
+	 * @param legs Legs to start: `LEG1` to `LEG5`
+	 * @param count Number of legs
+	 * @param at_period_start `true` to wait for the next PWM period
+	 *        boundary of the first leg before enabling (at most one period),
+	 *        so that no part of the previous period appears on the outputs
+	 */
+	void start(const leg_t *legs, uint8_t count, bool at_period_start = false);
+
+	/**
+	 * @brief Prepares a start of several legs (driver pins, output mask)
+	 *        without enabling anything; enable later with startPrepared().
+	 *        Splits start(legs, count) so that the slow part runs before a
+	 *        time-critical wait (it takes several us, more than a period at
+	 *        200 kHz).
+	 *
+	 * @return mask of the HRTIM outputs to enable
+	 */
+	uint32_t prepareStart(const leg_t *legs, uint8_t count);
+
+	/**
+	 * @brief Enables the outputs prepared by prepareStart(), one register
+	 *        write, no wait.
+	 */
+	void startPrepared(uint32_t outputs);
+
+	/**
+	 * @brief Stops the outputs of several legs with a single register
+	 *        write, then ends their duty-cycle sequences.
+	 *
+	 * @param legs Legs to stop: `LEG1` to `LEG5`
+	 * @param count Number of legs
+	 * @param at_period_end `true` to wait until the first leg is
+	 *        POWER_STOP_MARGIN_NS (2 us) before the end of its PWM period
+	 *        (at most one period), so that no part of the next period
+	 *        appears on the outputs. `Lft_aligned` legs only.
+	 */
+	void stop(const leg_t *legs, uint8_t count, bool at_period_end = false);
+
+	/**
+	 * @brief Busy-waits until the PWM counter of a leg is in the middle of
+	 *        its period ([1/2, 3/4)), at most about two periods. A fixed
+	 *        reference point within the period, away from the boundary.
+	 *
+	 * @param leg Leg: `LEG1` to `LEG5`
+	 */
+	void waitPeriodMiddle(leg_t leg);
+
+	/**
+	 * @brief Busy-waits for `boundaries` PWM period boundaries of a leg
+	 *        (counter wraps), each bounded to about two periods.
+	 *
+	 * @param leg Leg: `LEG1` to `LEG5`
+	 * @param boundaries Number of boundaries to wait for
+	 */
+	void waitPeriodStart(leg_t leg, uint16_t boundaries = 1);
+
+	/**
+	 * @brief Returns the PWM counter of a leg (0 to getPeriod(leg)), e.g.
+	 *        to record where in its period an event happened.
+	 *
+	 * @param leg Leg: `LEG1` to `LEG5`
+	 */
+	uint16_t getPeriodCounter(leg_t leg);
 
 	/**
 	 * @brief Connect the electrolytic capacitor.
@@ -347,6 +419,102 @@ public:
 	 * @param leg Leg to initialize: `LEG1` to `ALL`
 	 */
 	void initBoost(leg_t leg);
+
+	/**
+	 * @brief Loads a duty-cycle sequence on a leg: one duty value per PWM
+	 *        period, applied by DMA without CPU intervention and repeated
+	 *        until stopped.
+	 *
+	 *        Duty values follow the same limits as setDutyCycle()
+	 *        (setDutyCycleMin/Max). `1.0` gives a full period on.
+	 *
+	 *        If the sequence of the leg is running, it is stopped, reloaded
+	 *        and restarted.
+	 *
+	 * @param leg Leg: `LEG1` to `ALL` (`ALL` loads the same sequence on all legs)
+	 * @param duties Duty cycle values between 0.0 and 1.0, copied
+	 * @param length Number of values, 1 to CONFIG_OWNTECH_POWER_DUTY_SEQ_MAX_LEN
+	 * @param double_buffered `true` to allow glitch-free updates while
+	 *        running with updateDutySequence(). Uses DMA half/complete
+	 *        interrupts (one every `length` PWM periods).
+	 *
+	 * @return `0` if ok, `-1` if the length is invalid, DMA2 is not enabled
+	 *         or the leg is not `Lft_aligned`.
+	 *
+	 * @note  Requires `&dma2 { status = "okay"; };` and
+	 *        `default-modulation = "Lft_aligned"` on the leg in app.overlay.
+	 */
+	int8_t setDutySequence(leg_t leg,
+						   const float32_t *duties,
+						   uint16_t length,
+						   bool double_buffered = false);
+
+	/**
+	 * @brief Replaces the values of a loaded duty-cycle sequence, same length.
+	 *
+	 *        Double-buffered sequence: the new values are staged and each
+	 *        half of the DMA buffer picks them up once it has been played,
+	 *        so the change is applied at a sequence boundary within at most
+	 *        two sequence lengths, never in the middle of a period.
+	 *        Call it from the critical task, so that the DMA interrupt cannot
+	 *        copy a half-written update.
+	 *
+	 *        Single-buffered sequence: same as setDutySequence() (stop,
+	 *        reload, restart from index 0).
+	 *
+	 * @param leg Leg: `LEG1` to `ALL`
+	 * @param duties New duty values, as many as the loaded sequence
+	 *
+	 * @return `0` if ok, `-1` if no sequence is loaded on the leg
+	 */
+	int8_t updateDutySequence(leg_t leg, const float32_t *duties);
+
+	/**
+	 * @brief Starts the duty-cycle sequence of a leg. With `ALL`, every leg
+	 *        with a loaded sequence starts on the same PWM period.
+	 *
+	 *        Waits for the middle of a PWM period (up to about two periods,
+	 *        interrupts locked), so that the first value is always applied
+	 *        the same number of periods after the call. The PWM outputs must
+	 *        be started with start().
+	 *
+	 * @param leg Leg: `LEG1` to `ALL`
+	 *
+	 * @return `0` if ok, `-1` if no sequence is loaded or it already runs
+	 */
+	int8_t startDutySequence(leg_t leg);
+
+	/**
+	 * @brief Stops the duty-cycle sequence of a leg and sets its duty cycle
+	 *        to the minimum duty cycle (setDutyCycleMin). Outputs stay on.
+	 *
+	 * @param leg Leg: `LEG1` to `ALL`
+	 */
+	void stopDutySequence(leg_t leg);
+
+	/**
+	 * @brief Returns true if the duty-cycle sequence of the leg runs.
+	 *
+	 * @param leg Leg: `LEG1` to `LEG5`
+	 * @warning `ALL` is NOT supported !
+	 */
+	bool isDutySequenceRunning(leg_t leg);
+
+	/**
+	 * @brief Returns the index of the next sequence value the DMA will write.
+	 *
+	 * @param leg Leg: `LEG1` to `LEG5`
+	 * @warning `ALL` is NOT supported !
+	 */
+	uint16_t getDutySequenceIndex(leg_t leg);
+
+	/**
+	 * @brief Returns the number of DMA transfer errors since the last start.
+	 *
+	 * @param leg Leg: `LEG1` to `LEG5`
+	 * @warning `ALL` is NOT supported !
+	 */
+	uint32_t getDutySequenceErrors(leg_t leg);
 
 };
 

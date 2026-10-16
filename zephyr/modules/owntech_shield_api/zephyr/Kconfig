@@ -5,3 +5,13 @@ config OWNTECH_SHIELD_API
 	depends on HAS_POWER_SHIELD
 	help
 		This module provides functions to interact with Spin shields.
+
+config OWNTECH_POWER_DUTY_SEQ_MAX_LEN
+	int "Maximum number of values in a leg duty-cycle sequence"
+	default 64
+	range 1 1024
+	depends on OWNTECH_SHIELD_API
+	help
+		Size of the per-leg buffers used by PowerAPI::setDutySequence().
+		Each leg enabled in the device tree reserves 16 bytes per value
+		(float copy, staging and two DMA copies for double buffering).

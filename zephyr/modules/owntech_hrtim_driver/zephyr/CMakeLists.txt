@@ -6,5 +6,6 @@ if(CONFIG_OWNTECH_HRTIM_DRIVER)
   # Select source files to be compiled
   zephyr_library_sources(
     ./src/hrtim.c
+    ./src/hrtim_dma.c
     )
 endif()

@@ -29,8 +29,76 @@
 #include "Power.h"
 #include "SpinAPI.h"
 
+#define DUTY_SEQ_MAX_LEN CONFIG_OWNTECH_POWER_DUTY_SEQ_MAX_LEN
+
+/**
+ * 100 % in a sequence: CMP1 is placed this far above the period so that it
+ * never matches (one HRTIM clock in high-resolution counts), without
+ * exceeding the highest compare value allowed by the HRTIM.
+ */
+#define SEQ_CMP_ABOVE_PERIOD 32U
+#define SEQ_CMP_MAX          0xFFDFU
+
+/* stop(legs, count, true) disables outputs this long before period end;
+ * 300 ns let ~0.1 us of the next period through at 50 kHz, 1 us did at
+ * 200 kHz (disable ~1.2 us after the margin point) */
+#define POWER_STOP_MARGIN_NS 2000U
+
+/**
+ * Duty-cycle sequences, one per leg (`ALL` is the number of legs).
+ *
+ * seq_raw is the buffer read by the DMA. In double-buffered mode it holds
+ * two copies of the sequence: updates go to seq_stage and are copied into
+ * each half by the DMA interrupt once that half has been played.
+ */
+static float32_t seq_duty[ALL][DUTY_SEQ_MAX_LEN];
+static uint32_t seq_raw[ALL][2 * DUTY_SEQ_MAX_LEN];
+static uint32_t seq_stage[ALL][DUTY_SEQ_MAX_LEN];
+static uint16_t seq_len[ALL] = {0};
+static bool seq_double[ALL] = {false};
+
+/* Leg index driven by each timing unit, for the DMA callback */
+static int8_t seq_tu_leg[HRTIM_STU_NUMOF] = {-1, -1, -1, -1, -1, -1};
+
+/* DMA interrupt: half `finished_half` has been played, refresh it */
+static void seq_half_done(hrtim_tu_number_t tu_number, uint8_t finished_half)
+{
+    int8_t i = seq_tu_leg[tu_number];
+
+    if (i < 0 || !seq_double[i])
+    {
+        return;
+    }
+
+    uint32_t *half = &seq_raw[i][finished_half * seq_len[i]];
+
+    for (uint16_t k = 0; k < seq_len[i]; k++)
+    {
+        half[k] = seq_stage[i][k];
+    }
+}
+
+/* Writes the staged sequence of a leg into every part of its DMA buffer */
+static void seq_copy_stage_to_all(int8_t i)
+{
+    uint8_t copies = seq_double[i] ? 2 : 1;
+
+    for (uint8_t c = 0; c < copies; c++)
+    {
+        for (uint16_t k = 0; k < seq_len[i]; k++)
+        {
+            seq_raw[i][c * seq_len[i] + k] = seq_stage[i][k];
+        }
+    }
+}
+
 
 hrtim_tu_number_t PowerAPI::spinNumberToTu(uint16_t spin_number)
+{
+    return spinNumberToTuStatic(spin_number);
+}
+
+hrtim_tu_number_t PowerAPI::spinNumberToTuStatic(uint16_t spin_number)
 {
     if(spin_number == 12 || spin_number == 14)
     {
@@ -256,6 +324,12 @@ void PowerAPI::setDutyCycleRaw(leg_t leg, uint16_t duty_value)
     {
         leg_tu = spinNumberToTu(dt_pwm_pin[i]);
 
+        /* A running duty-cycle sequence owns the duty cycle of this leg */
+        if (spin.pwm.isDutySequenceRunning(leg_tu))
+        {
+            continue;
+        }
+
         duty_cycle_max_raw = tu_channel[leg_tu]->pwm_conf.duty_max_user;
         duty_cycle_min_raw = tu_channel[leg_tu]->pwm_conf.duty_min_user;
 
@@ -355,6 +429,9 @@ void PowerAPI::stop(leg_t leg)
         endIndex = leg + 1;
     }
 
+    /* Stopping the outputs also ends any running duty-cycle sequence */
+    stopDutySequence(leg);
+
     for (int8_t i = startIndex; i < endIndex; i++)
     {
         /* Stop PWM */
@@ -368,6 +445,129 @@ void PowerAPI::stop(leg_t leg)
         {
             spin.gpio.resetPin(dt_pin_driver[i]);
         }
+    }
+}
+
+/* HRTIM output bits: TIMx output 1 = bit 2x, output 2 = bit 2x+1 */
+static uint32_t legs_output_mask(const leg_t *legs, uint8_t count,
+                                 hrtim_tu_number_t (*to_tu)(uint16_t))
+{
+    uint32_t outputs = 0;
+
+    for (uint8_t k = 0; k < count; k++)
+    {
+        int8_t i = legs[k];
+        if (i < 0 || i >= dt_leg_count)
+        {
+            continue;
+        }
+
+        uint32_t tu = (uint32_t)to_tu(dt_pwm_pin[i]);
+
+        if (!dt_output1_inactive[i])
+        {
+            outputs |= (LL_HRTIM_OUTPUT_TA1 << (2U * tu));
+        }
+        if (!dt_output2_inactive[i])
+        {
+            outputs |= (LL_HRTIM_OUTPUT_TA2 << (2U * tu));
+        }
+    }
+
+    return outputs;
+}
+
+uint32_t PowerAPI::prepareStart(const leg_t *legs, uint8_t count)
+{
+    for (uint8_t k = 0; k < count; k++)
+    {
+        int8_t i = legs[k];
+        /* Only relevant for twist hardware, enables the mosfet drivers */
+        if (i >= 0 && i < dt_leg_count && dt_pin_driver[i] != 0)
+        {
+            spin.gpio.setPin(dt_pin_driver[i]);
+        }
+    }
+    return legs_output_mask(legs, count, spinNumberToTuStatic);
+}
+
+void PowerAPI::startPrepared(uint32_t outputs)
+{
+    hrtim_out_en_single((hrtim_output_units_t)outputs);
+}
+
+void PowerAPI::start(const leg_t *legs, uint8_t count, bool at_period_start)
+{
+    for (uint8_t k = 0; k < count; k++)
+    {
+        int8_t i = legs[k];
+        /* Only relevant for twist hardware, enables the mosfet drivers */
+        if (i >= 0 && i < dt_leg_count && dt_pin_driver[i] != 0)
+        {
+            spin.gpio.setPin(dt_pin_driver[i]);
+        }
+    }
+
+    uint32_t outputs = legs_output_mask(legs, count, spinNumberToTuStatic);
+
+    if (at_period_start && count > 0)
+    {
+        hrtim_wait_period_start(spinNumberToTu(dt_pwm_pin[legs[0]]));
+    }
+
+    hrtim_out_en_single((hrtim_output_units_t)outputs);
+}
+
+void PowerAPI::stop(const leg_t *legs, uint8_t count, bool at_period_end)
+{
+    uint32_t outputs = legs_output_mask(legs, count, spinNumberToTuStatic);
+
+    if (at_period_end && count > 0)
+    {
+        hrtim_wait_period_end(spinNumberToTu(dt_pwm_pin[legs[0]]),
+                              POWER_STOP_MARGIN_NS);
+    }
+
+    /* Outputs first, in one write, then the slower bookkeeping */
+    hrtim_out_dis_single((hrtim_output_units_t)outputs);
+
+    for (uint8_t k = 0; k < count; k++)
+    {
+        int8_t i = legs[k];
+        if (i < 0 || i >= dt_leg_count)
+        {
+            continue;
+        }
+
+        stopDutySequence(legs[k]);
+
+        /* Only relevant for twist hardware, disables the mosfet drivers */
+        if (dt_pin_driver[i] != 0)
+        {
+            spin.gpio.resetPin(dt_pin_driver[i]);
+        }
+    }
+}
+
+void PowerAPI::waitPeriodMiddle(leg_t leg)
+{
+    hrtim_wait_period_middle(spinNumberToTu(dt_pwm_pin[leg]));
+}
+
+uint16_t PowerAPI::getPeriodCounter(leg_t leg)
+{
+    hrtim_tu_number_t leg_tu = spinNumberToTu(dt_pwm_pin[leg]);
+    return (uint16_t)LL_HRTIM_TIM_GetCounter(HRTIM1,
+                                            tu_channel[leg_tu]->pwm_conf.pwm_tu);
+}
+
+void PowerAPI::waitPeriodStart(leg_t leg, uint16_t boundaries)
+{
+    hrtim_tu_number_t leg_tu = spinNumberToTu(dt_pwm_pin[leg]);
+
+    for (uint16_t k = 0; k < boundaries; k++)
+    {
+        hrtim_wait_period_start(leg_tu);
     }
 }
 
@@ -622,6 +822,27 @@ void PowerAPI::setDeadTime(leg_t leg,
 
 void PowerAPI::setFrequency(uint32_t frequency)
 {
+    /**
+     * Raw sequence values depend on the period: stop running sequences,
+     * rescale them once the new period is applied, then restart them.
+     */
+    hrtim_tu_number_t restart_tu[ALL];
+    int8_t restart_leg[ALL];
+    uint8_t restart_count = 0;
+
+    for (int8_t i = 0; i < dt_leg_count; i++)
+    {
+        hrtim_tu_number_t leg_tu = spinNumberToTu(dt_pwm_pin[i]);
+
+        if (spin.pwm.isDutySequenceRunning(leg_tu))
+        {
+            spin.pwm.stopDutySequence(leg_tu);
+            restart_tu[restart_count] = leg_tu;
+            restart_leg[restart_count] = i;
+            restart_count++;
+        }
+    }
+
     spin.pwm.setFrequency(frequency);
 
     /* spin.pwm.setFrequency() clamps below timer_min_frequency, so mirror
@@ -643,6 +864,22 @@ void PowerAPI::setFrequency(uint32_t frequency)
             tu_channel[leg_tu]->pwm_conf.duty_min_user_float * period;
         tu_channel[leg_tu]->pwm_conf.duty_max_user =
             tu_channel[leg_tu]->pwm_conf.duty_max_user_float * period;
+    }
+
+    for (uint8_t k = 0; k < restart_count; k++)
+    {
+        int8_t i = restart_leg[k];
+
+        for (uint16_t n = 0; n < seq_len[i]; n++)
+        {
+            seq_stage[i][n] = dutyToSequenceRaw(i, seq_duty[i][n]);
+        }
+        seq_copy_stage_to_all(i);
+    }
+
+    if (restart_count > 0)
+    {
+        spin.pwm.startDutySequence(restart_tu, restart_count);
     }
 }
 
@@ -911,4 +1148,270 @@ void PowerAPI::initBoost(leg_t leg)
             initMode(static_cast<leg_t>(i), PWMx2, VOLTAGE_MODE);
         }
     }
+}
+
+uint32_t PowerAPI::dutyToSequenceRaw(int8_t leg_index, float32_t duty)
+{
+    hrtim_tu_number_t leg_tu = spinNumberToTu(dt_pwm_pin[leg_index]);
+    uint16_t period = tu_channel[leg_tu]->pwm_conf.period;
+
+    if (duty < 0.0F)
+    {
+        duty = 0.0F;
+    }
+    else if (duty > 1.0F)
+    {
+        duty = 1.0F;
+    }
+
+    uint32_t raw = duty * period;
+
+    /* Same limits as setDutyCycleRaw */
+    if (raw > tu_channel[leg_tu]->pwm_conf.duty_max_user)
+    {
+        raw = tu_channel[leg_tu]->pwm_conf.duty_max_user;
+    }
+    else if (raw < tu_channel[leg_tu]->pwm_conf.duty_min_user)
+    {
+        raw = tu_channel[leg_tu]->pwm_conf.duty_min_user;
+    }
+
+    /**
+     * 100 %: in left-aligned mode the output is set on period and reset on
+     * CMP1. A CMP1 equal to the period resets it at the same instant it is
+     * set, and reset has priority (this is why CMP1 = 0 gives 0 %, which
+     * setDutyCycleRaw relies on). CMP1 above the period never matches, so
+     * the output stays set. Same threshold as setDutyCycleRaw.
+     */
+    if (raw >= (uint32_t)(period - 3))
+    {
+        raw = period + SEQ_CMP_ABOVE_PERIOD;
+        if (raw > SEQ_CMP_MAX)
+        {
+            raw = SEQ_CMP_MAX;
+        }
+    }
+
+    return raw;
+}
+
+int8_t PowerAPI::setDutySequence(leg_t leg,
+                                 const float32_t *duties,
+                                 uint16_t length,
+                                 bool double_buffered)
+{
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
+
+    if (duties == NULL || length == 0 || length > DUTY_SEQ_MAX_LEN)
+    {
+        return -1;
+    }
+
+    /*  If ALL is selected, loop through all legs */
+    if (leg == ALL)
+    {
+        startIndex = 0;
+        endIndex = dt_leg_count;
+    }
+    else
+    {
+        startIndex = leg;
+        endIndex = leg + 1;
+    }
+
+    hrtim_tu_number_t restart_tu[ALL];
+    uint8_t restart_count = 0;
+    int8_t result = 0;
+
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        hrtim_tu_number_t leg_tu = spinNumberToTu(dt_pwm_pin[i]);
+
+        /* A running sequence is reloaded and restarted */
+        if (spin.pwm.isDutySequenceRunning(leg_tu))
+        {
+            spin.pwm.stopDutySequence(leg_tu);
+            restart_tu[restart_count++] = leg_tu;
+        }
+
+        seq_len[i] = length;
+        seq_double[i] = double_buffered;
+        seq_tu_leg[leg_tu] = i;
+
+        for (uint16_t k = 0; k < length; k++)
+        {
+            seq_duty[i][k] = duties[k];
+            seq_stage[i][k] = dutyToSequenceRaw(i, duties[k]);
+        }
+        seq_copy_stage_to_all(i);
+
+        uint16_t dma_length = double_buffered ? 2 * length : length;
+        hrtim_dma_cmp1_callback_t callback =
+            double_buffered ? seq_half_done : NULL;
+
+        if (spin.pwm.initDutySequence(leg_tu, seq_raw[i],
+                                      dma_length, callback) != 0)
+        {
+            seq_len[i] = 0;
+            result = -1;
+        }
+    }
+
+    if (restart_count > 0)
+    {
+        spin.pwm.startDutySequence(restart_tu, restart_count);
+    }
+
+    return result;
+}
+
+int8_t PowerAPI::startDutySequence(leg_t leg)
+{
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
+
+    /*  If ALL is selected, loop through all legs */
+    if (leg == ALL)
+    {
+        startIndex = 0;
+        endIndex = dt_leg_count;
+    }
+    else
+    {
+        startIndex = leg;
+        endIndex = leg + 1;
+    }
+
+    hrtim_tu_number_t start_tu[ALL];
+    uint8_t start_count = 0;
+
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        hrtim_tu_number_t leg_tu = spinNumberToTu(dt_pwm_pin[i]);
+
+        if (seq_len[i] > 0 && !spin.pwm.isDutySequenceRunning(leg_tu))
+        {
+            start_tu[start_count++] = leg_tu;
+        }
+    }
+
+    if (start_count == 0)
+    {
+        return -1;
+    }
+
+    return spin.pwm.startDutySequence(start_tu, start_count);
+}
+
+void PowerAPI::stopDutySequence(leg_t leg)
+{
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
+
+    /*  If ALL is selected, loop through all legs */
+    if (leg == ALL)
+    {
+        startIndex = 0;
+        endIndex = dt_leg_count;
+    }
+    else
+    {
+        startIndex = leg;
+        endIndex = leg + 1;
+    }
+
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        hrtim_tu_number_t leg_tu = spinNumberToTu(dt_pwm_pin[i]);
+
+        if (spin.pwm.isDutySequenceRunning(leg_tu))
+        {
+            spin.pwm.stopDutySequence(leg_tu);
+            /* Do not leave the last sequence value (possibly 100 %) applied */
+            setDutyCycleRaw(static_cast<leg_t>(i),
+                            tu_channel[leg_tu]->pwm_conf.duty_min_user);
+        }
+    }
+}
+
+bool PowerAPI::isDutySequenceRunning(leg_t leg)
+{
+    return spin.pwm.isDutySequenceRunning(spinNumberToTu(dt_pwm_pin[leg]));
+}
+
+uint16_t PowerAPI::getDutySequenceIndex(leg_t leg)
+{
+    if (seq_len[leg] == 0)
+    {
+        return 0;
+    }
+
+    /* Both halves of a double-buffered sequence hold the same pattern */
+    return spin.pwm.getDutySequenceIndex(spinNumberToTu(dt_pwm_pin[leg])) %
+           seq_len[leg];
+}
+
+int8_t PowerAPI::updateDutySequence(leg_t leg, const float32_t *duties)
+{
+    int8_t startIndex = 0;
+    int8_t endIndex = 0;
+
+    if (duties == NULL)
+    {
+        return -1;
+    }
+
+    /*  If ALL is selected, loop through all legs */
+    if (leg == ALL)
+    {
+        startIndex = 0;
+        endIndex = dt_leg_count;
+    }
+    else
+    {
+        startIndex = leg;
+        endIndex = leg + 1;
+    }
+
+    int8_t result = 0;
+
+    for (int8_t i = startIndex; i < endIndex; i++)
+    {
+        if (seq_len[i] == 0)
+        {
+            result = -1;
+            continue;
+        }
+
+        if (!seq_double[i])
+        {
+            /* Single buffer: stop, reload and restart */
+            if (setDutySequence(static_cast<leg_t>(i), duties,
+                                seq_len[i], false) != 0)
+            {
+                result = -1;
+            }
+            continue;
+        }
+
+        for (uint16_t k = 0; k < seq_len[i]; k++)
+        {
+            seq_duty[i][k] = duties[k];
+            seq_stage[i][k] = dutyToSequenceRaw(i, duties[k]);
+        }
+
+        /* Not running: no interrupt will copy the stage, do it now */
+        if (!isDutySequenceRunning(static_cast<leg_t>(i)))
+        {
+            seq_copy_stage_to_all(i);
+        }
+    }
+
+    return result;
+}
+
+uint32_t PowerAPI::getDutySequenceErrors(leg_t leg)
+{
+    return spin.pwm.getDutySequenceErrors(spinNumberToTu(dt_pwm_pin[leg]));
 }
