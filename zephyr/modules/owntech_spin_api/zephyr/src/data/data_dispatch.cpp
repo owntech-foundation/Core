@@ -41,6 +41,9 @@
 /* Current file header */
 #include "data_dispatch.h"
 
+/* Dispatch periods of conversions the DMA buffers can hold */
+#define DATA_DISPATCH_MARGIN_TICKS 4
+
 /**
  *  Local variables
  */
@@ -176,16 +179,24 @@ void data_dispatch_init(dispatch_t dispatch_method, uint32_t repetitions)
 			}
 			else
 			{
-				dma_buffer_size = repetitions;
+				/**
+				 * Room for DATA_DISPATCH_MARGIN_TICKS dispatch periods: the
+				 * conversion count is read from the DMA position, so more
+				 * conversions than the buffer between two dispatches are
+				 * silently lost. With one period of room, a critical task
+				 * delayed by ~2 PWM periods (long interrupt, synchronous logging)
+				 * lost data.
+				 */
+				dma_buffer_size = repetitions * DATA_DISPATCH_MARGIN_TICKS;
 
 				/**
 				 * Make sure buffer size is a multiple of enabled channels count
 				 * so that each channel data will always be at the same position
 				 */
-				if (repetitions % enabled_channels_count[adc_index] != 0)
+				if (dma_buffer_size % enabled_channels_count[adc_index] != 0)
 				{
 					dma_buffer_size +=  (enabled_channels_count[adc_index]) -
-										(repetitions %
+										(dma_buffer_size %
 										 enabled_channels_count[adc_index]);
 				}
 				else
