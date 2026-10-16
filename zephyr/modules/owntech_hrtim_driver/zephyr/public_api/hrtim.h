@@ -605,6 +605,91 @@ void hrtim_change_frequency(uint32_t new_frequency);
  */
 void hrtim_output_hot_swap(hrtim_tu_number_t tu_number);
 
+/**
+ * @brief Busy-waits for the next period boundary (repetition event) of a
+ *        timing unit, at most about one PWM period.
+ * @param[in] tu_number Timing unit: `PWMA` to `PWMF`
+ */
+void hrtim_wait_period_start(hrtim_tu_number_t tu_number);
+
+/**
+ * @brief Busy-waits until the counter of a timing unit is in the window
+ *        [1/2, 3/4) of its period, at most about two PWM periods.
+ * @param[in] tu_number Timing unit: `PWMA` to `PWMF`
+ */
+void hrtim_wait_period_middle(hrtim_tu_number_t tu_number);
+
+/**
+ * @brief Busy-waits until the counter of a timing unit is less than
+ *        `margin_ns` before the end of the period, at most about one
+ *        PWM period. Up-counting (`Lft_aligned`) timing units only.
+ * @param[in] tu_number Timing unit: `PWMA` to `PWMF`
+ * @param[in] margin_ns Time before the period end, in ns
+ */
+void hrtim_wait_period_end(hrtim_tu_number_t tu_number, uint32_t margin_ns);
+
+/**
+ * @brief Configures DMA2 so that one CMP1 (duty cycle) value per PWM period
+ *        is copied from a circular buffer into a timing unit.
+ *
+ *        Timing unit x uses DMA2 channel x+1. The transfer is requested by
+ *        the repetition event of the timing unit (one per period).
+ *
+ * @param[in] tu_number Timing unit: `PWMA` to `PWMF`
+ * @param[in] buffer    Raw CMP1 values, one per PWM period. Must stay valid
+ *                      while the sequence runs.
+ * @param[in] length    Number of values in the buffer
+ * @param[in] callback  Optional callback on half / complete transfer,
+ *                      `NULL` to keep DMA interrupts off
+ *
+ * @return `0` if ok, `-1` if DMA2 is not enabled in the device tree, the
+ *         timing unit is not `Lft_aligned`, or a sequence is running.
+ */
+int8_t hrtim_dma_cmp1_init(hrtim_tu_number_t tu_number,
+                           uint32_t *buffer,
+                           uint16_t length,
+                           hrtim_dma_cmp1_callback_t callback);
+
+/**
+ * @brief Starts the sequences of one or several timing units so that they
+ *        all receive their first transfer on the same PWM period.
+ *
+ *        Waits for the middle of a period (hrtim_wait_period_middle()), so
+ *        that the first transfer is always on the same repetition event.
+ *        A leftover output swap (100 % duty via setDutyCycle) is cleared.
+ *        Interrupts are locked during this wait (up to about two PWM
+ *        periods), which can delay the critical task.
+ *
+ * @param[in] tu_numbers Timing units to start, all previously initialized
+ * @param[in] count      Number of timing units
+ *
+ * @return `0` if ok, `-1` if a timing unit is not initialized or running
+ */
+int8_t hrtim_dma_cmp1_start(const hrtim_tu_number_t *tu_numbers,
+                            uint8_t count);
+
+/**
+ * @brief Stops the sequence of a timing unit.
+ *        CMP1 keeps the last value written by the DMA.
+ * @param[in] tu_number Timing unit: `PWMA` to `PWMF`
+ */
+void hrtim_dma_cmp1_stop(hrtim_tu_number_t tu_number);
+
+/**
+ * @brief Returns true if a sequence is running on the timing unit.
+ */
+bool hrtim_dma_cmp1_is_running(hrtim_tu_number_t tu_number);
+
+/**
+ * @brief Returns the index of the next buffer value the DMA will write.
+ */
+uint16_t hrtim_dma_cmp1_get_next_index(hrtim_tu_number_t tu_number);
+
+/**
+ * @brief Returns the number of DMA transfer errors since the last start.
+ */
+uint32_t hrtim_dma_cmp1_get_error_count(hrtim_tu_number_t tu_number);
+
 #ifdef __cplusplus
 }
 #endif
