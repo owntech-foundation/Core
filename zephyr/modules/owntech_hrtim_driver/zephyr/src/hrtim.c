@@ -32,6 +32,8 @@
 #include <stm32_ll_rcc.h>
 #include "assert.h"
 #include "hrtim.h"
+#include <zephyr/fatal.h>
+#include <zephyr/logging/log_ctrl.h>
 
 
 /** @brief Defines the HRTIM IRQ Number */
@@ -1619,4 +1621,26 @@ uint32_t hrtim_get_max_frequency(hrtim_tu_number_t tu_number)
 uint32_t hrtim_get_min_frequency(hrtim_tu_number_t tu_number)
 {
     return tu_channel[tu_number]->pwm_conf.min_frequency;
+}
+
+/**
+ * Fatal error (CPU fault, kernel panic): switch every HRTIM output off before
+ * halting. Without this, a crash (for instance in the critical task) left the
+ * HRTIM running and the gates switching at their last duty cycle. Replaces
+ * Zephyr's weak handler, which only logs and halts.
+ */
+void k_sys_fatal_error_handler(unsigned int reason, const struct arch_esf *esf)
+{
+    ARG_UNUSED(esf);
+
+    LL_HRTIM_DisableOutput(HRTIM1,
+                           LL_HRTIM_OUTPUT_TA1 | LL_HRTIM_OUTPUT_TA2 |
+                           LL_HRTIM_OUTPUT_TB1 | LL_HRTIM_OUTPUT_TB2 |
+                           LL_HRTIM_OUTPUT_TC1 | LL_HRTIM_OUTPUT_TC2 |
+                           LL_HRTIM_OUTPUT_TD1 | LL_HRTIM_OUTPUT_TD2 |
+                           LL_HRTIM_OUTPUT_TE1 | LL_HRTIM_OUTPUT_TE2 |
+                           LL_HRTIM_OUTPUT_TF1 | LL_HRTIM_OUTPUT_TF2);
+
+    LOG_PANIC();
+    k_fatal_halt(reason);
 }
