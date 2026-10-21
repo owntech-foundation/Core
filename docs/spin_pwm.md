@@ -145,6 +145,33 @@ Varying the duty cycle is how to vary the output of the PWM.
 
     ```
 
+#### Frequency of a single PWM unit
+
+A PWM unit can switch at its own frequency, independent of the others. Call `initUnitFrequency()` after the common frequency is initialized and before `initUnit()`.
+
+```c++
+    spin.pwm.initVariableFrequency(200000, 50000);  /* common, minimum */
+
+    spin.pwm.setModulation(PWMA, Lft_aligned);
+    spin.pwm.initUnit(PWMA);                        /* 200 kHz */
+
+    hrtim_tu_number_t inverter[2] = {PWMD, PWME};
+    for (uint8_t i = 0; i < 2; i++)
+    {
+        spin.pwm.initUnitFrequency(inverter[i], 50000);
+        spin.pwm.setModulation(inverter[i], UpDwn);
+        spin.pwm.initUnit(inverter[i]);
+    }
+    spin.pwm.resetCounters(inverter, 2);            /* start them in phase */
+
+    spin.pwm.setFrequency(PWMD, 100000);            /* PWMD only */
+    spin.pwm.setFrequency(150000);                  /* PWMA only */
+```
+
+- The frequency must be at least the minimal frequency (the clock prescaler is shared).
+- The unit is not reset by the other units: `setPhaseShift()` and current mode are not available on it.
+- `getFrequency(pwmX)` returns its switching frequency, and `hasOwnFrequency(pwmX)` tells whether it has its own.
+
 ### Single/Dual Output
 
 === "Single Output"

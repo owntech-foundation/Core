@@ -8,12 +8,13 @@ properties :
   default-frequency :
     type : int
     required : true
-    description : Switching frequency in Hz (this frequency must be same for all the timer !)
+    description : Switching frequency in Hz, common to all the legs (a leg can have its own with leg-frequency)
 
   min-frequency :
     type : int
     required : false
-    description : Minimum switching frequency in Hz (this frequency will be be same for all the timers !)
+    description : Minimum switching frequency in Hz, same for all the legs. It sets the clock prescaler
+                  shared by all the timers, so no frequency (leg-frequency included) can be lower.
 
 
 child-binding:
@@ -146,6 +147,16 @@ child-binding:
       type : int
       required : true
       description : Value of the phase shift in ° a value between 0 and 360. Choose 0 as default.
+
+    leg-frequency :
+      type : int
+      required : false
+      description : Switching frequency of this leg only, in Hz, independent of default-frequency
+                    (e.g. inverter legs at 50 kHz while the other legs run at 200 kHz).
+                    At least min-frequency. The leg is not reset by the other timers, so
+                    default-phase-shift must be 0 and current mode is not available.
+                    Legs with the same leg-frequency are started aligned.
+                    Set to 0 (common frequency) if no property defined.
 
     output1-inactive :
       type : boolean

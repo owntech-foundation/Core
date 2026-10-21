@@ -555,6 +555,7 @@ void hrtim_init_default_all()
 
             tu_channel[tu_count]->pwm_conf.frequency =
                 timerMaster.pwm_conf.frequency;
+            tu_channel[tu_count]->pwm_conf.own_frequency = 0;
 
             tu_channel[tu_count]->pwm_conf.fall_dead_time = TU_DEFAULT_DT;
             tu_channel[tu_count]->pwm_conf.period = TU_DEFAULT_PERIOD;
@@ -652,6 +653,15 @@ uint16_t hrtim_tu_init(hrtim_tu_number_t tu_number)
     {
         /* if master timer not initialized, we initialize it */
         _init_master();
+    }
+
+    if (tu_channel[tu_number]->pwm_conf.own_frequency &&
+        tu_channel[tu_number]->pwm_conf.pwm_mode == CURRENT_MODE)
+    {
+        /* Current mode resets the unit on external events and on the
+         * master: not supported with an independent frequency */
+        printk("hrtim: current mode not supported with an own frequency\n");
+        return 0;
     }
 
     if (tu_channel[tu_number]->pwm_conf.pwm_mode == CURRENT_MODE)
@@ -889,20 +899,66 @@ void hrtim_frequency_set(uint32_t frequency_set, uint32_t frequency_min)
     HRTIM_MINIM_FREQUENCY = frequency_min;
 
     timerMaster.pwm_conf.frequency = frequency_set;
-    tu_channel[PWMA]->pwm_conf.frequency = frequency_set;
-    tu_channel[PWMB]->pwm_conf.frequency = frequency_set;
-    tu_channel[PWMC]->pwm_conf.frequency = frequency_set;
-    tu_channel[PWMD]->pwm_conf.frequency = frequency_set;
-    tu_channel[PWME]->pwm_conf.frequency = frequency_set;
-    tu_channel[PWMF]->pwm_conf.frequency = frequency_set;
-
     timerMaster.pwm_conf.min_frequency = frequency_min;
-    tu_channel[PWMA]->pwm_conf.min_frequency = frequency_min;
-    tu_channel[PWMB]->pwm_conf.min_frequency = frequency_min;
-    tu_channel[PWMC]->pwm_conf.min_frequency = frequency_min;
-    tu_channel[PWMD]->pwm_conf.min_frequency = frequency_min;
-    tu_channel[PWME]->pwm_conf.min_frequency = frequency_min;
-    tu_channel[PWMF]->pwm_conf.min_frequency = frequency_min;
+
+    for (uint8_t tu = PWMA; tu <= PWMF; tu++)
+    {
+        /* Units with their own frequency keep it. pwm_conf.frequency is
+         * doubled by the init of an up-down unit, so it is restored from
+         * own_frequency rather than left as is */
+        if (tu_channel[tu]->pwm_conf.own_frequency)
+        {
+            tu_channel[tu]->pwm_conf.frequency =
+                tu_channel[tu]->pwm_conf.own_frequency;
+        }
+        else
+        {
+            tu_channel[tu]->pwm_conf.frequency = frequency_set;
+        }
+        tu_channel[tu]->pwm_conf.min_frequency = frequency_min;
+    }
+}
+
+int8_t hrtim_tu_frequency_set(hrtim_tu_number_t tu_number, uint32_t frequency)
+{
+    if (tu_number >= HRTIM_STU_NUMOF)
+        return -1;
+
+    /* The prescaler is shared with the master: below the minimum
+     * frequency the period would not fit in 16 bits */
+    if (frequency < HRTIM_MINIM_FREQUENCY)
+        return -1;
+
+    if (tu_channel[tu_number]->pwm_conf.unit_on == false)
+    {
+        /* Otherwise a later default initialization overwrites it */
+        hrtim_init_default_all();
+    }
+
+    tu_channel[tu_number]->pwm_conf.frequency = frequency;
+    tu_channel[tu_number]->pwm_conf.own_frequency = frequency;
+
+    return 0;
+}
+
+bool hrtim_tu_has_own_frequency(hrtim_tu_number_t tu_number)
+{
+    if (tu_number >= HRTIM_STU_NUMOF)
+        return false;
+
+    return tu_channel[tu_number]->pwm_conf.own_frequency != 0;
+}
+
+uint32_t hrtim_tu_frequency_get(hrtim_tu_number_t tu_number)
+{
+    if (tu_number >= HRTIM_STU_NUMOF)
+        return 0;
+
+    if (tu_channel[tu_number]->pwm_conf.own_frequency)
+        return tu_channel[tu_number]->pwm_conf.own_frequency;
+
+    /* pwm_conf.frequency is the counting frequency (x2 in up-down) */
+    return timerMaster.pwm_conf.frequency;
 }
 
 inline uint16_t hrtim_period_Master_get()
@@ -933,7 +989,7 @@ uint32_t hrtim_period_get_us(hrtim_tu_number_t tu_number)
     return tu_channel[tu_number]->pwm_conf.period *
            HRTIM_CLK_RESOLUTION *
            mult *
-           (1<<timerMaster.pwm_conf.ckpsc);
+           (1<<tu_channel[tu_number]->pwm_conf.ckpsc);
 }
 
 /* CMP1, CMP2 and CMP3 must not be changed in current mode since they are used */
@@ -1097,16 +1153,31 @@ inline void hrtim_duty_cycle_set(hrtim_tu_number_t tu_number, uint16_t value)
 }
 
 
-void hrtim_phase_shift_set(hrtim_tu_number_t tu_number, uint16_t shift)
+int8_t hrtim_phase_shift_set(hrtim_tu_number_t tu_number, uint16_t shift)
 {
-    tu_channel[tu_number]->phase_shift.value = shift;
-
     hrtim_tu_t local_tu = tu_channel[tu_number]->pwm_conf.pwm_tu;
     hrtim_reset_trig_t rst_trg = tu_channel[tu_number]->phase_shift.reset_trig;
 
     uint32_t current_reset_trig = LL_HRTIM_TIM_GetResetTrig(HRTIM1, local_tu);
     uint32_t master_reset_trig = timerMaster.phase_shift.reset_trig;
     uint32_t updated_reset_trig = (current_reset_trig & ~master_reset_trig);
+
+    /**
+     * A unit with its own frequency free-runs on its own period: neither
+     * the master period nor its phase shift compare (e.g. master CMP3 for
+     * timer D, set by hrtim_tu_init()) may reset it, otherwise it is cut
+     * every master period. Its phase cannot be shifted.
+     */
+    if (tu_channel[tu_number]->pwm_conf.own_frequency)
+    {
+        LL_HRTIM_TIM_SetResetTrig(HRTIM1, local_tu,
+                                  current_reset_trig &
+                                  ~(master_reset_trig | rst_trg));
+        tu_channel[tu_number]->phase_shift.value = 0;
+        return (shift == 0) ? 0 : -1;
+    }
+
+    tu_channel[tu_number]->phase_shift.value = shift;
 
     /* Set reset comparator for phase positioning */
     if (shift)
@@ -1174,11 +1245,15 @@ void hrtim_phase_shift_set(hrtim_tu_number_t tu_number, uint16_t shift)
             }
         }else{
             /* timing unit do not run at the same frequency as master so
-            * phase positioning is not applicable */
-            uint32_t clear_reset = current_reset_trig & ~master_reset_trig;
+            * phase positioning is not applicable: remove the master period
+            * and the phase shift compare from the reset sources */
+            uint32_t clear_reset = current_reset_trig &
+                                   ~(master_reset_trig | local_tu_reset);
             LL_HRTIM_TIM_SetResetTrig(HRTIM1,local_tu,clear_reset);
         }
     }
+
+    return 0;
 }
 
 
@@ -1352,6 +1427,25 @@ void hrtim_cnt_dis(hrtim_tu_number_t tu_number)
     LL_HRTIM_TIM_CounterDisable(HRTIM1, tu_channel[tu_number]->pwm_conf.pwm_tu);
 }
 
+void hrtim_cnt_reset_sync(const hrtim_tu_number_t *tu_numbers, uint8_t count)
+{
+    uint32_t timers = 0;
+
+    for (uint8_t i = 0; i < count; i++)
+    {
+        if (tu_numbers[i] < HRTIM_STU_NUMOF)
+        {
+            timers |= tu_channel[tu_numbers[i]]->pwm_conf.pwm_tu;
+        }
+    }
+
+    /* One CR2 write: all the counters restart on the same clock edge */
+    if (timers != 0)
+    {
+        LL_HRTIM_CounterReset(HRTIM1, timers);
+    }
+}
+
 void hrtim_rst_evt_en(hrtim_tu_number_t tu_number, hrtim_reset_trig_t evt)
 {
     LL_HRTIM_TIM_SetResetTrig(HRTIM1, tu_channel[tu_number]->pwm_conf.pwm_tu, evt);
@@ -1491,6 +1585,72 @@ void DualDAC_init(hrtim_tu_number_t tu_number)
                                       tu_channel[tu_number]->pwm_conf.pwm_tu);
 }
 
+/* Value scaled from one period to another, rounded down */
+static inline uint16_t _rescale(uint32_t value, uint16_t old_period,
+                                uint16_t new_period)
+{
+    if (old_period == 0)
+        return 0;
+    return (uint16_t)(((uint64_t)value * new_period) / old_period);
+}
+
+int8_t hrtim_tu_change_frequency(hrtim_tu_number_t tu_number,
+                                 uint32_t new_frequency)
+{
+    if (tu_number >= HRTIM_STU_NUMOF)
+        return -1;
+
+    timer_hrtim_t *tu = tu_channel[tu_number];
+
+    /* Units that follow the master change with hrtim_change_frequency() */
+    if (!tu->pwm_conf.own_frequency)
+        return -1;
+
+    if (new_frequency < HRTIM_MINIM_FREQUENCY)
+        return -1;
+
+#if defined(CONFIG_SOC_SERIES_STM32F3X)
+    uint32_t f_hrtim = hrtim_get_apb2_clock() * 2;
+#elif defined(CONFIG_SOC_SERIES_STM32G4X)
+    uint32_t f_hrtim = hrtim_get_apb2_clock();
+#else
+#warning "unsupported stm32XX family"
+#endif
+
+    /* An up-down unit counts at twice its switching frequency */
+    uint32_t f_count = (tu->pwm_conf.modulation == UpDwn) ?
+                       2 * new_frequency : new_frequency;
+
+    uint32_t new_period = ((f_hrtim / f_count) * 32 +
+                           (f_hrtim % f_count) * 32 / f_count) >>
+                          tu->pwm_conf.ckpsc;
+
+    if (new_period > HRTIM_MAX_PER_and_CMP_REG_VALUES[tu->pwm_conf.ckpsc] ||
+        new_period < HRTIM_MIN_PER_and_CMP_REG_VALUES[tu->pwm_conf.ckpsc])
+        return -1;
+
+    hrtim_tu_t timing_unit = tu->pwm_conf.pwm_tu;
+    uint16_t old_period = tu->pwm_conf.period;
+    uint16_t new_duty = _rescale(tu->pwm_conf.duty_cycle, old_period,
+                                 new_period);
+
+    /* Preloaded: all applied together on the next repetition event */
+    LL_HRTIM_TIM_SetPeriod(HRTIM1, timing_unit, new_period);
+    LL_HRTIM_TIM_SetCompare1(HRTIM1, timing_unit, new_duty);
+    LL_HRTIM_TIM_SetCompare3(HRTIM1, timing_unit,
+        _rescale(LL_HRTIM_TIM_GetCompare3(HRTIM1, timing_unit),
+                 old_period, new_period));
+
+    tu->pwm_conf.period = new_period;
+    tu->pwm_conf.duty_cycle = new_duty;
+    tu->pwm_conf.frequency = f_count;
+    tu->pwm_conf.own_frequency = new_frequency;
+    tu->pwm_conf.duty_min_user = tu->pwm_conf.duty_min_user_float * new_period;
+    tu->pwm_conf.duty_max_user = tu->pwm_conf.duty_max_user_float * new_period;
+
+    return 0;
+}
+
 void hrtim_change_frequency(uint32_t new_frequency)
 {
 
@@ -1520,9 +1680,11 @@ void hrtim_change_frequency(uint32_t new_frequency)
 
         hrtim_tu_t timing_unit;
 
+        /* Same formula as _period_ckpsc(): the remainder is scaled by 32
+         * before the division, (32 / new_frequency) would always be 0 */
         new_master_period =
             ((f_hrtim / new_frequency) * 32 +
-            (f_hrtim % new_frequency) * (32 / new_frequency)) /
+            (f_hrtim % new_frequency) * 32 / new_frequency) /
             (1 << timerMaster.pwm_conf.ckpsc);
 
             timerMaster.pwm_conf.frequency = new_frequency;
@@ -1533,7 +1695,11 @@ void hrtim_change_frequency(uint32_t new_frequency)
             timerMaster.pwm_conf.period = new_master_period;
 
             for(uint8_t channel = PWMA; channel<=PWMF; channel++){
-                timing_unit = tu_channel[channel]->pwm_conf.pwm_tu;                
+                /* Units with their own frequency keep it */
+                if (tu_channel[channel]->pwm_conf.own_frequency)
+                    continue;
+
+                timing_unit = tu_channel[channel]->pwm_conf.pwm_tu;
                 old_duty = tu_channel[channel]->pwm_conf.duty_cycle;
                 old_period = tu_channel[channel]->pwm_conf.period;
                 old_shift = tu_channel[channel]->phase_shift.value;
@@ -1550,6 +1716,12 @@ void hrtim_change_frequency(uint32_t new_frequency)
 
                 LL_HRTIM_TIM_SetPeriod(HRTIM1,timing_unit,new_tu_period);
                 LL_HRTIM_TIM_SetCompare1(HRTIM1,timing_unit,new_duty);                 
+
+                /* CMP3 places the ADC trigger within the period: keep its
+                 * position as a fraction of the period */
+                LL_HRTIM_TIM_SetCompare3(HRTIM1, timing_unit,
+                    _rescale(LL_HRTIM_TIM_GetCompare3(HRTIM1, timing_unit),
+                             old_period, new_tu_period));
 
                 phase_shift_ratio = (float32_t)old_shift/(float32_t)old_period;
                 new_shift = phase_shift_ratio*new_tu_period;

@@ -147,6 +147,43 @@ This sawtooth signal is then compared with the ADC's current value. When selecti
 On the TWIST board, a voltage value of 1.024V on the ADC corresponds to a current of 0A. The system has a gain of 100mV per ampere, meaning that for each ampere increase in current, the voltage value increases by 100 millivolts.
 
 
+## Per-leg switching frequency
+
+All the legs switch at the shield `default-frequency` unless a leg has its own `leg-frequency`. For example, the two legs of an inverter can run at 50 kHz while the DC/DC legs stay at 200 kHz. Each leg is driven by its own HRTIM timer, which has its own period.
+
+In `src/app.overlay`:
+
+```
+&leg3 {
+    default-modulation = "UpDwn";
+    leg-frequency = <50000>;
+};
+
+&leg4 {
+    default-modulation = "UpDwn";
+    leg-frequency = <50000>;
+};
+```
+
+```cpp
+    shield.power.initBoost(LEG1);      /* 200 kHz, default-frequency */
+    shield.power.initBuck(LEG3);       /* 50 kHz */
+    shield.power.initBoost(LEG4);      /* 50 kHz, in phase with LEG3 */
+
+    shield.power.getFrequency(LEG3);          /* 50000 */
+    shield.power.setFrequency(LEG3, 100000);  /* this leg only */
+    shield.power.setFrequency(150000);        /* LEG1 only, LEG3/LEG4 unchanged */
+```
+
+- `leg-frequency` must be at least the shield `min-frequency`. The HRTIM clock prescaler is shared by all the timers and is chosen from `min-frequency`. A lower value is refused at init with a message, and the leg then uses the shared frequency.
+- Legs that share a `leg-frequency` are restarted together after each init, so the legs of an H-bridge are in phase.
+- Such a leg is not referenced to the other legs. `default-phase-shift` must be 0, `setPhaseShift()` has no effect on it, and current mode is not available.
+- The ADC trigger of the leg (`setTriggerValue()`) is placed in its own period.
+- The critical task still runs on the shared frequency. Choose a `leg-frequency` that divides it (50 kHz with 200 kHz) and a task period that is a multiple of the leg period. A message is printed otherwise.
+
+!!! note
+    `setFrequency(leg, f)` returns `-1` for a leg on the shared frequency: use `setFrequency(f)` for those.
+
 ## Snippets examples
 
 ### Buck topology

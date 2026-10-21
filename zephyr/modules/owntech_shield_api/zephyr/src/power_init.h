@@ -103,6 +103,13 @@
 #define LEG_PHASE(node_id)  DT_PROP(node_id, default_phase_shift),
 
 /**
+ * Define a macro LEG_FREQUENCY that retrieves the leg frequency
+ * property from the Device Tree node with the given `node_id`,
+ * 0 (common frequency) if the property is not defined.
+ */
+#define LEG_FREQUENCY(node_id)  DT_PROP_OR(node_id, leg_frequency, 0),
+
+/**
  * Define a macro LEG_ADC_DECIM that retrieves the adc decimator
  * property from the Device Tree node with the given `node_id`.
  */
@@ -247,6 +254,13 @@ extern uint16_t dt_falling_deadtime[];
  * with the ID `POWER_SHIELD_ID`.
  */
 extern int16_t dt_phase_shift[];
+
+/**
+ * Define an array `dt_leg_frequency` of type `uint32_t` and initialize it
+ * with the `leg-frequency` property of the children of the Device Tree node
+ * with the ID `POWER_SHIELD_ID` (0 when the leg uses the common frequency).
+ */
+extern uint32_t dt_leg_frequency[];
 
 /**
  * Define a variable `dt_leg_count` and initialize it with the count of

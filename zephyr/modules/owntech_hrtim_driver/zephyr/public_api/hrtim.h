@@ -270,6 +270,38 @@ void hrtim_cmpl_pwm_out(hrtim_tu_number_t tu_number);
 void hrtim_frequency_set(uint32_t frequency_set, uint32_t frequency_min);
 
 /**
+ * @brief   Gives a timing unit its own switching frequency, independent of
+ *          the master. Call it before hrtim_tu_init(). hrtim_frequency_set()
+ *          and hrtim_change_frequency() then leave this unit alone.
+ *
+ *          The unit is not reset by the master: it free-runs on its own
+ *          period. Phase shifting and current mode are not available.
+ *
+ * @param[in] tu_number  Timing unit: `PWMA` to `PWMF`
+ * @param[in] frequency  Frequency in Hz, at least the minimum frequency
+ *                       given to hrtim_frequency_set() (the clock
+ *                       prescaler is shared with the master)
+ *
+ * @return `0` if ok, `-1` if the frequency is below the minimum
+ */
+int8_t hrtim_tu_frequency_set(hrtim_tu_number_t tu_number, uint32_t frequency);
+
+/**
+ * @brief   Returns true if the timing unit has its own frequency
+ *          (hrtim_tu_frequency_set()).
+ *
+ * @param[in] tu_number  Timing unit: `PWMA` to `PWMF`
+ */
+bool hrtim_tu_has_own_frequency(hrtim_tu_number_t tu_number);
+
+/**
+ * @brief   Returns the switching frequency of a timing unit in Hz.
+ *
+ * @param[in] tu_number  Timing unit: `PWMA` to `PWMF`
+ */
+uint32_t hrtim_tu_frequency_get(hrtim_tu_number_t tu_number);
+
+/**
  * @brief   Returns the period of a given timing unit in number of clock cycles
  *
  * @param[in] tu_number        Timing unit number:
@@ -349,8 +381,11 @@ void hrtim_duty_cycle_set(hrtim_tu_number_t tu_number, uint16_t value);
  * @param[in] tu_number        Timing unit number:
  *                  `MSTR`, `TIMA`, `TIMB`, `TIMC`, `TIMD`, `TIME`, `TIMF`
  * @param[in] shift        The desired phase shift value
+ *
+ * @return `0` if ok, `-1` if the unit has its own frequency
+ *         (hrtim_tu_frequency_set()) and `shift` is not 0
  */
-void hrtim_phase_shift_set(hrtim_tu_number_t tu_number, uint16_t shift);
+int8_t hrtim_phase_shift_set(hrtim_tu_number_t tu_number, uint16_t shift);
 
 /**
  * @brief   Initialize the dead-time for the PWM
@@ -399,6 +434,17 @@ void hrtim_burst_dis(void);
  *                  `MSTR`, `TIMA`, `TIMB`, `TIMC`, `TIMD`, `TIME`, `TIMF`
  */
 void hrtim_cnt_en(hrtim_tu_number_t tu_number);
+
+/**
+ * @brief   Resets the counters of several timing units with a single
+ *          register write, so that they restart together. Used to align
+ *          units that run at the same frequency of their own
+ *          (hrtim_tu_frequency_set()), since the master does not reset them.
+ *
+ * @param[in] tu_numbers Timing units: `PWMA` to `PWMF`
+ * @param[in] count      Number of timing units
+ */
+void hrtim_cnt_reset_sync(const hrtim_tu_number_t *tu_numbers, uint8_t count);
 
 /**
  * @brief   Disables a timing unit counter
@@ -596,6 +642,22 @@ hrtim_external_trigger_t hrtim_eev_get(hrtim_tu_number_t tu_number);
  *          in the initialization step.
  */
 void hrtim_change_frequency(uint32_t new_frequency);
+
+/**
+ * @brief Changes the frequency of a unit that has its own frequency
+ *        (hrtim_tu_frequency_set()), after it has been initialized.
+ *        The duty cycle (CMP1), the ADC trigger position (CMP3) and the
+ *        user duty cycle limits keep their ratio to the period. The new
+ *        values are preloaded and applied on the next period.
+ *
+ * @param[in] tu_number     Timing unit: `PWMA` to `PWMF`
+ * @param[in] new_frequency Frequency in Hz, at least the minimum frequency
+ *
+ * @return `0` if ok, `-1` if the unit follows the master frequency or the
+ *         frequency is out of range
+ */
+int8_t hrtim_tu_change_frequency(hrtim_tu_number_t tu_number,
+                                 uint32_t new_frequency);
 
 
 /**

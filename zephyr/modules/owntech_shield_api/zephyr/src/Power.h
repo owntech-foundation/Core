@@ -56,6 +56,9 @@ private:
 	/* return timing unit from spin pin number */
 	hrtim_tu_number_t spinNumberToTu(uint16_t spin_number);
 
+	/* restart together the legs that share a leg-frequency */
+	void alignOwnFrequencyLegs();
+
 
 public:
 	/**
@@ -187,6 +190,9 @@ public:
 	 * @param leg The leg for which to set the phase shift value: `LEG1` to `ALL`
      * @param[in] phase_shift	phase shift value in degrees 
 	 * 							between `-360` and `360`
+	 *
+	 * @note Has no effect on a leg with its own frequency (leg-frequency):
+	 *       such a leg is not referenced to the other legs.
 	 */
 	void setPhaseShift(leg_t leg, int16_t phase_shift);
 
@@ -221,10 +227,26 @@ public:
 	 *
 	 * This updates the underlying HRTIM period and refreshes duty-cycle
 	 * limits so subsequent duty updates stay aligned with the new period.
+	 * Legs with their own frequency (leg-frequency) are not changed.
 	 *
 	 * @param frequency switching frequency in Hz
 	 */
 	void setFrequency(uint32_t frequency);
+
+	/**
+	 * @brief Sets the PWM frequency of a leg that has its own frequency
+	 *        (`leg-frequency` in the device tree). The duty cycle, the
+	 *        duty cycle limits and the ADC trigger keep their position as
+	 *        a fraction of the period.
+	 *
+	 * @param leg The leg: `LEG1` to `LEG5`. `ALL` is the same as
+	 *        setFrequency(frequency).
+	 * @param frequency switching frequency in Hz, at least getFrequencyMin()
+	 *
+	 * @return `0` if ok, `-1` if the leg uses the shared frequency or the
+	 *         frequency is out of range
+	 */
+	int8_t setFrequency(leg_t leg, uint32_t frequency);
 
 	/**
 	 * @brief Gets the currently configured shared PWM frequency in Hz.
@@ -232,6 +254,15 @@ public:
 	 * @return shared switching frequency in Hz
 	 */
 	uint32_t getFrequency();
+
+	/**
+	 * @brief Gets the PWM frequency of a leg in Hz: its own frequency
+	 *        (leg-frequency) or the shared one.
+	 *
+	 * @param leg The leg: `LEG1` to `LEG5`. `ALL` returns the shared
+	 *        frequency.
+	 */
+	uint32_t getFrequency(leg_t leg);
 
 	/**
 	 * @brief Gets the minimum allowed shared PWM frequency in Hz.

@@ -58,6 +58,9 @@ uint16_t dt_falling_deadtime[] =
 int16_t dt_phase_shift[] =
     {DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_PHASE)};
 
+uint32_t dt_leg_frequency[] =
+    {DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_FREQUENCY)};
+
 uint8_t dt_leg_count =
     DT_FOREACH_CHILD_STATUS_OKAY(POWER_SHIELD_ID, LEG_COUNTER);
 

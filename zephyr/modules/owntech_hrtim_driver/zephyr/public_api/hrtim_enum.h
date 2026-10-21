@@ -426,7 +426,9 @@ extern "C"
         uint16_t max_period;           /* Absolute Max Period used by the unit */
         uint16_t min_period;           /* Absolute Min Period used by the unit */
         uint32_t frequency;            /* Frequency used by the unit */
-        uint32_t max_frequency;        /* Max frequency used by the unit */
+        uint32_t own_frequency;        /* Switching frequency set for this
+                                          unit only (Hz), 0 = master's */
+        uint32_t max_frequency;      /* Max frequency used by the unit */
         uint32_t min_frequency;        /* Min frequency used by the unit */
         hrtim_cnt_t modulation;        /* Type of modulation used for this unit */
         hrtim_tu_ON_OFF_t unit_on;     /* State of the time unit (ON/OFF) */

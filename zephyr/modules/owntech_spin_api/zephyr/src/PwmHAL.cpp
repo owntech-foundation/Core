@@ -506,6 +506,31 @@ void PwmHAL::setFrequency(uint32_t frequency_update)
 	hrtim_change_frequency(frequency_update);
 }
 
+int8_t PwmHAL::initUnitFrequency(hrtim_tu_number_t pwmX, uint32_t frequency)
+{
+	return hrtim_tu_frequency_set(pwmX, frequency);
+}
+
+int8_t PwmHAL::setFrequency(hrtim_tu_number_t pwmX, uint32_t frequency_update)
+{
+	return hrtim_tu_change_frequency(pwmX, frequency_update);
+}
+
+uint32_t PwmHAL::getFrequency(hrtim_tu_number_t pwmX)
+{
+	return hrtim_tu_frequency_get(pwmX);
+}
+
+bool PwmHAL::hasOwnFrequency(hrtim_tu_number_t pwmX)
+{
+	return hrtim_tu_has_own_frequency(pwmX);
+}
+
+void PwmHAL::resetCounters(const hrtim_tu_number_t *pwmX, uint8_t count)
+{
+	hrtim_cnt_reset_sync(pwmX, count);
+}
+
 uint32_t PwmHAL::getFrequencyMax(hrtim_tu_number_t pwmX)
 {
 	return hrtim_get_max_frequency(pwmX);

@@ -90,6 +90,33 @@ void PowerAPI::initMode(leg_t leg,
         /* Configure PWM frequency */
         spin.pwm.initVariableFrequency(timer_frequency, timer_min_frequency);
 
+        /* Leg with its own frequency (leg-frequency), before initUnit() */
+        if (dt_leg_frequency[i] != 0)
+        {
+            hrtim_tu_number_t leg_tu = spinNumberToTu(dt_pwm_pin[i]);
+
+            if (spin.pwm.initUnitFrequency(leg_tu, dt_leg_frequency[i]) != 0)
+            {
+                printk("Leg %d: leg-frequency %u Hz is below min-frequency "
+                       "%u Hz, the common frequency is used\n",
+                       i, dt_leg_frequency[i], timer_min_frequency);
+            }
+            else if (timer_frequency % dt_leg_frequency[i] != 0)
+            {
+                /* The critical task runs on the common frequency: with a
+                 * non-integer ratio, the PWM and ADC sampling phase seen
+                 * by the task changes from one call to the next */
+                printk("Leg %d: leg-frequency %u Hz does not divide the "
+                       "common frequency %u Hz\n",
+                       i, dt_leg_frequency[i], timer_frequency);
+            }
+
+            if (dt_phase_shift[i] != 0)
+            {
+                printk("Leg %d: no phase shift with leg-frequency\n", i);
+            }
+        }
+
         /* Set modulation */
         spin.pwm.setModulation(spinNumberToTu(dt_pwm_pin[i]),
                                dt_modulation[i]);
@@ -198,6 +225,57 @@ void PowerAPI::initMode(leg_t leg,
         if (dt_pin_capacitor[i] != 0)
         {
             spin.gpio.configurePin(dt_pin_capacitor[i], OUTPUT);
+        }
+    }
+
+    alignOwnFrequencyLegs();
+}
+
+void PowerAPI::alignOwnFrequencyLegs()
+{
+    /**
+     * Legs with their own frequency are not reset by the master. Restart
+     * together the counters of all the legs that share a leg-frequency, so
+     * that, e.g., the two legs of an H-bridge are in phase. Called after
+     * every init: once the last of them is initialized they are aligned.
+     */
+    hrtim_tu_number_t group[ALL];
+
+    for (int8_t i = 0; i < dt_leg_count; i++)
+    {
+        if (dt_leg_frequency[i] == 0)
+        {
+            continue;
+        }
+
+        /* Handle each frequency once, from its first leg */
+        bool seen = false;
+        for (int8_t j = 0; j < i; j++)
+        {
+            if (dt_leg_frequency[j] == dt_leg_frequency[i])
+            {
+                seen = true;
+            }
+        }
+        if (seen)
+        {
+            continue;
+        }
+
+        uint8_t count = 0;
+        for (int8_t j = i; j < dt_leg_count; j++)
+        {
+            hrtim_tu_number_t leg_tu = spinNumberToTu(dt_pwm_pin[j]);
+            if (dt_leg_frequency[j] == dt_leg_frequency[i] &&
+                spin.pwm.hasOwnFrequency(leg_tu))
+            {
+                group[count++] = leg_tu;
+            }
+        }
+
+        if (count > 1)
+        {
+            spin.pwm.resetCounters(group, count);
         }
     }
 }
@@ -637,6 +715,13 @@ void PowerAPI::setFrequency(uint32_t frequency)
     for (int8_t i = 0; i < dt_leg_count; i++)
     {
         hrtim_tu_number_t leg_tu = spinNumberToTu(dt_pwm_pin[i]);
+
+        /* Legs with their own frequency did not change */
+        if (spin.pwm.hasOwnFrequency(leg_tu))
+        {
+            continue;
+        }
+
         uint16_t period = tu_channel[leg_tu]->pwm_conf.period;
 
         tu_channel[leg_tu]->pwm_conf.duty_min_user =
@@ -649,6 +734,33 @@ void PowerAPI::setFrequency(uint32_t frequency)
 uint32_t PowerAPI::getFrequency()
 {
     return timer_frequency;
+}
+
+int8_t PowerAPI::setFrequency(leg_t leg, uint32_t frequency)
+{
+    if (leg == ALL)
+    {
+        setFrequency(frequency);
+        return 0;
+    }
+
+    if (leg < 0 || leg >= dt_leg_count)
+    {
+        return -1;
+    }
+
+    /* Also rescales the duty cycle limits of the leg */
+    return spin.pwm.setFrequency(spinNumberToTu(dt_pwm_pin[leg]), frequency);
+}
+
+uint32_t PowerAPI::getFrequency(leg_t leg)
+{
+    if (leg == ALL || leg < 0 || leg >= dt_leg_count)
+    {
+        return timer_frequency;
+    }
+
+    return spin.pwm.getFrequency(spinNumberToTu(dt_pwm_pin[leg]));
 }
 
 uint32_t PowerAPI::getFrequencyMin()

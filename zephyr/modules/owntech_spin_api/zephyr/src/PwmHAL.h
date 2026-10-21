@@ -469,6 +469,62 @@ public:
      void setFrequency(uint32_t frequency_update);
 
      /**
+      * @brief Gives a PWM unit its own switching frequency, independent
+      *        of the other units (e.g. inverter legs at 50 kHz while the
+      *        others stay at 200 kHz).
+      *
+      * @param[in] pwmX      PWM Unit: `PWMA`,`PWMB`,`PWMC`,`PWMD`,`PWME`,`PWMF`
+      * @param[in] frequency Frequency in Hz, at least the minimal frequency
+      *                      given to initVariableFrequency()
+      *
+      * @return `0` if ok, `-1` if the frequency is below the minimum
+      *
+      * @warning Call it AFTER initVariableFrequency() / initFixedFrequency()
+      *          and BEFORE initUnit(). The unit is not reset by the other
+      *          units: setPhaseShift() and current mode are not available.
+      *          setFrequency(frequency_update) leaves the unit unchanged.
+      */
+     int8_t initUnitFrequency(hrtim_tu_number_t pwmX, uint32_t frequency);
+
+     /**
+      * @brief Changes the frequency of a PWM unit that has its own
+      *        frequency (initUnitFrequency()), after its initialization.
+      *        The duty cycle and the ADC trigger keep their position as a
+      *        fraction of the period.
+      *
+      * @param[in] pwmX             PWM Unit: `PWMA`,`PWMB`,`PWMC`,`PWMD`,`PWME`,`PWMF`
+      * @param[in] frequency_update The new frequency in Hz
+      *
+      * @return `0` if ok, `-1` if the unit follows the common frequency or
+      *         the frequency is out of range
+      */
+     int8_t setFrequency(hrtim_tu_number_t pwmX, uint32_t frequency_update);
+
+     /**
+      * @brief Returns the switching frequency of a PWM unit in Hz.
+      *
+      * @param[in] pwmX  PWM Unit: `PWMA`,`PWMB`,`PWMC`,`PWMD`,`PWME`,`PWMF`
+      */
+     uint32_t getFrequency(hrtim_tu_number_t pwmX);
+
+     /**
+      * @brief Returns true if the PWM unit has its own frequency.
+      *
+      * @param[in] pwmX  PWM Unit: `PWMA`,`PWMB`,`PWMC`,`PWMD`,`PWME`,`PWMF`
+      */
+     bool hasOwnFrequency(hrtim_tu_number_t pwmX);
+
+     /**
+      * @brief Restarts the counters of several PWM units together (one
+      *        register write). Aligns units that have the same frequency
+      *        of their own.
+      *
+      * @param[in] pwmX  PWM Units
+      * @param[in] count Number of PWM units
+      */
+     void resetCounters(const hrtim_tu_number_t *pwmX, uint8_t count);
+
+     /**
       * @brief     	          This function returns the minimum frequency
       *                       of the selected timer in Hz
       *
