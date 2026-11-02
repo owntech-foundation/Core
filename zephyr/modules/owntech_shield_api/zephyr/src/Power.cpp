@@ -230,8 +230,6 @@ void PowerAPI::setDutyCycle(leg_t leg, float32_t duty_value)
 
 void PowerAPI::setDutyCycleRaw(leg_t leg, uint16_t duty_value)
 {
-    uint16_t period;
-    uint8_t swap_state;
     hrtim_tu_number_t leg_tu;
     uint16_t duty_cycle_max_raw;
     uint16_t duty_cycle_min_raw;
@@ -269,27 +267,9 @@ void PowerAPI::setDutyCycleRaw(leg_t leg, uint16_t duty_value)
             duty_value = duty_cycle_min_raw;
         }
         
-        period = tu_channel[leg_tu]->pwm_conf.period;
-        swap_state = tu_channel[leg_tu]->pwm_conf.duty_swap;
-
-        /* Implements a logic that allows for a duty cycle of 100% */
-        if (duty_value >= period-3){
-            duty_value = 0;
-            hrtim_duty_cycle_set(leg_tu, duty_value);
-        
-            if(swap_state == false){ 
-                hrtim_output_hot_swap(leg_tu);
-            }        
-        }
-        else
-        {    
-            if(swap_state == true) {
-                hrtim_duty_cycle_set(leg_tu, duty_value);
-                hrtim_output_hot_swap(leg_tu);
-            }else{
-                hrtim_duty_cycle_set(leg_tu, duty_value);
-            }
-        }
+        /* User limits are applied above; silicon limits and endpoints are
+         * handled once in the shared driver, as in the SPIN API. */
+        hrtim_duty_cycle_set(leg_tu, duty_value);
     }
 }
 
