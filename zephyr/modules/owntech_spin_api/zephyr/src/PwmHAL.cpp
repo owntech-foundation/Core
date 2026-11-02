@@ -221,33 +221,8 @@ void PwmHAL::setDutyCycle(hrtim_tu_number_t pwmX, float32_t duty_cycle)
 
 void PwmHAL::setDutyCycleRaw(hrtim_tu_number_t pwmX, uint16_t duty_cycle)
 {
-    timer_hrtim_t *tu = tu_channel[pwmX]; /* Get pointer to timer unit config */
-    uint16_t previous_duty_cycle = tu->pwm_conf.duty_cycle; 
-    /* Store previously set duty cycle */
-
-    if (previous_duty_cycle == duty_cycle) {
-        return; /* Skip update if duty cycle has not changed */
-    }
-
-    uint16_t period = tu->pwm_conf.period;         /* Get PWM period */
-    bool swap_state = tu->pwm_conf.duty_swap;      /* Get output swap state */
-
-    /* True if near 100% duty */
-    bool over_limit = (duty_cycle >= period - 3); 
-
-    /* Force 0% to avoid glitches near 100% */
-    duty_cycle = over_limit ? 0 : duty_cycle; 
-
-    /* Flip outputs only if needed to preserve polarity */
-    bool force_swap = swap_state ^ over_limit; 
-
-    /* Write new duty cycle to HRTIM registers */
-    hrtim_duty_cycle_set(pwmX, duty_cycle); 
-
-    if (force_swap) {
-        hrtim_output_hot_swap(pwmX); 
-        /* Flip the outputs (high ↔ low) */
-    }
+    /* The shared driver owns hardware limits and endpoint transitions. */
+    hrtim_duty_cycle_set(pwmX, duty_cycle);
 }
 
 

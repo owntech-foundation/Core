@@ -1090,10 +1090,29 @@ void hrtim_dt_set(hrtim_tu_number_t tu_number, uint16_t rise_ns, uint16_t fall_n
                                rise_dt);
 }
 
-inline void hrtim_duty_cycle_set(hrtim_tu_number_t tu_number, uint16_t value)
+void hrtim_duty_cycle_set(hrtim_tu_number_t tu_number, uint16_t value)
 {
-    tu_channel[tu_number]->pwm_conf.duty_cycle = value;
-    HRTIM1->sTimerxRegs[tu_number].CMP1xR = value;
+    timer_hrtim_t *tu = tu_channel[tu_number];
+    uint16_t minimum = tu->pwm_conf.duty_min;
+    if (minimum == 0) {
+        /* Frequency changes also visit timing units not yet configured. */
+        minimum = HRTIM_MIN_PER_and_CMP_REG_VALUES[tu->pwm_conf.ckpsc];
+    }
+    /* Keep zero as a valid compare in both alignments. Suppress unsupported
+     * nonzero compares before applying the existing near-full swap policy.
+     * In particular, zero must stay zero even at the minimum legal period. */
+    if (value != 0 && value < minimum) {
+        value = 0;
+    }
+    bool full = value != 0 && value >= tu->pwm_conf.period - 3U;
+    uint16_t applied = full ? 0 : value;
+
+    /* Zero and ordinary PWM share the original compare/preload path. */
+    tu->pwm_conf.duty_cycle = applied;
+    HRTIM1->sTimerxRegs[tu_number].CMP1xR = applied;
+    if (tu->pwm_conf.duty_swap != full) {
+        hrtim_output_hot_swap(tu_number);
+    }
 }
 
 
@@ -1549,7 +1568,6 @@ void hrtim_change_frequency(uint32_t new_frequency)
                 new_duty = duty_cycle_ratio*new_tu_period;
 
                 LL_HRTIM_TIM_SetPeriod(HRTIM1,timing_unit,new_tu_period);
-                LL_HRTIM_TIM_SetCompare1(HRTIM1,timing_unit,new_duty);                 
 
                 phase_shift_ratio = (float32_t)old_shift/(float32_t)old_period;
                 new_shift = phase_shift_ratio*new_tu_period;
@@ -1557,9 +1575,12 @@ void hrtim_change_frequency(uint32_t new_frequency)
                 tu_channel[channel]->pwm_conf.frequency = new_frequency;
                 hrtim_phase_shift_set(channel, new_shift);
 
-                tu_channel[channel]->pwm_conf.duty_cycle = new_duty;
                 tu_channel[channel]->phase_shift.value = new_shift;
                 tu_channel[channel]->pwm_conf.period = new_tu_period;
+                /* Rescaling can move a valid pulse below the hardware limit.
+                 * Keep endpoints and hardware bounds on the common path. */
+                hrtim_duty_cycle_set(channel,
+                    tu_channel[channel]->pwm_conf.duty_swap ? new_tu_period : new_duty);
             }
 
 

@@ -337,6 +337,11 @@ void hrtim_dt_set(hrtim_tu_number_t tu_number,
 /**
  * @brief   Updates the duty cycle of a timing unit
  *
+ * Nonzero compares below the prescaler-dependent hardware minimum produce
+ * CMP1 = 0. Zero uses the original compare path in both alignments, with normal
+ * preload/update timing. Near-full duty retains the existing zero-compare plus
+ * output-swap policy. Zero takes precedence over that policy at small periods.
+ *
  * @param[in] tu_number        Timing unit number:
  *                  `MSTR`, `TIMA`, `TIMB`, `TIMC`, `TIMD`, `TIME`, `TIMF`
  * @param[in] value        The desired duty cycle value
