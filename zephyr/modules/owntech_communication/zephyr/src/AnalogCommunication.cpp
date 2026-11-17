@@ -50,7 +50,7 @@ void AnalogCommunication::init()
     shield.sensors.enableSensor(ANALOG_COMM, ADC_NUM);
 
     /* Initialize the DAC */
-    spin.dac.initConstValue(ADC_NUM);
+    spin.dac.initConstValue(DAC_NUM);
     spin.dac.setConstValue(DAC_NUM, DAC_CHAN, 0);
 }
 
