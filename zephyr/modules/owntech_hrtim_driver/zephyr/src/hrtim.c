@@ -776,9 +776,12 @@ void hrtim_tu_gpio_init(hrtim_tu_number_t tu_number)
             freq_mult = 2;
         }
 
+    /* The up-down counter runs at twice the switching frequency, but
+     * pwm_conf.frequency keeps the switching frequency: storing the counter
+     * frequency doubled the PWM frequency at each further init of the unit. */
     tu_channel[tu_number]->pwm_conf.frequency =
         _period_ckpsc(freq_mult * tu_channel[tu_number]->pwm_conf.frequency,
-                      tu_channel[tu_number]);
+                      tu_channel[tu_number]) / freq_mult;
 
     LL_HRTIM_TIM_SetPrescaler(HRTIM1,
                               tu_channel[tu_number]->pwm_conf.pwm_tu,
