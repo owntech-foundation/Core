@@ -72,8 +72,8 @@
 			sensor-name = "V1_LOW";
 			default-adc = "ADC_1";
 			default-order = <0>;
-			default-gain = <0x3d3851ec>;
-			default-offset = <0xc2b867f0>;
+			default-gain = <0x3cf5ec81>; /* 0.03002, mean of the production calibrations of three v1.1.1 boards */
+			default-offset = <0xbca3d70a>; /* -0.02 */
 			sensor-conv-type = "LINEAR";
 			v1-low-adc1 {
 				io-channels = <&adc1 6>;
@@ -91,8 +91,8 @@
 			sensor-name = "V2_LOW";
 			default-adc = "ADC_1";
 			default-order = <1>;
-			default-gain = <0x3d3851ec>;
-			default-offset = <0xc2b867f0>;
+			default-gain = <0x3cf5ec81>; /* 0.03002, mean of the production calibrations of three v1.1.1 boards */
+			default-offset = <0xbca3d70a>; /* -0.02 */
 			sensor-conv-type = "LINEAR";
 			v2-low-adc1 {
 				io-channels = <&adc1 1>;
@@ -110,8 +110,8 @@
 			sensor-name = "V3_LOW";
 			default-adc = "ADC_2";
 			default-order = <2>;
-			default-gain = <0x3d3851ec>;
-			default-offset = <0xc2b867f0>;
+			default-gain = <0x3cf5ec81>; /* 0.03002, mean of the production calibrations of three v1.1.1 boards */
+			default-offset = <0xbca3d70a>; /* -0.02 */
 			sensor-conv-type = "LINEAR";
 			v3-low-adc2 {
 				io-channels = <&adc2 4>;
@@ -161,8 +161,8 @@
 			sensor-name = "I1_LOW";
 			default-adc = "ADC_2";
 			default-order = <0>;
-			default-gain = <0x3ba3d70a>;
-			default-offset = <0xc1200000>;
+			default-gain = <0x3c1bcfd5>; /* 0.00951, mean of the production calibrations of three v1.1.1 boards */
+			default-offset = <0xc19ef5c3>; /* -19.87 */
 			sensor-conv-type = "LINEAR";
 			i1-low-adc1 {
 				io-channels = <&adc1 7>;
@@ -180,8 +180,8 @@
 			sensor-name = "I2_LOW";
 			default-adc = "ADC_2";
 			default-order = <1>;
-			default-gain = <0x3ba3d70a>;
-			default-offset = <0xc1200000>;
+			default-gain = <0x3c1bcfd5>; /* 0.00951, mean of the production calibrations of three v1.1.1 boards */
+			default-offset = <0xc19ef5c3>; /* -19.87 */
 			sensor-conv-type = "LINEAR";
 			i2-low-adc1 {
 				io-channels = <&adc1 2>;
@@ -199,8 +199,8 @@
 			sensor-name = "I3_LOW";
 			default-adc = "ADC_1";
 			default-order = <2>;
-			default-gain = <0x3d3851ec>;
-			default-offset = <0xc2b867f0>;
+			default-gain = <0x3c1bcfd5>; /* 0.00951, mean of the production calibrations of three v1.1.1 boards */
+			default-offset = <0xc19ef5c3>; /* -19.87 */
 			sensor-conv-type = "LINEAR";
 			v3-low-adc1 {
 				io-channels = <&adc1 14>;
@@ -218,8 +218,8 @@
 			sensor-name = "I_HIGH";
 			default-adc = "ADC_2";
 			default-order = <3>;
-			default-gain = <0x3ba3d70a>;
-			default-offset = <0xc1200000>;
+			default-gain = <0x3c19ae92>; /* 0.00938, mean of the production calibrations of three v1.1.1 boards; sign as before (reads -I, applications negate it) */
+			default-offset = <0xc19dd70a>; /* -19.73 */
 			sensor-conv-type = "LINEAR";
 			i-high-adc1 {
 				io-channels = <&adc1 9>;
