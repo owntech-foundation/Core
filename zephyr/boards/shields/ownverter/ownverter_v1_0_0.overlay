@@ -199,8 +199,8 @@
 			sensor-name = "I3_LOW";
 			default-adc = "ADC_1";
 			default-order = <2>;
-			default-gain = <0x3d3851ec>;
-			default-offset = <0xc2b867f0>;
+			default-gain = <0x3ba3d70a>; /* 0.005: current sensor, same scaling as I1_LOW/I2_LOW */
+			default-offset = <0xc1200000>; /* -10.0 */
 			sensor-conv-type = "LINEAR";
 			v3-low-adc1 {
 				io-channels = <&adc1 14>;
